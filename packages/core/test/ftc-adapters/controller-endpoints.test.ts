@@ -385,3 +385,25 @@ test("unrecognized read profile never probes guessed endpoints", async () => {
   ).toEqual({ code: "protocol_unknown" })
   expect(source.requests).toEqual([])
 })
+
+test.each([
+  ["id", " "],
+  ["id", " com.bylazar.telemetry "],
+  ["id", " unknown.plugin "],
+  ["version", " "],
+  ["version", " 1.0.7 "],
+  ["version", "\t\n"],
+  ["pluginsCoreVersion", " "],
+  ["pluginsCoreVersion", " 1.1.44 "],
+] as const)("rejects noncanonical plugin %s declaration %j without normalization", async (field, value) => {
+  const source = fixture()
+  source.plugins.data.plugins[0].details[field] = value
+  source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
+  source.resources["/api/configs/com.bylazar.telemetry"].body = JSON.stringify(source.plugins.data.plugins[0].details)
+  const result = await Effect.runPromiseExit(Panels.readEndpoints(input, source.transport))
+  expect(result._tag).toBe("Failure")
+  expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toEqual({
+    code: "resource_invalid",
+    resource: "/api/plugins",
+  })
+})

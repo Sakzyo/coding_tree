@@ -2,7 +2,7 @@
 
 Date: 2026-10-06. Delivery status: **DONE_WITH_CONCERNS for the scoped implementation/evaluation slice; the M8-04 task and acceptance gates remain open.** Physical and Windows requirements remain NOT RUN, not passing. No compatibility matrix row is promoted.
 
-Review base: `4a915eacb41f15bd54cb4617df08b4c181222f6a`. Product/test/fixture revision tested: **`29be4123ad812e66d26d225b899a46fa9b5d233d`** (`feat(ftc): evaluate controller endpoints and scoped forwarding`). This report and captured outputs are a subsequent documentation-only commit; no product changes follow the tested revision.
+Review base: `4a915eacb41f15bd54cb4617df08b4c181222f6a`. Product/test/fixture revision tested: **`29be4123ad812e66d26d225b899a46fa9b5d233d`** (`feat(ftc): evaluate controller endpoints and scoped forwarding`). The initial report and captured outputs were committed separately from that product revision. Later scoped fixes and their tested content are recorded below.
 
 ## Scope and decisions
 
@@ -61,3 +61,22 @@ Tests were first written against missing forward/schema behavior ([initial absen
 The adapter recognizes resource metadata for Telemetry/Battery/OpModeControl/Configurables/CameraStream but only decodes core/time, textual telemetry and finite battery samples. Other incoming frames fail closed, not silently become telemetry. Unknown/custom plugins and Limelight routes are not followed. Plugin hash equality never identifies a physical robot. Full dashboard resources, upstream JS execution, no-replay of real controls and external fallback are unverified.
 
 `ReadTransport` and `ForwardTransport` are narrow injected boundaries, not production network/ADB implementations. Any future host must prove bounded I/O, cancellation, acquisition compensation, exclusive lease ownership and response mediation before registration. A raw forward accepts traffic in both directions and cannot be used as a read-only capability. Fixed frontend port 8002 makes arbitrary-port dashboard forwarding insufficient. No approval, deployment/start/tuning, sibling module access or automatic replay was introduced.
+
+## Review fix 1 — reject noncanonical plugin declarations
+
+Date: 2026-10-06. Fix base: `3e9a64ca554408608ef6078c2e154123f3f687ad`. Addressed the Important finding in the coordinator's independent review: remote plugin IDs/version strings were only non-empty, allowing successful evidence containing whitespace that the canonical Schema rejects. `panels.ts` now applies the same non-empty and trimmed constraints as canonical `Text` when decoding all three plugin declaration fields. Observed declarations are **rejected, never normalized**. Both manifest and config parsing use that decoder; no canonical Schema or other behavior changed.
+
+Eight real-reader regressions cover whitespace-only and surrounding-whitespace IDs, unknown plugin IDs, plugin versions and frontend versions, including tab/newline-only input and matching malformed manifest/config declarations. Before the fix, six cases returned successful evidence and two reported protocol-unknown instead of malformed-resource; all eight now reject at `/api/plugins` with `resource_invalid`.
+
+Exact tested working-tree content was the fix base plus these Git blobs (the source/test changes committed with this addendum): `packages/core/src/ftc/controllers/panels.ts` = `fdac0236b325118f011f08a6f5c73ceed7aae36c`; `packages/core/test/ftc-adapters/controller-endpoints.test.ts` = `83e0c0f744e1f2d9200cb6237ec5285ad6efaa97`. Commands used the same macOS/Bun environment and PATH prefix documented above.
+
+| Cwd             | Exact command                                                                                                                                   | Exit / result                                                  | Output                                  |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | --------------------------------------- |
+| `packages/core` | `bun test ./test/ftc-adapters/controller-endpoints.test.ts --test-name-pattern 'rejects noncanonical plugin'` before fix                        | 1; 0 pass, 8 fail, 54 filtered out; expected behavior failures | [RED](m8-04/fix1-red.log)               |
+| `packages/core` | Same focused command after fix                                                                                                                  | 0; 8 pass, 0 fail, 54 filtered out, 16 assertions              | [GREEN](m8-04/fix1-green.log)           |
+| `packages/core` | `bun test ./test/ftc-adapters/controller-endpoints.test.ts ./test/ftc-evaluation/m8-04.test.ts ./test/ftc/controller-connections/m8-01.test.ts` | 0; **87 pass, 5 skip, 0 fail**, 203 assertions                 | [covering run](m8-04/fix1-covering.log) |
+| `packages/core` | `bun typecheck`                                                                                                                                 | 0; no type errors; Core is the only changed code package       | [types](m8-04/fix1-core-typecheck.log)  |
+| repo root       | `bun run lint packages/core/src/ftc/controllers/panels.ts packages/core/test/ftc-adapters/controller-endpoints.test.ts`                         | 0; 0 warnings/errors                                           | [lint](m8-04/fix1-lint.log)             |
+| repo root       | `bunx prettier --check packages/core/src/ftc/controllers/panels.ts packages/core/test/ftc-adapters/controller-endpoints.test.ts`                | 0; formatting passes                                           | [format](m8-04/fix1-format.log)         |
+
+The covering run used approved owned-loopback access; no real ADB, device or external endpoint was contacted. The review's Minor pending-acquisition interruption case remains explicitly deferred to bounded host-transport validation; the current tests cover cancellation after acquisition. All real controller/Windows/identity/log/freshness/dashboard gates remain open. Main-owned review documents, shared progress and the coordinator ledger were not edited.

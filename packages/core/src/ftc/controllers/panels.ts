@@ -179,10 +179,11 @@ const knownPlugins = [
   "com.bylazar.configurables",
   "com.bylazar.camerastream",
 ]
+const Text = Schema.String.check(Schema.isMinLength(1), Schema.isTrimmed())
 const Details = Schema.Struct({
-  id: Schema.NonEmptyString,
-  version: Schema.NonEmptyString,
-  pluginsCoreVersion: Schema.NonEmptyString,
+  id: Text,
+  version: Text,
+  pluginsCoreVersion: Text,
 })
 const Plugins = Schema.Struct({
   pluginID: Schema.Literal("core"),

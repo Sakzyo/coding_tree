@@ -1,0 +1,17 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-adapters/controller-endpoints.test.ts:
+(pass) rejects noncanonical plugin id declaration " " without normalization [4.04ms]
+(pass) rejects noncanonical plugin id declaration " com.bylazar.telemetry " without normalization [0.20ms]
+(pass) rejects noncanonical plugin id declaration " unknown.plugin " without normalization [0.16ms]
+(pass) rejects noncanonical plugin version declaration " " without normalization [0.17ms]
+(pass) rejects noncanonical plugin version declaration " 1.0.7 " without normalization [0.19ms]
+(pass) rejects noncanonical plugin version declaration "\t\n" without normalization [0.18ms]
+(pass) rejects noncanonical plugin pluginsCoreVersion declaration " " without normalization [0.18ms]
+(pass) rejects noncanonical plugin pluginsCoreVersion declaration " 1.1.44 " without normalization [0.12ms]
+
+ 8 pass
+ 54 filtered out
+ 0 fail
+ 16 expect() calls
+Ran 8 tests across 1 file. [52.00ms]

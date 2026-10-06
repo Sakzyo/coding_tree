@@ -1,0 +1,135 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-adapters/controller-endpoints.test.ts:
+399 |   const source = fixture()
+400 |   source.plugins.data.plugins[0].details[field] = value
+401 |   source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
+402 |   source.resources["/api/configs/com.bylazar.telemetry"].body = JSON.stringify(source.plugins.data.plugins[0].details)
+403 |   const result = await Effect.runPromiseExit(Panels.readEndpoints(input, source.transport))
+404 |   expect(result._tag).toBe("Failure")
+                            ^
+error: expect(received).toBe(expected)
+
+Expected: "Failure"
+Received: "Success"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:404:23)
+(fail) rejects noncanonical plugin id declaration " " without normalization [9.34ms]
+399 |   const source = fixture()
+400 |   source.plugins.data.plugins[0].details[field] = value
+401 |   source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
+402 |   source.resources["/api/configs/com.bylazar.telemetry"].body = JSON.stringify(source.plugins.data.plugins[0].details)
+403 |   const result = await Effect.runPromiseExit(Panels.readEndpoints(input, source.transport))
+404 |   expect(result._tag).toBe("Failure")
+                            ^
+error: expect(received).toBe(expected)
+
+Expected: "Failure"
+Received: "Success"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:404:23)
+(fail) rejects noncanonical plugin id declaration " com.bylazar.telemetry " without normalization [0.33ms]
+399 |   const source = fixture()
+400 |   source.plugins.data.plugins[0].details[field] = value
+401 |   source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
+402 |   source.resources["/api/configs/com.bylazar.telemetry"].body = JSON.stringify(source.plugins.data.plugins[0].details)
+403 |   const result = await Effect.runPromiseExit(Panels.readEndpoints(input, source.transport))
+404 |   expect(result._tag).toBe("Failure")
+                            ^
+error: expect(received).toBe(expected)
+
+Expected: "Failure"
+Received: "Success"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:404:23)
+(fail) rejects noncanonical plugin id declaration " unknown.plugin " without normalization [0.32ms]
+399 |   const source = fixture()
+400 |   source.plugins.data.plugins[0].details[field] = value
+401 |   source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
+402 |   source.resources["/api/configs/com.bylazar.telemetry"].body = JSON.stringify(source.plugins.data.plugins[0].details)
+403 |   const result = await Effect.runPromiseExit(Panels.readEndpoints(input, source.transport))
+404 |   expect(result._tag).toBe("Failure")
+                            ^
+error: expect(received).toBe(expected)
+
+Expected: "Failure"
+Received: "Success"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:404:23)
+(fail) rejects noncanonical plugin version declaration " " without normalization [0.30ms]
+399 |   const source = fixture()
+400 |   source.plugins.data.plugins[0].details[field] = value
+401 |   source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
+402 |   source.resources["/api/configs/com.bylazar.telemetry"].body = JSON.stringify(source.plugins.data.plugins[0].details)
+403 |   const result = await Effect.runPromiseExit(Panels.readEndpoints(input, source.transport))
+404 |   expect(result._tag).toBe("Failure")
+                            ^
+error: expect(received).toBe(expected)
+
+Expected: "Failure"
+Received: "Success"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:404:23)
+(fail) rejects noncanonical plugin version declaration " 1.0.7 " without normalization [0.27ms]
+399 |   const source = fixture()
+400 |   source.plugins.data.plugins[0].details[field] = value
+401 |   source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
+402 |   source.resources["/api/configs/com.bylazar.telemetry"].body = JSON.stringify(source.plugins.data.plugins[0].details)
+403 |   const result = await Effect.runPromiseExit(Panels.readEndpoints(input, source.transport))
+404 |   expect(result._tag).toBe("Failure")
+                            ^
+error: expect(received).toBe(expected)
+
+Expected: "Failure"
+Received: "Success"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:404:23)
+(fail) rejects noncanonical plugin version declaration "\t\n" without normalization [0.27ms]
+400 |   source.plugins.data.plugins[0].details[field] = value
+401 |   source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
+402 |   source.resources["/api/configs/com.bylazar.telemetry"].body = JSON.stringify(source.plugins.data.plugins[0].details)
+403 |   const result = await Effect.runPromiseExit(Panels.readEndpoints(input, source.transport))
+404 |   expect(result._tag).toBe("Failure")
+405 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toEqual({
+                                                                                                         ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "code": "resource_invalid",
+-   "resource": "/api/plugins",
++   "code": "protocol_unknown",
++   "resource": "com.bylazar.telemetry",
+  }
+
+- Expected  - 2
++ Received  + 2
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:405:100)
+(fail) rejects noncanonical plugin pluginsCoreVersion declaration " " without normalization [1.58ms]
+400 |   source.plugins.data.plugins[0].details[field] = value
+401 |   source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
+402 |   source.resources["/api/configs/com.bylazar.telemetry"].body = JSON.stringify(source.plugins.data.plugins[0].details)
+403 |   const result = await Effect.runPromiseExit(Panels.readEndpoints(input, source.transport))
+404 |   expect(result._tag).toBe("Failure")
+405 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toEqual({
+                                                                                                         ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "code": "resource_invalid",
+-   "resource": "/api/plugins",
++   "code": "protocol_unknown",
++   "resource": "com.bylazar.telemetry",
+  }
+
+- Expected  - 2
++ Received  + 2
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:405:100)
+(fail) rejects noncanonical plugin pluginsCoreVersion declaration " 1.1.44 " without normalization [0.24ms]
+
+ 0 pass
+ 54 filtered out
+ 8 fail
+ 10 expect() calls
+Ran 8 tests across 1 file. [68.00ms]

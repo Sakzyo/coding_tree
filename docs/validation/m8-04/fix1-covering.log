@@ -1,0 +1,123 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-adapters/controller-endpoints.test.ts:
+(pass) scoped forwards select the explicit target and never rebind or remove unrelated forwards [3.12ms]
+(pass) second-forward conflict cleans up only the first owned lease [0.20ms]
+(pass) unauthorized candidate is never forwarded [0.06ms]
+(pass) offline candidate is never forwarded [0.02ms]
+(pass) unavailable candidate is never forwarded [0.02ms]
+(pass) unknown revisions fail before assuming any controller ports [0.04ms]
+(pass) cancellation and repeated construction release owned forwards without replay [2.99ms]
+(pass) invalid lease ports fail and release rather than expose unusable routes [0.11ms]
+(pass) endpoint errors are serializable canonical contracts [0.78ms]
+(pass) read endpoints record protocol observations without claiming identity, deployment or safe dashboard access [2.71ms]
+(pass) HTML fallback with 200 at /api/plugins fails validation [0.25ms]
+(pass) HTML fallback with 200 at /api/shas fails validation [0.14ms]
+(pass) HTML fallback with 200 at /api/configs/com.bylazar.telemetry fails validation [0.21ms]
+(pass) HTML fallback with 200 at /api/performance fails validation [0.15ms]
+(pass) missing resource / is not a working endpoint [0.06ms]
+(pass) missing resource /index.html is not a working endpoint [0.04ms]
+(pass) missing resource /api/plugins is not a working endpoint [0.04ms]
+(pass) missing resource /api/shas is not a working endpoint [0.09ms]
+(pass) missing resource /api/svelte/com.bylazar.telemetry is not a working endpoint [0.18ms]
+(pass) missing resource /api/configs/com.bylazar.telemetry is not a working endpoint [0.11ms]
+(pass) null plugin hash is missing evidence and never triggers an invented bundle route [0.31ms]
+(pass) unknown frontend version fails rather than promote protocol compatibility [0.13ms]
+(pass) unknown plugins are recorded but their resources are never fetched [0.18ms]
+(pass) healthy HTTP does not hide a disconnected data socket [0.16ms]
+(pass) battery value %s is preserved without inventing freshness [0.15ms]
+(pass) battery value %s is preserved without inventing freshness [0.11ms]
+(pass) battery value %s is preserved without inventing freshness [0.30ms]
+(pass) missing sample is distinct from valid zero and omitted on encoding [0.29ms]
+(pass) unsupported or mutation frame core/pluginReloaded is rejected [0.14ms]
+(pass) unsupported or mutation frame com.bylazar.opmodecontrol/initOpMode is rejected [0.11ms]
+(pass) unsupported or mutation frame com.bylazar.opmodecontrol/startActiveOpMode is rejected [0.10ms]
+(pass) unsupported or mutation frame com.bylazar.opmodecontrol/stopActiveOpMode is rejected [0.09ms]
+(pass) unsupported or mutation frame com.bylazar.configurables/updatedConfigurable is rejected [0.09ms]
+(pass) unsupported or mutation frame com.bylazar.gamepad/gamepad0 is rejected [0.21ms]
+(pass) unsupported or mutation frame com.bylazar.gamepad/gamepad1 is rejected [0.11ms]
+(pass) unsupported or mutation frame custom/read is rejected [0.09ms]
+(pass) unsupported or mutation frame com.bylazar.limelightproxy/status is rejected [0.08ms]
+(pass) malformed frame fails: not-json [0.13ms]
+(pass) malformed frame fails: {"pluginID":"com.bylazar.battery","messageID":"battery","data":NaN} [0.08ms]
+(pass) malformed frame fails: {"pluginID":"com.bylazar.telemetry","messageID":"telemetryPacket","data":0} [0.11ms]
+(pass) unsafe base endpoint http://user:password@localhost:8001 is rejected before I/O [0.08ms]
+(pass) unsafe base endpoint https://example.org/path is rejected before I/O [0.02ms]
+(pass) unsafe base endpoint file:///tmp/example is rejected before I/O [0.02ms]
+(pass) unsafe base endpoint http://localhost:8001/?command=start is rejected before I/O [0.01ms]
+(pass) same local port cannot describe distinct HTTP and socket forwards [0.13ms]
+(pass) cleanup failure cannot become successful forwarding completion [0.12ms]
+(pass) malformed hash at /api/sha256 is not accepted as version evidence [0.07ms]
+(pass) malformed hash at /api/shas is not accepted as version evidence [0.07ms]
+(pass) malformed hash at /api/svelte/com.bylazar.telemetry/sha256 is not accepted as version evidence [0.07ms]
+(pass) HTML fallback cannot masquerade as a JavaScript plugin resource [0.10ms]
+(pass) duplicate plugin identities are not merged silently [0.09ms]
+(pass) cancellation closes the scoped receive resource without reconnecting [0.28ms]
+(pass) textual telemetry preserves empty packets and valid textual zero [0.22ms]
+(pass) unrecognized read profile never probes guessed endpoints [0.04ms]
+(pass) rejects noncanonical plugin id declaration " " without normalization [0.18ms]
+(pass) rejects noncanonical plugin id declaration " com.bylazar.telemetry " without normalization [0.08ms]
+(pass) rejects noncanonical plugin id declaration " unknown.plugin " without normalization [0.07ms]
+(pass) rejects noncanonical plugin version declaration " " without normalization [0.08ms]
+(pass) rejects noncanonical plugin version declaration " 1.0.7 " without normalization [0.06ms]
+(pass) rejects noncanonical plugin version declaration "\t\n" without normalization [0.06ms]
+(pass) rejects noncanonical plugin pluginsCoreVersion declaration " " without normalization [0.06ms]
+(pass) rejects noncanonical plugin pluginsCoreVersion declaration " 1.1.44 " without normalization [0.05ms]
+
+test/ftc-evaluation/m8-04.test.ts:
+(pass) source-derived protocol resolves HTTP, gzip plugin assets and receive-only data through owned TCP forwards [29.67ms]
+(pass) health 200 with socket 503 fails and closes both owned forwards [6.48ms]
+(pass) two synthetic controllers with identical software remain unknown identities on isolated routes [12.84ms]
+(skip) NOT RUN: real Control Hub and phone USB/Wi-Fi HTTP/WebSocket/plugin matrix
+(skip) NOT RUN: Windows ADB forwarding, conflicts, cancellation and resource cleanup
+(skip) NOT RUN: stable physical identity, alias convergence and deployed-build association
+(skip) NOT RUN: real robot logs and telemetry source/freshness across disconnect
+(skip) NOT RUN: Electron dashboard mediation, fixed-port routing, extra plugins and no-replay
+
+test/ftc/controller-connections/m8-01.test.ts:
+(pass) unauthorized device is visible without deployment side effects [0.66ms]
+(pass) multiple targets retain authorization and reported model facts without identity guesses [0.23ms]
+(pass) keeps recovery visible but unavailable [0.07ms]
+(pass) keeps bootloader visible but unavailable [0.04ms]
+(pass) keeps sideload visible but unavailable [0.02ms]
+(pass) keeps future-state visible but unavailable [0.02ms]
+(pass) keeps no permissions (user in plugdev group) visible but unavailable [0.03ms]
+(pass) successful empty discovery differs from missing output [0.15ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: garbage
+SERIAL_A device
+ [0.04ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
+SERIAL_A
+ [0.03ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
+SERIAL_A device not-metadata
+ [0.19ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
+SERIAL_A device model:one model:two
+ [0.02ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
+SERIAL_A device
+SERIAL_A offline
+ [0.03ms]
+(pass) ADB command failure differs from successful empty discovery [0.04ms]
+(pass) preserves adb_missing_tool from the read transport [0.09ms]
+(pass) preserves adb_transport_error from the read transport [0.02ms]
+(pass) releases the read resource after success [0.16ms]
+(pass) releases the read resource after malformed [0.04ms]
+(pass) releases the read resource after command [0.03ms]
+(pass) releases the read resource after transport [0.02ms]
+(pass) cancellation releases the active read and fresh scopes do not retain discovery state [0.35ms]
+(pass) canonical candidate contract omits optional values and is the exact facade contract [0.37ms]
+
+5 tests skipped:
+(skip) NOT RUN: real Control Hub and phone USB/Wi-Fi HTTP/WebSocket/plugin matrix
+(skip) NOT RUN: Windows ADB forwarding, conflicts, cancellation and resource cleanup
+(skip) NOT RUN: stable physical identity, alias convergence and deployed-build association
+(skip) NOT RUN: real robot logs and telemetry source/freshness across disconnect
+(skip) NOT RUN: Electron dashboard mediation, fixed-port routing, extra plugins and no-replay
+
+ 87 pass
+ 5 skip
+ 0 fail
+ 203 expect() calls
+Ran 92 tests across 3 files. [136.00ms]

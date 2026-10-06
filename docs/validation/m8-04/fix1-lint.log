@@ -1,0 +1,3 @@
+$ oxlint packages/core/src/ftc/controllers/panels.ts packages/core/test/ftc-adapters/controller-endpoints.test.ts
+Found 0 warnings and 0 errors.
+Finished in 298ms on 2 files with 130 rules using 10 threads.
