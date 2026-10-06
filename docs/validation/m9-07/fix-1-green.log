@@ -1,0 +1,12 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-adapters/action-boundary-probe.test.ts:
+(pass) owned process tree is gone after exit, including TERM-resistant inherited-pipe descendants [113.31ms]
+(pass) owned process tree is gone after timeout, including TERM-resistant inherited-pipe descendants [266.48ms]
+(pass) owned process tree is gone after abort, including TERM-resistant inherited-pipe descendants [266.08ms]
+
+ 3 pass
+ 11 filtered out
+ 0 fail
+ 12 expect() calls
+Ran 3 tests across 1 file. [665.00ms]

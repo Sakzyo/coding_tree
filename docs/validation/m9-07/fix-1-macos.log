@@ -1,0 +1,31 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-evaluation/m9-07.test.ts:
+(pass) owned process tree is gone after exit, including TERM-resistant inherited-pipe descendants [111.46ms]
+(pass) owned process tree is gone after timeout, including TERM-resistant inherited-pipe descendants [265.12ms]
+(pass) owned process tree is gone after abort, including TERM-resistant inherited-pipe descendants [265.10ms]
+{"mode":"http","restricted":false,"launcher":"absolute-bun","exit":0,"stdout":"probe_ready\n","stderr":"","received":["POST /broker"]}
+(pass) unrestricted absolute binary reaches owned HTTP broker despite filtered PATH [28.70ms]
+{"mode":"websocket","restricted":false,"launcher":"absolute-bun","exit":0,"stdout":"probe_ready\n","stderr":"","received":["probe"]}
+(pass) unrestricted process can send a dashboard-style WebSocket write [22.61ms]
+{"control":"sandbox-startup","exit":0,"stdout":"42\n","stderr":""}
+(pass) macOS candidate permits local development subprocess execution [32.26ms]
+{"mode":"http","restricted":true,"launcher":"absolute-bun","exit":1,"stdout":"probe_ready\n","stderr":"error: Was there a typo in the url or port?\n  path: \"http://127.0.0.1:53851/broker\",\n errno: 0,\n  code: \"FailedToOpenSocket\"\n\n\nBun v1.3.14 (macOS arm64)\n","received":[]}
+(pass) macOS candidate denies HTTP access to owned controller/broker fixture [41.16ms]
+{"mode":"websocket","restricted":true,"launcher":"absolute-bun","exit":1,"stdout":"probe_ready\n","stderr":"20 |       if (event.data === \"received\") resolve()\n21 |       else reject(new Error(\"unexpected_response\"))\n22 |     }\n23 |     socket.onerror = () => {\n24 |       clearTimeout(timeout)\n25 |       reject(new Error(\"websocket_denied\"))\n                      ^\nerror: websocket_denied\n      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/fixtures/action-boundary/process.ts:25:18)\n\nBun v1.3.14 (macOS arm64)\n","received":[]}
+(pass) macOS candidate denies dashboard-style WebSocket writes [34.21ms]
+{"control":"adb-version-only","exit":0,"stdout":"Android Debug Bridge version 1.0.41\nVersion 35.0.1-11580240\nInstalled as /Users/dylanxu/Library/Android/sdk/platform-tools/adb\nRunning on Darwin 25.5.0 (arm64)\n","stderr":""}
+(pass) real absolute ADB binary executes with filtered PATH (version only) [29.26ms]
+{"mode":"http","restricted":false,"launcher":"gradle","exit":0,"stdout":"\nWelcome to Gradle 8.9!\n\nHere are the highlights of this release:\n - Enhanced Error and Warning Messages\n - IDE Integration Improvements\n - Daemon JVM Information\n\nFor more details see https://docs.gradle.org/8.9/release-notes.html\n\nTo honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.9/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.\nDaemon will be stopped at the end of the build \n> Task :boundaryProbe\n\nBUILD SUCCESSFUL in 7s\n1 actionable task: 1 executed\n","stderr":"","received":["POST /broker"]}
+(pass) real offline Gradle task reaches owned broker fixture without isolation [7415.10ms]
+(skip) NOT RUN: Windows process, USB, controller/broker and embedded dashboard isolation
+(skip) NOT RUN: macOS physical USB API and real controller HTTP/WebSocket denial
+(skip) NOT RUN: production extension/MCP descendants and broker capability isolation
+(skip) NOT RUN: real Electron embedded controls, preload/IPC, navigation and permissions
+(pass) M9-07 keeps unverified embedded dashboard and controls disabled [0.18ms]
+
+ 11 pass
+ 4 skip
+ 0 fail
+ 36 expect() calls
+Ran 15 tests across 1 file. [8.26s]

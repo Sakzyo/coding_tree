@@ -1,0 +1,51 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-adapters/action-boundary-probe.test.ts:
+43 |     try {
+44 |       const outcome = await Promise.race([
+45 |         running.then(() => "finished", () => "finished"),
+46 |         Bun.sleep(2000).then(() => "stalled"),
+47 |       ])
+48 |       expect(outcome).toBe("finished")
+                           ^
+error: expect(received).toBe(expected)
+
+Expected: "finished"
+Received: "stalled"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/action-boundary-probe.test.ts:48:23)
+(fail) owned process tree is gone after exit, including TERM-resistant inherited-pipe descendants [2010.20ms]
+43 |     try {
+44 |       const outcome = await Promise.race([
+45 |         running.then(() => "finished", () => "finished"),
+46 |         Bun.sleep(2000).then(() => "stalled"),
+47 |       ])
+48 |       expect(outcome).toBe("finished")
+                           ^
+error: expect(received).toBe(expected)
+
+Expected: "finished"
+Received: "stalled"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/action-boundary-probe.test.ts:48:23)
+(fail) owned process tree is gone after timeout, including TERM-resistant inherited-pipe descendants [2004.79ms]
+43 |     try {
+44 |       const outcome = await Promise.race([
+45 |         running.then(() => "finished", () => "finished"),
+46 |         Bun.sleep(2000).then(() => "stalled"),
+47 |       ])
+48 |       expect(outcome).toBe("finished")
+                           ^
+error: expect(received).toBe(expected)
+
+Expected: "finished"
+Received: "stalled"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/action-boundary-probe.test.ts:48:23)
+(fail) owned process tree is gone after abort, including TERM-resistant inherited-pipe descendants [2004.81ms]
+
+ 0 pass
+ 11 filtered out
+ 3 fail
+ 3 expect() calls
+Ran 3 tests across 1 file. [6.03s]

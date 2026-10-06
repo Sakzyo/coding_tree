@@ -75,3 +75,9 @@ With optional environment variables absent, asset-dependent tests skip visibly; 
 | Physical AC-10/AC-11 target/generation/build binding, contention, lost replies and no replay | **NOT RUN** — belongs to composed/physical M9-08/M9-09 work; no source/fixture test promotes these gates.                                                                                                                                                         |
 
 M9-07 remains open. No production platform or controller combination is promoted. Full module behavior for M9-01–M9-06 is outside this evaluation; none is implicitly implemented by the fixture broker.
+
+## Review fix 1: subprocess lifetime
+
+The reviewed runner now owns a POSIX process group and confirms its termination before normal completion/cancellation and temporary-directory deletion. TERM-resistant descendants holding output pipes are covered for leader exit, timeout and AbortSignal cancellation; a cleanup failure retains the temporary directory and fails visibly. This is fixture lifecycle cleanup, not proof against a hostile process that escapes the group. Windows remains unimplemented/unverified.
+
+Latest [host output](m9-07/fix-1-macos.log): **11 pass, 4 NOT RUN skips, 0 fail, 36 assertions**. Three new cleanup regressions first failed and then passed; exact commands, separate logs and qualifications are in [the fix report](M9-07-implementation.md#independent-review-fix-round-1--owned-probe-cleanup). Every production/platform/physical gate above remains open.
