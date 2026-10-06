@@ -1,0 +1,20 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-01.test.ts:
+[14:54:44.404] ERROR (#122): Error: Expected string, got undefined
+    at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1069:19)
+    at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/SchemaParser.js:116:34)
+    at make (/Users/dylanxu/coding_tree/packages/llm/src/schema/options.ts:198:28)
+    at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-01.test.ts:69:91)
+    at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/session/runner/llm.ts:199:35)
+    at SessionRunner.run (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-01.test.ts:82:49)
+    at SessionRunner.run (definition) (/Users/dylanxu/coding_tree/packages/core/src/session/runner/llm.ts:392:24) {
+  [cause]: Error: Expected string, got undefined
+}
+(fail) admission precedes wake and exact retry reconciles [5000.00ms]
+  ^ this test timed out after 5000ms.
+
+ 0 pass
+ 1 fail
+ 6 expect() calls
+Ran 1 test across 1 file. [5.25s]

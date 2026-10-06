@@ -1,0 +1,66 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #1)
+(pass) admission precedes wake and exact retry reconciles [140.10ms]
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #2)
+(pass) admission precedes wake and exact retry reconciles [82.87ms]
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #3)
+(pass) admission precedes wake and exact retry reconciles [71.25ms]
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #4)
+(pass) admission precedes wake and exact retry reconciles [69.13ms]
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #5)
+(pass) admission precedes wake and exact retry reconciles [106.03ms]
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #6)
+(pass) admission precedes wake and exact retry reconciles [76.92ms]
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #7)
+(pass) admission precedes wake and exact retry reconciles [71.63ms]
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #8)
+(pass) admission precedes wake and exact retry reconciles [77.52ms]
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #9)
+(pass) admission precedes wake and exact retry reconciles [83.34ms]
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #10)
+(pass) admission precedes wake and exact retry reconciles [70.98ms]
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #11)
+(pass) admission precedes wake and exact retry reconciles [62.81ms]
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #12)
+(pass) admission precedes wake and exact retry reconciles [63.91ms]
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #13)
+(pass) admission precedes wake and exact retry reconciles [61.19ms]
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #14)
+(pass) admission precedes wake and exact retry reconciles [62.99ms]
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #15)
+(pass) admission precedes wake and exact retry reconciles [60.70ms]
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #16)
+(pass) admission precedes wake and exact retry reconciles [58.71ms]
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #17)
+(pass) admission precedes wake and exact retry reconciles [61.74ms]
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #18)
+(pass) admission precedes wake and exact retry reconciles [62.37ms]
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #19)
+(pass) admission precedes wake and exact retry reconciles [63.35ms]
+
+test/ftc/agent-and-context/m3-01.test.ts: (run #20)
+(pass) admission precedes wake and exact retry reconciles [60.49ms]
+
+ 20 pass
+ 0 fail
+ 360 expect() calls
+Ran 20 tests across 1 file. [1.87s]

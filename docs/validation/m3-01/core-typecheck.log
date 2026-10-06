@@ -1,0 +1,10 @@
+$ tsgo --noEmit
+test/ftc/environment-and-compatibility/m4-03.test.ts(21,31): error TS2694: Namespace '"/Users/dylanxu/coding_tree/packages/core/src/ftc/environment"' has no exported member 'GuidedPorts'.
+test/ftc/environment-and-compatibility/m4-03.test.ts(24,25): error TS7006: Parameter 'input' implicitly has an 'any' type.
+test/ftc/environment-and-compatibility/m4-03.test.ts(24,190): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ id: string; os: "macos"; osVersions: string[]; architecture: "arm64"; resources: { memoryBytes: number; diskBytes: number; }; editorJdk: { version: string; source: string; license: string; sha256: string; }; ... 7 more ...; evaluation: { ...; }; }'.
+test/ftc/environment-and-compatibility/m4-03.test.ts(27,22): error TS7006: Parameter 'input' implicitly has an 'any' type.
+test/ftc/environment-and-compatibility/m4-03.test.ts(31,22): error TS2339: Property 'guidedLayer' does not exist on type 'typeof import("/Users/dylanxu/coding_tree/packages/core/src/ftc/environment")'.
+test/ftc/environment-and-compatibility/m4-03.test.ts(32,27): error TS2345: Argument of type 'Effect<void, any, any>' is not assignable to parameter of type 'Effect<void, any, never>'.
+  Type 'any' is not assignable to type 'never'.
+test/ftc/environment-and-compatibility/m4-03.test.ts(33,40): error TS2339: Property 'GuidedService' does not exist on type 'typeof import("/Users/dylanxu/coding_tree/packages/core/src/ftc/environment")'.
+test/ftc/environment-and-compatibility/m4-03.test.ts(41,39): error TS2339: Property 'guidedLayer' does not exist on type 'typeof import("/Users/dylanxu/coding_tree/packages/core/src/ftc/environment")'.

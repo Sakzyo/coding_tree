@@ -1,0 +1,32 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-01.test.ts:
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @opencode/v2/storage/Database (defined at /Users/dylanxu/coding_tree/packages/core/src/database/database.ts:20:38)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at doneUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Deferred.js:657:20)
+      at /Users/dylanxu/coding_tree/packages/core/src/cross-spawn-spawner.ts:398:21
+      at emit (node:events:98:22)
+      at #maybeClose (node:child_process:766:16)
+      at #handleOnExit (node:child_process:520:72)
+      at processTicksAndRejections (native:7:39)
+(fail) admission precedes wake and exact retry reconciles [65.14ms]
+
+ 0 pass
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [470.00ms]
