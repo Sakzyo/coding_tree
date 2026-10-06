@@ -122,6 +122,50 @@ test("rejects invalid host resources and unpinned project versions", () => {
   })
 })
 
+const selectors = [
+  "latest.release",
+  "latest.integration",
+  "1.+",
+  "1.2+",
+  "1+",
+  "LATEST",
+  "Latest.Release",
+  "LATEST.INTEGRATION",
+  "NEXT",
+  "Nightly",
+]
+
+test.each(selectors)("rejects dynamic artifact version %s", (version) => {
+  expect(
+    resolveProfile({
+      host,
+      projectVersions: {},
+      catalog: { ...catalog, profiles: [{ ...profile, androidGradlePlugin: artifact(version) }] },
+    }),
+  ).toEqual({ kind: "unsupported", reasons: [{ code: "invalid_input" }] })
+})
+
+test.each(selectors)("rejects dynamic supplied project constraint %s", (version) => {
+  expect(
+    resolveProfile({
+      host,
+      projectVersions: { ...projectVersions, androidGradlePlugin: version },
+      catalog,
+    }),
+  ).toEqual({ kind: "unsupported", reasons: [{ code: "invalid_input" }] })
+})
+
+test.each(["8.7.3", "8.7.3-rc.1", "8.7.3+build.42"])("matches an exact artifact and project version %s", (version) => {
+  const result = resolveProfile({
+    host,
+    projectVersions: { ...projectVersions, androidGradlePlugin: version },
+    catalog: { ...catalog, profiles: [{ ...profile, androidGradlePlugin: artifact(version) }] },
+  })
+  expect(result.kind).toBe("matched")
+  if (result.kind !== "matched") throw new Error("Expected a matched exact version")
+  expect(result.profile.androidGradlePlugin.version).toBe(version)
+})
+
 test("unevaluated profiles cannot be selected", () => {
   expect(
     resolveProfile({

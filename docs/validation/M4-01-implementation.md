@@ -62,7 +62,27 @@ Self-review covered the complete assigned source, input validation, candidate ma
 
 Not run: real clean-host setup on macOS/Windows, Java tooling import/completion/diagnostics, actual FTC Gradle build, artifact downloads/checksum verification against remote assets, prepared-offline operation, model/content inventory, controllers, robot operation and release acceptance scenarios. These belong to M4-02 onward and the named M5/platform/integration evaluations. Matching partial constraints does not establish environment readiness. Metadata validation does not verify an artifact's bytes or license obligations.
 
-## Tested source identities
+## Fix round 1 — Reject dynamic version selectors
+
+Independent review [M4-01-review](M4-01-review.md) found that the original shared Version schema admitted `latest.release`, `latest.integration` and `1.+`. This was an Important defect in pinning, missed by the initial self-review. Fix base: `88890fecfa5a40ecde88f08fbeb8308fe23076e0`; verified 2026-10-06 around 05:49 UTC in the same environment and isolated test directories. This section supersedes the original pinning assessment and focused-suite final result above.
+
+The shared validator now rejects Gradle latest selectors and bare latest/next/nightly case-insensitively. A plus must introduce nonempty exact build metadata, rejecting open-ended selectors such as `1.+`, `1.2+` and `1+`. Exact versions, prerelease versions and build metadata remain accepted. No resolver logic, catalog entries or other task contracts changed.
+
+Twenty regression cases independently exercise dynamic versions in an artifact and in supplied project constraints, including uppercase/mixed-case aliases. Three positive cases resolve exact artifact/project pairs (`8.7.3`, `8.7.3-rc.1`, `8.7.3+build.42`). Expectations use the actual resolver, with empty project constraints in artifact-negative tests so project mismatch cannot mask failed metadata validation. All values are synthetic test data.
+
+| Command                                                                                                                                        | Cwd               | Exit/result                        | Evidence                                        |
+| ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- | ---------------------------------- | ----------------------------------------------- |
+| `bun test ./test/ftc/environment-and-compatibility/m4-01.test.ts` (fix RED)                                                                    | `packages/core`   | 1; 34 pass, 20 fail, 89 assertions | [fix RED, raw gzip](m4-01/fix1-red.log.gz)      |
+| Same focused command (fix GREEN)                                                                                                               | `packages/core`   | 0; 54 pass, 0 fail, 89 assertions  | [fix GREEN](m4-01/fix1-green.log)               |
+| `bun typecheck`                                                                                                                                | `packages/schema` | 0                                  | [Schema types](m4-01/fix1-schema-typecheck.log) |
+| `bun typecheck`                                                                                                                                | `packages/core`   | 0                                  | [Core types](m4-01/fix1-core-typecheck.log)     |
+| `bun test ./test/contract-hygiene.test.ts ./test/compatibility.test.ts ./test/v1-isolation.test.ts`                                            | `packages/schema` | 0; 8 pass, 0 fail, 17 assertions   | [contracts](m4-01/fix1-schema-contracts.log)    |
+| `bun run lint -- packages/schema/src/ftc-environment.ts packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts`                    | repository root   | 0; 0 warnings/errors               | [lint](m4-01/fix1-lint.log)                     |
+| `bunx --no-install prettier --check packages/schema/src/ftc-environment.ts packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts` | repository root   | 0                                  | [format](m4-01/fix1-format.log)                 |
+
+The Schema source and test blob identities for the tested fix are `b81a8673f7b739342f9a92e66b24755718650575` and `e8817b99e0765cb04e59841ceffd579cc81a73e9` respectively; other source identities remain as below. Self-review verified both input boundaries use the shared validator and no code path or data outside the finding changed. Full Schema suite was not repeated at coordinator instruction: its two documented unchanged event-manifest failures remain known, and the affected Version boundary plus contract regressions were rerun. Full Core, platform/build and release gates remain unrun as above. No deferred new finding remains in this focused fix; independent rereview is coordinator-owned.
+
+## Original tested source identities
 
 | File                                                                 | Git blob SHA                               |
 | -------------------------------------------------------------------- | ------------------------------------------ |

@@ -4,7 +4,12 @@ import { Schema } from "effect"
 import { NonNegativeInt, optional } from "./schema"
 
 const Text = Schema.String.check(Schema.isMinLength(1), Schema.isTrimmed())
-const Version = Text.check(Schema.isPattern(/^(?!(?:latest|next|nightly)$)[A-Za-z0-9][A-Za-z0-9._+-]*$/))
+// A plus may introduce exact build metadata, but never an open-ended Gradle selector.
+const Version = Text.check(
+  Schema.isPattern(
+    /^(?!(?:latest(?:\.(?:release|integration))?|next|nightly)$)[a-z0-9][a-z0-9._-]*(?:\+[a-z0-9][a-z0-9._-]*)?$/i,
+  ),
+)
 const Bytes = NonNegativeInt.check(Schema.isLessThanOrEqualTo(Number.MAX_SAFE_INTEGER))
 const Os = Schema.Literals(["macos", "windows"])
 const Architecture = Schema.Literals(["arm64", "x64"])
