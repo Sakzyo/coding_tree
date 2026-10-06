@@ -1,0 +1,13 @@
+$ tsgo --noEmit
+test/ftc/projects-and-chats/m2-01.test.ts(339,37): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'string & Brand<"AbsolutePath">'.
+      Type 'string' is not assignable to type 'Brand<"AbsolutePath">'.
+test/ftc/projects-and-chats/m2-01.test.ts(375,42): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'string & Brand<"Project.ID">'.
+      Type 'string' is not assignable to type 'Brand<"Project.ID">'.
+test/ftc/projects-and-chats/m2-01.test.ts(403,41): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'string & Brand<"AbsolutePath">'.
+      Type 'string' is not assignable to type 'Brand<"AbsolutePath">'.

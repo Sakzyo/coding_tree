@@ -1,0 +1,29 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-01.test.ts:
+error: M2-01 association is not implemented
+M2-01 association is not implemented
+(fail) folder aliases reopen one project [15.66ms]
+error: M2-01 association is not implemented
+M2-01 association is not implemented
+(fail) distinct local roots retain distinct association IDs despite a shared existing project ID [6.64ms]
+error: M2-01 association is not implemented
+M2-01 association is not implemented
+(fail) concurrent independent connections associate one canonical root exactly once [8.91ms]
+error: M2-01 association is not implemented
+M2-01 association is not implemented
+(fail) unavailable folder and regular file fail without associations or project-file edits [4.48ms]
+error: M2-01 association is not implemented
+M2-01 association is not implemented
+(fail) denied access is propagated before persistence [4.47ms]
+(fail) interrupting folder resolution leaves no association and releases its scope [5000.00ms]
+  ^ this test timed out after 5000ms.
+error: M2-01 association is not implemented
+M2-01 association is not implemented
+(fail) inconsistent or nonlocal folder identities fail before persistence [8.58ms]
+(pass) association contract reuses canonical schemas and encodes optional fields without undefined [2.73ms]
+
+ 1 pass
+ 7 fail
+ 6 expect() calls
+Ran 8 tests across 1 file. [5.12s]

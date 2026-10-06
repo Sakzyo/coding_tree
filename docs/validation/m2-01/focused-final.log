@@ -1,0 +1,21 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-01.test.ts:
+(pass) folder aliases reopen one project [24.93ms]
+(pass) distinct local roots retain distinct association IDs with host ID global [7.75ms]
+(pass) distinct local roots retain distinct association IDs with host ID shared-remote [8.08ms]
+(pass) concurrent independent connections associate one canonical root exactly once [10.63ms]
+(pass) unavailable folder and regular file fail without associations or project-file edits [5.56ms]
+(pass) denied access is propagated before persistence [5.01ms]
+(pass) interrupting folder resolution leaves no association and releases its scope [5.94ms]
+(pass) inconsistent or nonlocal folder identities fail before persistence [6.45ms]
+(pass) association contract reuses canonical schemas and encodes optional fields without undefined [0.29ms]
+(pass) SQLite write failure is recoverable and does not create a partial association [8.16ms]
+(pass) fresh independent database scopes do not inherit another repository's associations [9.70ms]
+(pass) reopen refreshes the explicit host mapping without changing canonical ownership [5.41ms]
+(pass) tracked upgrade preserves existing project data and supports a new association [15.44ms]
+
+ 13 pass
+ 0 fail
+ 50 expect() calls
+Ran 13 tests across 1 file. [186.00ms]

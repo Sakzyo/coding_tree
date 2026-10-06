@@ -1,0 +1,10 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-01.test.ts:
+error: M2-01 association is not implemented
+M2-01 association is not implemented
+(fail) folder aliases reopen one project [24.16ms]
+
+ 0 pass
+ 1 fail
+Ran 1 test across 1 file. [115.00ms]

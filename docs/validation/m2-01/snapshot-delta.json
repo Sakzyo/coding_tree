@@ -1,0 +1,68 @@
+{
+  "base_revision": "e65f6c386b4abc97582d4814eb98a9ae3c97045a",
+  "removed_ddl": [],
+  "added_ddl": [
+    {
+      "name": "ftc_project_association",
+      "entityType": "tables"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "canonical_root",
+      "entityType": "columns",
+      "table": "ftc_project_association"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "project_id",
+      "entityType": "columns",
+      "table": "ftc_project_association"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "host_project_id",
+      "entityType": "columns",
+      "table": "ftc_project_association"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "host_project_directory",
+      "entityType": "columns",
+      "table": "ftc_project_association"
+    },
+    {
+      "columns": [
+        "canonical_root"
+      ],
+      "nameExplicit": false,
+      "name": "ftc_project_association_pk",
+      "table": "ftc_project_association",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "project_id"
+      ],
+      "nameExplicit": false,
+      "name": "ftc_project_association_project_id_unique",
+      "entityType": "uniques",
+      "table": "ftc_project_association"
+    }
+  ]
+}

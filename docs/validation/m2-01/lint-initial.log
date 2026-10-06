@@ -1,0 +1,20 @@
+
+  ! typescript-eslint(no-base-to-string): 'cause' may use Object's default stringification format ('[object Object]') when stringified.
+    ,-[packages/core/src/ftc/projects/sql.ts:59:28]
+ 58 |             root: folder.canonicalRoot,
+ 59 |             detail: String(cause),
+    :                            ^^^^^
+ 60 |             recovery: "retry",
+    `----
+  help: Consider picking a property (e.g. `user.name`), using a formatter (or `JSON.stringify`), or implementing a custom `toString()`/`toLocaleString()` on the type.
+
+  ! typescript-eslint(no-misused-spread): Using the spread operator on class instances will lose their class prototype.
+     ,-[packages/core/test/ftc/projects-and-chats/m2-01.test.ts:110:45]
+ 109 |               ...folder,
+ 110 |               location: new Location.Info({ ...folder.location, project: { ...folder.location.project, id: hostID } }),
+     :                                             ^^^^^^^^^^^^^^^^^^
+ 111 |             })),
+     `----
+
+Found 2 warnings and 0 errors.
+Finished in 793ms on 8 files with 130 rules using 10 threads.

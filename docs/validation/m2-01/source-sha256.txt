@@ -1,0 +1,9 @@
+2927a77305d89bccac05294fe2b5fda4882c50240cfc443fecbcd7d8730e46aa  packages/schema/src/ftc-project.ts
+b4e67f8dd4e505a58e68930ef7a63cf30d6b46d41d307a56e7b9e14875fc225f  packages/schema/src/index.ts
+5024e63ed0581d9532c2fcbe3924e86e3bf602c7b36117e35250e2abd0dd87bb  packages/core/src/ftc/projects.ts
+e50f4ba26ef05da8b09081a7502a73ebbe0afccfb0f22cf57f1cff27ab42dd23  packages/core/src/ftc/projects/sql.ts
+27ef9c9309a073ef4c872448bfad59778590aedc374c815ff897260171c080d9  packages/core/test/ftc/projects-and-chats/m2-01.test.ts
+3bee655c9b19fe753d8785ddc880e5fe6857a35273ffa7e0386b4ddcae8323c0  packages/core/schema.json
+963da81bb96a9ec64edd660e094fc29a808a05e73ff74e270aa7c249855bac3c  packages/core/src/database/migration.gen.ts
+2780aa2cc2b19189a9959b35a1a9707b5b734f4db51af1850a8d685b01cd6262  packages/core/src/database/schema.gen.ts
+27fbcc93d47070e6d9f0df838876b351a27c263ba43309965380d5c8ab0bae87  packages/core/src/database/migration/20261006121634_ftc-project-association.ts

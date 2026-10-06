@@ -87,6 +87,14 @@ export default {
         );
       `)
       yield* tx.run(`
+        CREATE TABLE \`ftc_project_association\` (
+          \`canonical_root\` text PRIMARY KEY,
+          \`project_id\` text NOT NULL UNIQUE,
+          \`host_project_id\` text NOT NULL,
+          \`host_project_directory\` text NOT NULL
+        );
+      `)
+      yield* tx.run(`
         CREATE TABLE \`permission\` (
           \`id\` text PRIMARY KEY,
           \`project_id\` text NOT NULL,
