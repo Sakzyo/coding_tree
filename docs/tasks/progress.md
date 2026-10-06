@@ -3,7 +3,7 @@
 Date: 2026-10-06
 Planning baseline: `d7aca195c`
 
-**Implementation progress: 0 / 12 modules complete; 1 / 94 tasks complete.**
+**Implementation progress: 0 / 12 modules complete; 2 / 94 tasks complete.**
 
 These checkboxes track future development, not completion of this planning document. The existing OpenCode foundation is reused, but its presence does not prove that the FTC tasks are done. Both inputs describe unimplemented or unevaluated product work, so every implementation box starts unchecked.
 
@@ -18,7 +18,7 @@ These checkboxes track future development, not completion of this planning docum
 - [ ] **M5 — [Java development](java-development.md)** — 0 / 8 tasks.
 - [ ] **M6 — [FTC configuration and libraries](ftc-configuration-and-libraries.md)** — 0 / 6 tasks.
 - [ ] **M7 — [AI access and local inference](ai-access-and-local-inference.md)** — 0 / 8 tasks.
-- [ ] **M8 — [Controller connections](controller-connections.md)** — 0 / 6 tasks.
+- [ ] **M8 — [Controller connections](controller-connections.md)** — 1 / 6 tasks.
 - [ ] **M9 — [Robot approvals and operations](robot-approvals-and-operations.md)** — 0 / 9 tasks.
 - [ ] **M10 — [Diagnostics and dashboard](diagnostics-and-dashboard.md)** — 0 / 6 tasks.
 - [ ] **M11 — [FTC knowledge](ftc-knowledge.md)** — 0 / 10 tasks.
@@ -216,6 +216,8 @@ Preflight: [dependency/ownership scan](../validation/execution-preflight.md), [e
 | M4-01 | `/root/m4_01` | DONE | No prerequisite; canonical profile schemas and resolver | Approved at `f7d2a93eabae724f29875a29840b000cee8749fb`; [report](../validation/M4-01-implementation.md), [review](../validation/M4-01-review.md) |
 | M5-03 | `/root/m5_03` | BLOCKED | Available-host evaluation independently approved at `8dfc591ed`; Windows/import/production provenance/isolation gates open | [Report](../validation/M5-03-implementation.md), [review](../validation/M5-03-review.md); no support promotion |
 
+| M8-01 | `/root/m8_01` | DONE | Approved `858c8d070`; fixture-based discovery and scoped read cleanup | [Report](../validation/M8-01-implementation.md), [review](../validation/M8-01-review.md); later real-device/platform gates remain open |
+
 Recorded execution priority: M9-07 evaluation first; M4-01 then early M5-03 evaluation; M8-01 then early M8-04 evaluation. Current task states above and latest execution entries below supersede this initial ordering. Continue independent canonical-contract work when evaluation gates block. Only coordinator edits this ledger/checklists; one product-code writer at a time.
 
 - Tooling: pinned Bun 1.3.14 and 4663 locked packages installed successfully. Baseline Session suite passes 127/127 with isolated test data; Schema baseline has two existing event-manifest expectation failures; App/Schema typechecks pass. [Evidence](../validation/baseline.md).
@@ -296,3 +298,32 @@ User requested continuation. Reconciled `ftc-workspace` at `8dfc591ed4307a8c51ac
 - M5-03 minor (deferred): probe stores selected responses/notifications rather than complete outgoing-request/response envelopes; retain request parameters for stronger per-run audit (`probe.py:26`). Current source and response edits support observations.
 - M5-03 minor (deferred): explicitly annotate upstream compiler deprecation notes in validation output (`gradle-native-compile.log:14`); do not modify preserved FTC sources. These three minors are carried into final whole-branch review.
 - Read-only `/root/m7_runtime_preflight` is checking existing inference/credential contracts and installed local-runtime prerequisites. No product edits, secret inspection, model downloads or service calls authorized by this assignment.
+
+- M8-01 dispatched to fresh `/root/m8_01`, review base `4082deb639d4aca5451d9df2580d06c74e6bb34a`. No prerequisites; sole product-code writer. Allowed exact task files, canonical Schema export and owned report/logs. Verify discovery states/multiple/empty/malformed/error and cleanup with injected read transport; no actual ADB daemon/device/mutation. Core/Schema types and affected contract checks required. Counts **1/94 tasks, 0/12 modules**.
+
+- Read-only `/root/m7_runtime_preflight` completed; [report](../validation/M7-runtime-preflight.md). Reusable existing model routes/LLM streams and secret-bearing credential paths identified. Bounded conventional runtime/model inventory found no installed candidate. No services/secrets/downloads/tests touched; M7-08 remains unrun. Coordinator retains verified pinned Bun/hardware baseline. M8-01 is sole product writer.
+
+- Ruling (M8-01 interface): successful empty discovery returns `[]`; missing-tool/transport/malformed-response are typed failures rather than invented candidates. Candidate state and authorization remain separate; unrecognized states stay unavailable with explanatory codes. Reason: the source specifies an array of actual candidates. Consequence if wrong: consumers must revise their failure mapping; no hardware/identity guarantee follows from discovery.
+- Prepared M3-01 and M4-02 briefs for later sequential dispatch. M4-02 explicitly owns required Readiness/ToolchainDescriptor additions to the existing canonical Schema domain despite omission from the task Files line, following the recorded first-method contract rule. No implementation dispatched for these tasks.
+
+- M8-01 interim verification: 18 focused tests / 65 assertions pass; initial RED was behavioral (stubbed empty discovery, no import failures). Initial GREEN corrected a test-only Effect 4 Fiber API assumption; original log retained. Typechecks, Schema regression and scoped lint/format pending.
+- Ruling (M8-01 verification): use task-focused Core regression for new unregistered port-only modules, affected Schema contracts/full Schema baseline comparison, changed-package types and scoped lint/format. No blanket external/runtime Core suite is justified by this change; cross-module milestone suites remain mandatory. Reason: developer instruction limits expanded checks to new changes/unresolved concerns; consequence if wrong: an unrelated interaction could escape until integration coverage, so any new concrete shared-boundary concern triggers focused expansion.
+
+- M8-01 candidate `858c8d070afedde5ed9dd0cacb76f05577757556`: 22 focused tests / 81 assertions, Core/Schema types, 8 Schema contracts, lint/format pass. Full Schema suite has only the two documented baseline failures. Fixture-only parsing/lifecycle; no physical or Windows support claim. [Report](../validation/M8-01-implementation.md). Stable review package prepared; independent review pending.
+
+## Interruption handoff 4 — 2026-10-06
+
+Execution was deliberately interrupted while M8-01 independent review was running. Reconciled workers: `/root/m8_01` completed, `/root/m7_runtime_preflight` completed, `/root/m8_01_review` interrupted; no active implementation worker. Parent shell commands had completed. M8-01 created no processes/listeners/real ADB connection; no user service was touched.
+
+Current branch `ftc-workspace`, HEAD `858c8d070afedde5ed9dd0cacb76f05577757556`. M8-01 implementation is committed, 22 focused tests / 81 assertions pass; Core/Schema types, 8 Schema contracts, lint/format pass. Two full-Schema failures match baseline. Task stays **IN_REVIEW**, unchecked until reviewer verdict. Stable full review diff `docs/validation/M8-01-review.diff`, base `4082deb639d4aca5451d9df2580d06c74e6bb34a`. Report `docs/validation/M8-01-implementation.md`. Counts remain **1/94 tasks, 0/12 modules**.
+
+M5-03 available-host subset is independently approved at `8dfc591ed4307a8c51ac5af3d6c32310ecbabeac`, task remains BLOCKED; three deferred minors recorded above and in its review. Coordinator evidence checkpoint commit `4082deb639d4aca5451d9df2580d06c74e6bb34a` preserves Java review, M8 source audit, M2/M3 briefs and baseline evidence. Current uncommitted coordinator-only files include progress, M8-01 brief/review diff, M4-02 brief, M7 preflight and dependency audit. Preserve them.
+
+Next on explicit resumption: continue same `/root/m8_01_review` with stable diff/brief/report; request separate specification and quality verdicts without redoing already-read sections or unchanged tests. If findings, use original `/root/m8_01` for bounded fixes and scoped re-review. If approved, reconcile M8-01 checklist/counts, then dispatch fresh M8-04 from prepared exact brief using the current canonical ControllerCandidate/DiscoveryError/Adb.DiscoveryTransport contract. M8-04 must retain the source audit's fixed WebSocket port, missing stable identity/log route, source-derived fixture and mutation-boundary limitations; physical/Windows gates remain NOT RUN. Follow with M2-01; M3-01 and M4-02 briefs are also prepared and checked against exact task-index excerpts. Do not rerun completed M4/M5/baseline checks without changed behavior or concrete unresolved risk. Retain `/private/tmp/m5-03-tools` and `/private/tmp/m8-panels-preflight-11d69a98` for upcoming work.
+
+## Resumed execution 5 — 2026-10-06
+
+Explicit continuation received. Reconciled `ftc-workspace` at `858c8d070afedde5ed9dd0cacb76f05577757556`, preserving coordinator changes. Harness lists only `/root`; previous implementation/reviewer agents are no longer resumable. Therefore dispatch a fresh M8-01 reviewer with the same brief/report and regenerated stable full diff (`M8-01-review-resume.diff`, base `4082deb639d4aca5451d9df2580d06c74e6bb34a`). This is recovery of the interrupted review, not a second review seat. Existing test evidence stays valid; do not rerun unchanged suites. Counts **1/94 tasks, 0/12 modules**. Next: review/fixes, M8-04, then M2-01.
+
+- M8-01 complete (commits `4082deb639d4aca5451d9df2580d06c74e6bb34a`..`858c8d070afedde5ed9dd0cacb76f05577757556`, independent spec/quality review clean). Checked exactly task entry and five substeps; **2/94 tasks, 0/12 modules**. Physical/Windows/identity/protocol gates remain in later owning tasks.
+- Ruling (M8-04 contracts): this task may add canonical endpoint/protocol-evidence records to `packages/schema/src/ftc-controller.ts` when required by its public producer contract, despite omission from task Files. Reserve ControllerIdentity/ConnectionDescriptor lifecycle semantics for M8-02/03. Reason: one canonical producer-owned schema prevents duplicate downstream types; consequence if wrong: these small records may need revision when actual protocol evidence is obtained, and no unverified support claim may be encoded.

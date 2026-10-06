@@ -47,7 +47,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 ## Task checklist
 
-- [ ] [M8-01 — Parse discovery and authorization states](#m8-01)
+- [x] [M8-01 — Parse discovery and authorization states](#m8-01)
 - [ ] [M8-02 — Resolve controller identity across transport aliases](#m8-02)
 - [ ] [M8-03 — Connect and select a target with generation tracking](#m8-03)
 - [ ] [M8-04 — Evaluate and implement read endpoints and USB forwarding](#m8-04)
@@ -66,16 +66,16 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 **Interfaces:** Produces `discoverControllers(): readonly ControllerCandidate[]`; candidates include transport address, device kind if known, authorization and explanatory error codes.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/controller-connections/m8-01.test.ts`, add `unauthorized device is visible without deployment side effects`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/controller-connections/m8-01.test.ts`, add `unauthorized device is visible without deployment side effects`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(candidate.authorization).toBe('unauthorized'); expect(mutationCalls).toEqual([])
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/controller-connections/m8-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Use recorded ADB responses through an injected transport; distinguish unauthorized/offline/available devices, multiple targets and empty discovery. Include Control Hub/phone guidance and attached Expansion Hub context without inventing physical configuration.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/controller-connections/m8-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): parse discovery and authorization states`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/controller-connections/m8-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Use recorded ADB responses through an injected transport; distinguish unauthorized/offline/available devices, multiple targets and empty discovery. Include Control Hub/phone guidance and attached Expansion Hub context without inventing physical configuration.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/controller-connections/m8-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): parse discovery and authorization states`.
 
 <a id="m8-02"></a>
 

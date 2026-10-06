@@ -1,0 +1,846 @@
+858c8d070 feat(ftc): parse discovery and authorization states
+ docs/validation/M8-01-implementation.md            |  72 ++++++
+ docs/validation/m8-01/core-typecheck-final.log     |   1 +
+ docs/validation/m8-01/core-typecheck.log           |   1 +
+ docs/validation/m8-01/format-final.log             |   2 +
+ docs/validation/m8-01/format.log                   |   2 +
+ docs/validation/m8-01/green-final.log              |  41 ++++
+ docs/validation/m8-01/green-initial.log            |  57 +++++
+ docs/validation/m8-01/green.log                    |  37 +++
+ docs/validation/m8-01/lint-initial.log             |  51 +++++
+ docs/validation/m8-01/lint.log                     |   2 +
+ docs/validation/m8-01/red.log.gz                   | Bin 0 -> 2528 bytes
+ docs/validation/m8-01/schema-contracts.log         |  20 ++
+ docs/validation/m8-01/schema-suite.log.gz          | Bin 0 -> 94889 bytes
+ docs/validation/m8-01/schema-typecheck.log         |   1 +
+ packages/core/src/ftc/controllers.ts               |  29 +++
+ packages/core/src/ftc/controllers/adb.ts           |  84 +++++++
+ .../test/ftc/controller-connections/m8-01.test.ts  | 247 +++++++++++++++++++++
+ packages/schema/src/ftc-controller.ts              |  35 +++
+ packages/schema/src/index.ts                       |   1 +
+ 19 files changed, 683 insertions(+)
+diff --git a/docs/validation/M8-01-implementation.md b/docs/validation/M8-01-implementation.md
+new file mode 100644
+index 000000000..e365bb849
+--- /dev/null
++++ b/docs/validation/M8-01-implementation.md
+@@ -0,0 +1,72 @@
++# M8-01 discovery implementation — 2026-10-06
++
++Status: **DONE_WITH_CONCERNS**, subject to coordinator review. M8-01's isolated discovery behavior is implemented; no module, physical-controller, deployment, endpoint or platform compatibility gate is credited here. Shared checkboxes and progress were left to the coordinator.
++
++Review base: `4082deb639d4aca5451d9df2580d06c74e6bb34a`, branch `ftc-workspace`. Checks executed on that revision plus the scoped working-tree changes described below. The implementation revision is the focused `feat(ftc): parse discovery and authorization states` commit containing this report and its logs; the coordinator records its resulting hash after creation. To identify exactly what was tested without a self-referential commit hash, these are the final Git blob revisions:
++
++| File                                                          | Tested blob                                |
++| ------------------------------------------------------------- | ------------------------------------------ |
++| `packages/schema/src/ftc-controller.ts`                       | `55d3c1e8b4ff179868934740ccbc9adad71b984c` |
++| `packages/schema/src/index.ts`                                | `840451bcc36c2d6bee478fbb3dd5cc2c04baf94a` |
++| `packages/core/src/ftc/controllers.ts`                        | `9cb602d6433cd1cea8a5968bcf404b9c95b570d4` |
++| `packages/core/src/ftc/controllers/adb.ts`                    | `14012efff11aced5b8584fef831dcb6a592a247e` |
++| `packages/core/test/ftc/controller-connections/m8-01.test.ts` | `f0c9fbdb531ae3a15bb6154803e100416bdc7d51` |
++
++Environment: macOS 26.5.2, build 25F84, arm64; Bun **1.3.14** (`0d9b296a`); repository Effect **4.0.0-beta.83**. OS/architecture verified using `sw_vers` and `uname -m`; Bun verified with `/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun --version`, all exit 0. Dependencies were already provisioned; no dependency/tool installation or manifest/lockfile changes were made. Windows execution was not available and was not run.
++
++## Implementation and decisions
++
++- Schema owns the sole `FtcController.ControllerCandidate` and structured `DiscoveryError`. Public records are readonly Schema values with stable domain identifiers. The canonical current contract is exported from the existing Schema barrel as required by its package guide. Core re-exports those exact schema identities.
++- `Controllers.Service` is an Effect facade built by `Controllers.layer(transport)`. Its narrow injected `Adb.DiscoveryTransport.readDevices` accepts only the structured argument tuple `["devices", "-l"]`; it has no install/start/connect/forward/shell or mutation operation. No host binding, daemon, global coordinator, application registry or sibling bootstrap was added.
++- Pure `Adb.parseDevices` parses `devices -l` responses. It retains transport address, reported ADB state and optional reported model. Authorization and availability are distinct: `device` yields authorized/available; `unauthorized` yields unauthorized/unauthorized; `offline` yields unknown/offline. Unrecognized states, including the multi-word ADB permission diagnostic, remain unknown/unavailable with `adb_unsupported_state`.
++- Ruling agreed with the coordinator: a successful header with no devices yields `[]`; absent/malformed output is `adb_invalid_response`. Missing tools, transport failures and nonzero command exits are typed failures (`adb_missing_tool`, `adb_transport_error`, `adb_command_failed`) rather than fabricated candidates or empty-success results. Invalid rows, invalid metadata, duplicate metadata keys and repeated transport addresses fail the whole response conservatively.
++- Exact reported `model:REV_Control_Hub` produces an optional `control-hub` kind hint. Generic Android models remain of unknown kind, including the phone-shaped synthetic fixture. ADB authorization/availability and model hints establish neither FTC compatibility nor stable physical identity. No `controllerID`, alias mapping, target selection, generation or connection descriptor was introduced; those remain later owners' work.
++- Language-independent guidance codes cover Control Hub connections, identifying Control Hub/phone hardware, unverified phone compatibility, USB authorization, connection recovery and unobserved Expansion Hub configuration. They are setup/recovery context, not observations of attached Expansion Hubs, wiring or robot configuration. No UI copy or untranslated presentation text was added.
++- Import/layer construction does not run discovery. Each call owns an `Effect.scoped` read, preserving interruption and closing the injected transport's per-read finalizers on success, parse failure, command failure, transport failure and cancellation. The external host owns its transport; this task owns no process, polling subscription, forward or persistent/global map to dispose.
++
++## Task assertions and gates
++
++| Required assertion/gate                             | Concrete evidence                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
++| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
++| Focused unauthorized-device test                    | `unauthorized device is visible without deployment side effects` exercises the real service and parser. It asserts `candidate.authorization === "unauthorized"`, address/state/error code, exactly one discovery tuple and `mutationCalls === []`. The fixture records any non-discovery invocation as a mutation violation.                                                                                                                                                |
++| Behavioral RED before discovery implementation      | Tests were written first. Minimal Schema/port/service scaffolding returned `[]` to permit real facade imports without a broken harness. [RED](m8-01/red.log.gz): exit 1, 0 pass / 18 fail / 11 assertions. The named test failed on expected length 1 versus actual length 0. Cancellation also timed out because the stub never entered the read port; there were no import/module-resolution failures. The parser and transport read execution were added only afterward. |
++| Available/offline/unauthorized and multiple devices | Multiple-target CRLF fixture asserts exact authorization/state/address triples, reported models and offline cause; the unauthorized test covers the other branch. No target is automatically selected.                                                                                                                                                                                                                                                                      |
++| Unknown states and invalid responses                | Five unavailable-state cases and five malformed transcripts verify that unknown states stay visible but unavailable, while malformed data is a typed failure. Repeated addresses and duplicate model metadata cannot silently collapse or change device facts.                                                                                                                                                                                                              |
++| Successful empty versus missing-tool/error          | Empty-header fixture returns `[]`; missing output and malformed records fail. Command exit, missing-tool and transport-error tests preserve separate codes and structured details.                                                                                                                                                                                                                                                                                          |
++| Control Hub/phone and Expansion Hub context         | Multiple-target fixture asserts known Control Hub hint, unknown generic Android kind, phone compatibility/identification guidance and Expansion Hub configuration-unobserved guidance. It asserts absence of identity/aliases, attached-hub and wiring claims.                                                                                                                                                                                                              |
++| Canonical serializable readonly contract            | Runtime test asserts exact facade/Schema identity, decodes real output, verifies omitted optional fields during encoding, rejects guessed authorization and empty addresses, and round-trips JSON. Schema/Core typechecks pass.                                                                                                                                                                                                                                             |
++| No discovery or mutation at construction            | Four cleanup cases provide the real layer without invoking discovery and assert zero read acquisitions; named unauthorized test asserts the only issued command tuple and no mutation violation. Source has no process/network/ADB binding or import-time I/O.                                                                                                                                                                                                              |
++| Cleanup and cancellation                            | Four cleanup cases observe zero active read resources after success/malformed/command/transport results. Cancellation test interrupts the in-flight read and observes failure plus zero remaining resources. Two fresh scopes return fresh results and acquire three distinct resources overall, including the cancelled read.                                                                                                                                              |
++| GREEN and scoped review                             | [Final focused log](m8-01/green-final.log): exit 0, 22 pass / 0 fail / 81 assertions. Source diff was reviewed against the declared base, scoped lint/format and `git diff --check` pass. Only assigned files, required Schema barrel and owned report/logs are staged.                                                                                                                                                                                                     |
++
++The first GREEN attempt was 17 pass / 1 fail / 58 assertions ([log](m8-01/green-initial.log)): the cancellation test incorrectly assumed Effect 4's `Fiber.interrupt` returns an Exit. Installed declaration and existing test usage showed it returns void. Only the test was corrected to await `Fiber.await`; subsequent [GREEN](m8-01/green.log) was 18 pass / 0 fail / 65 assertions. Four additional cleanup cases required no production changes. Scoped lint initially reported three own warnings ([log](m8-01/lint-initial.log)); explicit `undefined` returns and removal of unnecessary assertions resolved them. Final verification reflects those changes.
++
++## Exact verification commands
++
++Compressed evidence was first redirected to the corresponding `.log` path, then archived with `gzip`; raw command output is preserved, including diagnostic whitespace. All Bun commands below use the prefix `PATH=/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64:$PATH`. Full output was redirected to the linked log using `> <log> 2>&1`; log paths from package directories are `../../docs/validation/m8-01/<name>` and from root are `docs/validation/m8-01/<name>`.
++
++| Command after the PATH prefix                                                                                                                                                                                                                                                | Cwd               | Exit/result                                                | Evidence                                                                     |
++| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------------- |
++| `bun test ./test/ftc/controller-connections/m8-01.test.ts`                                                                                                                                                                                                                   | `packages/core`   | 1; 0 pass, 18 fail, 11 assertions; intended behavioral RED | [red.log.gz](m8-01/red.log.gz)                                               |
++| Same focused command, initial implementation                                                                                                                                                                                                                                 | `packages/core`   | 1; 17 pass, 1 test API assumption failure, 58 assertions   | [green-initial.log](m8-01/green-initial.log)                                 |
++| Same focused command, corrected cancellation test                                                                                                                                                                                                                            | `packages/core`   | 0; 18 pass, 0 fail, 65 assertions                          | [green.log](m8-01/green.log)                                                 |
++| Same focused command, final expanded cleanup selection                                                                                                                                                                                                                       | `packages/core`   | 0; 22 pass, 0 fail, 81 assertions                          | [green-final.log](m8-01/green-final.log)                                     |
++| `bun typecheck`                                                                                                                                                                                                                                                              | `packages/core`   | 0; no diagnostics, initial and final sources               | [initial](m8-01/core-typecheck.log), [final](m8-01/core-typecheck-final.log) |
++| `bun typecheck`                                                                                                                                                                                                                                                              | `packages/schema` | 0; no diagnostics                                          | [schema-typecheck.log](m8-01/schema-typecheck.log)                           |
++| `bun test ./test/contract-hygiene.test.ts ./test/compatibility.test.ts ./test/v1-isolation.test.ts`                                                                                                                                                                          | `packages/schema` | 0; 8 pass, 0 fail, 17 assertions                           | [schema-contracts.log](m8-01/schema-contracts.log)                           |
++| `bun test`                                                                                                                                                                                                                                                                   | `packages/schema` | 1; 13 pass, 2 known baseline failures, 42 assertions       | [full compressed log](m8-01/schema-suite.log.gz)                             |
++| `bunx oxlint packages/schema/src/ftc-controller.ts packages/schema/src/index.ts packages/core/src/ftc/controllers.ts packages/core/src/ftc/controllers/adb.ts packages/core/test/ftc/controller-connections/m8-01.test.ts`                                                   | repository root   | 0; 0 warnings, 0 errors on 5 files                         | [lint.log](m8-01/lint.log)                                                   |
++| `bunx prettier --check packages/schema/src/ftc-controller.ts packages/schema/src/index.ts packages/core/src/ftc/controllers.ts packages/core/src/ftc/controllers/adb.ts packages/core/test/ftc/controller-connections/m8-01.test.ts docs/validation/M8-01-implementation.md` | repository root   | 0; all matched files formatted                             | [format-final.log](m8-01/format-final.log)                                   |
++| `git diff --check`                                                                                                                                                                                                                                                           | repository root   | 0; no whitespace issues                                    | Performed before staging                                                     |
++
++The exact absolute package cwd prefix is `/Users/dylanxu/coding_tree/`; repository root is `/Users/dylanxu/coding_tree`. `bunx prettier --write` used the same five product/test paths from root to apply repository formatting, exit 0; the report was then formatted separately. No root tests or raw `tsc` commands were run.
++
++Known Schema failures match [baseline](baseline.md): `public event manifest > owns the complete public event surface` expects 55 and receives 58; `public event manifest > uses canonical definitions for current public events` retains the outdated slice comparison. Neither manifest was modified. Relevant Schema contracts pass, and no additional Schema failures occurred.
++
++Ruling: coordinator explicitly required task-scoped Core checks for these new unregistered port-only modules, consistent with the existing M4-01 verification scope. The generic skill full-suite default does not override that scope. No shared FTC behavior was changed, so unrelated environment or real Java-import evaluations were not rerun. Full Core/runtime/external/evaluation and composed integration milestones remain future gates.
++
++## Fixture versus real limits and cleanup
++
++All discovery transcripts and error responses are synthetic, inline `adb devices -l` format fixtures with addresses `SERIAL_A`, `USB_A`, `PHONE_A`, `192.0.2.3:5555` and `FRESH`. They exercise the actual Effect facade and pure parser, not a substitute discovery algorithm. These results validate fixture parsing and lifecycle behavior on the available macOS host only. No ADB binary was executed, daemon started, controller contacted, robot mutated, forwarding created or user application/service restarted. No physical attachment, wiring, supported phone matrix, USB/Wi-Fi reachability, stable identity, Panels endpoint or actual deployment was established. Those need M8-02/M8-04/M8-06 and M9 evidence.
++
++The isolated suite creates only test-owned in-memory resource tokens; each lifecycle assertion observes zero active tokens after completion/interruption. No ADB/controller transport process, port listener, scratch tool installation or temporary resource directory was created by this task. Raw RED and full Schema output are gzip-compressed to retain the complete baseline comparison without a large raw AST diff. Only the five product/test paths and this report/log directory belong to the commit; pre-existing and concurrent coordinator documents remain unstaged and unchanged by this worker. No checklist or ledger was edited, no reviewer/subagent dispatched, and no generated client/SDK regeneration is required because Protocol/HttpApi/legacy SDK surfaces were untouched.
+diff --git a/docs/validation/m8-01/core-typecheck-final.log b/docs/validation/m8-01/core-typecheck-final.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m8-01/core-typecheck-final.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/docs/validation/m8-01/core-typecheck.log b/docs/validation/m8-01/core-typecheck.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m8-01/core-typecheck.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/docs/validation/m8-01/format-final.log b/docs/validation/m8-01/format-final.log
+new file mode 100644
+index 000000000..4aa0d16e7
+--- /dev/null
++++ b/docs/validation/m8-01/format-final.log
+@@ -0,0 +1,2 @@
++Checking formatting...
++All matched files use Prettier code style!
+diff --git a/docs/validation/m8-01/format.log b/docs/validation/m8-01/format.log
+new file mode 100644
+index 000000000..4aa0d16e7
+--- /dev/null
++++ b/docs/validation/m8-01/format.log
+@@ -0,0 +1,2 @@
++Checking formatting...
++All matched files use Prettier code style!
+diff --git a/docs/validation/m8-01/green-final.log b/docs/validation/m8-01/green-final.log
+new file mode 100644
+index 000000000..cfa59c932
+--- /dev/null
++++ b/docs/validation/m8-01/green-final.log
+@@ -0,0 +1,41 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc/controller-connections/m8-01.test.ts:
++(pass) unauthorized device is visible without deployment side effects [5.80ms]
++(pass) multiple targets retain authorization and reported model facts without identity guesses [0.55ms]
++(pass) keeps recovery visible but unavailable [0.20ms]
++(pass) keeps bootloader visible but unavailable [0.09ms]
++(pass) keeps sideload visible but unavailable [0.10ms]
++(pass) keeps future-state visible but unavailable [0.07ms]
++(pass) keeps no permissions (user in plugdev group) visible but unavailable [0.11ms]
++(pass) successful empty discovery differs from missing output [0.54ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: garbage
++SERIAL_A device
++ [0.13ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A
++ [0.08ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device not-metadata
++ [0.08ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device model:one model:two
++ [0.08ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device
++SERIAL_A offline
++ [0.07ms]
++(pass) ADB command failure differs from successful empty discovery [0.10ms]
++(pass) preserves adb_missing_tool from the read transport [0.21ms]
++(pass) preserves adb_transport_error from the read transport [0.07ms]
++(pass) releases the read resource after success [0.66ms]
++(pass) releases the read resource after malformed [0.15ms]
++(pass) releases the read resource after command [0.09ms]
++(pass) releases the read resource after transport [0.08ms]
++(pass) cancellation releases the active read and fresh scopes do not retain discovery state [1.44ms]
++(pass) canonical candidate contract omits optional values and is the exact facade contract [4.24ms]
++
++ 22 pass
++ 0 fail
++ 81 expect() calls
++Ran 22 tests across 1 file. [131.00ms]
+diff --git a/docs/validation/m8-01/green-initial.log b/docs/validation/m8-01/green-initial.log
+new file mode 100644
+index 000000000..6e5982fa4
+--- /dev/null
++++ b/docs/validation/m8-01/green-initial.log
+@@ -0,0 +1,57 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc/controller-connections/m8-01.test.ts:
++(pass) unauthorized device is visible without deployment side effects [6.68ms]
++(pass) multiple targets retain authorization and reported model facts without identity guesses [1.06ms]
++(pass) keeps recovery visible but unavailable [0.22ms]
++(pass) keeps bootloader visible but unavailable [0.09ms]
++(pass) keeps sideload visible but unavailable [0.10ms]
++(pass) keeps future-state visible but unavailable [0.11ms]
++(pass) keeps no permissions (user in plugdev group) visible but unavailable [0.09ms]
++(pass) successful empty discovery differs from missing output [0.57ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: garbage
++SERIAL_A device
++ [0.12ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A
++ [0.08ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device not-metadata
++ [0.08ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device model:one model:two
++ [0.08ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device
++SERIAL_A offline
++ [0.08ms]
++(pass) ADB command failure differs from successful empty discovery [0.10ms]
++(pass) preserves adb_missing_tool from the read transport [0.22ms]
++(pass) preserves adb_transport_error from the read transport [0.07ms]
++1040 | /** @internal */
++1041 | export const exitFilterSuccess = self => self._tag === "Success" ? Result.succeed(self) : Result.fail(self);
++1042 | /** @internal */
++1043 | export const exitFilterValue = self => self._tag === "Success" ? Result.succeed(self.value) : Result.fail(self);
++1044 | /** @internal */
++1045 | export const exitIsFailure = self => self._tag === "Failure";
++                                            ^
++TypeError: undefined is not an object (evaluating 'self._tag')
++      at exitIsFailure (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1045:38)
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/controller-connections/m8-01.test.ts:141:19)
++      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
++      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
++      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
++      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
++      at doneUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Deferred.js:657:20)
++      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:625:24)
++      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
++      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
++      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
++      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
++(fail) cancellation releases the active read and fresh scopes do not retain discovery state [2.12ms]
++(pass) canonical candidate contract omits optional values and is the exact facade contract [3.10ms]
++
++ 17 pass
++ 1 fail
++ 58 expect() calls
++Ran 18 tests across 1 file. [132.00ms]
+diff --git a/docs/validation/m8-01/green.log b/docs/validation/m8-01/green.log
+new file mode 100644
+index 000000000..eac327311
+--- /dev/null
++++ b/docs/validation/m8-01/green.log
+@@ -0,0 +1,37 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc/controller-connections/m8-01.test.ts:
++(pass) unauthorized device is visible without deployment side effects [5.76ms]
++(pass) multiple targets retain authorization and reported model facts without identity guesses [0.60ms]
++(pass) keeps recovery visible but unavailable [0.20ms]
++(pass) keeps bootloader visible but unavailable [0.11ms]
++(pass) keeps sideload visible but unavailable [0.11ms]
++(pass) keeps future-state visible but unavailable [0.12ms]
++(pass) keeps no permissions (user in plugdev group) visible but unavailable [0.09ms]
++(pass) successful empty discovery differs from missing output [0.58ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: garbage
++SERIAL_A device
++ [0.12ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A
++ [0.08ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device not-metadata
++ [0.08ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device model:one model:two
++ [0.08ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device
++SERIAL_A offline
++ [0.08ms]
++(pass) ADB command failure differs from successful empty discovery [0.10ms]
++(pass) preserves adb_missing_tool from the read transport [0.22ms]
++(pass) preserves adb_transport_error from the read transport [0.07ms]
++(pass) cancellation releases the active read and fresh scopes do not retain discovery state [1.85ms]
++(pass) canonical candidate contract omits optional values and is the exact facade contract [3.12ms]
++
++ 18 pass
++ 0 fail
++ 65 expect() calls
++Ran 18 tests across 1 file. [130.00ms]
+diff --git a/docs/validation/m8-01/lint-initial.log b/docs/validation/m8-01/lint-initial.log
+new file mode 100644
+index 000000000..0f480cfc1
+--- /dev/null
++++ b/docs/validation/m8-01/lint-initial.log
+@@ -0,0 +1,51 @@
++
++  ! typescript-eslint(consistent-return): Function 'parseCandidate' expected no return value.
++    ,-[packages/core/src/ftc/controllers/adb.ts:60:3]
++ 59 |       const offline = state === "offline"
++ 60 | ,->   return {
++ 61 | |       transportAddress: address,
++ 62 | |       adbState: noPermissions ? "no permissions" : state,
++ 63 | |       ...(model ? { model } : {}),
++ 64 | |       ...(kind ? { kind } : {}),
++ 65 | |       authorization: available ? "authorized" : unauthorized ? "unauthorized" : "unknown",
++ 66 | |       state: available ? "available" : unauthorized ? "unauthorized" : offline ? "offline" : "unavailable",
++ 67 | |       errorCodes: available
++ 68 | |         ? []
++ 69 | |         : unauthorized
++ 70 | |           ? ["adb_unauthorized"]
++ 71 | |           : offline
++ 72 | |             ? ["adb_offline"]
++ 73 | |             : ["adb_unsupported_state"],
++ 74 | |       // Guidance describes setup/recovery, never observed phone compatibility or attached hardware.
++ 75 | |       guidanceCodes: [
++ 76 | |         ...(kind
++ 77 | |           ? ["control_hub_connection" as const]
++ 78 | |           : ["identify_control_hub_or_phone" as const, "phone_compatibility_unverified" as const]),
++ 79 | |         ...(unauthorized ? ["usb_authorization_required" as const] : []),
++ 80 | |         ...(!available && !unauthorized ? ["connection_recovery" as const] : []),
++ 81 | |         "expansion_hub_configuration_unobserved",
++ 82 | |       ],
++ 83 | `->   }
++ 84 |     }
++    `----
++
++  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
++    ,-[packages/core/test/ftc/controller-connections/m8-01.test.ts:37:34]
++ 36 |   expect(candidates).toHaveLength(1)
++ 37 |   const candidate = candidates[0]!
++    :                    ^^^^^^^|^^^^^^^
++    :                           `-- This expression already has the type 'ControllerCandidate'
++ 38 |   expect(candidate.authorization).toBe("unauthorized")
++    `----
++
++  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
++     ,-[packages/core/test/ftc/controller-connections/m8-01.test.ts:225:105]
++ 224 | test("canonical candidate contract omits optional values and is the exact facade contract", async () => {
++ 225 |   const candidate = (await discover(transcript("List of devices attached\nSERIAL_A unauthorized\n")))[0]!
++     :                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++     :                                                              `-- This expression already has the type 'ControllerCandidate'
++ 226 |   expect(Controllers.ControllerCandidate).toBe(FtcController.ControllerCandidate)
++     `----
++
++Found 3 warnings and 0 errors.
++Finished in 516ms on 5 files with 130 rules using 10 threads.
+diff --git a/docs/validation/m8-01/lint.log b/docs/validation/m8-01/lint.log
+new file mode 100644
+index 000000000..c6461a7db
+--- /dev/null
++++ b/docs/validation/m8-01/lint.log
+@@ -0,0 +1,2 @@
++Found 0 warnings and 0 errors.
++Finished in 424ms on 5 files with 130 rules using 10 threads.
+diff --git a/docs/validation/m8-01/red.log.gz b/docs/validation/m8-01/red.log.gz
+new file mode 100644
+index 000000000..d79d948de
+Binary files /dev/null and b/docs/validation/m8-01/red.log.gz differ
+diff --git a/docs/validation/m8-01/schema-contracts.log b/docs/validation/m8-01/schema-contracts.log
+new file mode 100644
+index 000000000..fcdffff78
+--- /dev/null
++++ b/docs/validation/m8-01/schema-contracts.log
+@@ -0,0 +1,20 @@
++bun test v1.3.14 (0d9b296a)
++
++test/contract-hygiene.test.ts:
++(pass) contract hygiene > optional properties preserve transformations and omit undefined while encoding [2.38ms]
++(pass) contract hygiene > todo status and priority preserve arbitrary strings [0.07ms]
++(pass) contract hygiene > current ID constructors expose create [0.96ms]
++(pass) contract hygiene > reusable public identifiers are stable and unique [0.07ms]
++(pass) contract hygiene > current source avoids Any and mutable contract wrappers [10.26ms]
++
++test/compatibility.test.ts:
++(pass) schema compatibility > moved class schemas remain constructible [0.20ms]
++
++test/v1-isolation.test.ts:
++(pass) compatibility entrypoints preserve isolated V1 schema identity [0.06ms]
++(pass) current source does not import the V1 subtree directly [2.86ms]
++
++ 8 pass
++ 0 fail
++ 17 expect() calls
++Ran 8 tests across 3 files. [145.00ms]
+diff --git a/docs/validation/m8-01/schema-suite.log.gz b/docs/validation/m8-01/schema-suite.log.gz
+new file mode 100644
+index 000000000..6170b01bd
+Binary files /dev/null and b/docs/validation/m8-01/schema-suite.log.gz differ
+diff --git a/docs/validation/m8-01/schema-typecheck.log b/docs/validation/m8-01/schema-typecheck.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m8-01/schema-typecheck.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/packages/core/src/ftc/controllers.ts b/packages/core/src/ftc/controllers.ts
+new file mode 100644
+index 000000000..9cb602d64
+--- /dev/null
++++ b/packages/core/src/ftc/controllers.ts
+@@ -0,0 +1,29 @@
++export * as Controllers from "./controllers"
++
++import { Context, Effect, Layer } from "effect"
++import { FtcController } from "@opencode-ai/schema/ftc-controller"
++import { Adb } from "./controllers/adb"
++
++export { ControllerCandidate, DiscoveryError } from "@opencode-ai/schema/ftc-controller"
++
++export interface Interface {
++  readonly discoverControllers: () => Effect.Effect<
++    readonly FtcController.ControllerCandidate[],
++    FtcController.DiscoveryError
++  >
++}
++
++export class Service extends Context.Service<Service, Interface>()("@opencode/FtcControllers") {}
++
++export const layer = (transport: Adb.DiscoveryTransport) =>
++  Layer.succeed(Service, {
++    discoverControllers: () =>
++      Effect.scoped(
++        Effect.gen(function* () {
++          const response = yield* transport.readDevices(["devices", "-l"])
++          const result = Adb.parseDevices(response)
++          if ("error" in result) return yield* Effect.fail(result.error)
++          return result.candidates
++        }),
++      ),
++  })
+diff --git a/packages/core/src/ftc/controllers/adb.ts b/packages/core/src/ftc/controllers/adb.ts
+new file mode 100644
+index 000000000..14012efff
+--- /dev/null
++++ b/packages/core/src/ftc/controllers/adb.ts
+@@ -0,0 +1,84 @@
++export * as Adb from "./adb"
++
++import { Effect, Scope } from "effect"
++import { FtcController } from "@opencode-ai/schema/ftc-controller"
++
++export interface Response {
++  readonly stdout: string
++  readonly stderr: string
++  readonly exitCode: number
++}
++
++export interface DiscoveryTransport {
++  // This port admits only discovery. The host owns its transport and scoped read cleanup.
++  readonly readDevices: (
++    args: readonly ["devices", "-l"],
++  ) => Effect.Effect<Response, FtcController.DiscoveryError, Scope.Scope>
++}
++
++export function parseDevices(
++  response: Response,
++):
++  | { readonly candidates: readonly FtcController.ControllerCandidate[] }
++  | { readonly error: FtcController.DiscoveryError } {
++  if (response.exitCode !== 0)
++    return { error: { code: "adb_command_failed", detail: response.stderr.trim(), exitCode: response.exitCode } }
++
++  const lines = response.stdout.trim().split(/\r?\n/)
++  if (lines[0]?.trim() !== "List of devices attached") return { error: { code: "adb_invalid_response" } }
++
++  const candidates = lines
++    .slice(1)
++    .filter((line) => line.trim() !== "")
++    .map(parseCandidate)
++  if (
++    candidates.some((candidate) => candidate === undefined) ||
++    new Set(candidates.map((candidate) => candidate?.transportAddress)).size !== candidates.length
++  )
++    return { error: { code: "adb_invalid_response" } }
++
++  return { candidates: candidates.filter((candidate) => candidate !== undefined) }
++}
++
++function parseCandidate(line: string): FtcController.ControllerCandidate | undefined {
++  const fields = line.trim().split(/\s+/)
++  const address = fields[0]
++  const state = fields[1]
++  if (!address || !state) return undefined
++
++  // ADB's Linux permission diagnostic is a multi-word state, not device metadata.
++  const noPermissions = state === "no" && fields[2] === "permissions"
++  const facts = noPermissions ? [] : fields.slice(2)
++  if (facts.some((fact) => !/^[a-z_]+:\S+$/.test(fact))) return undefined
++  if (new Set(facts.map((fact) => fact.slice(0, fact.indexOf(":")))).size !== facts.length) return undefined
++
++  const model = facts.find((fact) => fact.startsWith("model:"))?.slice(6)
++  const kind = model === "REV_Control_Hub" ? "control-hub" : undefined
++  const available = state === "device"
++  const unauthorized = state === "unauthorized"
++  const offline = state === "offline"
++  return {
++    transportAddress: address,
++    adbState: noPermissions ? "no permissions" : state,
++    ...(model ? { model } : {}),
++    ...(kind ? { kind } : {}),
++    authorization: available ? "authorized" : unauthorized ? "unauthorized" : "unknown",
++    state: available ? "available" : unauthorized ? "unauthorized" : offline ? "offline" : "unavailable",
++    errorCodes: available
++      ? []
++      : unauthorized
++        ? ["adb_unauthorized"]
++        : offline
++          ? ["adb_offline"]
++          : ["adb_unsupported_state"],
++    // Guidance describes setup/recovery, never observed phone compatibility or attached hardware.
++    guidanceCodes: [
++      ...(kind
++        ? ["control_hub_connection" as const]
++        : ["identify_control_hub_or_phone" as const, "phone_compatibility_unverified" as const]),
++      ...(unauthorized ? ["usb_authorization_required" as const] : []),
++      ...(!available && !unauthorized ? ["connection_recovery" as const] : []),
++      "expansion_hub_configuration_unobserved",
++    ],
++  }
++}
+diff --git a/packages/core/test/ftc/controller-connections/m8-01.test.ts b/packages/core/test/ftc/controller-connections/m8-01.test.ts
+new file mode 100644
+index 000000000..f0c9fbdb5
+--- /dev/null
++++ b/packages/core/test/ftc/controller-connections/m8-01.test.ts
+@@ -0,0 +1,247 @@
++import { expect, test } from "bun:test"
++import { FtcController } from "@opencode-ai/schema"
++import { Deferred, Effect, Exit, Fiber, Schema } from "effect"
++import { Controllers } from "../../../src/ftc/controllers"
++import { Adb } from "../../../src/ftc/controllers/adb"
++
++// Synthetic adb devices -l transcripts; no ADB process or physical device is used.
++const transcript = (stdout: string): Adb.Response => ({ stdout, stderr: "", exitCode: 0 })
++const discover = (response: Adb.Response) =>
++  Effect.runPromise(
++    Effect.gen(function* () {
++      const controllers = yield* Controllers.Service
++      return yield* controllers.discoverControllers()
++    }).pipe(Effect.provide(Controllers.layer({ readDevices: () => Effect.succeed(response) }))),
++  )
++
++test("unauthorized device is visible without deployment side effects", async () => {
++  const mutationCalls: string[][] = []
++  const readCalls: string[][] = []
++  const candidates = await Effect.runPromise(
++    Effect.gen(function* () {
++      const controllers = yield* Controllers.Service
++      return yield* controllers.discoverControllers()
++    }).pipe(
++      Effect.provide(
++        Controllers.layer({
++          readDevices: (args) => {
++            if (args[0] !== "devices" || args[1] !== "-l" || args.length !== 2) mutationCalls.push([...args])
++            readCalls.push([...args])
++            return Effect.succeed(transcript("List of devices attached\nSERIAL_A\tunauthorized\n"))
++          },
++        }),
++      ),
++    ),
++  )
++  expect(candidates).toHaveLength(1)
++  const candidate = candidates[0]
++  expect(candidate.authorization).toBe("unauthorized")
++  expect(candidate.state).toBe("unauthorized")
++  expect(candidate.errorCodes).toEqual(["adb_unauthorized"])
++  expect(candidate.transportAddress).toBe("SERIAL_A")
++  expect(mutationCalls).toEqual([])
++  expect(readCalls).toEqual([["devices", "-l"]])
++})
++
++test("multiple targets retain authorization and reported model facts without identity guesses", async () => {
++  const candidates = await discover(
++    transcript(
++      "List of devices attached\r\nUSB_A device usb:1-2 product:ControlHub model:REV_Control_Hub device:ControlHub transport_id:1\r\n192.0.2.3:5555 offline transport_id:2\r\nPHONE_A device product:fixture model:Pixel_7 device:fixture transport_id:3\r\n",
++    ),
++  )
++  expect(candidates.map((candidate) => [candidate.transportAddress, candidate.authorization, candidate.state])).toEqual(
++    [
++      ["USB_A", "authorized", "available"],
++      ["192.0.2.3:5555", "unknown", "offline"],
++      ["PHONE_A", "authorized", "available"],
++    ],
++  )
++  expect(candidates[0]?.kind).toBe("control-hub")
++  expect(candidates[0]?.model).toBe("REV_Control_Hub")
++  expect(candidates[1]?.errorCodes).toEqual(["adb_offline"])
++  expect(candidates[2]?.model).toBe("Pixel_7")
++  expect(candidates[2]?.kind).toBeUndefined()
++  expect(candidates.every((candidate) => !("controllerID" in candidate) && !("aliases" in candidate))).toBe(true)
++  expect(candidates[0]?.guidanceCodes).toContain("control_hub_connection")
++  expect(candidates[2]?.guidanceCodes).toContain("identify_control_hub_or_phone")
++  expect(candidates[2]?.guidanceCodes).toContain("phone_compatibility_unverified")
++  expect(
++    candidates.every((candidate) => candidate.guidanceCodes.includes("expansion_hub_configuration_unobserved")),
++  ).toBe(true)
++  expect(candidates.every((candidate) => !("attachedExpansionHubs" in candidate) && !("wiring" in candidate))).toBe(
++    true,
++  )
++})
++
++test.each(["recovery", "bootloader", "sideload", "future-state", "no permissions (user in plugdev group)"])(
++  "keeps %s visible but unavailable",
++  async (state) => {
++    const candidates = await discover(transcript(`List of devices attached\nSERIAL_A ${state}\n`))
++    expect(candidates[0]?.state).toBe("unavailable")
++    expect(candidates[0]?.adbState).toBe(state.startsWith("no permissions") ? "no permissions" : state)
++    expect(candidates[0]?.authorization).toBe("unknown")
++    expect(candidates[0]?.errorCodes).toEqual(["adb_unsupported_state"])
++  },
++)
++
++test("successful empty discovery differs from missing output", async () => {
++  expect(await discover(transcript("List of devices attached\n\n"))).toEqual([])
++  expect(await discoverFailure(transcript(""))).toMatchObject({ code: "adb_invalid_response" })
++})
++
++test.each([
++  "garbage\nSERIAL_A device\n",
++  "List of devices attached\nSERIAL_A\n",
++  "List of devices attached\nSERIAL_A device not-metadata\n",
++  "List of devices attached\nSERIAL_A device model:one model:two\n",
++  "List of devices attached\nSERIAL_A device\nSERIAL_A offline\n",
++])("malformed transcript fails rather than reporting usable or empty targets: %s", async (stdout) => {
++  expect(await discoverFailure(transcript(stdout))).toMatchObject({ code: "adb_invalid_response" })
++})
++
++test("ADB command failure differs from successful empty discovery", async () => {
++  expect(
++    await discoverFailure({ stdout: "List of devices attached\n", stderr: "cannot connect", exitCode: 1 }),
++  ).toEqual({
++    code: "adb_command_failed",
++    detail: "cannot connect",
++    exitCode: 1,
++  })
++})
++
++test.each(["adb_missing_tool", "adb_transport_error"] as const)(
++  "preserves %s from the read transport",
++  async (code) => {
++    const result = await Effect.runPromise(
++      Effect.gen(function* () {
++        const controllers = yield* Controllers.Service
++        return yield* controllers.discoverControllers().pipe(Effect.flip)
++      }).pipe(
++        Effect.provide(Controllers.layer({ readDevices: () => Effect.fail({ code, detail: "fixture failure" }) })),
++      ),
++    )
++    expect(result).toEqual({ code, detail: "fixture failure" })
++  },
++)
++
++test.each(["success", "malformed", "command", "transport"] as const)(
++  "releases the read resource after %s",
++  async (outcome) => {
++    const active = new Set<object>()
++    const calls: object[] = []
++    const layer = Controllers.layer({
++      readDevices: () =>
++        Effect.acquireRelease(
++          Effect.sync(() => {
++            const token = {}
++            active.add(token)
++            calls.push(token)
++            return token
++          }),
++          (token) => Effect.sync(() => active.delete(token)),
++        ).pipe(
++          Effect.andThen(() =>
++            outcome === "transport"
++              ? Effect.fail({ code: "adb_transport_error" as const })
++              : Effect.succeed(
++                  outcome === "command"
++                    ? { stdout: "", stderr: "fixture failure", exitCode: 1 }
++                    : transcript(outcome === "malformed" ? "invalid" : "List of devices attached\nSERIAL_A device\n"),
++                ),
++          ),
++        ),
++    })
++    await Effect.runPromise(Effect.void.pipe(Effect.provide(layer)))
++    expect(calls).toEqual([])
++    const exit = await Effect.runPromiseExit(
++      Effect.gen(function* () {
++        const controllers = yield* Controllers.Service
++        return yield* controllers.discoverControllers()
++      }).pipe(Effect.provide(layer)),
++    )
++    expect(Exit.isSuccess(exit)).toBe(outcome === "success")
++    expect(active.size).toBe(0)
++    expect(calls).toHaveLength(1)
++  },
++)
++
++test("cancellation releases the active read and fresh scopes do not retain discovery state", async () => {
++  const active = new Set<object>()
++  const acquired: object[] = []
++  const started = Deferred.makeUnsafe<void>()
++  const transport: Adb.DiscoveryTransport = {
++    readDevices: () =>
++      Effect.acquireRelease(
++        Effect.sync(() => {
++          const token = {}
++          active.add(token)
++          acquired.push(token)
++          return token
++        }),
++        (token) => Effect.sync(() => active.delete(token)),
++      ).pipe(Effect.andThen(Deferred.succeed(started, undefined)), Effect.andThen(Effect.never)),
++  }
++  const layer = Controllers.layer(transport)
++  expect(active.size).toBe(0)
++  await Effect.runPromise(
++    Effect.gen(function* () {
++      const controllers = yield* Controllers.Service
++      const fiber = yield* controllers.discoverControllers().pipe(Effect.forkChild)
++      yield* Deferred.await(started)
++      expect(active.size).toBe(1)
++      yield* Fiber.interrupt(fiber)
++      const exit = yield* Fiber.await(fiber)
++      expect(Exit.isFailure(exit)).toBe(true)
++      expect(active.size).toBe(0)
++    }).pipe(Effect.provide(layer)),
++  )
++  const fresh = Controllers.layer({
++    readDevices: () =>
++      Effect.acquireRelease(
++        Effect.sync(() => {
++          const token = {}
++          active.add(token)
++          acquired.push(token)
++          return token
++        }),
++        (token) => Effect.sync(() => active.delete(token)),
++      ).pipe(Effect.as(transcript("List of devices attached\nFRESH device\n"))),
++  })
++  const run = () =>
++    Effect.runPromise(
++      Effect.gen(function* () {
++        const controllers = yield* Controllers.Service
++        return yield* controllers.discoverControllers()
++      }).pipe(Effect.provide(fresh)),
++    )
++  expect((await run())[0]?.transportAddress).toBe("FRESH")
++  expect(active.size).toBe(0)
++  expect((await run())[0]?.transportAddress).toBe("FRESH")
++  expect(active.size).toBe(0)
++  expect(new Set(acquired).size).toBe(3)
++})
++
++test("canonical candidate contract omits optional values and is the exact facade contract", async () => {
++  const candidate = (await discover(transcript("List of devices attached\nSERIAL_A unauthorized\n")))[0]
++  expect(Controllers.ControllerCandidate).toBe(FtcController.ControllerCandidate)
++  expect(Controllers.DiscoveryError).toBe(FtcController.DiscoveryError)
++  expect(Schema.decodeUnknownSync(FtcController.ControllerCandidate)(candidate)).toEqual(candidate)
++  expect(
++    Schema.encodeSync(FtcController.ControllerCandidate)({ ...candidate, kind: undefined, model: undefined }),
++  ).toEqual(candidate)
++  expect(() =>
++    Schema.decodeUnknownSync(FtcController.ControllerCandidate)({ ...candidate, authorization: "guessed" }),
++  ).toThrow()
++  expect(() =>
++    Schema.decodeUnknownSync(FtcController.ControllerCandidate)({ ...candidate, transportAddress: "" }),
++  ).toThrow()
++  expect(JSON.parse(JSON.stringify(candidate))).toEqual(candidate)
++})
++
++const discoverFailure = (response: Adb.Response) =>
++  Effect.runPromise(
++    Effect.gen(function* () {
++      const controllers = yield* Controllers.Service
++      return yield* controllers.discoverControllers().pipe(Effect.flip)
++    }).pipe(Effect.provide(Controllers.layer({ readDevices: () => Effect.succeed(response) }))),
++  )
+diff --git a/packages/schema/src/ftc-controller.ts b/packages/schema/src/ftc-controller.ts
+new file mode 100644
+index 000000000..55d3c1e8b
+--- /dev/null
++++ b/packages/schema/src/ftc-controller.ts
+@@ -0,0 +1,35 @@
++export * as FtcController from "./ftc-controller"
++
++import { Schema } from "effect"
++import { optional } from "./schema"
++
++const Text = Schema.String.check(Schema.isMinLength(1), Schema.isTrimmed())
++
++export interface ControllerCandidate extends Schema.Schema.Type<typeof ControllerCandidate> {}
++export const ControllerCandidate = Schema.Struct({
++  // A transport address and reported model do not establish physical controller identity.
++  transportAddress: Text,
++  adbState: Text,
++  model: optional(Text),
++  kind: optional(Schema.Literals(["control-hub", "phone"])),
++  authorization: Schema.Literals(["authorized", "unauthorized", "unknown"]),
++  state: Schema.Literals(["available", "unauthorized", "offline", "unavailable"]),
++  errorCodes: Schema.Array(Schema.Literals(["adb_unauthorized", "adb_offline", "adb_unsupported_state"])),
++  guidanceCodes: Schema.Array(
++    Schema.Literals([
++      "control_hub_connection",
++      "identify_control_hub_or_phone",
++      "phone_compatibility_unverified",
++      "usb_authorization_required",
++      "connection_recovery",
++      "expansion_hub_configuration_unobserved",
++    ]),
++  ),
++}).annotate({ identifier: "FtcController.ControllerCandidate" })
++
++export interface DiscoveryError extends Schema.Schema.Type<typeof DiscoveryError> {}
++export const DiscoveryError = Schema.Struct({
++  code: Schema.Literals(["adb_missing_tool", "adb_transport_error", "adb_command_failed", "adb_invalid_response"]),
++  detail: optional(Schema.String),
++  exitCode: optional(Schema.Int),
++}).annotate({ identifier: "FtcController.DiscoveryError" })
+diff --git a/packages/schema/src/index.ts b/packages/schema/src/index.ts
+index 3c6057134..840451bcc 100644
+--- a/packages/schema/src/index.ts
++++ b/packages/schema/src/index.ts
+@@ -1,29 +1,30 @@
+ export { Agent } from "./agent"
+ export { Command } from "./command"
+ export { Connection } from "./connection"
+ export { Credential } from "./credential"
+ export { Event } from "./event"
+ export { FileSystem } from "./filesystem"
++export { FtcController } from "./ftc-controller"
+ export { FtcEnvironment } from "./ftc-environment"
+ export { Integration } from "./integration"
+ export { LLM } from "./llm"
+ export { Location } from "./location"
+ export { Model } from "./model"
+ export { Permission } from "./permission"
+ export { PermissionSaved } from "./permission-saved"
+ export { Project } from "./project"
+ export { ProjectCopy } from "./project-copy"
+ export { Provider } from "./provider"
+ export { Reference } from "./reference"
+ export { Revert } from "./revert"
+ export { Session } from "./session"
+ export { SessionInput } from "./session-input"
+ export { SessionMessage } from "./session-message"
+ export { Skill } from "./skill"
+ export { Pty } from "./pty"
+ export { PtyTicket } from "./pty-ticket"
+ export { Question } from "./question"
+ export { Workspace } from "./workspace"
+ export { Prompt, Source, FileAttachment, AgentAttachment } from "./prompt"
+ export { PromptInput } from "./prompt-input"
+ export * from "./schema"
+M8-01 stable review package
+Base: 4082deb639d4aca5451d9df2580d06c74e6bb34a
+Head: 858c8d070afedde5ed9dd0cacb76f05577757556
+

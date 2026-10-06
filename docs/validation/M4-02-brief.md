@@ -1,18 +1,18 @@
-# M8-01 dispatch brief
+# M4-02 dispatch brief
 
-Dispatched 2026-10-06. No prerequisites. Review base `4082deb639d4aca5451d9df2580d06c74e6bb34a`. Owner `/root/m8_01`.
+Prepared, not dispatched. Coordinator records current review base before assignment.
 
-Role: implement M8-01 in Controller connections, ROB-01 (AC-10 support).
-Prerequisites: none. Injected recorded ADB transport responses may exercise real facade/parser; do not start a real ADB daemon or contact devices in the isolated suite.
-Allowed writes: exact four task files; docs/validation/M8-01-implementation.md and docs/validation/m8-01/. Canonical ControllerCandidate discovery contract owned here in ftc-controller.ts; reserve ControllerIdentity/ConnectionDescriptor semantics from module plan for later owning tasks, do not duplicate them in consumer modules. Schema barrel only if existing conventions require it.
-Decisions: port-based Effect service; zero import-time I/O, no sibling module bootstrap. Distinguish unauthorized/offline/available/missing-tool/error/empty results; transport addresses never prove stable physical identity. Hardware guidance cannot fabricate connected Expansion Hubs or wiring. No mutation capability in discovery.
-Verification: behavioral RED→GREEN focused core unit selection; valid/invalid/multiple/empty responses, transport failures, cancellation and fresh-scope cleanup as applicable; changed Schema/Core types; scoped lint/format and relevant schema tests.
-Work from /Users/dylanxu/coding_tree. Read root/applicable AGENTS.md and the owning module plan. Preserve repo and source constraints. No subagents or separate reviewer; coordinator owns review. Only coordinator edits shared completion checkboxes/ledger. Make a focused conventional commit of assigned files only; do not stage sibling work.
-Tooling: prepend /private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64 to PATH; Bun 1.3.14, dependencies provisioned frozen. Baselines: docs/validation/baseline.md. Existing Schema two event-manifest expectation failures and App one locale failure are unrelated; don't repair them here. Tests and bun typecheck run from each package directory; lint/format from root against changed paths. No manifest/lock/generated/registration edits unless explicitly assigned.
-Report must map each required assertion/gate to concrete code/evidence with date, OS/architecture/tools, exact commands/cwd/exit/counts, revision and fixture-versus-real classification. Cover failure/cancellation/cleanup as relevant. Return DONE/DONE_WITH_CONCERNS/NEEDS_CONTEXT/BLOCKED with commit, concise test summary and report path.
-Report path: docs/validation/M8-01-implementation.md.
+Role: implement M4-02 Environment inspection. Read this brief, owning module plan, root/applicable AGENTS and Schema guide first.
+Prerequisite M4-01 complete at f7d2a93eabae724f29875a29840b000cee8749fb, independently reviewed. Consume FtcEnvironment canonical Profile/Host/ProjectVersions/Catalog/ResolveResult and existing pure resolver in packages/core/src/ftc/environment/catalog.ts. Missing imported dependency constraints are not proof of compatibility; M4-01 matching alone does not establish readiness.
+Allowed writes: exact task files plus packages/schema/src/ftc-environment.ts for this task's canonical Readiness/ToolchainDescriptor/request/error records required by the module contract, and owned docs/validation/M4-02-implementation.md / docs/validation/m4-02/ evidence. This is an explicit shared-schema assignment; no consumer-local duplicate. No production catalog promotion, host registration, manifests/locks, existing project files or runtime tool installation.
+Architecture: actual Effect module using narrow injected read-only probe/dependency ports. Distinguish missing binary, denied/manual permission, unsuccessful probe and incompatible project. Build/editor Java are separate resolved paths and pins; never rely on a global Java choice. Keep candidate toolchain discovery separate from M4-03/06 build-verified readiness. Importing the module starts no process or I/O; scope owns cleanup/cancellation.
+M5-03 available-host evidence at docs/validation/java-import.md uses canonical artifacts plus explicit local evaluation paths because this descriptor did not yet exist. It does not authorize a supported production combination; native import failed, shadows only passed sampled macOS cases, and Windows remains unrun. Do not edit that harness in this task without coordinator assignment.
+Verification: focused behavioral RED→GREEN with actual module and injected read probes/temporary imported files; verify unchanged files, independent Java versions, wrapper/SDK/ADB states, malformed/failure/cancellation and fresh-scope disposal. Run relevant M4-01 resolver regression, affected Schema contracts, bun typecheck from Core and Schema package directories, scoped lint/format. Known Schema event-manifest baseline failures are unchanged and unrelated. Tests must not require actual toolchains/downloads/Electron/network/robots.
+Tooling: prepend /private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64 to PATH. Isolate Core test HOME/XDG state under task-owned /private/tmp paths. No user app/server restart. Production process isolation remains gated by M9-07/M9-08.
+No subagents, no shared progress/checklist edits. Commit assigned files only. Report exact revision/commands/cwd/results/counts/assertion map, fixture-versus-real classification and unrun gates in docs/validation/M4-02-implementation.md. Return DONE/DONE_WITH_CONCERNS/NEEDS_CONTEXT/BLOCKED with short commit/test/concern summary.
 
 ## Binding global constraints
+
 
 - Preserve the twelve-module design inside the existing Electron/Solid/OpenCode application. Do not add twelve packages, a new daemon, a universal service registry or a second agent loop.
 - Java/FTC SDK, macOS and Windows, English and Simplified Chinese remain first-version scope. No Blocks, robot hardware-configuration synchronization, app-operated AI billing service or extra student-profile system.
@@ -37,21 +37,21 @@ Report path: docs/validation/M8-01-implementation.md.
 
 ## Exact task excerpt
 
-### M8-01 — Parse discovery and authorization states
+### M4-02 — Inspect tools and imported project requirements
 
-**Prerequisites:** None; implement using supplied port fixtures.
+**Prerequisites:** [M4-01](environment-and-compatibility.md#m4-01).
 
-**Files:** `packages/schema/src/ftc-controller.ts`, `packages/core/src/ftc/controllers.ts`, `packages/core/src/ftc/controllers/adb.ts`, `packages/core/test/ftc/controller-connections/m8-01.test.ts`.
+**Files:** `packages/core/src/ftc/environment.ts`, `packages/core/src/ftc/environment/adapters.ts`, `packages/core/test/ftc/environment-and-compatibility/m4-02.test.ts`.
 
-**Interfaces:** Produces `discoverControllers(): readonly ControllerCandidate[]`; candidates include transport address, device kind if known, authorization and explanatory error codes.
+**Interfaces:** Consumes read-only process probes and project dependency snapshots. Produces `inspectEnvironment({ host, project, catalog }): Readiness` plus a candidate ToolchainDescriptor.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/controller-connections/m8-01.test.ts`, add `unauthorized device is visible without deployment side effects`. Use the real module and supplied port fixtures; core assertions:
+- [ ] **1. Write the focused test:** In `packages/core/test/ftc/environment-and-compatibility/m4-02.test.ts`, add `inspection preserves incompatible imported files`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(candidate.authorization).toBe('unauthorized'); expect(mutationCalls).toEqual([])
+expect(afterFiles).toEqual(beforeFiles); expect(result.state).toBe('incompatible'); expect(probes).toContain('adb')
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/controller-connections/m8-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Use recorded ADB responses through an injected transport; distinguish unauthorized/offline/available devices, multiple targets and empty discovery. Include Control Hub/phone guidance and attached Expansion Hub context without inventing physical configuration.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/controller-connections/m8-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): parse discovery and authorization states`.
+- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/environment-and-compatibility/m4-02.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [ ] **3. Implement the smallest behavior:** Probe build/editor Java separately, Android SDK, ADB and the project's Gradle wrapper. Reuse working tools, identify required permissions/manual steps and distinguish missing binaries from probe failure.
+- [ ] **4. Verify:** Re-run `bun test ./test/ftc/environment-and-compatibility/m4-02.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): inspect tools and imported project requirements`.
