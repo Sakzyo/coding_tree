@@ -776,3 +776,81 @@ test("probe cancellation releases its lease and never advances to a build", asyn
     ),
   )
 })
+
+test.each(["unknown", "windows", "project", "ambiguous", "unevaluated", "requirements_unknown"] as const)(
+  "missing tools with %s profile selection produce review rather than installation advice",
+  async (selection) => {
+    const supplied = ports()
+    const wrong = {
+      ...profile,
+      id: "windows-profile",
+      os: "windows" as const,
+      architecture: "x64" as const,
+      buildJdk: artifact("99"),
+    }
+    const catalog = {
+      kind: "synthetic" as const,
+      profiles:
+        selection === "windows"
+          ? [profile, wrong]
+          : selection === "ambiguous"
+            ? [profile, { ...profile, id: "second-matching-profile" }]
+            : selection === "unevaluated"
+              ? [{ ...profile, evaluation: { status: "unevaluated" as const } }]
+              : [profile],
+    }
+    const builds: string[] = []
+    const dependencyReads: string[] = []
+    const result = await runSetup(
+      {
+        ...supplied,
+        context: {
+          read: () =>
+            Effect.succeed({
+              inspection: { ...context, catalog },
+              sourceRevision: "fixture-source",
+              configurationRevision: "fixture-config",
+              dirty: false,
+            }),
+        },
+        inspection: {
+          dependencies: {
+            read: () =>
+              Effect.sync(() => {
+                dependencyReads.push("read")
+                return selection === "project"
+                  ? { ...versions, ftcSdk: "outside-profile" }
+                  : selection === "requirements_unknown"
+                    ? {}
+                    : versions
+              }),
+          },
+          probes: { inspect: () => Effect.succeed({ state: "missing" }) },
+        },
+        builds: {
+          verify: () =>
+            Effect.sync(() => {
+              builds.push("build")
+              return undefined
+            }),
+        },
+      },
+      {
+        ...request,
+        profileID: selection === "unknown" ? "unknown-profile" : selection === "windows" ? wrong.id : profile.id,
+      },
+    )
+    expect(result.readiness.state).toBe(selection === "requirements_unknown" ? "missing" : "incompatible")
+    expect(result.steps.some((step) => step.messageKey === "ftc.setup.install")).toBe(false)
+    expect(result.steps.some((step) => step.step.recovery === "install")).toBe(false)
+    expect(result.steps.find((step) => step.step.id === "buildJdk")).toMatchObject({
+      messageKey: "ftc.setup.review",
+      step: { state: "manual", recovery: "review_project" },
+    })
+    expect(result.steps.find((step) => step.step.id === "buildJdk")).not.toHaveProperty("version")
+    expect(result.steps.find((step) => step.step.id === "buildJdk")).not.toHaveProperty("source")
+    expect(result.readiness.candidateToolchain).toBeUndefined()
+    expect(builds).toEqual([])
+    expect(dependencyReads).toEqual(["read"])
+  },
+)

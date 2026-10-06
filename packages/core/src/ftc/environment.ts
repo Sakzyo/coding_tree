@@ -35,21 +35,30 @@ export function inspectEnvironment(
   input: unknown,
   ports: EnvironmentAdapters.Ports,
 ): Effect.Effect<FtcEnvironment.Readiness> {
+  return inspectEnvironmentResult(input, ports).pipe(Effect.map((result) => result.readiness))
+}
+
+function inspectEnvironmentResult(
+  input: unknown,
+  ports: EnvironmentAdapters.Ports,
+): Effect.Effect<{ readiness: FtcEnvironment.Readiness; profile?: FtcEnvironment.Profile }> {
   return Effect.scoped(
     Effect.gen(function* () {
       const decoded = Schema.decodeUnknownOption(FtcEnvironment.InspectRequest, { onExcessProperty: "error" })(input)
       if (Option.isNone(decoded))
         return {
-          state: "failed" as const,
-          steps: [
-            {
-              id: "project" as const,
-              state: "failed" as const,
-              cause: "invalid_input" as const,
-              recovery: "review_project" as const,
-            },
-          ],
-          missingAssets: [],
+          readiness: {
+            state: "failed" as const,
+            steps: [
+              {
+                id: "project" as const,
+                state: "failed" as const,
+                cause: "invalid_input" as const,
+                recovery: "review_project" as const,
+              },
+            ],
+            missingAssets: [],
+          },
         }
       const request = decoded.value
       const dependencies = yield* ports.dependencies
@@ -207,14 +216,17 @@ export function inspectEnvironment(
           : []),
       ]
       return {
-        state: steps.some((step) => step.state === "incompatible")
-          ? "incompatible"
-          : steps.some((step) => step.state === "failed")
-            ? "failed"
-            : "missing",
-        steps,
-        missingAssets: steps.filter((step) => step.cause === "binary_missing").map((step) => step.id),
-        ...(candidateToolchain ? { candidateToolchain } : {}),
+        readiness: {
+          state: steps.some((step) => step.state === "incompatible")
+            ? "incompatible"
+            : steps.some((step) => step.state === "failed")
+              ? "failed"
+              : "missing",
+          steps,
+          missingAssets: steps.filter((step) => step.cause === "binary_missing").map((step) => step.id),
+          ...(candidateToolchain ? { candidateToolchain } : {}),
+        },
+        ...(profile ? { profile } : {}),
       }
     }),
   )
@@ -324,10 +336,14 @@ export const guidedLayer = (ports: GuidedPorts) =>
             done: yield* Deferred.make<FtcEnvironment.SetupResult>(),
           }
 
-          const observe = (readiness: FtcEnvironment.Readiness, context?: FtcEnvironment.SetupContext) =>
+          const observe = (
+            readiness: FtcEnvironment.Readiness,
+            context?: FtcEnvironment.SetupContext,
+            profile?: FtcEnvironment.Profile,
+          ) =>
             Effect.gen(function* () {
               state.readiness = readiness
-              const steps = setupSteps(readiness, context, request.profileID)
+              const steps = setupSteps(readiness, context, profile)
               state.result = { state: "completed", readiness, steps }
               yield* Effect.forEach(steps, (step) =>
                 PubSub.publish(events, { projectID: request.projectID, type: "step", step }),
@@ -341,15 +357,17 @@ export const guidedLayer = (ports: GuidedPorts) =>
               )
               if (Option.isNone(decoded)) return failedSetup("project", "invalid_response")
               const context = decoded.value
-              const inspected = yield* inspectEnvironment(context.inspection, ports.inspection)
-              const readiness: FtcEnvironment.Readiness =
-                inspected.candidateToolchain && inspected.candidateToolchain.profileID !== request.profileID
+              const inspected = yield* inspectEnvironmentResult(context.inspection, ports.inspection)
+              const unknown = inspected.readiness.steps.some((step) => step.cause === "requirements_unknown")
+              const profile = inspected.profile?.id === request.profileID && !unknown ? inspected.profile : undefined
+              const selected: FtcEnvironment.Readiness =
+                inspected.profile && inspected.profile.id !== request.profileID
                   ? {
-                      ...inspected,
+                      ...inspected.readiness,
                       state: "incompatible",
                       candidateToolchain: undefined,
                       steps: [
-                        ...inspected.steps,
+                        ...inspected.readiness.steps,
                         {
                           id: "profile",
                           state: "incompatible",
@@ -358,10 +376,26 @@ export const guidedLayer = (ports: GuidedPorts) =>
                         },
                       ],
                     }
-                  : inspected
-              yield* observe(readiness, context)
+                  : inspected.readiness
+              // Installation pins require a resolved choice and known imported requirements.
+              const readiness: FtcEnvironment.Readiness = profile
+                ? selected
+                : {
+                    ...selected,
+                    steps: selected.steps.map((step) =>
+                      step.recovery === "install"
+                        ? {
+                            ...step,
+                            state: "manual",
+                            cause: unknown ? "requirements_unknown" : "unsupported_profile",
+                            recovery: "review_project",
+                          }
+                        : step,
+                    ),
+                  }
+              yield* observe(readiness, context, profile)
               if (!readiness.candidateToolchain) return state.result
-              if (context.dirty) return failedSetup("build", "build_stale", readiness, context, request.profileID)
+              if (context.dirty) return failedSetup("build", "build_stale", readiness, context, profile)
               const buildRequest = {
                 projectID: request.projectID,
                 root: context.inspection.project.root,
@@ -372,20 +406,18 @@ export const guidedLayer = (ports: GuidedPorts) =>
               const rawBuild = yield* ports.builds
                 .verify(buildRequest)
                 .pipe(Effect.match({ onFailure: (error) => ({ error }), onSuccess: (value) => ({ value }) }))
-              if ("error" in rawBuild)
-                return failedSetup("build", "build_failed", readiness, context, request.profileID)
+              if ("error" in rawBuild) return failedSetup("build", "build_failed", readiness, context, profile)
               const evidence = Schema.decodeUnknownOption(FtcEnvironment.BuildVerification, {
                 onExcessProperty: "error",
               })(rawBuild.value)
-              if (Option.isNone(evidence))
-                return failedSetup("build", "invalid_response", readiness, context, request.profileID)
+              if (Option.isNone(evidence)) return failedSetup("build", "invalid_response", readiness, context, profile)
               if (evidence.value.state !== "verified")
                 return failedSetup(
                   "build",
                   evidence.value.state === "stale" ? "build_stale" : "build_failed",
                   readiness,
                   context,
-                  request.profileID,
+                  profile,
                 )
               const verified = evidence.value
               if (
@@ -395,7 +427,7 @@ export const guidedLayer = (ports: GuidedPorts) =>
                 verified.configurationRevision !== context.configurationRevision ||
                 !sameToolchain(verified.toolchain, buildRequest.toolchain)
               )
-                return failedSetup("build", "build_stale", readiness, context, request.profileID)
+                return failedSetup("build", "build_stale", readiness, context, profile)
               const current = Schema.decodeUnknownOption(FtcEnvironment.SetupContext, { onExcessProperty: "error" })(
                 yield* ports.context.read({ projectID: request.projectID }),
               )
@@ -406,7 +438,7 @@ export const guidedLayer = (ports: GuidedPorts) =>
                 current.value.configurationRevision !== context.configurationRevision ||
                 JSON.stringify(current.value.inspection) !== JSON.stringify(context.inspection)
               )
-                return failedSetup("build", "build_stale", readiness, context, request.profileID)
+                return failedSetup("build", "build_stale", readiness, context, profile)
               const ready: FtcEnvironment.Readiness = {
                 ...readiness,
                 state: "ready",
@@ -417,7 +449,7 @@ export const guidedLayer = (ports: GuidedPorts) =>
               return {
                 state: "completed" as const,
                 readiness: ready,
-                steps: setupSteps(ready, context, request.profileID),
+                steps: setupSteps(ready, context, profile),
                 buildEvidence: verified,
               }
             }),
@@ -516,9 +548,8 @@ export const guidedLayer = (ports: GuidedPorts) =>
 function setupSteps(
   readiness: FtcEnvironment.Readiness,
   context?: FtcEnvironment.SetupContext,
-  profileID?: string,
+  profile?: FtcEnvironment.Profile,
 ): FtcEnvironment.SetupStep[] {
-  const profile = context?.inspection.catalog.profiles.find((profile) => profile.id === profileID)
   return readiness.steps.map((step) => {
     const component = Schema.decodeUnknownOption(FtcEnvironment.ToolComponent)(step.id)
     const artifact = profile && Option.isSome(component) ? profile[component.value] : undefined
@@ -553,7 +584,7 @@ function failedSetup(
   cause: "invalid_response" | "probe_failed" | "build_failed" | "build_stale",
   previous?: FtcEnvironment.Readiness,
   context?: FtcEnvironment.SetupContext,
-  profileID?: string,
+  profile?: FtcEnvironment.Profile,
 ): FtcEnvironment.SetupResult {
   const readiness: FtcEnvironment.Readiness = {
     state: "failed",
@@ -564,7 +595,7 @@ function failedSetup(
       { id, state: "failed", cause, recovery: id === "build" ? "verify_build" : "review_project" },
     ],
   }
-  return { state: "completed", readiness, steps: setupSteps(readiness, context, profileID) }
+  return { state: "completed", readiness, steps: setupSteps(readiness, context, profile) }
 }
 
 function sameToolchain(left: FtcEnvironment.ToolchainDescriptor, right: FtcEnvironment.ToolchainDescriptor) {

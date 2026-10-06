@@ -142,3 +142,62 @@ aa1918ea6c914b7c5854f957e9a25a5c828201369a6b56be1ee8f362a6832e9c  packages/app/s
 ```
 
 Deliverables are precisely these six assigned files, this report, and `docs/validation/m4-03/`. The coordinator owns the stable commit, independent review, ledger/checklist updates and later integration. No approval or completed checklist is claimed by this candidate.
+
+## Independent-review fix round 1 of 5
+
+Original reviewed candidate: `575d0901e`. Fix base: `13838cc9778c80c3411e6ff5b0d404aa288a11b4`. Status: **fix candidate frozen for coordinator commit and same-reviewer scoped re-review**. The original report/hash sections above are historical evidence of the reviewed candidate; the updated source manifest below identifies this fix. No staging, commits, ledger edits, new agents, host/toolchain/build/installer work or unrelated changes were made by this worker.
+
+Read [M4-03-review.md](M4-03-review.md) before implementation. Important I1, verbatim:
+
+> - **I1 — Validate the selected compatibility profile before producing installation advice.** `packages/core/src/ftc/environment.ts:346` gates profile mismatch handling on `candidateToolchain`, which is absent in the very missing-tool state guided installation must handle. `packages/core/src/ftc/environment.ts:521` then selects any catalog record whose ID matches the request without checking whether it is the coherent profile resolved for this host/project. A focused reproduction with valid synthetic dependency pins and all five probes missing returned:
+>
+>   ```json
+>   {"profileID":"unknown","state":"missing","buildJdk":{"step":{"id":"buildJdk","state":"missing","cause":"binary_missing","recovery":"install"},"messageKey":"ftc.setup.install","os":"macos","osVersion":"fixture-os","architecture":"arm64"}}
+>   {"profileID":"win","state":"missing","buildJdk":{"step":{"id":"buildJdk","state":"missing","cause":"binary_missing","recovery":"install"},"messageKey":"ftc.setup.install","os":"macos","osVersion":"fixture-os","architecture":"arm64","version":"99","source":"https://fixtures.invalid/tool.zip","license":"fixture-license"}}
+>   ```
+>
+>   The unknown profile emits an installation phrase without its required version/source values. The Windows/x64 profile emits its Java pin under a macOS/arm64 host label. Guided setup can therefore direct a user to the wrong prerequisite before ever obtaining a candidate; merely remaining non-ready does not make this advice correct. Resolve/validate the requested profile against the host and imported requirements independently of installed-tool availability, and obtain install metadata only from that validated result. Unknown, mismatched, unsupported or ambiguous selection must yield actionable profile/project review rather than installation advice with guessed or missing values. Preserve manual `requirements_unknown` behavior and avoid build dispatch. Add regression cases combining a missing tool with an unknown ID and with a known profile incompatible with the host/project. The existing profile test at `packages/core/test/ftc/environment-and-compatibility/m4-03.test.ts:189` uses available tools and does not cover this branch.
+
+### Confirmed defect and repair
+
+Six added real-service cases combine all five tools missing with an unknown requested ID, a Windows/x64 requested profile on the macOS/arm64 host, incompatible project requirements, an ambiguous catalog, an unevaluated requested profile, and unknown imported requirements. Before the fix, all six failed on observable state or installation advice: **0 pass / 6 fail / 44 filtered / 10 assertions, exit 1**. The unknown/Windows cases reproduced the independent review's bypass; the other cases verify the named resolver/manual boundaries. See [fix-round1-red.log](m4-03/fix-round1-red.log).
+
+The existing scoped inspection body now returns its resolver-matched profile through a **private** `inspectEnvironmentResult` helper, alongside the same canonical readiness record. The public `inspectEnvironment` and inspection-only Effect service still return exactly Readiness. Both guided setup and public inspection share that implementation; no public Schema contract, catalog resolver, adapter, producer metadata or host API changed.
+
+Guided setup validates the requested ID against the full-catalog resolver result independently of tool availability. Only a matched requested profile with known imported requirements is passed to `setupSteps`/failure-message construction. Instruction construction no longer looks up an arbitrary catalog entry by requested ID. Invalid/unsupported/mismatched/ambiguous profiles remain incompatible, and missing-tool actions become manual project/profile review without install recovery or version/source metadata. Unknown imported requirements retain missing/manual `requirements_unknown` and no candidate/build. The full resolver's ambiguity, evaluation, host/resource and project-version rules remain in force; the code does not filter the catalog to bypass them or silently choose another requested profile.
+
+The helper reuses the **same single dependency snapshot** already read by inspection; every new case asserts one dependency read and zero build calls. The original five valid-profile missing-tool cases still assert actionable pins/source/license/platform metadata; the Windows valid-profile case still passes. Existing build gating, cancellation/finalizers, events, retry, public inspection and concurrency cases remain covered.
+
+The final focused suite is **50 pass / 0 fail / 206 assertions**, and the full covering M4 selection is **155 pass / 0 fail / 448 assertions** across three files. See [focused GREEN](m4-03/fix-round1-green.log) and [covering M4](m4-03/fix-round1-regression.log). The new table starts at test line **780** (title at 781); each of its six cases asserts aggregate state, absence of install messages and install recovery, manual review for build Java, absence of unvalidated version/source fields, absent candidate, zero builds and exactly one dependency read. Original test anchors above did not move because the regressions were appended.
+
+### Fix verification commands
+
+Commands used the same pinned Bun PATH and task-owned OPENCODE/XDG environment recorded above. Test and typecheck commands ran from their package directories.
+
+| CWD                                        | Command                                                                                                                                          | Exit / result                                    | Evidence                                            |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------ | --------------------------------------------------- |
+| `/Users/dylanxu/coding_tree/packages/core` | `bun test ./test/ftc/environment-and-compatibility/m4-03.test.ts --test-name-pattern 'missing tools with'`                                       | 1; 0 pass / 6 fail / 44 filtered / 10 assertions | [RED](m4-03/fix-round1-red.log)                     |
+| `/Users/dylanxu/coding_tree/packages/core` | `bun test ./test/ftc/environment-and-compatibility/m4-03.test.ts`                                                                                | 0; 50 pass / 0 fail / 206 assertions             | [Focused GREEN](m4-03/fix-round1-green.log)         |
+| `/Users/dylanxu/coding_tree/packages/core` | `bun test ./test/ftc/environment-and-compatibility`                                                                                              | 0; 155 pass / 0 fail / 448 assertions            | [Covering](m4-03/fix-round1-regression.log)         |
+| `/Users/dylanxu/coding_tree/packages/core` | `bun typecheck`                                                                                                                                  | 0                                                | [Core types](m4-03/fix-round1-core-typecheck.log)   |
+| `/Users/dylanxu/coding_tree/packages/app`  | `bun test ./src/i18n/parity.test.ts`                                                                                                             | 0; 6 pass / 0 fail / 1003 assertions             | [Affected parity](m4-03/fix-round1-i18n-parity.log) |
+| `/Users/dylanxu/coding_tree`               | `bun node_modules/.bin/oxlint packages/core/src/ftc/environment.ts packages/core/test/ftc/environment-and-compatibility/m4-03.test.ts`           | 0; 0 warnings / 0 errors                         | [Lint](m4-03/fix-round1-lint.log)                   |
+| `/Users/dylanxu/coding_tree`               | `bun node_modules/.bin/prettier --check packages/core/src/ftc/environment.ts packages/core/test/ftc/environment-and-compatibility/m4-03.test.ts` | 0                                                | [Format](m4-03/fix-round1-format-check.log)         |
+| `/Users/dylanxu/coding_tree`               | `git diff --check -- packages/core/src/ftc/environment.ts packages/core/test/ftc/environment-and-compatibility/m4-03.test.ts`                    | 0                                                | [Scoped diff](m4-03/fix-round1-diff-check.log)      |
+
+Only Core source/tests changed in this fix. Unchanged Schema/App typechecks and Schema contracts were not rerun; their prior passing evidence remains applicable. The App parity selection was explicitly required for this review fix and still passes without dictionary/parity-test changes. No broader unchanged suite was rerun. All previously named production/M5/build/platform/UI/Chinese editorial/robot gates remain unrun and unchanged; these six synthetic records do not evaluate a real Windows host or installed toolchain.
+
+### Updated frozen source SHA-256
+
+[fix-round1-SHA256SUMS](m4-03/fix-round1-SHA256SUMS) records all six original task source files; only the Core implementation and focused test hashes changed.
+
+```text
+e33c0d5eb10b9eaef505c296e1385c1ea359cfc8aa481d9785dd6c4d5f9cfda3  packages/core/src/ftc/environment.ts
+32fbbc070f0a1d877238867247f72d30028853d4669b88948e224901932db868  packages/schema/src/ftc-environment.ts
+5383c571635f34f4c6175e334ea6f89595c77888e156087f3c890aa62f8ce566  packages/core/test/ftc/environment-and-compatibility/m4-03.test.ts
+d178d52b8605127e3cebca264924e8017bcb77643f701e44cdca980e36e0ec6e  packages/app/src/i18n/en.ts
+aa1918ea6c914b7c5854f957e9a25a5c828201369a6b56be1ee8f362a6832e9c  packages/app/src/i18n/zh.ts
+310ad2c1a9ce989aa8b244f9b1819a9c3c8b530291306dce646867753a4195e7  packages/app/src/i18n/parity.test.ts
+```
+
+I1 is addressed by this implementation and its behavioral regressions, pending the coordinator's stable commit and independent same-reviewer verdict. The worker does not credit task/checklist completion.

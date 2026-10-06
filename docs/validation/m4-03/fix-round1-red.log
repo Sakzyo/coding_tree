@@ -1,0 +1,93 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/environment-and-compatibility/m4-03.test.ts:
+838 |       {
+839 |         ...request,
+840 |         profileID: selection === "unknown" ? "unknown-profile" : selection === "windows" ? wrong.id : profile.id,
+841 |       },
+842 |     )
+843 |     expect(result.readiness.state).toBe(selection === "requirements_unknown" ? "missing" : "incompatible")
+                                         ^
+error: expect(received).toBe(expected)
+
+Expected: "incompatible"
+Received: "missing"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-03.test.ts:843:36)
+(fail) missing tools with unknown profile selection produce review rather than installation advice [9.85ms]
+838 |       {
+839 |         ...request,
+840 |         profileID: selection === "unknown" ? "unknown-profile" : selection === "windows" ? wrong.id : profile.id,
+841 |       },
+842 |     )
+843 |     expect(result.readiness.state).toBe(selection === "requirements_unknown" ? "missing" : "incompatible")
+                                         ^
+error: expect(received).toBe(expected)
+
+Expected: "incompatible"
+Received: "missing"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-03.test.ts:843:36)
+(fail) missing tools with windows profile selection produce review rather than installation advice [1.02ms]
+839 |         ...request,
+840 |         profileID: selection === "unknown" ? "unknown-profile" : selection === "windows" ? wrong.id : profile.id,
+841 |       },
+842 |     )
+843 |     expect(result.readiness.state).toBe(selection === "requirements_unknown" ? "missing" : "incompatible")
+844 |     expect(result.steps.some((step) => step.messageKey === "ftc.setup.install")).toBe(false)
+                                                                                       ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-03.test.ts:844:82)
+(fail) missing tools with project profile selection produce review rather than installation advice [1.18ms]
+839 |         ...request,
+840 |         profileID: selection === "unknown" ? "unknown-profile" : selection === "windows" ? wrong.id : profile.id,
+841 |       },
+842 |     )
+843 |     expect(result.readiness.state).toBe(selection === "requirements_unknown" ? "missing" : "incompatible")
+844 |     expect(result.steps.some((step) => step.messageKey === "ftc.setup.install")).toBe(false)
+                                                                                       ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-03.test.ts:844:82)
+(fail) missing tools with ambiguous profile selection produce review rather than installation advice [0.63ms]
+839 |         ...request,
+840 |         profileID: selection === "unknown" ? "unknown-profile" : selection === "windows" ? wrong.id : profile.id,
+841 |       },
+842 |     )
+843 |     expect(result.readiness.state).toBe(selection === "requirements_unknown" ? "missing" : "incompatible")
+844 |     expect(result.steps.some((step) => step.messageKey === "ftc.setup.install")).toBe(false)
+                                                                                       ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-03.test.ts:844:82)
+(fail) missing tools with unevaluated profile selection produce review rather than installation advice [0.46ms]
+839 |         ...request,
+840 |         profileID: selection === "unknown" ? "unknown-profile" : selection === "windows" ? wrong.id : profile.id,
+841 |       },
+842 |     )
+843 |     expect(result.readiness.state).toBe(selection === "requirements_unknown" ? "missing" : "incompatible")
+844 |     expect(result.steps.some((step) => step.messageKey === "ftc.setup.install")).toBe(false)
+                                                                                       ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-03.test.ts:844:82)
+(fail) missing tools with requirements_unknown profile selection produce review rather than installation advice [0.43ms]
+
+ 0 pass
+ 44 filtered out
+ 6 fail
+ 10 expect() calls
+Ran 6 tests across 1 file. [67.00ms]
