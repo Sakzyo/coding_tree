@@ -381,3 +381,24 @@ Verified task checklist count: **4/94** (M4-01, M8-01, M2-01, M2-02); modules **
 M9-07, M5-03 and M8-04 remain **BLOCKED** on their documented real-platform/physical/production evidence; their reviewed available-host subsets are preserved. Deferred Minor findings remain in M5-03/M8-04 review records. These are not completed tasks and no production execution path was enabled.
 
 On a later explicit continuation: begin **M2-03** with its prepared exact brief after recording the new current base and owner. Its M2-01/02 prerequisites are reviewed. Use the [Session gate preflight](../validation/M3-gate-preflight.md) to settle reservation/lifetime contracts and assign actual V2 host/coordinator paths before later integration. M3-01, M4-02 and M11-01 briefs are also prepared. Preserve existing evidence and owned tool/source caches; do not rerun unchanged successful suites or reset counts. Remain stopped until the user requests continuation.
+
+## Parallel continuation — 2026-10-06
+
+The user explicitly resumed implementation and requested simultaneous subagents. Starting checkpoint: clean `ftc-workspace` at `3d496b0c9`; completed tasks remain M4-01, M8-01, M2-01 and M2-02 (**4/94 tasks, 0/12 modules**). The earlier stop boundary is revoked by this continuation.
+
+- Ruling: Continue in the existing feature checkout, as in the saved execution preflight; use concurrent writers only on explicitly disjoint task paths — the user's parallel-work request supersedes the earlier one-writer scheduling rule — accidental overlap would require scoped rework, so shared files, Git index/commits and ledger updates remain coordinator-owned.
+- Ruling: Preserve `docs/tasks/progress.md` as the sole completion ledger and the existing durable validation artifacts — the scratch ledger remains a pointer and the previous plan scan is reused — duplicate accounting could redispatch completed work.
+
+| Concurrent task | Prerequisites verified | Exclusive write ownership | Shared paths reserved to coordinator |
+| --- | --- | --- | --- |
+| M2-03 | M2-01 / M2-02 reviewed | projects/gate.ts, ftc-project.ts, m2-03 tests and evidence | projects facade/repository additions only after explicit assignment; no migrations |
+| M4-02 | M4-01 reviewed | environment.ts, environment/adapters.ts, ftc-environment.ts, m4-02 tests and evidence | no production catalog/host/client changes |
+| M11-01 | None | ftc-knowledge.ts, knowledge.ts, content/manifest.json, m11-01 tests and evidence | Schema root barrel |
+
+These tasks share no owned source files or consumed implementation dependencies. The prior task/interface scan remains valid; canonical Schema producer ownership is retained. Workers do not commit, stage, edit checklists or spawn helpers. The coordinator commits each stable task independently and dispatches a separate reviewer; a passing worker report is not completion. Typecheck failures caused by another unfinished lane are recorded and rechecked after that lane stabilizes.
+
+M2-03 starts first; M4-02 and M11-01 run alongside it. Actual owner IDs, lifecycle decisions and reviewed task outcomes are appended below. Mandatory platform/hardware gates remain blocked; no production robot authority is enabled.
+
+- Dispatched `/root/m2_03`, `/root/m4_02` and `/root/m11_01` concurrently against starting base `3d496b0c9`, each with its exact saved brief and exclusive paths. Counts remain **4/94 tasks, 0/12 modules**.
+- Ruling: M2-03 same-chat acquisitions receive independent claim tokens under one canonical-root owner; release removes only its exact claim and frees the owner after the last claim — concurrent admission rollback must not release another holder — later M2-04/05/M3-02 must still implement transfer and terminal settlement, or ownership could be retained incorrectly. Raw acquisitions have explicit release responsibility; interrupted validation allocates no claim and scope disposal clears all claims. Assigned projects.ts only for a narrow public getProject lookup needed to validate canonical project/chat membership.
+- Ruling: M4-02 produces inspected candidate toolchains without build-verified setup readiness; a build-verification-pending step keeps readiness non-ready, and unknown imported requirements produce a manual requirements_unknown result without a descriptor — M4-03/06 own verification — an incorrect pending-state interpretation would need adjustment at setup composition.
