@@ -1,0 +1,35 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-knowledge/m11-02.test.ts:
+(pass) incompatible or absent local reference never appears as current [34.69ms]
+(pass) explicit library versions and back-to-back SDK queries have independent applicability [22.71ms]
+(pass) search sees only compatible available language candidates and retains validated content [6.25ms]
+(pass) unavailable compatible metadata is explicit and cannot satisfy a body search [31.34ms]
+(pass) missing references retain the exact explicit request: {"id":"absent","want":"not_found"} [0.61ms]
+(pass) missing references retain the exact explicit request: {"id":"sdk-fixture-v2","want":"incompatible"} [0.40ms]
+(pass) missing references retain the exact explicit request: {"topic":"absent-topic","want":"not_found"} [0.45ms]
+(pass) invalid queries fail before repository observation: {"sdkVersion":"1.x"} [0.37ms]
+(pass) invalid queries fail before repository observation: {"sdkVersion":"v1.2.0"} [0.05ms]
+(pass) invalid queries fail before repository observation: {"sdkVersion":""} [0.19ms]
+(pass) invalid queries fail before repository observation: {"language":"fr"} [0.05ms]
+(pass) invalid queries fail before repository observation: {"library":"fixture-library"} [0.03ms]
+(pass) invalid queries fail before repository observation: {"libraryVersion":"1.0.0"} [0.04ms]
+(pass) invalid queries fail before repository observation: {"library":"fixture-library","libraryVersion":"^1.0.0"} [0.03ms]
+(pass) invalid queries fail before repository observation: {"projectID":"implicit-selection"} [0.04ms]
+(pass) invalid search text never reaches the repository [0.08ms]
+(pass) repository bytes are revalidated instead of trusting claimed validity [2.42ms]
+(pass) availability observation cannot mutate the already validated document snapshot [1.46ms]
+(pass) failures release repository resources and remain distinct from missing data [2.16ms]
+(pass) interruption releases a pending repository observation and independent instances remain usable [0.97ms]
+(pass) canonical query/result contracts preserve facade identity and omit undefined optionals [0.36ms]
+(pass) construction observes nothing and successful observation releases all acquired resources [0.89ms]
+(pass) malformed availability responses fail explicitly [0.68ms]
+(pass) malformed search responses fail explicitly [2.38ms]
+(pass) an incomplete translation pack is invalid and cannot silently supply another language [0.60ms]
+(pass) search interruption closes scoped resources without retaining a partial result [0.87ms]
+(pass) knowledge Context Source preserves missing data and treats failed observation as unavailable [3.74ms]
+
+ 27 pass
+ 0 fail
+ 59 expect() calls
+Ran 27 tests across 1 file. [196.00ms]

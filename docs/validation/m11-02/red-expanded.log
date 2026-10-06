@@ -1,0 +1,448 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-knowledge/m11-02.test.ts:
+66 |         }),
+67 |       ),
+68 |     ),
+69 |   )
+70 |   const result = results[0]
+71 |   expect(result.kind).toBe("found")
+                           ^
+error: expect(received).toBe(expected)
+
+Expected: "found"
+Received: "missing"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-02.test.ts:71:23)
+(fail) incompatible or absent local reference never appears as current [4.87ms]
+ 98 |       ],
+ 99 |       (input) => service.lookup(input),
+100 |       { concurrency: "unbounded" },
+101 |     ),
+102 |   )
+103 |   expect(results.map((result) => (result.kind === "found" ? result.records.map((x) => x.id) : result.reason))).toEqual([
+                                                                                                                     ^
+error: expect(received).toEqual(expected)
+
+  [
+-   [
+-     "sdk-fixture-v1",
+-     "library-v1",
+-   ],
+-   [
+-     "sdk-fixture-v1",
+-     "library-v2",
+-   ],
+-   [
+-     "sdk-fixture-v2",
+-   ],
+-   [
+-     "sdk-fixture-v1",
+-   ],
++   "not_found",
++   "not_found",
++   "not_found",
++   "not_found",
+  ]
+
+- Expected  - 14
++ Received  + 4
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-02.test.ts:103:112)
+(fail) explicit library versions and back-to-back SDK queries have independent applicability [1.04ms]
+120 |         seen.push(`${input.record.id}:${input.record.language}`)
+121 |         return supplied.search.matches(input)
+122 |       },
+123 |     },
+124 |   })
+125 |   expect(seen).toEqual(["sdk-fixture-v1:en"])
+                     ^
+error: expect(received).toEqual(expected)
+
+- [
+-   "sdk-fixture-v1:en",
+- ]
++ []
+
+- Expected  - 3
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-02.test.ts:125:16)
+(fail) search sees only compatible available language candidates and retains validated content [0.16ms]
+133 | 
+134 | test("unavailable compatible metadata is explicit and cannot satisfy a body search", async () => {
+135 |   const supplied = ports()
+136 |   const unavailable = { ...supplied, repository: { ...supplied.repository, available: () => Effect.succeed(false) } }
+137 |   const result = await run((service) => service.lookup({ ...query, localOnly: false }), unavailable)
+138 |   expect(result.kind).toBe("found")
+                            ^
+error: expect(received).toBe(expected)
+
+Expected: "found"
+Received: "missing"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-02.test.ts:138:23)
+(fail) unavailable compatible metadata is explicit and cannot satisfy a body search [0.12ms]
+(pass) missing references retain the exact explicit request: {"id":"absent","want":"not_found"} [0.15ms]
+151 |   { id: "absent", want: "not_found" },
+152 |   { id: "sdk-fixture-v2", want: "incompatible" },
+153 |   { topic: "absent-topic", want: "not_found" },
+154 | ])("missing references retain the exact explicit request: %j", async ({ want, ...input }) => {
+155 |   const requested = { ...query, ...input }
+156 |   expect(await run((service) => service.lookup(requested))).toEqual({ kind: "missing", reason: want, requested })
+                                                                  ^
+error: expect(received).toEqual(expected)
+
+  {
+    "kind": "missing",
+-   "reason": "incompatible",
++   "reason": "not_found",
+    "requested": {
+      "id": "sdk-fixture-v2",
+      "language": "en",
+      "localOnly": true,
+      "sdkVersion": "1.2.0",
+    },
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-02.test.ts:156:61)
+(fail) missing references retain the exact explicit request: {"id":"sdk-fixture-v2","want":"incompatible"} [0.07ms]
+(pass) missing references retain the exact explicit request: {"topic":"absent-topic","want":"not_found"} [0.03ms]
+169 |   const supplied = ports()
+170 |   const result = await run(
+171 |     (service) => service.lookup({ ...query, ...input } as FtcKnowledge.ContentQuery).pipe(Effect.result),
+172 |     { ...supplied, repository: { ...supplied.repository, read: () => Effect.die("Invalid input reached repository") } },
+173 |   )
+174 |   expect(result).toEqual({ _tag: "Failure", failure: { code: "invalid_input" } })
+                       ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "_tag": "Failure",
+-   "failure": {
+-     "code": "invalid_input",
++   "success": {
++     "kind": "missing",
++     "reason": "not_found",
++     "requested": {
++       "language": "en",
++       "localOnly": true,
++       "sdkVersion": "1.x",
++     },
+    },
+  }
+
+- Expected  - 3
++ Received  + 8
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-02.test.ts:174:18)
+(fail) invalid queries fail before repository observation: {"sdkVersion":"1.x"} [0.22ms]
+169 |   const supplied = ports()
+170 |   const result = await run(
+171 |     (service) => service.lookup({ ...query, ...input } as FtcKnowledge.ContentQuery).pipe(Effect.result),
+172 |     { ...supplied, repository: { ...supplied.repository, read: () => Effect.die("Invalid input reached repository") } },
+173 |   )
+174 |   expect(result).toEqual({ _tag: "Failure", failure: { code: "invalid_input" } })
+                       ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "_tag": "Failure",
+-   "failure": {
+-     "code": "invalid_input",
++   "success": {
++     "kind": "missing",
++     "reason": "not_found",
++     "requested": {
++       "language": "en",
++       "localOnly": true,
++       "sdkVersion": "v1.2.0",
++     },
+    },
+  }
+
+- Expected  - 3
++ Received  + 8
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-02.test.ts:174:18)
+(fail) invalid queries fail before repository observation: {"sdkVersion":"v1.2.0"} [0.12ms]
+169 |   const supplied = ports()
+170 |   const result = await run(
+171 |     (service) => service.lookup({ ...query, ...input } as FtcKnowledge.ContentQuery).pipe(Effect.result),
+172 |     { ...supplied, repository: { ...supplied.repository, read: () => Effect.die("Invalid input reached repository") } },
+173 |   )
+174 |   expect(result).toEqual({ _tag: "Failure", failure: { code: "invalid_input" } })
+                       ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "_tag": "Failure",
+-   "failure": {
+-     "code": "invalid_input",
++   "success": {
++     "kind": "missing",
++     "reason": "not_found",
++     "requested": {
++       "language": "en",
++       "localOnly": true,
++       "sdkVersion": "",
++     },
+    },
+  }
+
+- Expected  - 3
++ Received  + 8
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-02.test.ts:174:18)
+(fail) invalid queries fail before repository observation: {"sdkVersion":""} [0.11ms]
+169 |   const supplied = ports()
+170 |   const result = await run(
+171 |     (service) => service.lookup({ ...query, ...input } as FtcKnowledge.ContentQuery).pipe(Effect.result),
+172 |     { ...supplied, repository: { ...supplied.repository, read: () => Effect.die("Invalid input reached repository") } },
+173 |   )
+174 |   expect(result).toEqual({ _tag: "Failure", failure: { code: "invalid_input" } })
+                       ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "_tag": "Failure",
+-   "failure": {
+-     "code": "invalid_input",
++   "success": {
++     "kind": "missing",
++     "reason": "not_found",
++     "requested": {
++       "language": "fr",
++       "localOnly": true,
++       "sdkVersion": "1.2.0",
++     },
+    },
+  }
+
+- Expected  - 3
++ Received  + 8
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-02.test.ts:174:18)
+(fail) invalid queries fail before repository observation: {"language":"fr"} [0.09ms]
+169 |   const supplied = ports()
+170 |   const result = await run(
+171 |     (service) => service.lookup({ ...query, ...input } as FtcKnowledge.ContentQuery).pipe(Effect.result),
+172 |     { ...supplied, repository: { ...supplied.repository, read: () => Effect.die("Invalid input reached repository") } },
+173 |   )
+174 |   expect(result).toEqual({ _tag: "Failure", failure: { code: "invalid_input" } })
+                       ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "_tag": "Failure",
+-   "failure": {
+-     "code": "invalid_input",
++   "success": {
++     "kind": "missing",
++     "reason": "not_found",
++     "requested": {
++       "language": "en",
++       "library": "fixture-library",
++       "localOnly": true,
++       "sdkVersion": "1.2.0",
++     },
+    },
+  }
+
+- Expected  - 3
++ Received  + 9
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-02.test.ts:174:18)
+(fail) invalid queries fail before repository observation: {"library":"fixture-library"} [0.12ms]
+169 |   const supplied = ports()
+170 |   const result = await run(
+171 |     (service) => service.lookup({ ...query, ...input } as FtcKnowledge.ContentQuery).pipe(Effect.result),
+172 |     { ...supplied, repository: { ...supplied.repository, read: () => Effect.die("Invalid input reached repository") } },
+173 |   )
+174 |   expect(result).toEqual({ _tag: "Failure", failure: { code: "invalid_input" } })
+                       ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "_tag": "Failure",
+-   "failure": {
+-     "code": "invalid_input",
++   "success": {
++     "kind": "missing",
++     "reason": "not_found",
++     "requested": {
++       "language": "en",
++       "libraryVersion": "1.0.0",
++       "localOnly": true,
++       "sdkVersion": "1.2.0",
++     },
+    },
+  }
+
+- Expected  - 3
++ Received  + 9
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-02.test.ts:174:18)
+(fail) invalid queries fail before repository observation: {"libraryVersion":"1.0.0"} [0.11ms]
+169 |   const supplied = ports()
+170 |   const result = await run(
+171 |     (service) => service.lookup({ ...query, ...input } as FtcKnowledge.ContentQuery).pipe(Effect.result),
+172 |     { ...supplied, repository: { ...supplied.repository, read: () => Effect.die("Invalid input reached repository") } },
+173 |   )
+174 |   expect(result).toEqual({ _tag: "Failure", failure: { code: "invalid_input" } })
+                       ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "_tag": "Failure",
+-   "failure": {
+-     "code": "invalid_input",
++   "success": {
++     "kind": "missing",
++     "reason": "not_found",
++     "requested": {
++       "language": "en",
++       "library": "fixture-library",
++       "libraryVersion": "^1.0.0",
++       "localOnly": true,
++       "sdkVersion": "1.2.0",
++     },
+    },
+  }
+
+- Expected  - 3
++ Received  + 10
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-02.test.ts:174:18)
+(fail) invalid queries fail before repository observation: {"library":"fixture-library","libraryVersion":"^1.0.0"} [0.11ms]
+169 |   const supplied = ports()
+170 |   const result = await run(
+171 |     (service) => service.lookup({ ...query, ...input } as FtcKnowledge.ContentQuery).pipe(Effect.result),
+172 |     { ...supplied, repository: { ...supplied.repository, read: () => Effect.die("Invalid input reached repository") } },
+173 |   )
+174 |   expect(result).toEqual({ _tag: "Failure", failure: { code: "invalid_input" } })
+                       ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "_tag": "Failure",
+-   "failure": {
+-     "code": "invalid_input",
++   "success": {
++     "kind": "missing",
++     "reason": "not_found",
++     "requested": {
++       "language": "en",
++       "localOnly": true,
++       "projectID": "implicit-selection",
++       "sdkVersion": "1.2.0",
++     },
+    },
+  }
+
+- Expected  - 3
++ Received  + 9
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-02.test.ts:174:18)
+(fail) invalid queries fail before repository observation: {"projectID":"implicit-selection"} [0.11ms]
+173 |   )
+174 |   expect(result).toEqual({ _tag: "Failure", failure: { code: "invalid_input" } })
+175 | })
+176 | 
+177 | test("invalid search text never reaches the repository", async () => {
+178 |   expect(await run((service) => service.search({ query, text: " " }).pipe(Effect.result))).toEqual({
+                                                                                                 ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "_tag": "Failure",
+-   "failure": {
+-     "code": "invalid_input",
++   "success": {
++     "kind": "missing",
++     "reason": "no_match",
++     "requested": {
++       "language": "en",
++       "localOnly": true,
++       "sdkVersion": "1.2.0",
++     },
+    },
+  }
+
+- Expected  - 3
++ Received  + 8
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-02.test.ts:178:92)
+(fail) invalid search text never reaches the repository [0.12ms]
+188 |     repository: {
+189 |       ...supplied.repository,
+190 |       read: () => Effect.succeed({ ...input, files: input.files.map((file) => ({ ...file, bytes: [0] })) }),
+191 |     },
+192 |   })
+193 |   expect(result._tag).toBe("Failure")
+                            ^
+error: expect(received).toBe(expected)
+
+Expected: "Failure"
+Received: "Success"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-02.test.ts:193:23)
+(fail) repository bytes are revalidated instead of trusting claimed validity [0.82ms]
+206 |         yield* Effect.acquireRelease(Effect.sync(() => activity.push("open")), () => Effect.sync(() => activity.push("close")))
+207 |         return yield* Effect.fail({ code: "repository_failed" as const })
+208 |       }),
+209 |     },
+210 |   })
+211 |   expect(result).toEqual({ _tag: "Failure", failure: { code: "repository_failed" } })
+                       ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "_tag": "Failure",
+-   "failure": {
+-     "code": "repository_failed",
++   "success": {
++     "kind": "missing",
++     "reason": "not_found",
++     "requested": {
++       "language": "en",
++       "localOnly": true,
++       "sdkVersion": "1.2.0",
++     },
+    },
+  }
+
+- Expected  - 3
++ Received  + 8
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-02.test.ts:211:18)
+(fail) failures release repository resources and remain distinct from missing data [0.16ms]
+(pass) canonical query/result contracts preserve facade identity and omit undefined optionals [0.99ms]
+197 | /** Creates the immutable baseline and durable snapshot for a new generation. */
+198 | export function initialize(value: SystemContext): Effect.Effect<Generation, InitializationBlocked> {
+199 |   return observe(value).pipe(
+200 |     Effect.flatMap((entries) => {
+201 |       const unavailable = entries.flatMap((entry) => (entry._tag === "Unavailable" ? [entry.key] : []))
+202 |       if (unavailable.length > 0) return new InitializationBlocked({ keys: unavailable })
+                                               ^
+error: System context initialization blocked by unavailable sources: ftc/knowledge
+ keys: [ "ftc/knowledge" ],
+ _tag: "SystemContext.InitializationBlocked",
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/system-context/index.ts:202:42)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-02.test.ts:247:28)
+(fail) knowledge Context Source preserves missing data and treats failed observation as unavailable [1.03ms]
+
+ 3 pass
+ 1 filtered out
+ 17 fail
+ 21 expect() calls
+Ran 20 tests across 1 file. [76.00ms]

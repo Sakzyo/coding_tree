@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-knowledge/m11-02.test.ts:
+64 |         }),
+65 |       ),
+66 |     ),
+67 |   )
+68 |   const result = results[0]
+69 |   expect(result.kind).toBe("found")
+                           ^
+error: expect(received).toBe(expected)
+
+Expected: "found"
+Received: "missing"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-02.test.ts:69:23)
+(fail) incompatible or absent local reference never appears as current [8.01ms]
+
+ 0 pass
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [190.00ms]

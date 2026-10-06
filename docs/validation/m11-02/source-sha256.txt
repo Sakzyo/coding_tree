@@ -1,0 +1,4 @@
+5d393c5b618859991dbd33531b92adc60b9a37de9288df5a2032e7e08c19e821  packages/schema/src/ftc-knowledge.ts
+041a465bfc646260db625cea95ffe061110fdeef525310556f5dcdbe7c0a33bf  packages/core/src/ftc/knowledge.ts
+196e0f4e7e9b38d8c473bc98dcbeaf2fde1ca9582df9d05243084f3842a76d79  packages/core/src/ftc/knowledge/context.ts
+cdce27d921fe532c74e2cdd4a7309fe892c2c455cca11d03dfc798dc11b37468  packages/core/test/ftc/ftc-knowledge/m11-02.test.ts

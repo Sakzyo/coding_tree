@@ -1,7 +1,7 @@
 export * as FtcKnowledge from "./knowledge"
 
 import { FtcKnowledge } from "@opencode-ai/schema/ftc-knowledge"
-import { Option, Schema } from "effect"
+import { Context, Effect, Layer, Option, Schema, Scope } from "effect"
 import semver from "semver"
 import { Hash } from "../util/hash"
 
@@ -9,6 +9,128 @@ export const ContentRecord = FtcKnowledge.ContentRecord
 export type ContentRecord = FtcKnowledge.ContentRecord
 export const PackResult = FtcKnowledge.PackResult
 export type PackResult = FtcKnowledge.PackResult
+
+export const ContentQuery = FtcKnowledge.ContentQuery
+export type ContentQuery = FtcKnowledge.ContentQuery
+export const ContentResult = FtcKnowledge.ContentResult
+export type ContentResult = FtcKnowledge.ContentResult
+
+export interface Ports {
+  readonly repository: {
+    // Snapshot bytes are validated independently of current local-use availability.
+    readonly read: () => Effect.Effect<unknown, FtcKnowledge.QueryError, Scope.Scope>
+    readonly available: (record: ContentRecord) => Effect.Effect<boolean, FtcKnowledge.QueryError, Scope.Scope>
+  }
+  readonly search: {
+    readonly matches: (input: {
+      readonly record: ContentRecord
+      readonly document: FtcKnowledge.ContentDocument
+      readonly text: string
+    }) => Effect.Effect<boolean, FtcKnowledge.QueryError, Scope.Scope>
+  }
+}
+
+export interface Interface {
+  readonly lookup: (query: ContentQuery) => Effect.Effect<ContentResult, FtcKnowledge.QueryError>
+  readonly search: (input: FtcKnowledge.SearchRequest) => Effect.Effect<ContentResult, FtcKnowledge.QueryError>
+}
+
+export class Service extends Context.Service<Service, Interface>()("@opencode/FtcKnowledge") {}
+
+export const layer = (ports: Ports) => {
+  const query = (input: unknown, text?: string): Effect.Effect<ContentResult, FtcKnowledge.QueryError> =>
+    Effect.scoped(
+      Effect.gen(function* () {
+        const decoded = Schema.decodeUnknownOption(ContentQuery, { onExcessProperty: "error" })(input)
+        if (
+          Option.isNone(decoded) ||
+          !concreteVersion(decoded.value.sdkVersion) ||
+          (decoded.value.library === undefined) !== (decoded.value.libraryVersion === undefined) ||
+          (decoded.value.libraryVersion !== undefined && !concreteVersion(decoded.value.libraryVersion))
+        )
+          return yield* Effect.fail({ code: "invalid_input" as const })
+        const requested = decoded.value
+        const inputPack = yield* ports.repository.read()
+        const pack = validatePack(inputPack)
+        if (pack.kind === "invalid")
+          return yield* Effect.fail({ code: "invalid_content" as const, errors: pack.errors })
+        const selected = pack.records.filter(
+          (record) =>
+            (requested.id === undefined || record.id === requested.id) &&
+            (requested.topic === undefined || record.topic === requested.topic),
+        )
+        const applicable = selected.filter(
+          (record) =>
+            semver.satisfies(requested.sdkVersion, record.sdkRange) &&
+            (record.library === undefined ||
+              (record.library === requested.library &&
+                requested.libraryVersion !== undefined &&
+                record.libraryRange !== undefined &&
+                semver.satisfies(requested.libraryVersion, record.libraryRange))),
+        )
+        const localized = applicable.filter((record) => record.language === requested.language)
+        const missing = (reason: Extract<ContentResult, { kind: "missing" }>["reason"]): ContentResult => ({
+          kind: "missing",
+          reason,
+          requested,
+        })
+        if (!selected.length) return missing("not_found")
+        if (!applicable.length) return missing("incompatible")
+        if (!localized.length) return missing("missing_translation")
+
+        // Only validated snapshot bytes can supply the document; availability never fetches content.
+        const snapshot = Schema.decodeUnknownSync(FtcKnowledge.PackInput)(inputPack)
+        const observed = yield* Effect.forEach(localized, (record) =>
+          Effect.gen(function* () {
+            const available = yield* ports.repository.available(record)
+            if (typeof available !== "boolean") return yield* Effect.fail({ code: "invalid_response" as const })
+            if (!available) return { ...record, locallyAvailable: false }
+            const file = snapshot.files.find((file) => file.localPath === record.localPath)!
+            const document = Schema.decodeUnknownSync(Schema.UnknownFromJsonString)(
+              Buffer.from(file.bytes).toString("utf8"),
+            )
+            return {
+              ...record,
+              locallyAvailable: true,
+              document: Schema.decodeUnknownSync(FtcKnowledge.ContentDocument)(document),
+            }
+          }),
+        )
+        const local = observed.filter(
+          (record): record is Extract<typeof record, { document: FtcKnowledge.ContentDocument }> =>
+            "document" in record && record.locallyAvailable,
+        )
+        if (text !== undefined) {
+          if (!local.length) return missing("not_local")
+          const matches = yield* Effect.forEach(local, (record) =>
+            Effect.gen(function* () {
+              const matches = yield* ports.search.matches({ record, document: record.document, text })
+              if (typeof matches !== "boolean") return yield* Effect.fail({ code: "invalid_response" as const })
+              return matches ? [record] : []
+            }),
+          )
+          const records = matches.flat()
+          return records.length ? { kind: "found", records } : missing("no_match")
+        }
+        const records = requested.localOnly ? local : observed
+        return records.length ? { kind: "found", records } : missing("not_local")
+      }),
+    )
+
+  return Layer.succeed(Service, {
+    lookup: (input) => query(input),
+    search: (input) =>
+      Effect.suspend((): Effect.Effect<ContentResult, FtcKnowledge.QueryError> => {
+        const decoded = Schema.decodeUnknownOption(FtcKnowledge.SearchRequest, { onExcessProperty: "error" })(input)
+        if (Option.isNone(decoded)) return Effect.fail({ code: "invalid_input" as const })
+        return query(decoded.value.query, decoded.value.text)
+      }),
+  })
+}
+
+function concreteVersion(value: string) {
+  return semver.valid(value) !== null && !value.startsWith("v") && value === value.trim()
+}
 
 const Input = Schema.Struct({
   manifest: Schema.Struct({

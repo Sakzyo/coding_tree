@@ -84,3 +84,45 @@ export const PackResult = Schema.Union([
   Schema.Struct({ kind: Schema.Literal("valid"), records: Schema.Array(ContentRecord) }),
   Schema.Struct({ kind: Schema.Literal("invalid"), errors: Schema.Array(PackError).check(Schema.isMinLength(1)) }),
 ]).annotate({ identifier: "FtcKnowledge.PackResult" })
+
+export interface ContentQuery extends Schema.Schema.Type<typeof ContentQuery> {}
+export const ContentQuery = Schema.Struct({
+  id: optional(Text),
+  topic: optional(Text),
+  sdkVersion: Text,
+  library: optional(Text),
+  libraryVersion: optional(Text),
+  language: Language,
+  localOnly: Schema.Boolean,
+}).annotate({ identifier: "FtcKnowledge.ContentQuery" })
+
+export interface SearchRequest extends Schema.Schema.Type<typeof SearchRequest> {}
+export const SearchRequest = Schema.Struct({ query: ContentQuery, text: Text }).annotate({
+  identifier: "FtcKnowledge.SearchRequest",
+})
+
+export interface ContentReference extends Schema.Schema.Type<typeof ContentReference> {}
+export const ContentReference = Schema.Struct({
+  ...ContentRecord.fields,
+  locallyAvailable: Schema.Boolean,
+  document: optional(ContentDocument),
+}).annotate({ identifier: "FtcKnowledge.ContentReference" })
+
+export type ContentResult = typeof ContentResult.Type
+export const ContentResult = Schema.Union([
+  Schema.Struct({
+    kind: Schema.Literal("found"),
+    records: Schema.Array(ContentReference).check(Schema.isMinLength(1)),
+  }),
+  Schema.Struct({
+    kind: Schema.Literal("missing"),
+    reason: Schema.Literals(["not_found", "incompatible", "missing_translation", "not_local", "no_match"]),
+    requested: ContentQuery,
+  }),
+]).annotate({ identifier: "FtcKnowledge.ContentResult" })
+
+export interface QueryError extends Schema.Schema.Type<typeof QueryError> {}
+export const QueryError = Schema.Struct({
+  code: Schema.Literals(["invalid_input", "invalid_content", "repository_failed", "search_failed", "invalid_response"]),
+  errors: optional(Schema.Array(PackError).check(Schema.isMinLength(1))),
+}).annotate({ identifier: "FtcKnowledge.QueryError" })
