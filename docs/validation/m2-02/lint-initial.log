@@ -1,0 +1,26 @@
+
+  ! typescript-eslint(consistent-return): Function expected a return value.
+     ,-[packages/core/src/ftc/projects.ts:94:50]
+  93 |       })
+  94 | ,->   const lookup = Effect.fn("FtcProjects.lookup")(function* (project: FtcProject.ProjectContext, sessionID: Session.ID) {
+  95 | |       const session = yield* sessions.getSession(sessionID)
+  96 | |       if (!session)
+  97 | |         return yield* Effect.fail({
+  98 | |           code: "session_not_found",
+  99 | |           projectID: project.projectID,
+ 100 | |           sessionID,
+ 101 | |           recovery: "reopen_project",
+ 102 | |         } satisfies FtcProject.ChatError)
+ 103 | |       if (session.id !== sessionID || !matches(project, session))
+ 104 | |         return yield* Effect.fail({
+ 105 | |           code: "session_mismatch",
+ 106 | |           projectID: project.projectID,
+ 107 | |           sessionID,
+ 108 | |           recovery: "reopen_project",
+ 109 | |         } satisfies FtcProject.ChatError)
+ 110 | `->   })
+ 111 |       return Layer.succeed(Service, {
+     `----
+
+Found 1 warning and 0 errors.
+Finished in 869ms on 8 files with 130 rules using 10 threads.

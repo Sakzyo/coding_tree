@@ -16,6 +16,11 @@ import { FtcProjects } from "../../../src/ftc/projects"
 import { ProjectAssociations } from "../../../src/ftc/projects/sql"
 import { tmpdir } from "../../fixture/tmpdir"
 
+const sessions: FtcProjects.SessionAccess = {
+  createSession: () => Effect.die("Association must not create a Session"),
+  getSession: () => Effect.die("Association must not read a Session"),
+}
+
 const folders: FtcProjects.FolderIdentity = {
   resolve: ({ root }) =>
     Effect.tryPromise({
@@ -45,7 +50,7 @@ function run<A, E>(filename: string, effect: Effect.Effect<A, E, FtcProjects.Ser
     Effect.gen(function* () {
       const db = yield* EffectDrizzleSqlite.makeWithDefaults()
       yield* DatabaseMigration.apply(db)
-      return yield* effect.pipe(Effect.provide(FtcProjects.layer(identity, ProjectAssociations.make(db))))
+      return yield* effect.pipe(Effect.provide(FtcProjects.layer(identity, ProjectAssociations.make(db), sessions)))
     }).pipe(Effect.provide(SqliteClient.layer({ filename })), Effect.scoped),
   )
 }
@@ -324,7 +329,7 @@ test("SQLite write failure is recoverable and does not create a partial associat
       return yield* Effect.gen(function* () {
         const projects = yield* FtcProjects.Service
         return yield* projects.openProject({ root: AbsolutePath.make(tmp.path) }).pipe(Effect.result)
-      }).pipe(Effect.provide(FtcProjects.layer(folders, ProjectAssociations.make(db))))
+      }).pipe(Effect.provide(FtcProjects.layer(folders, ProjectAssociations.make(db), sessions)))
     }).pipe(Effect.provide(SqliteClient.layer({ filename })), Effect.scoped),
   )
   expect(Result.isFailure(result) && result.failure.code).toBe("association_store_failed")
@@ -400,7 +405,7 @@ test("tracked upgrade preserves existing project data and supports a new associa
       const opened = yield* Effect.gen(function* () {
         const projects = yield* FtcProjects.Service
         return yield* projects.openProject({ root: AbsolutePath.make(tmp.path) })
-      }).pipe(Effect.provide(FtcProjects.layer(folders, ProjectAssociations.make(db))))
+      }).pipe(Effect.provide(FtcProjects.layer(folders, ProjectAssociations.make(db), sessions)))
       expect(opened.canonicalRoot).toBe(AbsolutePath.make(tmp.path))
       expect(yield* db.all(sql`SELECT id, worktree, name, time_created, time_updated, sandboxes FROM project`)).toEqual(
         [

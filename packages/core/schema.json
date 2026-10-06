@@ -1,9 +1,9 @@
 {
   "version": "7",
   "dialect": "sqlite",
-  "id": "d3fb1ce7-b53c-4fd3-9965-ce7dd5c1cb0b",
+  "id": "445bccd6-3162-4ce2-aa5e-ac75c867625a",
   "prevIds": [
-    "f14a9b18-8207-487e-a3d3-227e629ba9ad"
+    "d3fb1ce7-b53c-4fd3-9965-ce7dd5c1cb0b"
   ],
   "ddl": [
     {
@@ -36,6 +36,10 @@
     },
     {
       "name": "event",
+      "entityType": "tables"
+    },
+    {
+      "name": "ftc_chat",
       "entityType": "tables"
     },
     {
@@ -545,6 +549,46 @@
       "name": "data",
       "entityType": "columns",
       "table": "event"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": true,
+      "default": null,
+      "generated": null,
+      "name": "sequence",
+      "entityType": "columns",
+      "table": "ftc_chat"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "chat_id",
+      "entityType": "columns",
+      "table": "ftc_chat"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "project_id",
+      "entityType": "columns",
+      "table": "ftc_chat"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "session_id",
+      "entityType": "columns",
+      "table": "ftc_chat"
     },
     {
       "type": "text",
@@ -1575,6 +1619,21 @@
       "columns": [
         "project_id"
       ],
+      "tableTo": "ftc_project_association",
+      "columnsTo": [
+        "project_id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "fk_ftc_chat_project_id_ftc_project_association_project_id_fk",
+      "entityType": "fks",
+      "table": "ftc_chat"
+    },
+    {
+      "columns": [
+        "project_id"
+      ],
       "tableTo": "project",
       "columnsTo": [
         "id"
@@ -1812,6 +1871,15 @@
       "nameExplicit": false,
       "name": "event_pk",
       "table": "event",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "sequence"
+      ],
+      "nameExplicit": false,
+      "name": "ftc_chat_pk",
+      "table": "ftc_chat",
       "entityType": "pks"
     },
     {
@@ -2213,6 +2281,24 @@
       "name": "todo_session_idx",
       "entityType": "indexes",
       "table": "todo"
+    },
+    {
+      "columns": [
+        "chat_id"
+      ],
+      "nameExplicit": false,
+      "name": "ftc_chat_chat_id_unique",
+      "entityType": "uniques",
+      "table": "ftc_chat"
+    },
+    {
+      "columns": [
+        "session_id"
+      ],
+      "nameExplicit": false,
+      "name": "ftc_chat_session_id_unique",
+      "entityType": "uniques",
+      "table": "ftc_chat"
     },
     {
       "columns": [

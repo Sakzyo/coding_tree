@@ -3,7 +3,9 @@ export * as FtcProject from "./ftc-project"
 import { Schema } from "effect"
 import { Location } from "./location"
 import { Project } from "./project"
-import { AbsolutePath, optional } from "./schema"
+import { Session } from "./session"
+import { ascending } from "./identifier"
+import { AbsolutePath, optional, statics } from "./schema"
 
 export interface ProjectContext extends Schema.Schema.Type<typeof ProjectContext> {}
 export const ProjectContext = Schema.Struct({
@@ -24,3 +26,38 @@ export const AssociationError = Schema.Struct({
   detail: optional(Schema.String),
   recovery: Schema.Literals(["select_accessible_folder", "retry"]),
 }).annotate({ identifier: "FtcProject.AssociationError" })
+
+export const ChatID = Schema.String.check(Schema.isStartsWith("chat_"))
+  .pipe(Schema.brand("FtcProject.ChatID"))
+  .annotate({ identifier: "FtcProject.ChatID" })
+  .pipe(statics((schema) => ({ create: () => schema.make(`chat_${ascending()}`) })))
+export type ChatID = typeof ChatID.Type
+
+export interface ChatRef extends Schema.Schema.Type<typeof ChatRef> {}
+export const ChatRef = Schema.Struct({
+  projectID: Project.ID,
+  chatID: ChatID,
+  sessionID: Session.ID,
+}).annotate({ identifier: "FtcProject.ChatRef" })
+
+export interface ProjectRequest extends Schema.Schema.Type<typeof ProjectRequest> {}
+export const ProjectRequest = Schema.Struct({ projectID: Project.ID }).annotate({
+  identifier: "FtcProject.ProjectRequest",
+})
+
+export interface ChatError extends Schema.Schema.Type<typeof ChatError> {}
+export const ChatError = Schema.Struct({
+  code: Schema.Literals([
+    "project_not_found",
+    "project_changed",
+    "session_not_found",
+    "session_mismatch",
+    "session_access_failed",
+    "chat_session_conflict",
+    "chat_store_failed",
+  ]),
+  projectID: Project.ID,
+  sessionID: optional(Session.ID),
+  detail: optional(Schema.String),
+  recovery: Schema.Literals(["reopen_project", "retry"]),
+}).annotate({ identifier: "FtcProject.ChatError" })

@@ -1,0 +1,91 @@
+{
+  "added": [
+    {
+      "autoincrement": false,
+      "default": null,
+      "entityType": "columns",
+      "generated": null,
+      "name": "chat_id",
+      "notNull": true,
+      "table": "ftc_chat",
+      "type": "text"
+    },
+    {
+      "autoincrement": false,
+      "default": null,
+      "entityType": "columns",
+      "generated": null,
+      "name": "project_id",
+      "notNull": true,
+      "table": "ftc_chat",
+      "type": "text"
+    },
+    {
+      "autoincrement": false,
+      "default": null,
+      "entityType": "columns",
+      "generated": null,
+      "name": "session_id",
+      "notNull": true,
+      "table": "ftc_chat",
+      "type": "text"
+    },
+    {
+      "autoincrement": true,
+      "default": null,
+      "entityType": "columns",
+      "generated": null,
+      "name": "sequence",
+      "notNull": false,
+      "table": "ftc_chat",
+      "type": "integer"
+    },
+    {
+      "columns": [
+        "chat_id"
+      ],
+      "entityType": "uniques",
+      "name": "ftc_chat_chat_id_unique",
+      "nameExplicit": false,
+      "table": "ftc_chat"
+    },
+    {
+      "columns": [
+        "project_id"
+      ],
+      "columnsTo": [
+        "project_id"
+      ],
+      "entityType": "fks",
+      "name": "fk_ftc_chat_project_id_ftc_project_association_project_id_fk",
+      "nameExplicit": false,
+      "onDelete": "NO ACTION",
+      "onUpdate": "NO ACTION",
+      "table": "ftc_chat",
+      "tableTo": "ftc_project_association"
+    },
+    {
+      "columns": [
+        "sequence"
+      ],
+      "entityType": "pks",
+      "name": "ftc_chat_pk",
+      "nameExplicit": false,
+      "table": "ftc_chat"
+    },
+    {
+      "columns": [
+        "session_id"
+      ],
+      "entityType": "uniques",
+      "name": "ftc_chat_session_id_unique",
+      "nameExplicit": false,
+      "table": "ftc_chat"
+    },
+    {
+      "entityType": "tables",
+      "name": "ftc_chat"
+    }
+  ],
+  "removed_or_changed": []
+}

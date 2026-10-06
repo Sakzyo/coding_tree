@@ -1,0 +1,9 @@
+dfe2097b9ce35cb5dcf0aa69c997c8218e4612d1e889442062645f553e74d2c6  packages/schema/src/ftc-project.ts
+42c531e0669e5fa74419776f8a70337b6f2c95a2cc6f02c4bc2d9baef5db9446  packages/core/src/ftc/projects.ts
+cd0a1ba025a851abe189c679dccfd0a6d92cd102c057d2a00622ebbd3bc237bc  packages/core/src/ftc/projects/sql.ts
+763c84852e245553ec5ee363c1f6524e455847a3c45fe2f1dc5da7c994902a51  packages/core/test/ftc/projects-and-chats/m2-01.test.ts
+8f11d53b8618aa3d295b3bd20c2f87bc759953a82b7b94f326846d35a9c39d7d  packages/core/test/ftc/projects-and-chats/m2-02.test.ts
+9eb09b938c8a4a70ea162ddba5bdb66d8fb2814d69ceb1c355867536c734a315  packages/core/src/database/migration/20261006123700_ftc-chat-membership.ts
+e50acd86a0b141c50a586633d208e11a4631f7dc48ec9f17b5c79239dc246193  packages/core/src/database/migration.gen.ts
+bc6aadffeb52cb3492a8465092ab72dfd5b32c1e6fe62dd0787516d92cd269cb  packages/core/src/database/schema.gen.ts
+c07cf927b0785bde7da6c588239494af994030a6c74836ebf0fe92351c370ace  packages/core/schema.json

@@ -1,0 +1,54 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-02.test.ts:
+error: M2-02 chat membership is not implemented
+M2-02 chat membership is not implemented
+(fail) reopen retains distinct chat Sessions [28.65ms]
+error: M2-02 chat membership is not implemented
+M2-02 chat membership is not implemented
+(fail) two roots with the same host ID keep separate chats and aliases restore membership [10.29ms]
+error: M2-02 chat membership is not implemented
+M2-02 chat membership is not implemented
+(fail) unknown association fails before Session creation and is not inherited by another database [12.26ms]
+error: M2-02 chat membership is not implemented
+M2-02 chat membership is not implemented
+(fail) create rejects directory Session mismatch without membership [5.87ms]
+error: M2-02 chat membership is not implemented
+M2-02 chat membership is not implemented
+(fail) create rejects host Session mismatch without membership [6.02ms]
+error: M2-02 chat membership is not implemented
+M2-02 chat membership is not implemented
+(fail) create rejects workspace Session mismatch without membership [5.80ms]
+error: M2-02 chat membership is not implemented
+M2-02 chat membership is not implemented
+(fail) create rejects lookup-id Session mismatch without membership [5.52ms]
+error: M2-02 chat membership is not implemented
+M2-02 chat membership is not implemented
+(fail) create rejects missing Session mismatch without membership [5.19ms]
+error: M2-02 chat membership is not implemented
+M2-02 chat membership is not implemented
+(fail) reopen rejects missing Session instead of returning a false association [6.98ms]
+error: M2-02 chat membership is not implemented
+M2-02 chat membership is not implemented
+(fail) reopen rejects placement Session instead of returning a false association [5.74ms]
+error: M2-02 chat membership is not implemented
+M2-02 chat membership is not implemented
+(fail) reopen rejects identity Session instead of returning a false association [4.74ms]
+error: M2-02 chat membership is not implemented
+M2-02 chat membership is not implemented
+(fail) concurrent separate connections cannot assign a Session to two chats [8.18ms]
+error: M2-02 chat membership is not implemented
+M2-02 chat membership is not implemented
+(fail) SQLite failure after Session creation retains the unassociated Session and retry creates a fresh chat [5.97ms]
+(fail) interruption during lookup releases the port and creates no membership [5000.00ms]
+  ^ this test timed out after 5000ms.
+error: M2-02 chat membership is not implemented
+M2-02 chat membership is not implemented
+(fail) Session create failure does not become successful membership [11.01ms]
+error: M2-02 chat membership is not implemented
+M2-02 chat membership is not implemented
+(fail) Session lookup failure does not become successful membership [4.46ms]
+
+ 0 pass
+ 16 fail
+Ran 16 tests across 1 file. [5.22s]

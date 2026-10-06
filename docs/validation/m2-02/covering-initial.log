@@ -1,0 +1,86 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-02.test.ts:
+(pass) reopen retains distinct chat Sessions [61.25ms]
+(pass) two roots with the same host ID keep separate chats and aliases restore membership [43.23ms]
+(pass) unknown association fails before Session creation and is not inherited by another database [78.39ms]
+(pass) create rejects directory Session mismatch without membership [42.72ms]
+(pass) create rejects host Session mismatch without membership [32.54ms]
+(pass) create rejects workspace Session mismatch without membership [26.65ms]
+(pass) create rejects lookup-id Session mismatch without membership [11.56ms]
+(pass) create rejects missing Session mismatch without membership [14.64ms]
+(pass) reopen rejects missing Session instead of returning a false association [15.21ms]
+(pass) reopen rejects placement Session instead of returning a false association [18.56ms]
+(pass) reopen rejects identity Session instead of returning a false association [47.44ms]
+(pass) concurrent separate connections cannot assign a Session to two chats [23.63ms]
+(pass) SQLite failure after Session creation retains the unassociated Session and retry creates a fresh chat [12.04ms]
+(pass) interruption during lookup releases the port and creates no membership [11.46ms]
+(pass) Session create failure does not become successful membership [33.12ms]
+(pass) Session lookup failure does not become successful membership [29.93ms]
+(pass) host mapping refresh during Session creation rejects stale membership [30.14ms]
+(pass) tracked chat migration preserves prior project association data and reopens membership [33.74ms]
+508 |     }),
+509 |   ).toEqual({ code: "chat_store_failed", projectID: Project.ID.global, recovery: "retry" })
+510 |   const identifiers = [FtcProject.ChatID, FtcProject.ChatRef, FtcProject.ProjectRequest, FtcProject.ChatError].map(
+511 |     (schema) => schema.ast.annotations?.identifier,
+512 |   )
+513 |   expect(identifiers).toEqual([
+                            ^
+error: expect(received).toEqual(expected)
+
+  [
+-   "FtcProject.ChatID",
++   undefined,
+    "FtcProject.ChatRef",
+    "FtcProject.ProjectRequest",
+    "FtcProject.ChatError",
+  ]
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/projects-and-chats/m2-02.test.ts:513:23)
+(fail) chat contracts keep canonical identities, strict ID prefix and optional omission [2.64ms]
+
+test/ftc/projects-and-chats/m2-01.test.ts:
+(pass) folder aliases reopen one project [13.15ms]
+(pass) distinct local roots retain distinct association IDs with host ID global [10.87ms]
+(pass) distinct local roots retain distinct association IDs with host ID shared-remote [13.16ms]
+(pass) concurrent independent connections associate one canonical root exactly once [10.86ms]
+(pass) unavailable folder and regular file fail without associations or project-file edits [10.13ms]
+(pass) denied access is propagated before persistence [6.07ms]
+(pass) interrupting folder resolution leaves no association and releases its scope [7.56ms]
+(pass) inconsistent or nonlocal folder identities fail before persistence [7.36ms]
+(pass) association contract reuses canonical schemas and encodes optional fields without undefined [0.31ms]
+(pass) SQLite write failure is recoverable and does not create a partial association [12.13ms]
+(pass) fresh independent database scopes do not inherit another repository's associations [12.92ms]
+(pass) reopen refreshes the explicit host mapping without changing canonical ownership [11.46ms]
+(pass) tracked upgrade preserves existing project data and supports a new association [24.60ms]
+
+test/database-migration.test.ts:
+(pass) DatabaseMigration > defaults missing workspace names while preserving legacy workspace data [1.41ms]
+(pass) DatabaseMigration > imports unnamed legacy Drizzle journal entries by their actual migration timestamps [0.65ms]
+(pass) DatabaseMigration > rejects unknown legacy Drizzle journal timestamps instead of guessing completed migrations [1.47ms]
+(pass) DatabaseMigration > serializes concurrent embedded initialization for one database path [23.43ms]
+(pass) DatabaseMigration > applies tracked migrations to an empty database [22.59ms]
+(pass) DatabaseMigration > rejects a non-empty database without a session table [1.00ms]
+(pass) DatabaseMigration > backfills existing Context Epoch rows to the build agent [0.74ms]
+(pass) DatabaseMigration > keeps legacy credential fields nullable [0.75ms]
+(pass) DatabaseMigration > resets beta history and rebuilds event-sourced Session input storage [3.26ms]
+(pass) DatabaseMigration > preserves canonical V1 state and restarts its event stream [10.90ms]
+(pass) DatabaseMigration > resets incompatible projected Session messages before adding sequence order [1.40ms]
+(pass) DatabaseMigration > runs session usage backfill in order with schema changes [0.93ms]
+(pass) DatabaseMigration > normalizes Windows storage paths and leaves POSIX paths untouched [1.40ms]
+(pass) DatabaseMigration > maps native Windows paths through database columns [0.08ms]
+(pass) DatabaseMigration > imports existing drizzle migration state [0.74ms]
+(pass) DatabaseMigration > does not replay a migrated session metadata column [0.53ms]
+(pass) DatabaseMigration > accepts the temporary replacement session metadata migration id [2.37ms]
+(pass) DatabaseMigration > skips drizzle import when migration table already has state [0.83ms]
+
+1 tests failed:
+(fail) chat contracts keep canonical identities, strict ID prefix and optional omission [2.64ms]
+
+ 49 pass
+ 1 fail
+ 152 expect() calls
+Ran 50 tests across 3 files. [1214.00ms]

@@ -1,0 +1,11 @@
+$ tsgo --noEmit
+test/ftc/projects-and-chats/m2-02.test.ts(137,94): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'string[]' is not assignable to parameter of type '(string & Brand<"AbsolutePath">)[]'.
+      Type 'string' is not assignable to type 'string & Brand<"AbsolutePath">'.
+        Type 'string' is not assignable to type 'Brand<"AbsolutePath">'.
+test/ftc/projects-and-chats/m2-02.test.ts(169,48): error TS2345: Argument of type 'Result<ChatRef, ChatError> | Result<...>' is not assignable to parameter of type 'Result<ChatRef, ChatError>'.
+  Type 'Failure<readonly ChatRef[], ChatError>' is not assignable to type 'Result<ChatRef, ChatError>'.
+    Type 'Failure<readonly ChatRef[], ChatError>' is not assignable to type 'Failure<ChatRef, ChatError>'.
+      Type 'readonly ChatRef[]' is not assignable to type 'ChatRef'.
+        Type 'readonly ChatRef[]' is missing the following properties from type '{ readonly projectID: string & Brand<"Project.ID">; readonly chatID: string & Brand<"FtcProject.ChatID">; readonly sessionID: string & Brand<"SessionID">; }': projectID, chatID, sessionID

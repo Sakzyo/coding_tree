@@ -1,0 +1,4 @@
+Reading config file '/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-hhQgar/incremental.config.ts'
+[✓] Your SQL migration ➜ /var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-hhQgar/incremental/20261006123700_ftc-chat-membership/migration.sql 🚀
+Reading config file '/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-hhQgar/full.config.ts'
+[✓] Your SQL migration ➜ /var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-hhQgar/full/20261006123700_schema/migration.sql 🚀

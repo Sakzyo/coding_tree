@@ -1,0 +1,24 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-02.test.ts:
+(pass) reopen retains distinct chat Sessions [30.45ms]
+(pass) two roots with the same host ID keep separate chats and aliases restore membership [10.60ms]
+(pass) unknown association fails before Session creation and is not inherited by another database [12.30ms]
+(pass) create rejects directory Session mismatch without membership [7.11ms]
+(pass) create rejects host Session mismatch without membership [6.16ms]
+(pass) create rejects workspace Session mismatch without membership [5.52ms]
+(pass) create rejects lookup-id Session mismatch without membership [6.37ms]
+(pass) create rejects missing Session mismatch without membership [5.87ms]
+(pass) reopen rejects missing Session instead of returning a false association [6.72ms]
+(pass) reopen rejects placement Session instead of returning a false association [6.16ms]
+(pass) reopen rejects identity Session instead of returning a false association [7.74ms]
+(pass) concurrent separate connections cannot assign a Session to two chats [8.22ms]
+(pass) SQLite failure after Session creation retains the unassociated Session and retry creates a fresh chat [8.80ms]
+(pass) interruption during lookup releases the port and creates no membership [5.32ms]
+(pass) Session create failure does not become successful membership [4.92ms]
+(pass) Session lookup failure does not become successful membership [5.64ms]
+
+ 16 pass
+ 0 fail
+ 44 expect() calls
+Ran 16 tests across 1 file. [214.00ms]

@@ -1,0 +1,10 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-02.test.ts:
+error: M2-02 chat membership is not implemented
+M2-02 chat membership is not implemented
+(fail) reopen retains distinct chat Sessions [26.21ms]
+
+ 0 pass
+ 1 fail
+Ran 1 test across 1 file. [234.00ms]

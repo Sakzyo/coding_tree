@@ -1,0 +1,62 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-02.test.ts:
+(pass) reopen retains distinct chat Sessions [206.17ms]
+(pass) two roots with the same host ID keep separate chats and aliases restore membership [30.15ms]
+(pass) unknown association fails before Session creation and is not inherited by another database [26.89ms]
+(pass) create rejects directory Session mismatch without membership [18.10ms]
+(pass) create rejects host Session mismatch without membership [13.91ms]
+(pass) create rejects workspace Session mismatch without membership [9.30ms]
+(pass) create rejects lookup-id Session mismatch without membership [14.04ms]
+(pass) create rejects missing Session mismatch without membership [12.45ms]
+(pass) reopen rejects missing Session instead of returning a false association [48.79ms]
+(pass) reopen rejects placement Session instead of returning a false association [13.53ms]
+(pass) reopen rejects identity Session instead of returning a false association [31.79ms]
+(pass) concurrent separate connections cannot assign a Session to two chats [119.02ms]
+(pass) SQLite failure after Session creation retains the unassociated Session and retry creates a fresh chat [17.07ms]
+(pass) interruption during lookup releases the port and creates no membership [40.09ms]
+(pass) Session create failure does not become successful membership [18.27ms]
+(pass) Session lookup failure does not become successful membership [20.61ms]
+(pass) host mapping refresh during Session creation rejects stale membership [17.81ms]
+(pass) tracked chat migration preserves prior project association data and reopens membership [35.56ms]
+(pass) chat contracts keep canonical identities, strict ID prefix and optional omission [1.33ms]
+
+test/ftc/projects-and-chats/m2-01.test.ts:
+(pass) folder aliases reopen one project [17.26ms]
+(pass) distinct local roots retain distinct association IDs with host ID global [10.41ms]
+(pass) distinct local roots retain distinct association IDs with host ID shared-remote [13.63ms]
+(pass) concurrent independent connections associate one canonical root exactly once [19.94ms]
+(pass) unavailable folder and regular file fail without associations or project-file edits [8.56ms]
+(pass) denied access is propagated before persistence [9.04ms]
+(pass) interrupting folder resolution leaves no association and releases its scope [7.94ms]
+(pass) inconsistent or nonlocal folder identities fail before persistence [7.97ms]
+(pass) association contract reuses canonical schemas and encodes optional fields without undefined [0.31ms]
+(pass) SQLite write failure is recoverable and does not create a partial association [8.37ms]
+(pass) fresh independent database scopes do not inherit another repository's associations [16.27ms]
+(pass) reopen refreshes the explicit host mapping without changing canonical ownership [8.27ms]
+(pass) tracked upgrade preserves existing project data and supports a new association [16.31ms]
+
+test/database-migration.test.ts:
+(pass) DatabaseMigration > defaults missing workspace names while preserving legacy workspace data [9.71ms]
+(pass) DatabaseMigration > imports unnamed legacy Drizzle journal entries by their actual migration timestamps [14.83ms]
+(pass) DatabaseMigration > rejects unknown legacy Drizzle journal timestamps instead of guessing completed migrations [0.67ms]
+(pass) DatabaseMigration > serializes concurrent embedded initialization for one database path [12.94ms]
+(pass) DatabaseMigration > applies tracked migrations to an empty database [2.84ms]
+(pass) DatabaseMigration > rejects a non-empty database without a session table [0.49ms]
+(pass) DatabaseMigration > backfills existing Context Epoch rows to the build agent [0.60ms]
+(pass) DatabaseMigration > keeps legacy credential fields nullable [0.60ms]
+(pass) DatabaseMigration > resets beta history and rebuilds event-sourced Session input storage [2.36ms]
+(pass) DatabaseMigration > preserves canonical V1 state and restarts its event stream [9.84ms]
+(pass) DatabaseMigration > resets incompatible projected Session messages before adding sequence order [1.28ms]
+(pass) DatabaseMigration > runs session usage backfill in order with schema changes [0.82ms]
+(pass) DatabaseMigration > normalizes Windows storage paths and leaves POSIX paths untouched [0.83ms]
+(pass) DatabaseMigration > maps native Windows paths through database columns [0.05ms]
+(pass) DatabaseMigration > imports existing drizzle migration state [0.44ms]
+(pass) DatabaseMigration > does not replay a migrated session metadata column [0.42ms]
+(pass) DatabaseMigration > accepts the temporary replacement session metadata migration id [0.42ms]
+(pass) DatabaseMigration > skips drizzle import when migration table already has state [0.35ms]
+
+ 50 pass
+ 0 fail
+ 152 expect() calls
+Ran 50 tests across 3 files. [1297.00ms]
