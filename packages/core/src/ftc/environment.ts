@@ -2,6 +2,7 @@ export * as Environment from "./environment"
 
 import { FtcEnvironment } from "@opencode-ai/schema/ftc-environment"
 import { Context, Effect, Layer, Option, Schema } from "effect"
+import { win32 } from "node:path"
 import { EnvironmentAdapters } from "./environment/adapters"
 import { FtcEnvironmentCatalog } from "./environment/catalog"
 
@@ -109,8 +110,14 @@ export function inspectEnvironment(
                 }),
               }
             const found = result.value
-            const wrapper = `${request.project.root.replace(/[\\/]+$/, "")}${request.host.os === "windows" ? "\\gradlew.bat" : "/gradlew"}`
-            if (component === "gradleWrapper" && found.path !== wrapper)
+            const wrapper =
+              request.host.os === "windows"
+                ? win32.join(request.project.root, "gradlew.bat")
+                : `${request.project.root.replace(/[\\/]+$/, "")}/gradlew`
+            if (
+              component === "gradleWrapper" &&
+              (request.host.os === "windows" ? win32.relative(wrapper, found.path) !== "" : found.path !== wrapper)
+            )
               return {
                 component,
                 step: {

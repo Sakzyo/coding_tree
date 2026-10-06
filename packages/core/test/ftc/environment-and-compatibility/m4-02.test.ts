@@ -351,6 +351,43 @@ test("Windows inspection uses supplied paths and the project's batch wrapper", a
   expect(result.state).toBe("missing")
 })
 
+test.each([
+  ["C:/fixture/import", "C:/fixture/import/gradlew.bat", true],
+  ["C:/fixture/import", "C:\\fixture/import\\gradlew.bat", true],
+  ["C:\\fixture/import", "C:/fixture\\import/gradlew.bat", true],
+  ["C:/fixture/import", "C:/fixture/global/gradlew.bat", false],
+  ["C:/fixture/import", "C:\\fixture\\global-gradle", false],
+] as const)(
+  "Windows wrapper identity accepts equivalent separators and rejects outside paths: %s, %s",
+  async (root, wrapper, accepted) => {
+    const result = await Effect.runPromise(
+      inspectEnvironment(
+        {
+          host: { ...host, os: "windows", architecture: "x64" },
+          project: { root },
+          catalog: { ...catalog, profiles: [{ ...profile, os: "windows", architecture: "x64" }] },
+        },
+        {
+          ...ports(),
+          probes: {
+            inspect: (request) =>
+              Effect.succeed({
+                state: "available",
+                version: profile[request.component].version,
+                path: request.component === "gradleWrapper" ? wrapper : `C:/fixture/${request.component}`,
+              }),
+          },
+        },
+      ),
+    )
+    expect(result.state).toBe(accepted ? "missing" : "failed")
+    expect(result.steps.find((step) => step.id === "gradleWrapper")?.cause).toBe(
+      accepted ? "available" : "invalid_response",
+    )
+    expect(result.candidateToolchain?.gradleWrapper).toBe(accepted ? wrapper : undefined)
+  },
+)
+
 test("scoped probes clean up on success and each recheck obtains fresh observations", async () => {
   const activity: string[] = []
   const supplied = ports()

@@ -1,0 +1,95 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/environment-and-compatibility/m4-02.test.ts:
+(pass) inspection preserves incompatible imported files [7.68ms]
+(pass) working tools produce a pinned candidate while build verification remains pending [0.99ms]
+(pass) missing buildJdk is an installable missing asset, not a failed probe [0.40ms]
+(pass) missing editorJdk is an installable missing asset, not a failed probe [0.24ms]
+(pass) missing androidSdk is an installable missing asset, not a failed probe [0.26ms]
+(pass) missing adb is an installable missing asset, not a failed probe [0.23ms]
+(pass) missing gradleWrapper is an installable missing asset, not a failed probe [0.21ms]
+(pass) reports failed probes distinctly [0.54ms]
+(pass) reports denied probes distinctly [0.31ms]
+(pass) reports manual probes distinctly [0.19ms]
+(pass) typed probe error binary_missing remains a recoverable step and later probes still run [0.35ms]
+(pass) typed probe error permission_denied remains a recoverable step and later probes still run [0.17ms]
+(pass) typed probe error manual_required remains a recoverable step and later probes still run [0.20ms]
+(pass) typed probe error probe_failed remains a recoverable step and later probes still run [0.15ms]
+(pass) rejects buildJdk version mismatch without replacing working tools [0.20ms]
+(pass) rejects editorJdk version mismatch without replacing working tools [0.15ms]
+(pass) rejects androidSdk version mismatch without replacing working tools [0.15ms]
+(pass) rejects adb version mismatch without replacing working tools [0.14ms]
+(pass) rejects gradleWrapper version mismatch without replacing working tools [0.13ms]
+(pass) unknown imported requirements {} need manual inspection [0.17ms]
+(pass) unknown imported requirements {"ftcSdk":"fixture-ftc"} need manual inspection [0.12ms]
+(pass) malformed dependency snapshot  fails without claiming compatibility [0.16ms]
+(pass) malformed dependency snapshot {"ftcSdk":"fixture-ftc","androidGradlePlugin":"fixture-agp","androidSdk":"fixture-android","gradleWrapper":"fixture-gradle","unexpected":"1"} fails without claiming compatibility [0.11ms]
+(pass) malformed dependency snapshot {"ftcSdk":"latest","androidGradlePlugin":"fixture-agp","androidSdk":"fixture-android","gradleWrapper":"fixture-gradle"} fails without claiming compatibility [0.19ms]
+(pass) dependency permission failure is manual and does not skip tool inspection [0.14ms]
+(pass) malformed probe output  cannot yield a candidate [0.19ms]
+(pass) malformed probe output {"state":"available","path":"/fixture/adb","version":"latest"} cannot yield a candidate [0.27ms]
+(pass) malformed probe output {"state":"available","path":"relative","version":"fixture-adb"} cannot yield a candidate [0.15ms]
+(pass) malformed probe output {"state":"available","path":"/fixture/adb","version":"fixture-adb","injected":true} cannot yield a candidate [0.16ms]
+(pass) a global Gradle binary cannot replace the project's wrapper [0.23ms]
+(pass) invalid requests perform no dependency reads or probes [0.09ms]
+(pass) empty production catalogs do not promote synthetic support [0.13ms]
+(pass) Windows inspection uses supplied paths and the project's batch wrapper [0.22ms]
+366 |     ...ports(), probes: { inspect: (request) => Effect.succeed({
+367 |       state: "available", version: profile[request.component].version,
+368 |       path: request.component === "gradleWrapper" ? wrapper : `C:/fixture/${request.component}`,
+369 |     }) },
+370 |   }))
+371 |   expect(result.state).toBe(accepted ? "missing" : "failed")
+                             ^
+error: expect(received).toBe(expected)
+
+Expected: "missing"
+Received: "failed"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-02.test.ts:371:24)
+(fail) Windows wrapper identity accepts equivalent separators and rejects outside paths: C:/fixture/import, C:/fixture/import/gradlew.bat [0.37ms]
+366 |     ...ports(), probes: { inspect: (request) => Effect.succeed({
+367 |       state: "available", version: profile[request.component].version,
+368 |       path: request.component === "gradleWrapper" ? wrapper : `C:/fixture/${request.component}`,
+369 |     }) },
+370 |   }))
+371 |   expect(result.state).toBe(accepted ? "missing" : "failed")
+                             ^
+error: expect(received).toBe(expected)
+
+Expected: "missing"
+Received: "failed"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-02.test.ts:371:24)
+(fail) Windows wrapper identity accepts equivalent separators and rejects outside paths: C:/fixture/import, C:\fixture/import\gradlew.bat [0.19ms]
+366 |     ...ports(), probes: { inspect: (request) => Effect.succeed({
+367 |       state: "available", version: profile[request.component].version,
+368 |       path: request.component === "gradleWrapper" ? wrapper : `C:/fixture/${request.component}`,
+369 |     }) },
+370 |   }))
+371 |   expect(result.state).toBe(accepted ? "missing" : "failed")
+                             ^
+error: expect(received).toBe(expected)
+
+Expected: "missing"
+Received: "failed"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-02.test.ts:371:24)
+(fail) Windows wrapper identity accepts equivalent separators and rejects outside paths: C:\fixture/import, C:/fixture\import/gradlew.bat [0.18ms]
+(pass) Windows wrapper identity accepts equivalent separators and rejects outside paths: C:/fixture/import, C:/fixture/global/gradlew.bat [0.10ms]
+(pass) Windows wrapper identity accepts equivalent separators and rejects outside paths: C:/fixture/import, C:\fixture\global-gradle [0.11ms]
+(pass) scoped probes clean up on success and each recheck obtains fresh observations [1.22ms]
+(pass) cancellation releases an in-flight probe and a fresh scope remains usable [0.53ms]
+(pass) failed scoped reads release resources before returning recoverable failure [0.35ms]
+(pass) independent service layers never share probe observations [0.30ms]
+(pass) inspection contracts preserve canonical identities, identifiers and omitted optional fields [0.25ms]
+
+3 tests failed:
+(fail) Windows wrapper identity accepts equivalent separators and rejects outside paths: C:/fixture/import, C:/fixture/import/gradlew.bat [0.37ms]
+(fail) Windows wrapper identity accepts equivalent separators and rejects outside paths: C:/fixture/import, C:\fixture/import\gradlew.bat [0.19ms]
+(fail) Windows wrapper identity accepts equivalent separators and rejects outside paths: C:\fixture/import, C:/fixture\import/gradlew.bat [0.18ms]
+
+ 40 pass
+ 3 fail
+ 139 expect() calls
+Ran 43 tests across 1 file. [72.00ms]

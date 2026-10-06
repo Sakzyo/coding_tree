@@ -103,3 +103,40 @@ e746b10d82ff405f3c8b2942cec24094f13f188e80501a089db61c6d47549a03  packages/core/
 ```
 
 The only task deliverables are those four files, this report, and `docs/validation/m4-02/` logs. No Schema barrel, migration, manifest, lockfile, production catalog, host binding or task checklist was changed by this worker. Independent review and the stable task commit are coordinator-owned.
+
+## Independent-review fix round 1 of 5
+
+Original candidate: `a94369c4c`. Fix base: `446c005505d438a5181ad2d80f4c13f34702a629`. Read [M4-02-review.md](M4-02-review.md) before editing. Status: **fix candidate ready for coordinator commit and same-reviewer scoped re-review**. No staging, commit, shared checklist edits or subagents.
+
+Open Important finding, verbatim:
+
+> **Rejects an equivalent Windows project wrapper path — `packages/core/src/ftc/environment.ts:112-113`.** The canonical path schema at `packages/schema/src/ftc-environment.ts:114` accepts Windows absolute paths using either separator. For project root `C:/fixture/import`, a successful wrapper observation `C:/fixture/import/gradlew.bat` is valid and names the project's wrapper. Inspection constructs `C:/fixture/import\gradlew.bat`, compares strings literally and reports `invalid_response`, preventing a candidate even when every tool/version matches. The existing Windows fixture at `packages/core/test/ftc/environment-and-compatibility/m4-02.test.ts:324-352` uses backslashes exclusively, so its passing result does not cover this contract-valid case. Compare paths with Windows path semantics, or enforce one canonical representation consistently at both boundaries; retain rejection of a global Gradle binary. Add a focused fixture for forward-slash/mixed-separator Windows paths.
+
+The finding was confirmed in the source and reproduced against the real module before changing its comparison. Five focused table cases were added at test lines 354–389. Three equivalent Windows paths (forward slashes, mixed observation separators, mixed project-root separators) produced behavioral RED: expected `missing` with a candidate, received `failed`. Two outside/global-wrapper paths were rejected before and after the fix. The RED suite reports **40 pass, 3 fail, 139 assertions**, not an import/harness error. See [fix-round1-red.log](m4-02/fix-round1-red.log).
+
+The smallest production change imports Node's `win32` path value, forms the project's batch-wrapper path with `win32.join`, and compares the observed wrapper using `win32.relative(...) === ""`. This applies Windows separator/case/path normalization on any test host, without inspecting the actual filesystem or changing the descriptor's observed path. The macOS literal identity check remains as before. Both outside-project `gradlew.bat` and global Gradle observations still produce `failed` / `invalid_response` and no descriptor. No Schema contract or adapter was changed by this fix.
+
+Each new case asserts aggregate state, wrapper step cause and exact observed candidate path or its absence. The final focused run is **43 pass, 0 fail, 145 assertions**, and the covering M4 run is **105 pass, 0 fail, 242 assertions**. Existing lifecycle/contract test anchors moved to 391 (success/recheck cleanup), 423 (cancellation), 453 (failed reads cleanup), 496 (independent layers), and 510 (contract hygiene); earlier assertion-map anchors are the original candidate's locations.
+
+Commands used the exact same pinned Bun PATH and task-owned Core test environment documented above:
+
+| Working directory | Command | Result | Evidence |
+| --- | --- | --- | --- |
+| `/Users/dylanxu/coding_tree/packages/core` | `bun test ./test/ftc/environment-and-compatibility/m4-02.test.ts` | Behavioral RED: 40 pass, 3 fail, 139 assertions | [RED](m4-02/fix-round1-red.log) |
+| `/Users/dylanxu/coding_tree/packages/core` | `bun test ./test/ftc/environment-and-compatibility/m4-02.test.ts` | GREEN: 43 pass, 0 fail, 145 assertions | [Focused](m4-02/fix-round1-green.log) |
+| `/Users/dylanxu/coding_tree/packages/core` | `bun test ./test/ftc/environment-and-compatibility` | 105 pass, 0 fail, 242 assertions | [Covering M4](m4-02/fix-round1-regression.log) |
+| `/Users/dylanxu/coding_tree/packages/core` | `bun typecheck` | Exit 0 | [Changed-package types](m4-02/fix-round1-core-typecheck.log) |
+| `/Users/dylanxu/coding_tree` | `bun node_modules/.bin/oxlint packages/core/src/ftc/environment.ts packages/core/test/ftc/environment-and-compatibility/m4-02.test.ts` | 0 warnings, 0 errors | [Lint](m4-02/fix-round1-lint.log) |
+| `/Users/dylanxu/coding_tree` | `bun node_modules/.bin/prettier --check packages/core/src/ftc/environment.ts packages/core/test/ftc/environment-and-compatibility/m4-02.test.ts` | Exit 0 | [Formatting](m4-02/fix-round1-format-check.log) |
+| `/Users/dylanxu/coding_tree` | `git diff --check -- packages/core/src/ftc/environment.ts packages/core/test/ftc/environment-and-compatibility/m4-02.test.ts` | Exit 0 | Scoped diff check |
+
+Only Core source/tests changed, so unchanged Schema typechecks/contracts/full suite were not rerun. The original two unrelated Schema event-manifest failures and every real-platform/build/host/robot gate documented above remain unchanged. These new path tests are supplied Windows values on macOS, not a real Windows filesystem/toolchain evaluation.
+
+Final SHA-256 values for the fix's two changed implementation files:
+
+```text
+ba7ae4c8b86ba0c3b8c2c5f3185ada5e84f56794cbf4875d738f8c938b713e95  packages/core/src/ftc/environment.ts
+20a1f32b7707615f1868c6d718e5dc86b533f2e49590faa25e47322272cb7569  packages/core/test/ftc/environment-and-compatibility/m4-02.test.ts
+```
+
+The original hash section and original `SHA256SUMS` above identify the reviewed candidate. Updated complete source/report hashes are in [fix-round1-SHA256SUMS](m4-02/fix-round1-SHA256SUMS).
