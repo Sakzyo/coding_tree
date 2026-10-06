@@ -76,9 +76,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 - [x] **1. Write the focused test:** In `packages/core/test/ftc/ftc-knowledge/m11-01.test.ts`, add `translation pair preserves stable IDs and code tokens`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(en.id).toBe(zh.id)
-expect(en.codeTokens).toEqual(zh.codeTokens)
-expect(missingSource.code).toBe("invalid_content")
+expect(en.id).toBe(zh.id); expect(en.codeTokens).toEqual(zh.codeTokens); expect(missingSource.code).toBe('invalid_content')
 ```
 
 - [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/ftc-knowledge/m11-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
@@ -101,9 +99,7 @@ Verified 2026-10-06: candidate `446c00550`, reviewed repair `9b71593fb`; [implem
 - [x] **1. Write the focused test:** In `packages/core/test/ftc/ftc-knowledge/m11-02.test.ts`, add `incompatible or absent local reference never appears as current`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(result.records.map((x) => x.id)).toEqual(["sdk-fixture-v1"])
-expect(missing.kind).toBe("missing")
-expect(networkCalls).toBe(0)
+expect(result.records.map(x => x.id)).toEqual(['sdk-fixture-v1']); expect(missing.kind).toBe('missing'); expect(networkCalls).toBe(0)
 ```
 
 - [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/ftc-knowledge/m11-02.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
@@ -126,8 +122,7 @@ Verified 2026-10-07 at `7a5d89367`; [implementation evidence](../validation/M11-
 - [ ] **1. Write the focused test:** In `packages/core/test/ftc/ftc-knowledge/m11-03.test.ts`, add `three choices retain documented differences and requirements`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(choices).toEqual(["pedro", "road-runner", "neither"])
-expect(roadRunner.prerequisites).toContain("ftc-dashboard")
+expect(choices).toEqual(['pedro', 'road-runner', 'neither']); expect(roadRunner.prerequisites).toContain('ftc-dashboard')
 ```
 
 - [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/ftc-knowledge/m11-03.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
@@ -148,9 +143,7 @@ expect(roadRunner.prerequisites).toContain("ftc-dashboard")
 - [x] **1. Write the focused test:** In `packages/core/test/ftc/ftc-knowledge/m11-04.test.ts`, add `foundation lessons require explanation and project application`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(missingRequiredTopics).toEqual([])
-expect(exercise.requiresExplanation).toBe(true)
-expect(exercise.requiresProjectApplication).toBe(true)
+expect(missingRequiredTopics).toEqual([]); expect(exercise.requiresExplanation).toBe(true); expect(exercise.requiresProjectApplication).toBe(true)
 ```
 
 - [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/ftc-knowledge/m11-04.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
@@ -173,9 +166,7 @@ Verified 2026-10-07: product `c425aad48`, source-provenance checkpoint `77f3ce1b
 - [ ] **1. Write the focused test:** In `packages/core/test/ftc/ftc-knowledge/m11-05.test.ts`, add `exercises teach code purpose and independent application`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(topics).toEqual(["driver-control", "mechanisms"])
-expect(exercise.requiresExplanation).toBe(true)
-expect(exercise.requiresProjectApplication).toBe(true)
+expect(topics).toEqual(['driver-control', 'mechanisms']); expect(exercise.requiresExplanation).toBe(true); expect(exercise.requiresProjectApplication).toBe(true)
 ```
 
 - [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/ftc-knowledge/m11-05.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
@@ -196,9 +187,7 @@ expect(exercise.requiresProjectApplication).toBe(true)
 - [ ] **1. Write the focused test:** In `packages/core/test/ftc/ftc-knowledge/m11-06.test.ts`, add `guidance requires actual observations and separate deployment approval`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(robotConfigWriterInstructions).toEqual([])
-expect(requiredEvidence).toContain("observation")
-expect(deployIncludesStart).toBe(false)
+expect(robotConfigWriterInstructions).toEqual([]); expect(requiredEvidence).toContain('observation'); expect(deployIncludesStart).toBe(false)
 ```
 
 - [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/ftc-knowledge/m11-06.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
@@ -219,9 +208,7 @@ expect(deployIncludesStart).toBe(false)
 - [ ] **1. Write the focused test:** In `packages/core/test/ftc/ftc-knowledge/m11-07.test.ts`, add `Pedro capstone requires independent explanation and physical evidence`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(trackID).toBe("pedro")
-expect(capstoneEvidence).toContain("physical")
-expect(capstoneEvidence).toContain("explanation")
+expect(trackID).toBe('pedro'); expect(capstoneEvidence).toContain('physical'); expect(capstoneEvidence).toContain('explanation')
 ```
 
 - [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/ftc-knowledge/m11-07.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
@@ -242,9 +229,7 @@ expect(capstoneEvidence).toContain("explanation")
 - [ ] **1. Write the focused test:** In `packages/core/test/ftc/ftc-knowledge/m11-08.test.ts`, add `Road Runner capstone preserves prerequisites and physical evidence`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(trackID).toBe("road-runner")
-expect(prerequisites).toContain("ftc-dashboard")
-expect(capstoneEvidence).toContain("physical")
+expect(trackID).toBe('road-runner'); expect(prerequisites).toContain('ftc-dashboard'); expect(capstoneEvidence).toContain('physical')
 ```
 
 - [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/ftc-knowledge/m11-08.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
@@ -265,9 +250,7 @@ expect(capstoneEvidence).toContain("physical")
 - [ ] **1. Write the focused test:** In `packages/core/test/ftc-adapters/m11-09.test.ts`, add `packaged content works without network and missing packs stay explicit`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(offlineLookup.kind).toBe("found")
-expect(missingAsset.available).toBe(false)
-expect(networkCalls).toBe(0)
+expect(offlineLookup.kind).toBe('found'); expect(missingAsset.available).toBe(false); expect(networkCalls).toBe(0)
 ```
 
 - [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc-adapters/m11-09.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.

@@ -76,9 +76,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 - [x] **1. Write the focused test:** In `packages/core/test/ftc/agent-and-context/m3-01.test.ts`, add `admission precedes wake and exact retry reconciles`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(inputRowsForMessage).toHaveLength(1)
-expect(order).toEqual(["admit", "wake"])
-expect(streamCalls).toBe(providerTurns)
+expect(inputRowsForMessage).toHaveLength(1); expect(order).toEqual(['admit', 'wake']); expect(streamCalls).toBe(providerTurns)
 ```
 
 - [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/agent-and-context/m3-01.test.ts`. Expected: the new behavior fails for the intended missing behavior. Existing Session invariants may already pass: record that baseline and reuse their assertions without forcing a failure.
@@ -101,9 +99,7 @@ Verified 2026-10-06: candidate `97b5f4ee6`, reviewed repair `13838cc97`; [implem
 - [x] **1. Write the focused test:** In `packages/core/test/ftc/agent-and-context/m3-02.test.ts`, add `resume wake and prompt cannot overlap different chats in one project`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(blockedDrainStarts).toBe(0)
-expect(otherProjectDrainStarts).toBe(1)
-expect(releaseBeforeCleanup).toBe(false)
+expect(blockedDrainStarts).toBe(0); expect(otherProjectDrainStarts).toBe(1); expect(releaseBeforeCleanup).toBe(false)
 ```
 
 - [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/agent-and-context/m3-02.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
@@ -126,9 +122,7 @@ Verified 2026-10-07, reviewed repair `1aa520e9e`; [implementation evidence](../v
 - [ ] **1. Write the focused test:** In `packages/core/test/ftc/agent-and-context/m3-03.test.ts`, add `plan-first waits and stale approval cannot edit`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(writesBeforeApproval).toBe(0)
-expect(staleApproval.code).toBe("revision_conflict")
-expect(directResult.applied).toBe(true)
+expect(writesBeforeApproval).toBe(0); expect(staleApproval.code).toBe('revision_conflict'); expect(directResult.applied).toBe(true)
 ```
 
 - [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/agent-and-context/m3-03.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
@@ -149,9 +143,7 @@ expect(directResult.applied).toBe(true)
 - [ ] **1. Write the focused test:** In `packages/core/test/ftc/agent-and-context/m3-04.test.ts`, add `context preserves project version freshness and missing facts`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(context.projectID).toBe(requestProjectID)
-expect(context.missingFacts).toContain("wheel-diameter")
-expect(context.text).not.toContain(secret)
+expect(context.projectID).toBe(requestProjectID); expect(context.missingFacts).toContain('wheel-diameter'); expect(context.text).not.toContain(secret)
 ```
 
 - [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/agent-and-context/m3-04.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
@@ -172,9 +164,7 @@ expect(context.text).not.toContain(secret)
 - [ ] **1. Write the focused test:** In `packages/core/test/ftc/agent-and-context/m3-05.test.ts`, add `failed tool is reported as failed and never fabricated success`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(result.kind).toBe("build_failed")
-expect(result.artifact).toBeUndefined()
-expect(robotDispatchesWithoutApproval).toBe(0)
+expect(result.kind).toBe('build_failed'); expect(result.artifact).toBeUndefined(); expect(robotDispatchesWithoutApproval).toBe(0)
 ```
 
 - [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/agent-and-context/m3-05.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
@@ -195,9 +185,7 @@ expect(robotDispatchesWithoutApproval).toBe(0)
 - [ ] **1. Write the focused test:** In `packages/core/test/ftc-integration/m3-06.test.ts`, add `real wiring preserves global coordinators and Location tools`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(projectGateInstances).toBe(1)
-expect(controllerCoordinatorInstances).toBe(1)
-expect(toolLocations).toEqual(expectedLocations)
+expect(projectGateInstances).toBe(1); expect(controllerCoordinatorInstances).toBe(1); expect(toolLocations).toEqual(expectedLocations)
 ```
 
 - [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc-integration/m3-06.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
