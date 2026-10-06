@@ -1,0 +1,30 @@
+bun test v1.3.14 (0d9b296a)
+
+test/session-prompt.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find package 'effect' from '/Users/dylanxu/coding_tree/packages/core/test/session-prompt.test.ts'
+-------------------------------
+
+
+test/session-runner.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module '@opencode-ai/llm' from '/Users/dylanxu/coding_tree/packages/core/test/session-runner.test.ts'
+-------------------------------
+
+
+test/session-run-coordinator.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find package 'effect' from '/Users/dylanxu/coding_tree/packages/core/test/session-run-coordinator.test.ts'
+-------------------------------
+
+
+ 0 pass
+ 3 fail
+ 3 errors
+Ran 3 tests across 3 files. [92.00ms]

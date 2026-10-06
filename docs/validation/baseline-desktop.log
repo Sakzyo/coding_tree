@@ -1,0 +1,21 @@
+bun test v1.3.14 (0d9b296a)
+
+src/main/external-url.test.ts:
+(pass) external URLs > opens web URLs externally [1.80ms]
+(pass) external URLs > opens mail links externally [0.03ms]
+(pass) external URLs > rejects file URLs and unsupported protocols [0.38ms]
+(pass) external URLs > resolves only local file URLs [0.10ms]
+
+src/main/window-registry.test.ts:
+(pass) window registry > restores persisted ids and ignores malformed entries [0.54ms]
+(pass) window registry > registers windows and persists each id once [0.11ms]
+(pass) window registry > forgets a deliberately closed window while others remain open [0.07ms]
+(pass) window registry > keeps the id when the last window closes so relaunch restores it [0.05ms]
+(pass) window registry > keeps every id when windows close during quit [0.03ms]
+(pass) window registry > tracks the last focused window and falls back on close [0.10ms]
+(pass) window registry > resumes forgetting closed windows after the quit flag resets [0.03ms]
+
+ 11 pass
+ 0 fail
+ 26 expect() calls
+Ran 11 tests across 2 files. [86.00ms]
