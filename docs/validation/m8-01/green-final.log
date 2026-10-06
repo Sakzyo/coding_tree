@@ -1,0 +1,41 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/controller-connections/m8-01.test.ts:
+(pass) unauthorized device is visible without deployment side effects [5.80ms]
+(pass) multiple targets retain authorization and reported model facts without identity guesses [0.55ms]
+(pass) keeps recovery visible but unavailable [0.20ms]
+(pass) keeps bootloader visible but unavailable [0.09ms]
+(pass) keeps sideload visible but unavailable [0.10ms]
+(pass) keeps future-state visible but unavailable [0.07ms]
+(pass) keeps no permissions (user in plugdev group) visible but unavailable [0.11ms]
+(pass) successful empty discovery differs from missing output [0.54ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: garbage
+SERIAL_A device
+ [0.13ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
+SERIAL_A
+ [0.08ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
+SERIAL_A device not-metadata
+ [0.08ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
+SERIAL_A device model:one model:two
+ [0.08ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
+SERIAL_A device
+SERIAL_A offline
+ [0.07ms]
+(pass) ADB command failure differs from successful empty discovery [0.10ms]
+(pass) preserves adb_missing_tool from the read transport [0.21ms]
+(pass) preserves adb_transport_error from the read transport [0.07ms]
+(pass) releases the read resource after success [0.66ms]
+(pass) releases the read resource after malformed [0.15ms]
+(pass) releases the read resource after command [0.09ms]
+(pass) releases the read resource after transport [0.08ms]
+(pass) cancellation releases the active read and fresh scopes do not retain discovery state [1.44ms]
+(pass) canonical candidate contract omits optional values and is the exact facade contract [4.24ms]
+
+ 22 pass
+ 0 fail
+ 81 expect() calls
+Ran 22 tests across 1 file. [131.00ms]

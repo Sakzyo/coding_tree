@@ -1,0 +1,57 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/controller-connections/m8-01.test.ts:
+(pass) unauthorized device is visible without deployment side effects [6.68ms]
+(pass) multiple targets retain authorization and reported model facts without identity guesses [1.06ms]
+(pass) keeps recovery visible but unavailable [0.22ms]
+(pass) keeps bootloader visible but unavailable [0.09ms]
+(pass) keeps sideload visible but unavailable [0.10ms]
+(pass) keeps future-state visible but unavailable [0.11ms]
+(pass) keeps no permissions (user in plugdev group) visible but unavailable [0.09ms]
+(pass) successful empty discovery differs from missing output [0.57ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: garbage
+SERIAL_A device
+ [0.12ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
+SERIAL_A
+ [0.08ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
+SERIAL_A device not-metadata
+ [0.08ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
+SERIAL_A device model:one model:two
+ [0.08ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
+SERIAL_A device
+SERIAL_A offline
+ [0.08ms]
+(pass) ADB command failure differs from successful empty discovery [0.10ms]
+(pass) preserves adb_missing_tool from the read transport [0.22ms]
+(pass) preserves adb_transport_error from the read transport [0.07ms]
+1040 | /** @internal */
+1041 | export const exitFilterSuccess = self => self._tag === "Success" ? Result.succeed(self) : Result.fail(self);
+1042 | /** @internal */
+1043 | export const exitFilterValue = self => self._tag === "Success" ? Result.succeed(self.value) : Result.fail(self);
+1044 | /** @internal */
+1045 | export const exitIsFailure = self => self._tag === "Failure";
+                                            ^
+TypeError: undefined is not an object (evaluating 'self._tag')
+      at exitIsFailure (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1045:38)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/controller-connections/m8-01.test.ts:141:19)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at doneUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Deferred.js:657:20)
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:625:24)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) cancellation releases the active read and fresh scopes do not retain discovery state [2.12ms]
+(pass) canonical candidate contract omits optional values and is the exact facade contract [3.10ms]
+
+ 17 pass
+ 1 fail
+ 58 expect() calls
+Ran 18 tests across 1 file. [132.00ms]

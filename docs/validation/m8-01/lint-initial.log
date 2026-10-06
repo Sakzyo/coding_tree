@@ -1,0 +1,51 @@
+
+  ! typescript-eslint(consistent-return): Function 'parseCandidate' expected no return value.
+    ,-[packages/core/src/ftc/controllers/adb.ts:60:3]
+ 59 |       const offline = state === "offline"
+ 60 | ,->   return {
+ 61 | |       transportAddress: address,
+ 62 | |       adbState: noPermissions ? "no permissions" : state,
+ 63 | |       ...(model ? { model } : {}),
+ 64 | |       ...(kind ? { kind } : {}),
+ 65 | |       authorization: available ? "authorized" : unauthorized ? "unauthorized" : "unknown",
+ 66 | |       state: available ? "available" : unauthorized ? "unauthorized" : offline ? "offline" : "unavailable",
+ 67 | |       errorCodes: available
+ 68 | |         ? []
+ 69 | |         : unauthorized
+ 70 | |           ? ["adb_unauthorized"]
+ 71 | |           : offline
+ 72 | |             ? ["adb_offline"]
+ 73 | |             : ["adb_unsupported_state"],
+ 74 | |       // Guidance describes setup/recovery, never observed phone compatibility or attached hardware.
+ 75 | |       guidanceCodes: [
+ 76 | |         ...(kind
+ 77 | |           ? ["control_hub_connection" as const]
+ 78 | |           : ["identify_control_hub_or_phone" as const, "phone_compatibility_unverified" as const]),
+ 79 | |         ...(unauthorized ? ["usb_authorization_required" as const] : []),
+ 80 | |         ...(!available && !unauthorized ? ["connection_recovery" as const] : []),
+ 81 | |         "expansion_hub_configuration_unobserved",
+ 82 | |       ],
+ 83 | `->   }
+ 84 |     }
+    `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+    ,-[packages/core/test/ftc/controller-connections/m8-01.test.ts:37:34]
+ 36 |   expect(candidates).toHaveLength(1)
+ 37 |   const candidate = candidates[0]!
+    :                    ^^^^^^^|^^^^^^^
+    :                           `-- This expression already has the type 'ControllerCandidate'
+ 38 |   expect(candidate.authorization).toBe("unauthorized")
+    `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/controller-connections/m8-01.test.ts:225:105]
+ 224 | test("canonical candidate contract omits optional values and is the exact facade contract", async () => {
+ 225 |   const candidate = (await discover(transcript("List of devices attached\nSERIAL_A unauthorized\n")))[0]!
+     :                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     :                                                              `-- This expression already has the type 'ControllerCandidate'
+ 226 |   expect(Controllers.ControllerCandidate).toBe(FtcController.ControllerCandidate)
+     `----
+
+Found 3 warnings and 0 errors.
+Finished in 516ms on 5 files with 130 rules using 10 threads.
