@@ -1,0 +1,24 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/environment-and-compatibility/m4-03.test.ts:
+(pass) typed context failure cleans up and cannot become ready [5.99ms]
+505 |   const result = await runSetup({
+506 |     ...supplied,
+507 |     ...(boundary === "context" ? { context: { read: () => failed } } : { builds: { verify: () => failed } }),
+508 |   })
+509 |   expect(result.readiness.state).toBe("failed")
+510 |   if (boundary === "build") expect(result.readiness.steps.find((step) => step.id === "build")?.cause).toBe("build_failed")
+                                                                                                            ^
+error: expect(received).toBe(expected)
+
+Expected: "build_failed"
+Received: "invalid_response"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-03.test.ts:510:103)
+(fail) typed build failure cleans up and cannot become ready [4.19ms]
+
+ 1 pass
+ 37 filtered out
+ 1 fail
+ 4 expect() calls
+Ran 2 tests across 1 file. [61.00ms]

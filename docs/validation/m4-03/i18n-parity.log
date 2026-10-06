@@ -1,0 +1,14 @@
+bun test v1.3.14 (0d9b296a)
+
+src/i18n/parity.test.ts:
+(pass) i18n parity > non-English locales have every English key and required plural variants [254.96ms]
+(pass) i18n parity > guided setup has six complete English and Chinese phrases with matching placeholders [0.54ms]
+(pass) i18n parity > non-English locales preserve English placeholders [147.65ms]
+(pass) i18n parity > non-English locales translate targeted unseen session keys [1.20ms]
+(pass) i18n parity > changed-file summary keys preserve rendered English copy and localize complete phrases [1.02ms]
+(pass) i18n plural parity > locale-specific categories exist and preserve count placeholders [1.57ms]
+
+ 6 pass
+ 0 fail
+ 1003 expect() calls
+Ran 6 tests across 1 file. [480.00ms]

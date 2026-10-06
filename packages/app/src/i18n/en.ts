@@ -1147,4 +1147,11 @@ export const dict = {
   "workspace.reset.archived.one": "1 session will be archived.",
   "workspace.reset.archived.many": "{{count}} sessions will be archived.",
   "workspace.reset.note": "This will reset the workspace to match the default branch.",
+  "ftc.setup.install":
+    "Install {{component}} {{version}} for {{os}} {{osVersion}} ({{architecture}}) from {{source}}, review its license, then recheck.",
+  "ftc.setup.permission": "Grant permission to inspect {{component}}, then recheck.",
+  "ftc.setup.review": "Review the project requirements and {{component}} setup, then recheck.",
+  "ftc.setup.recheck": "Check {{component}} again after resolving the reported problem.",
+  "ftc.setup.verify": "Verify a build from the project's saved files before completing setup.",
+  "ftc.setup.available": "{{component}} is available for this setup check.",
 }

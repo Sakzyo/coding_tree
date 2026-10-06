@@ -1224,4 +1224,11 @@ export const dict = {
   "error.childStore.persistedProjectIconCreateFailed": "创建持久化项目图标失败",
   "error.childStore.storeCreateFailed": "创建存储失败",
   "terminal.connectionLost.abnormalClose": "WebSocket 异常关闭：{{code}}",
+  "ftc.setup.install":
+    "请从 {{source}} 安装适用于 {{os}} {{osVersion}}（{{architecture}}）的 {{component}} {{version}}，查阅其许可证，然后重新检查。",
+  "ftc.setup.permission": "请授予检查 {{component}} 所需的权限，然后重新检查。",
+  "ftc.setup.review": "请检查项目要求和 {{component}} 的设置，然后重新检查。",
+  "ftc.setup.recheck": "请解决报告的问题，然后再次检查 {{component}}。",
+  "ftc.setup.verify": "请使用项目已保存的文件验证构建，确认成功后再完成设置。",
+  "ftc.setup.available": "{{component}} 可用于本次设置检查。",
 } satisfies Partial<Record<Keys, string>>

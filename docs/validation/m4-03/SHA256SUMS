@@ -1,0 +1,6 @@
+56c482010033ec5267b102ba9680c58f66a852d2bb03c77c47646488fdd6260f  packages/core/src/ftc/environment.ts
+32fbbc070f0a1d877238867247f72d30028853d4669b88948e224901932db868  packages/schema/src/ftc-environment.ts
+325ef69ad996ea27f8f7bfbcfb03cd501a32892468ba7c4d9f25fb476a5c94d3  packages/core/test/ftc/environment-and-compatibility/m4-03.test.ts
+d178d52b8605127e3cebca264924e8017bcb77643f701e44cdca980e36e0ec6e  packages/app/src/i18n/en.ts
+aa1918ea6c914b7c5854f957e9a25a5c828201369a6b56be1ee8f362a6832e9c  packages/app/src/i18n/zh.ts
+310ad2c1a9ce989aa8b244f9b1819a9c3c8b530291306dce646867753a4195e7  packages/app/src/i18n/parity.test.ts

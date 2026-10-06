@@ -1,0 +1,21 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/environment-and-compatibility/m4-03.test.ts:
+26 |   context: { read: () => Effect.succeed(context) },
+27 |   builds: { verify: (input) => Effect.succeed({ state: "verified", projectID: input.projectID, toolchain: input.toolchain, current: true, sourceRevision: "fixture-source", configurationRevision: "fixture-config", apkSha256: "b".repeat(64) }) },
+28 | })
+29 | 
+30 | test("guided setup stays incomplete until build evidence", async () => {
+31 |   expect(Environment.guidedLayer).toBeFunction()
+                                       ^
+error: expect(received).toBeFunction()
+
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-03.test.ts:31:35)
+(fail) guided setup stays incomplete until build evidence [2.02ms]
+
+ 0 pass
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [60.00ms]

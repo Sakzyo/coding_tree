@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+src/i18n/parity.test.ts:
+136 |   test("guided setup has six complete English and Chinese phrases with matching placeholders", async () => {
+137 |     const source = await dictionary("./en.ts")
+138 |     const target = await dictionary("./zh.ts")
+139 |     for (const key of guidedSetupKeys) {
+140 |       expect(source[key]?.trim()).toBeTruthy()
+141 |       expect(target[key]?.trim()).toBeTruthy()
+                                        ^
+error: expect(received).toBeTruthy()
+
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/src/i18n/parity.test.ts:141:35)
+(fail) i18n parity > guided setup has six complete English and Chinese phrases with matching placeholders [4.35ms]
+
+ 0 pass
+ 5 filtered out
+ 1 fail
+ 2 expect() calls
+Ran 1 test across 1 file. [69.00ms]

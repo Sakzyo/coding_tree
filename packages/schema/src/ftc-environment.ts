@@ -2,6 +2,7 @@ export * as FtcEnvironment from "./ftc-environment"
 
 import { Schema } from "effect"
 import { NonNegativeInt, optional } from "./schema"
+import { Project } from "./project"
 
 const Text = Schema.String.check(Schema.isMinLength(1), Schema.isTrimmed())
 // Reject every latest.<status> selector; a plus must introduce exact build metadata.
@@ -190,6 +191,8 @@ export const ReadinessStep = Schema.Struct({
     "requirements_unknown",
     "unsupported_profile",
     "build_unverified",
+    "build_failed",
+    "build_stale",
   ]),
   recovery: Schema.Literals([
     "reuse",
@@ -212,3 +215,96 @@ export const Readiness = Schema.Struct({
   missingAssets: Schema.Array(Text),
   candidateToolchain: optional(ToolchainDescriptor),
 }).annotate({ identifier: "FtcEnvironment.Readiness" })
+
+export interface PrepareRequest extends Schema.Schema.Type<typeof PrepareRequest> {}
+export const PrepareRequest = Schema.Struct({
+  choice: Schema.Literal("guided"),
+  profileID: Text,
+  projectID: Project.ID.check(Schema.isMinLength(1), Schema.isTrimmed()),
+}).annotate({ identifier: "FtcEnvironment.PrepareRequest" })
+
+export interface ReadinessRequest extends Schema.Schema.Type<typeof ReadinessRequest> {}
+export const ReadinessRequest = Schema.Struct({
+  projectID: Project.ID.check(Schema.isMinLength(1), Schema.isTrimmed()),
+}).annotate({
+  identifier: "FtcEnvironment.ReadinessRequest",
+})
+
+export interface SetupContext extends Schema.Schema.Type<typeof SetupContext> {}
+export const SetupContext = Schema.Struct({
+  inspection: InspectRequest,
+  sourceRevision: Text,
+  configurationRevision: Text,
+  dirty: Schema.Boolean,
+}).annotate({ identifier: "FtcEnvironment.SetupContext" })
+
+export interface BuildRequest extends Schema.Schema.Type<typeof BuildRequest> {}
+export const BuildRequest = Schema.Struct({
+  projectID: Project.ID.check(Schema.isMinLength(1), Schema.isTrimmed()),
+  root: LocalPath,
+  toolchain: ToolchainDescriptor,
+  sourceRevision: Text,
+  configurationRevision: Text,
+}).annotate({ identifier: "FtcEnvironment.BuildRequest" })
+
+export type BuildVerification = typeof BuildVerification.Type
+export const BuildVerification = Schema.Union([
+  Schema.Struct({
+    state: Schema.Literal("verified"),
+    projectID: Project.ID.check(Schema.isMinLength(1), Schema.isTrimmed()),
+    root: LocalPath,
+    toolchain: ToolchainDescriptor,
+    sourceRevision: Text,
+    configurationRevision: Text,
+    apkSha256: Text.check(Schema.isPattern(/^[a-fA-F0-9]{64}$/)),
+    current: Schema.Literal(true),
+  }),
+  Schema.Struct({ state: Schema.Literals(["failed", "stale"]), detail: optional(Text) }),
+]).annotate({ identifier: "FtcEnvironment.BuildVerification" })
+
+export interface SetupError extends Schema.Schema.Type<typeof SetupError> {}
+export const SetupError = Schema.Struct({
+  code: Schema.Literals(["invalid_input", "busy", "cancelled", "closed", "context_failed", "build_failed"]),
+  detail: optional(Text),
+}).annotate({ identifier: "FtcEnvironment.SetupError" })
+
+export interface SetupStep extends Schema.Schema.Type<typeof SetupStep> {}
+export const SetupStep = Schema.Struct({
+  step: ReadinessStep,
+  messageKey: Schema.Literals([
+    "ftc.setup.install",
+    "ftc.setup.permission",
+    "ftc.setup.review",
+    "ftc.setup.recheck",
+    "ftc.setup.verify",
+    "ftc.setup.available",
+  ]),
+  os: optional(Os),
+  osVersion: optional(Text),
+  architecture: optional(Architecture),
+  version: optional(Version),
+  source: optional(Text),
+  license: optional(Text),
+}).annotate({ identifier: "FtcEnvironment.SetupStep" })
+
+export interface SetupResult extends Schema.Schema.Type<typeof SetupResult> {}
+export const SetupResult = Schema.Struct({
+  state: Schema.Literals(["completed", "cancelled"]),
+  readiness: Readiness,
+  steps: Schema.Array(SetupStep),
+  buildEvidence: optional(BuildVerification),
+}).annotate({ identifier: "FtcEnvironment.SetupResult" })
+
+export type SetupEvent = typeof SetupEvent.Type
+export const SetupEvent = Schema.Union([
+  Schema.Struct({
+    projectID: Project.ID.check(Schema.isMinLength(1), Schema.isTrimmed()),
+    type: Schema.Literal("step"),
+    step: SetupStep,
+  }),
+  Schema.Struct({
+    projectID: Project.ID.check(Schema.isMinLength(1), Schema.isTrimmed()),
+    type: Schema.Literal("settled"),
+    result: SetupResult,
+  }),
+]).annotate({ identifier: "FtcEnvironment.SetupEvent" })

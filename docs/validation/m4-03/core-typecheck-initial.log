@@ -1,0 +1,17 @@
+$ tsgo --noEmit
+src/ftc/environment.ts(279,145): error TS2322: Type 'Deferred<unknown, never>' is not assignable to type 'Deferred<SetupResult, never>'.
+  Types of property 'effect' are incompatible.
+    Type 'Effect<unknown, never, never> | undefined' is not assignable to type 'Effect<SetupResult, never, never> | undefined'.
+      Type 'Effect<unknown, never, never>' is not assignable to type 'Effect<SetupResult, never, never>'.
+        Type 'unknown' is not assignable to type 'SetupResult'.
+src/ftc/environment.ts(320,7): error TS2322: Type 'Deferred<unknown, never>' is not assignable to type 'Deferred<SetupResult, never>'.
+  Types of property 'effect' are incompatible.
+    Type 'Effect<unknown, never, never> | undefined' is not assignable to type 'Effect<SetupResult, never, never> | undefined'.
+      Type 'Effect<unknown, never, never>' is not assignable to type 'Effect<SetupResult, never, never>'.
+        Type 'unknown' is not assignable to type 'SetupResult'.
+src/ftc/environment.ts(350,51): error TS2345: Argument of type '() => Effect.Effect<never, { code: "closed"; }, never> | Effect.Effect<never, { code: "invalid_input"; }, never> | Effect.Effect<FtcEnvironment.Readiness, never, never>' is not assignable to parameter of type 'LazyArg<Effect<Readiness, { code: "closed"; }, never>>'.
+  Type 'Effect<never, { code: "closed"; }, never> | Effect<never, { code: "invalid_input"; }, never> | Effect<Readiness, never, never>' is not assignable to type 'Effect<Readiness, { code: "closed"; }, never>'.
+    Type 'Effect<never, { code: "invalid_input"; }, never>' is not assignable to type 'Effect<Readiness, { code: "closed"; }, never>'.
+      Type '{ code: "invalid_input"; }' is not assignable to type '{ code: "closed"; }'.
+        Types of property 'code' are incompatible.
+          Type '"invalid_input"' is not assignable to type '"closed"'.
