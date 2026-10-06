@@ -1,0 +1,15 @@
+packages/core/test/ftc/agent-and-context/m3-01.test.ts: OK
+packages/core/test/session-prompt.test.ts: OK
+packages/core/test/session-runner.test.ts: OK
+packages/core/test/session-run-coordinator.test.ts: OK
+packages/core/src/session.ts: OK
+packages/core/src/session/input.ts: OK
+packages/core/src/session/execution.ts: OK
+packages/core/src/session/execution/local.ts: OK
+packages/core/src/session/run-coordinator.ts: OK
+packages/core/src/session/runner/llm.ts: OK
+packages/core/src/session/store.ts: OK
+packages/core/src/session/projector.ts: OK
+packages/core/src/session/context-epoch.ts: OK
+packages/core/src/session/history.ts: OK
+packages/core/src/event.ts: OK

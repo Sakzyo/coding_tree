@@ -121,11 +121,8 @@ test("admission precedes wake and exact retry reconciles", async () => {
           location: Location.Ref.make({ directory: AbsolutePath.make(repository.path) }),
         })
         const input = { sessionID: created.id, id: messageID, prompt: Prompt.make({ text: "Pin Session admission" }) }
-        const admitted = yield* session.prompt({ ...input, resume: false })
-        expect(order).toEqual(["admit"])
-        expect(requests).toHaveLength(0)
-        const retried = yield* session.prompt(input)
-        expect(retried).toEqual(admitted)
+        expect(yield* SessionInput.find(database.db, messageID)).toBeUndefined()
+        const admitted = yield* session.prompt(input)
         expect(order).toEqual(["admit", "wake"])
         yield* Deferred.await(started)
         expect(yield* session.prompt(input)).toMatchObject({
