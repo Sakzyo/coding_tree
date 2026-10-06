@@ -1,0 +1,39 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/environment-and-compatibility/m4-01.test.ts:
+(pass) profile pins independent editor and build runtimes [11.25ms]
+(pass) rejects incompatible host OS [0.94ms]
+(pass) rejects incompatible host OS version [0.53ms]
+(pass) rejects incompatible host architecture [0.25ms]
+(pass) rejects incompatible host memory [0.37ms]
+(pass) rejects incompatible host disk [0.22ms]
+(pass) preserves incompatible project requirement ftcSdk [0.34ms]
+(pass) preserves incompatible project requirement androidGradlePlugin [0.22ms]
+(pass) preserves incompatible project requirement androidSdk [0.17ms]
+(pass) preserves incompatible project requirement gradleWrapper [0.15ms]
+(pass) selects a whole matching combination without mixing newer components [0.31ms]
+(pass) rejects invalid artifact version metadata [0.57ms]
+(pass) rejects invalid artifact source metadata [0.14ms]
+(pass) rejects invalid artifact license metadata [0.13ms]
+(pass) rejects invalid artifact sha256 metadata [0.09ms]
+(pass) rejects invalid host resources and unpinned project versions [0.20ms]
+(pass) unevaluated profiles cannot be selected [0.19ms]
+(pass) evaluated profiles require evidence [0.20ms]
+(pass) rejects absent or malformed evaluation provenance  [0.25ms]
+(pass) rejects absent or malformed evaluation provenance {"status":"evaluated","kind":"platform","evidence":[" "]} [0.19ms]
+(pass) rejects duplicate profile identities [0.20ms]
+(pass) does not choose arbitrarily between multiple matching combinations [0.19ms]
+(pass) production catalogs cannot claim synthetic evaluations as support [0.14ms]
+(pass) supports independently supplied Windows profiles [0.14ms]
+(pass) empty production catalog reports no evaluated compatibility profiles [3.60ms]
+(pass) unknown project dependencies are not silently ignored [0.13ms]
+(pass) omitted project constraints permit the one evaluated combination {} [0.36ms]
+(pass) omitted project constraints permit the one evaluated combination {"ftcSdk":"fixture-ftc"} [0.12ms]
+(pass) missing project constraints never choose the newest matching profile [0.23ms]
+(pass) profile selection is unchanged by catalog order [0.39ms]
+(pass) resolved records serialize through the canonical readonly contracts [0.95ms]
+
+ 31 pass
+ 0 fail
+ 63 expect() calls
+Ran 31 tests across 1 file. [165.00ms]

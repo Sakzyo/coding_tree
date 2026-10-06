@@ -1,0 +1,32 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/environment-and-compatibility/m4-01.test.ts:
+(pass) profile pins independent editor and build runtimes [13.87ms]
+(pass) rejects incompatible host OS [0.33ms]
+(pass) rejects incompatible host OS version [0.15ms]
+(pass) rejects incompatible host architecture [0.18ms]
+(pass) rejects incompatible host memory [0.22ms]
+(pass) rejects incompatible host disk [0.14ms]
+(pass) preserves incompatible project requirement ftcSdk [0.51ms]
+(pass) preserves incompatible project requirement androidGradlePlugin [0.16ms]
+(pass) preserves incompatible project requirement androidSdk [0.11ms]
+(pass) preserves incompatible project requirement gradleWrapper [0.10ms]
+(pass) selects a whole matching combination without mixing newer components [0.24ms]
+(pass) rejects invalid artifact version metadata [0.41ms]
+(pass) rejects invalid artifact source metadata [0.10ms]
+(pass) rejects invalid artifact license metadata [0.08ms]
+(pass) rejects invalid artifact sha256 metadata [0.08ms]
+(pass) rejects invalid host resources and unpinned project versions [0.09ms]
+(pass) unevaluated profiles cannot be selected [0.14ms]
+(pass) evaluated profiles require evidence [0.16ms]
+(pass) rejects absent or malformed evaluation provenance  [0.12ms]
+(pass) rejects absent or malformed evaluation provenance {"status":"evaluated","kind":"platform","evidence":[" "]} [0.14ms]
+(pass) rejects duplicate profile identities [0.16ms]
+(pass) does not choose arbitrarily between multiple matching combinations [0.15ms]
+(pass) production catalogs cannot claim synthetic evaluations as support [0.13ms]
+(pass) supports independently supplied Windows profiles [0.12ms]
+
+ 24 pass
+ 0 fail
+ 46 expect() calls
+Ran 24 tests across 1 file. [167.00ms]

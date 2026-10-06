@@ -1,0 +1,73 @@
+# M4-01 — Compatibility profile validation
+
+Date: 2026-10-06 (verification completed around 05:43 UTC). Task: M4-01. Primary requirement: ENV-04; supporting contracts for ENV-01–ENV-06 and PRJ-01. Acceptance scenarios AC-01, AC-02 and AC-06 remain integration/evaluation gates, not completed by this task.
+
+Review base and tested checkout HEAD: `705d41839dc1e64e12343c62777ce500e022d3a1`. Verification ran on that revision plus this task's five source files. The focused `feat(ftc): validate compatibility profiles` commit contains this report; resolve its exact revision with `git log -1 --format=%H -- docs/validation/M4-01-implementation.md`. The source blob identities below identify the precise tested implementation without a self-referential commit hash.
+
+Environment: macOS 26.5.2 (25F84), Darwin arm64, Bun 1.3.14 from `/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun`. Commands prefix that directory to PATH. Core test runs set `OPENCODE_TEST_HOME=/private/tmp/ftc-m4-01/home` and `XDG_DATA_HOME`, `XDG_CONFIG_HOME`, `XDG_CACHE_HOME`, `XDG_STATE_HOME` to `/private/tmp/ftc-m4-01/{data,config,cache,state}` respectively. No installed FTC tools, user app, network download or robot is used by the focused tests.
+
+## Behavior and contracts
+
+`FtcEnvironment` defines readonly, serializable, validated host/resources/artifact/evaluation/profile/project-version/catalog/request/result/reason schemas. The Schema root barrel exposes the same canonical values. A profile pins independent editor and build JDKs, JDT LS, FTC SDK, Android Gradle plugin, Android SDK, ADB and Gradle wrapper. Each artifact carries its pinned version, HTTPS source, nonblank license and SHA256 metadata. The profile records exact evaluated OS versions, architecture, resource thresholds and evaluation references.
+
+`resolveProfile({ host, projectVersions, catalog })` is pure and synchronous. It validates the entire request, rejects unknown keys and malformed metadata, and returns a complete profile only when exactly one eligible combination matches. It does not combine artifacts from different profiles. Unsupported results carry stable language-independent reason codes with profile/component identity where applicable. It starts no processes or I/O and does not mutate the input.
+
+The checked-in `compatibility.json` is an empty production catalog. It contains no supported FTC combination or synthetic fixture. All fixture versions (including editor Java 21/build Java 17), resource numbers, OS versions, URLs, checksums and evaluation references are explicitly synthetic. The test-only synthetic Windows and macOS profiles establish resolver behavior, not actual platform compatibility. An evaluated-shaped record does not independently prove its evidence is authentic or that a real host was tested; evaluation tasks own publication of genuine production entries.
+
+## Rulings
+
+- Multiple matching combinations return `unsupported` with `ambiguous_profiles`; catalog order never chooses a version. Duplicate profile IDs fail validation. This prevents arbitrary upgrades; if an explicit default is needed later, its selection policy needs a separate contract.
+- Omitted project version fields are unconstrained, supporting new projects and partial detection. Supplied values must match exactly. An empty/partial snapshot never chooses arbitrarily among multiple matches. Coordinator approved this ruling. This does not certify unresolved imported dependencies or readiness; later inspection/setup owns those checks.
+- Invalid metadata in any catalog entry rejects the request, rather than silently using a different entry. Unknown project-version keys are rejected instead of being ignored. A later expansion must explicitly add any permitted dependency fields.
+- Exact OS versions are used rather than guessing minima/ranges. Production OS support/resource minima remain unevaluated because the production catalog is empty.
+- Coordinator requires the focused Core resolver suite and affected Schema regressions rather than the TDD skill's blanket full Core suite: this new pure resolver has no existing callers. Full Core tests were not run. No shared checklist/ledger was edited.
+
+## Verification
+
+Paths in this table are relative to the repository root. Each command's actual exit status was captured before printing its log tail.
+
+| Command                                                                                                                                                                                                                                                                 | Cwd               | Exit/result                                    | Evidence                                                     |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- | ---------------------------------------------- | ------------------------------------------------------------ |
+| `bun test ./test/ftc/environment-and-compatibility/m4-01.test.ts` (RED)                                                                                                                                                                                                 | `packages/core`   | 1; 0 pass, 24 fail, 33 assertions              | [RED](m4-01/red.log.gz)                                      |
+| Same focused command (initial GREEN)                                                                                                                                                                                                                                    | `packages/core`   | 0; 24 pass, 0 fail, 46 assertions              | [GREEN](m4-01/green.log)                                     |
+| Same command after adding optional-constraint regressions (RED)                                                                                                                                                                                                         | `packages/core`   | 1; 28 pass, 3 fail, 59 assertions              | [optional RED](m4-01/optional-red.log.gz)                    |
+| Same focused command (final GREEN)                                                                                                                                                                                                                                      | `packages/core`   | 0; 31 pass, 0 fail, 63 assertions              | [final](m4-01/focused-final.log)                             |
+| `bun typecheck`                                                                                                                                                                                                                                                         | `packages/schema` | 0                                              | [Schema types](m4-01/schema-typecheck.log)                   |
+| `bun typecheck`                                                                                                                                                                                                                                                         | `packages/core`   | 0                                              | [Core types](m4-01/core-typecheck.log)                       |
+| `bun test ./test/contract-hygiene.test.ts ./test/compatibility.test.ts ./test/v1-isolation.test.ts`                                                                                                                                                                     | `packages/schema` | 0; 8 pass, 0 fail, 17 assertions               | [contract regressions](m4-01/schema-contracts.log)           |
+| `bun test`                                                                                                                                                                                                                                                              | `packages/schema` | 1; 13 pass, 2 baseline failures, 42 assertions | [full raw log, gzip](m4-01/schema-suite.log.gz)              |
+| `bun run lint -- packages/schema/src/ftc-environment.ts packages/schema/src/index.ts packages/core/src/ftc/environment/catalog.ts packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts`                                                                   | repository root   | 0; 0 warnings/errors                           | [lint](m4-01/lint.log)                                       |
+| `bunx --no-install prettier --check packages/schema/src/ftc-environment.ts packages/schema/src/index.ts packages/core/src/ftc/environment/catalog.ts packages/core/resources/ftc/compatibility.json packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts` | repository root   | 0                                              | [format](m4-01/format.log)                                   |
+| `git diff --check`                                                                                                                                                                                                                                                      | repository root   | 0                                              | Self-review; repeated for the staged task diff before commit |
+
+The initial RED used a callable admission scaffold that always returned unsupported with no reasons. Failures were behavioral assertions, not missing imports/dependencies. The scaffold was replaced by the actual implementation. The optional-constraint cycle failed specifically on three new cases before optional schemas/matching were added. Additional contract checks caught a missing AST identifier on the refined Catalog schema; putting its identifier annotation before the uniqueness check fixed it. An initial Core typecheck found a widened test table reason-code string; making that literal table readonly resolved it.
+
+Known unchanged Schema failures: `public event manifest > owns the complete public event surface` (outdated expected 55, actual 58), and `public event manifest > uses canonical definitions for current public events` (outdated fixed event slice). Both match [the coordinator baseline](baseline.md). No event definitions or manifests were changed.
+
+## Assertion mapping
+
+| Task/requirement boundary                         | Tests/assertions                                                                                                                                                                                      |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| M4-01 / ENV-04 independent coherent runtimes      | Named `profile pins independent editor and build runtimes`: Java 21 and 17, pinned JDT LS, unsupported outside SDK; whole-combination selection rejects newer mismatched profile                      |
+| ENV-04 selected host compatibility                | Five OS/version/architecture/memory/disk rejection cases; threshold equality succeeds; synthetic Windows/x64 selection                                                                                |
+| ENV-05 / PRJ-01 exact imported requirements       | Four supplied version mismatches return component reasons and preserve input; unknown project dependencies rejected; full catalog order/input preservation                                            |
+| ENV-02 / ENV-06 future asset preparation boundary | Invalid artifact version/source/license/checksum rejected; valid profile retains all asset metadata; no download/cache/readiness claim                                                                |
+| M4-01 evaluation publication boundary             | Unevaluated, absent provenance, empty/blank evidence, duplicate IDs, ambiguous matches, synthetic-to-production provenance rejected; actual empty production JSON decodes and returns `no_profiles`   |
+| New-project/partial detection boundary            | Empty/partial project constraints permit one profile, while missing constraints with two candidates return ambiguity                                                                                  |
+| Canonical Schema boundary                         | JSON result round trip, undefined optional fields omitted in encoding, exact root/direct schema identity, ten unique stable public identifiers; package typechecks verify readonly inferred contracts |
+
+## Self-review and unrun gates
+
+Self-review covered the complete assigned source, input validation, candidate matching, ambiguity, source metadata, profile evaluation status, readonly Schema interfaces, schema identity, runtime dependency direction and scoped changes. No additional issue remains in this task. Independent review is coordinator-owned. The only shared source edit is the explicitly allowed Schema barrel export.
+
+Not run: real clean-host setup on macOS/Windows, Java tooling import/completion/diagnostics, actual FTC Gradle build, artifact downloads/checksum verification against remote assets, prepared-offline operation, model/content inventory, controllers, robot operation and release acceptance scenarios. These belong to M4-02 onward and the named M5/platform/integration evaluations. Matching partial constraints does not establish environment readiness. Metadata validation does not verify an artifact's bytes or license obligations.
+
+## Tested source identities
+
+| File                                                                 | Git blob SHA                               |
+| -------------------------------------------------------------------- | ------------------------------------------ |
+| `packages/schema/src/ftc-environment.ts`                             | `5737f7a62423706e25043fd306c72726d8c9c4b4` |
+| `packages/schema/src/index.ts`                                       | `3c60571343f0d305e73964dd70638221f6e0f100` |
+| `packages/core/src/ftc/environment/catalog.ts`                       | `9968c08c910d71eea2638b8dc1b12fefc5cbc054` |
+| `packages/core/resources/ftc/compatibility.json`                     | `e857990e9636dc6eb4a98dbe83dbc23e90022730` |
+| `packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts` | `5d26694e4811b883f9ddefbfa4c2dd5a3a5ab9ab` |
