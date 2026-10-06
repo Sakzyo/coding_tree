@@ -130,12 +130,28 @@ function validateContent(
   )
     return ["identity_mismatch"]
   // These exact literals are the package's protected API/device/domain-code surface.
-  const tokens = Array.from(
-    document.value.body.matchAll(
-      /(?:^|\n)[ \t]*(`{3,}|~{3,})[^\n]*\n([\s\S]*?)\n[ \t]*\1[ \t]*(?=\n|$)|(`+)([\s\S]*?)\3/g,
-    ),
-    (match) => match[2] ?? match[4],
-  )
+  const tokens = protectedLiterals(document.value.body)
+  if (tokens === null) return ["malformed_content"]
   if (JSON.stringify(tokens) !== JSON.stringify(record.codeTokens)) return ["identifier_mismatch"]
   return []
+}
+
+function protectedLiterals(body: string) {
+  const tokens: string[] = []
+  const pattern = /^[ \t]*(`{3,}|~{3,})([^\r\n]*)(?:\r?\n|$)|(`+)([\s\S]*?)\3/gm
+  for (let match = pattern.exec(body); match; match = pattern.exec(body)) {
+    if (match[1] === undefined) {
+      tokens.push(match[4])
+      continue
+    }
+    if (match[1][0] === "`" && match[2].includes("`")) return null
+    const closer = new RegExp(`^[ \\t]*${match[1][0]}{${match[1].length},}[ \\t]*(?:\\r?\\n|$)`, "gm")
+    closer.lastIndex = match.index + match[0].length
+    const closing = closer.exec(body)
+    if (!closing) return null
+    tokens.push(body.slice(match.index + match[0].length, closing.index).replace(/\r?\n$/, ""))
+    // Consume the whole fence so code inside it is protected once, not reparsed as Markdown.
+    pattern.lastIndex = closer.lastIndex
+  }
+  return tokens
 }

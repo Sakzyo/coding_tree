@@ -1,0 +1,226 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-knowledge/m11-01.test.ts:
+(pass) translation pair preserves stable IDs and code tokens [6.59ms]
+(pass) rejects missing or whitespace source [0.76ms]
+(pass) rejects missing or whitespace license [0.54ms]
+(pass) requires each declared file and rejects duplicate file paths [0.83ms]
+(pass) rejects duplicate id/version/language but permits separate paired versions [0.98ms]
+(pass) requires the translation with the same stable id and version [0.52ms]
+(pass) digest is checked against actual injected bytes [0.35ms]
+(pass) rejects malformed digest  [0.18ms]
+(pass) rejects malformed digest "" [0.15ms]
+(pass) rejects malformed digest "bogus" [0.16ms]
+(pass) rejects invalid or empty SDK applicability  [0.16ms]
+(pass) rejects invalid or empty SDK applicability "" [0.13ms]
+(pass) rejects invalid or empty SDK applicability "not-a-range" [0.25ms]
+(pass) rejects invalid or empty SDK applicability ">=2.0.0 <1.0.0" [0.21ms]
+(pass) library applicability requires both library and satisfiable library range [1.24ms]
+(pass) translation pairs preserve applicability and declared code tokens [0.40ms]
+(pass) actual content identifier drift fails even with a freshly matching digest [0.70ms]
+(pass) actual document identity is checked instead of trusting manifest declarations "id":"synthetic-lesson" [0.17ms]
+(pass) actual document identity is checked instead of trusting manifest declarations "version":"1.0.0" [0.15ms]
+(pass) actual document identity is checked instead of trusting manifest declarations "language":"zh" [0.14ms]
+(pass) rejects malformed record {"record":null} [0.10ms]
+(pass) rejects malformed record {"record":[]} [0.13ms]
+(pass) rejects malformed record {"record":"record"} [0.09ms]
+(pass) rejects malformed pack 
+(pass) rejects malformed pack null
+(pass) rejects malformed pack {} [0.03ms]
+(pass) rejects malformed pack {"manifest":{"kind":"unsupported","records":[]},"files":[]} [0.02ms]
+(pass) rejects invalid content version "latest" [0.17ms]
+(pass) rejects invalid content version "1" [0.14ms]
+(pass) rejects invalid content version "not-a-version" [0.13ms]
+(pass) actual code is checked when both manifests declare the same incorrect tokens [0.15ms]
+(pass) protected code literals retain order, indentation and nested backticks [0.19ms]
+36 |   const zh = fixture("zh")
+37 |   return { manifest: { kind: "synthetic" as const, records: [en.record, zh.record] }, files: [en.file, zh.file] }
+38 | }
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+                           ^
+error: expect(received).toBe(expected)
+
+Expected: "invalid"
+Received: "valid"
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:41:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:346:3)
+(fail) longer ~ closing fences cannot hide rehashed identifier drift [0.30ms]
+(pass) longer ` closing fences cannot hide rehashed identifier drift [0.13ms]
+349 |   ], []), "identifier_mismatch")
+350 | })
+351 | 
+352 | test.each(["~", "`"])("same-character longer %s closing fences preserve valid protected literals", (marker) => {
+353 |   const body = `${marker.repeat(3)}java\n${codeTokens[0]}\n${marker.repeat(5)}`
+354 |   expect(validatePack(literalPack([body, body], [codeTokens[0]])).kind).toBe("valid")
+                                                                              ^
+error: expect(received).toBe(expected)
+
+Expected: "valid"
+Received: "invalid"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:354:73)
+(fail) same-character longer ~ closing fences preserve valid protected literals [0.19ms]
+349 |   ], []), "identifier_mismatch")
+350 | })
+351 | 
+352 | test.each(["~", "`"])("same-character longer %s closing fences preserve valid protected literals", (marker) => {
+353 |   const body = `${marker.repeat(3)}java\n${codeTokens[0]}\n${marker.repeat(5)}`
+354 |   expect(validatePack(literalPack([body, body], [codeTokens[0]])).kind).toBe("valid")
+                                                                              ^
+error: expect(received).toBe(expected)
+
+Expected: "valid"
+Received: "invalid"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:354:73)
+(fail) same-character longer ` closing fences preserve valid protected literals [0.16ms]
+36 |   const zh = fixture("zh")
+37 |   return { manifest: { kind: "synthetic" as const, records: [en.record, zh.record] }, files: [en.file, zh.file] }
+38 | }
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+                           ^
+error: expect(received).toBe(expected)
+
+Expected: "invalid"
+Received: "valid"
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:41:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:367:3)
+(fail) invalid, mixed or unterminated fences cannot disappear from protected content "~~~java\nhardwareMap.get()\n~~" [0.14ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:367:3)
+(fail) invalid, mixed or unterminated fences cannot disappear from protected content "```java\nhardwareMap.get()\n``" [0.12ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:367:3)
+(fail) invalid, mixed or unterminated fences cannot disappear from protected content "~~~java\nhardwareMap.get()\n```" [0.12ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:367:3)
+(fail) invalid, mixed or unterminated fences cannot disappear from protected content "```java\nhardwareMap.get()\n~~~" [0.15ms]
+36 |   const zh = fixture("zh")
+37 |   return { manifest: { kind: "synthetic" as const, records: [en.record, zh.record] }, files: [en.file, zh.file] }
+38 | }
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+                           ^
+error: expect(received).toBe(expected)
+
+Expected: "invalid"
+Received: "valid"
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:41:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:367:3)
+(fail) invalid, mixed or unterminated fences cannot disappear from protected content "~~~java\nhardwareMap.get()" [0.14ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:367:3)
+(fail) invalid, mixed or unterminated fences cannot disappear from protected content "```java\nhardwareMap.get()" [0.12ms]
+36 |   const zh = fixture("zh")
+37 |   return { manifest: { kind: "synthetic" as const, records: [en.record, zh.record] }, files: [en.file, zh.file] }
+38 | }
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+                           ^
+error: expect(received).toBe(expected)
+
+Expected: "invalid"
+Received: "valid"
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:41:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:367:3)
+(fail) invalid, mixed or unterminated fences cannot disappear from protected content "~~~java\nhardwareMap.get()\n~~~~ trailing-info" [0.13ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:367:3)
+(fail) invalid, mixed or unterminated fences cannot disappear from protected content "```java`invalid\nhardwareMap.get()\n```" [0.13ms]
+(pass) malformed source URL is rejected [0.17ms]
+(pass) rejects malformed content bytes "not JSON" [0.26ms]
+(pass) rejects malformed content bytes "{}" [0.12ms]
+(pass) rejects malformed content bytes "{\"valid\":true}" [0.11ms]
+(pass) rejects malformed content bytes "[]" [0.09ms]
+(pass) rejects invalid UTF-8 and non-byte values [0.13ms]
+(pass) rejects nonlocal content path "../escape.json" [0.12ms]
+(pass) rejects nonlocal content path "/absolute.json" [0.11ms]
+(pass) rejects nonlocal content path "https://fixtures.invalid/file" [0.12ms]
+(pass) rejects nonlocal content path "en\\file.json" [0.10ms]
+(pass) synthetic provenance cannot populate a production pack [0.14ms]
+(pass) empty production manifest makes no course or support claim [1.63ms]
+(pass) independent inputs remain unchanged and cannot leak prior validation state [0.53ms]
+(pass) canonical contracts serialize and optional fields omit undefined [0.88ms]
+
+11 tests failed:
+(fail) longer ~ closing fences cannot hide rehashed identifier drift [0.30ms]
+(fail) same-character longer ~ closing fences preserve valid protected literals [0.19ms]
+(fail) same-character longer ` closing fences preserve valid protected literals [0.16ms]
+(fail) invalid, mixed or unterminated fences cannot disappear from protected content "~~~java\nhardwareMap.get()\n~~" [0.14ms]
+(fail) invalid, mixed or unterminated fences cannot disappear from protected content "```java\nhardwareMap.get()\n``" [0.12ms]
+(fail) invalid, mixed or unterminated fences cannot disappear from protected content "~~~java\nhardwareMap.get()\n```" [0.12ms]
+(fail) invalid, mixed or unterminated fences cannot disappear from protected content "```java\nhardwareMap.get()\n~~~" [0.15ms]
+(fail) invalid, mixed or unterminated fences cannot disappear from protected content "~~~java\nhardwareMap.get()" [0.14ms]
+(fail) invalid, mixed or unterminated fences cannot disappear from protected content "```java\nhardwareMap.get()" [0.12ms]
+(fail) invalid, mixed or unterminated fences cannot disappear from protected content "~~~java\nhardwareMap.get()\n~~~~ trailing-info" [0.13ms]
+(fail) invalid, mixed or unterminated fences cannot disappear from protected content "```java`invalid\nhardwareMap.get()\n```" [0.13ms]
+
+ 47 pass
+ 11 fail
+ 218 expect() calls
+Ran 58 tests across 1 file. [88.00ms]

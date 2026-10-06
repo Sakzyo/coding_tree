@@ -331,6 +331,56 @@ test("protected code literals retain order, indentation and nested backticks", (
   ).toBe("valid")
 })
 
+const literalPack = (bodies: readonly string[], tokens: readonly string[]) => {
+  const entries = pack().manifest.records.map((record, index) => {
+    const content = JSON.stringify({
+      id: record.id,
+      version: record.version,
+      language: record.language,
+      body: bodies[index],
+    })
+    return {
+      record: { ...record, codeTokens: tokens, digest: Hash.sha256(content) },
+      file: { localPath: record.localPath, bytes: Array.from(new TextEncoder().encode(content)) },
+    }
+  })
+  return {
+    manifest: { kind: "synthetic", records: entries.map((entry) => entry.record) },
+    files: entries.map((entry) => entry.file),
+  }
+}
+
+test.each(["~", "`"])("longer %s closing fences cannot hide rehashed identifier drift", (marker) => {
+  error(
+    literalPack(
+      [
+        `${marker.repeat(3)}java\n${codeTokens[0]}\n${marker.repeat(4)}`,
+        `${marker.repeat(3)}java\n硬件映射.get(电机类.class, "合成电机")\n${marker.repeat(4)}`,
+      ],
+      [],
+    ),
+    "identifier_mismatch",
+  )
+})
+
+test.each(["~", "`"])("same-character longer %s closing fences preserve valid protected literals", (marker) => {
+  const body = `${marker.repeat(3)}java\n${codeTokens[0]}\n${marker.repeat(5)}`
+  expect(validatePack(literalPack([body, body], [codeTokens[0]])).kind).toBe("valid")
+})
+
+test.each([
+  "~~~java\nhardwareMap.get()\n~~",
+  "```java\nhardwareMap.get()\n``",
+  "~~~java\nhardwareMap.get()\n```",
+  "```java\nhardwareMap.get()\n~~~",
+  "~~~java\nhardwareMap.get()",
+  "```java\nhardwareMap.get()",
+  "~~~java\nhardwareMap.get()\n~~~~ trailing-info",
+  "```java`invalid\nhardwareMap.get()\n```",
+])("invalid, mixed or unterminated fences cannot disappear from protected content %j", (body) => {
+  error(literalPack([body, body], []), "malformed_content")
+})
+
 test("malformed source URL is rejected", () => {
   const input = pack()
   error(

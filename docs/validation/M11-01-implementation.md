@@ -91,3 +91,49 @@ f033f18acfc08a6ee3e5b2fe17338e0c7bb4addb9c128095012d8b8cafe3790b  packages/core/
 ```
 
 Author self-review checked the brief, canonical contract identities, import boundaries, actual-content checks, zero production records and exact owned paths. This is not the coordinator's independent review.
+
+## Independent review fix, round 1 of 5
+
+Reviewed finding: [M11-01-review.md](M11-01-review.md), Important: `packages/core/src/ftc/knowledge.ts:135` ignored tilde fences when the closing run was longer than the opening run. Original candidate: `446c00550`. Fix verification snapshot: `32dbfd69b317d8e4188674dcd5aab465160a5e0e`, plus the uncommitted task-owned source/test changes identified below. The earlier assertion map and source inventory describe the original candidate; this section supersedes its parser behavior and final hashes.
+
+The old combined regex required equal opening/closing fence lengths. A `~~~java` opener with a `~~~~` closer therefore produced no protected literal, allowing translated API/device names and fresh matching digests to pass when both records declared `codeTokens: []`.
+
+The smallest fix adds a private `protectedLiterals` extraction boundary. It recognizes a fence opener, locates the next same-character closing run at least as long as the opener, captures its exact content once, and advances past the whole block before scanning further literals. Unterminated, shorter-only, mixed-only and trailing-info closing fences fail as `malformed_content`; backtick-containing information strings on backtick openers fail too. A shorter/mixed delimiter occurring inside a subsequently closed block remains part of the protected literal rather than disappearing. Valid longer closers preserve protected content for both tilde and backtick fences. No contract, production catalog, dependency or public method changed.
+
+Behavioral regression was added before implementation to the real-validator suite:
+
+- RED: **47 pass / 11 fail / 218 assertions**, exit 1. The longer-tilde regression returned `valid` despite rehashed changed identifiers and empty declarations. Valid longer tilde/backtick closers and malformed-fence classifications also failed. Evidence: [fix-round1-red.log](m11-01/fix-round1-red.log).
+- GREEN: **58 pass / 0 fail / 231 assertions**, exit 0. Evidence: [fix-round1-green.log](m11-01/fix-round1-green.log).
+
+New assertion map, current `packages/core/test/ftc/ftc-knowledge/m11-01.test.ts`:
+
+| Lines | Assertion                                                                                                                                                                             |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 353   | Longer tilde/backtick closers with rehashed en/zh API/device drift and identical empty declarations fail `identifier_mismatch`                                                        |
+| 366   | Valid longer same-character tilde/backtick closers accept correctly declared exact literals                                                                                           |
+| 371   | Eight invalid/mixed/unterminated cases cannot evade extraction: short tilde/backtick closers, swapped delimiters, absent closers, closing trailing info, invalid backtick opener info |
+
+Commands used the same pinned PATH and task-owned XDG/OPENCODE_TEST_HOME values documented above. Exact command/cwd/results:
+
+| Cwd               | Command                                                                                                                                                                                                                                         | Result / evidence                                                                 |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `packages/core`   | `bun test ./test/ftc/ftc-knowledge/m11-01.test.ts`                                                                                                                                                                                              | RED then GREEN above                                                              |
+| `packages/core`   | `bun typecheck`                                                                                                                                                                                                                                 | Exit 0, [fix-round1-core-typecheck.log](m11-01/fix-round1-core-typecheck.log)     |
+| `packages/schema` | `bun typecheck`                                                                                                                                                                                                                                 | Exit 0, [fix-round1-schema-typecheck.log](m11-01/fix-round1-schema-typecheck.log) |
+| Repository        | `bunx --no-install oxlint packages/schema/src/ftc-knowledge.ts packages/core/src/ftc/knowledge.ts packages/core/test/ftc/ftc-knowledge/m11-01.test.ts`                                                                                          | Exit 0, 0 warnings/errors, [fix-round1-lint.log](m11-01/fix-round1-lint.log)      |
+| Repository        | `bunx --no-install prettier --write packages/core/src/ftc/knowledge.ts packages/core/test/ftc/ftc-knowledge/m11-01.test.ts`                                                                                                                     | Exit 0                                                                            |
+| Repository        | `bunx --no-install prettier --check packages/schema/src/ftc-knowledge.ts packages/schema/src/index.ts packages/core/src/ftc/knowledge.ts packages/core/test/ftc/ftc-knowledge/m11-01.test.ts packages/core/resources/ftc/content/manifest.json` | Exit 0, [fix-round1-format.log](m11-01/fix-round1-format.log)                     |
+| Repository        | `git diff --check -- packages/core/src/ftc/knowledge.ts packages/core/test/ftc/ftc-knowledge/m11-01.test.ts docs/validation/M11-01-implementation.md`                                                                                           | Exit 0                                                                            |
+| Repository        | `shasum -a 256 -c docs/validation/m11-01/fix-round1-source-sha256.txt`                                                                                                                                                                          | Five files verified                                                               |
+
+All added content remains synthetic inline test material; no source, support or production content claims were added. No resources are acquired. No staging, commits, checklist edits or sibling changes were made by the worker. Coordinator commit and the same reviewer's scoped re-review remain pending; the later content/source/license/compatibility gates above remain unresolved by design.
+
+Frozen tested SHA-256 inventory: [fix-round1-source-sha256.txt](m11-01/fix-round1-source-sha256.txt).
+
+```text
+00746629c56b88a0baed6a1d9a30c5fa6d95d5f0e3da694115092b36b21152ac  packages/schema/src/ftc-knowledge.ts
+c6b0e7a3736a4c97244dd12d4c46a34a2c17535b6e4b5623f4a915eeaa1e2517  packages/schema/src/index.ts
+257bcb3542d57d829e3469e02b673b578ae85e21d1918cc78c98c411d7712d62  packages/core/src/ftc/knowledge.ts
+f033f18acfc08a6ee3e5b2fe17338e0c7bb4addb9c128095012d8b8cafe3790b  packages/core/resources/ftc/content/manifest.json
+9f3c920fbc4975a5b7a9edfcf7d7b73a443c30190e1c2cf7c8295fee286bd90f  packages/core/test/ftc/ftc-knowledge/m11-01.test.ts
+```
