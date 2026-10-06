@@ -1,0 +1,212 @@
+[
+  {
+    "original": "/private/tmp/m5-03-tools/native/TeamCode/build/intermediates/compile_and_runtime_not_namespaced_r_class_jar/debug/processDebugResources/R.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/0-R.jar",
+    "sha256": "4bd94314b620dea5b3a42bbe5bee7ac750b30f9469973feb70449ea1ab4f222c"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/81ae1d986a88f9440979e473966bfe9b/transformed/Inspection-11.1.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/1-Inspection-11.1.0-api.jar",
+    "sha256": "8bb9615ba2220f9a2434c3ae75b85e7489efd73dfd0d0d8a51bcec46c78dfbe1"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/b3c250fc8a6830fa5e3e8bd7779259e4/transformed/Blocks-11.1.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/2-Blocks-11.1.0-api.jar",
+    "sha256": "9acd5a6fbb31730f59723bfd904521e8b9e9625633be196411e8b2c47d0ab44f"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/67f9698aaebe16007c5c0993ea33bb43/transformed/RobotCore-11.1.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/3-RobotCore-11.1.0-api.jar",
+    "sha256": "259f6139364eb4694d471101b56f52c99c8f5faf27fe04be933acff9085d8b98"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/f0e2061fc0b9b75918d9cca2ce9ce95e/transformed/RobotServer-11.1.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/4-RobotServer-11.1.0-api.jar",
+    "sha256": "816b5fb63e92c7f8036f8616e2168b53b986e85f8acc469b6625359ed815b57e"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/0143fe4f3b1f4f152236d73bf5653f06/transformed/OnBotJava-11.1.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/5-OnBotJava-11.1.0-api.jar",
+    "sha256": "40aeef38a40afe1bc24e87aa1821c53b80132f0d2c0633836f898640312a976d"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/13bb03a8f09bef1aa49ab56091473973/transformed/Hardware-11.1.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/6-Hardware-11.1.0-api.jar",
+    "sha256": "23da82a7381026a7c4354e6f308dc6420a73aefe6bb9b8641f2ef0e36b1881c0"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/4f195963438c0760f3aa40a7fd61f695/transformed/FtcCommon-11.1.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/7-FtcCommon-11.1.0-api.jar",
+    "sha256": "2c4e38f718cbc188fc63b0fad60480eb31146d460986489652a287d56cea7330"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/22c29dbadf4dbfb2c44da0e28e09ca37/transformed/Vision-11.1.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/8-Vision-11.1.0-api.jar",
+    "sha256": "ce4a28104b1e79541db35b641bdc6f1c03eab3d90873f462dca0dee259d2d825"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/09436e833cfefa233353471031daf4a3/transformed/appcompat-1.2.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/9-appcompat-1.2.0-api.jar",
+    "sha256": "bd7c7650d2b9f2bca0d415848adb902134ef65698f0027b13b2cfa3ae1fae8b0"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/native/FtcRobotController/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/10-classes.jar",
+    "sha256": "d795cc7edfa4434a85a0597ef8662a3ab1b2a3676e903613361b51359fcbf270"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/f542708b07e3a4f445e877d870a94db8/transformed/fragment-1.1.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/11-fragment-1.1.0-api.jar",
+    "sha256": "7eb0e0baea91512eff9a75e865d76d2b419bade634dc55bef50c2b12f9445beb"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/1151d7bb2f311133eda8b89c0e4d5e46/transformed/appcompat-resources-1.2.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/12-appcompat-resources-1.2.0-api.jar",
+    "sha256": "fec8d517e766ba11b0214a87c4dc18971c356ad62ba200f56f75320cea6fc7e3"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/9f4a6769cdb92c77aa0fd4ee008d7d7b/transformed/drawerlayout-1.0.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/13-drawerlayout-1.0.0-api.jar",
+    "sha256": "5dbaf9b6e37571a4eaa6b345292ccf98626c770a7548b434d825e2f6d99c5f7e"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/389f510a648db93f986a49791be3b6f1/transformed/viewpager-1.0.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/14-viewpager-1.0.0-api.jar",
+    "sha256": "c6339a1c2cd9cdb25d1c8d5a0019a583450f530717841c9a927e8a76fac367af"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/a794c6810a4f115d75916689cbebb945/transformed/loader-1.0.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/15-loader-1.0.0-api.jar",
+    "sha256": "7b8d130a2134503e4153a9fcf0d6ce4ca7e995c57bafbb12e5f85cd796f2e31e"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/99c95bb3d12fc538d8a6af1fb9add08d/transformed/activity-1.0.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/16-activity-1.0.0-api.jar",
+    "sha256": "d5390696c382039aadac5e813e9aaae4130f87459da4368fea4ec5034905234d"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/d4fee0fe1bc6c71954bf41edeafdc156/transformed/vectordrawable-animated-1.1.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/17-vectordrawable-animated-1.1.0-api.jar",
+    "sha256": "7fb48b12b5cfefd6cab0972eaf5b358a9edd2ed68322e37bbb5ed9dc9f86d3a4"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/ec4b5f65b9c2a93fbe7f0a05ebd26c5f/transformed/vectordrawable-1.1.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/18-vectordrawable-1.1.0-api.jar",
+    "sha256": "d4ab4b9fc7a598dd2e8cf60e8517a6234e5cc9b6a0515565dc338885d7564c01"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/f222280621505e8da38860546a550914/transformed/customview-1.0.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/19-customview-1.0.0-api.jar",
+    "sha256": "9dfeef6fbf10a1e974039348f6f2c60f69ddcc39e7a24a912599bee8a5b74b16"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/654a7a51527f6c9f5bda980ac72d8ee4/transformed/core-1.3.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/20-core-1.3.0-api.jar",
+    "sha256": "6550e11b7631e0c9a567df3f0694e54640fc261eba5bf8e11b437aa725f1b800"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/ca2e0c627d7c1f753d65b27323f02d56/transformed/cursoradapter-1.0.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/21-cursoradapter-1.0.0-api.jar",
+    "sha256": "cd51036ac1b49da0613a4766e8c870b43da6b61802151449cd7c65663ce497a5"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/868eced539d5fa303a4526daf9db9811/transformed/lifecycle-runtime-2.1.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/22-lifecycle-runtime-2.1.0-api.jar",
+    "sha256": "38e44566cb6ace7d0f0b3ed51e209e79e096764417d8c083848b22456c03dad0"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/eb7fe19a9f2533e652552f2b5eb70ede/transformed/versionedparcelable-1.1.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/23-versionedparcelable-1.1.0-api.jar",
+    "sha256": "4a571a2b719bb7e0b884c340985a4c9cd511df38f13cbaab56eb312e25adf55c"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/androidx.collection/collection/1.1.0/1f27220b47669781457de0d600849a5de0e89909/collection-1.1.0.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/24-collection-1.1.0.jar",
+    "sha256": "632a0e5407461de774409352940e292a291037724207a787820c77daf7d33b72"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/03c54cea5cbd4835026932bab77efd7a/transformed/lifecycle-viewmodel-2.1.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/25-lifecycle-viewmodel-2.1.0-api.jar",
+    "sha256": "55ea674a8e45a0a524fd46425a33366579e9d56264edba695d13698c4629bad9"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/a2e36fda51d81b6c50d78dc19ffb7c9c/transformed/savedstate-1.0.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/26-savedstate-1.0.0-api.jar",
+    "sha256": "577358c9c446cb558bc0b9080415dda07486aead88d652b80e1c9a99d158904d"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/37b573a13168b6ecb92f2c773d57b940/transformed/lifecycle-livedata-2.0.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/27-lifecycle-livedata-2.0.0-api.jar",
+    "sha256": "057ab486abf1ed01123d77e79901376ad57001aa7903cca808e3f583e794ed35"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/a9749f1e4b6aa728d98565d1e48d41bf/transformed/lifecycle-livedata-core-2.0.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/28-lifecycle-livedata-core-2.0.0-api.jar",
+    "sha256": "6042423d03ccab1dfb2114015c4941c0809392f2e75142ac966b8b4d81586ced"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-common/2.1.0/c67e7807d9cd6c329b9d0218b2ec4e505dd340b7/lifecycle-common-2.1.0.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/29-lifecycle-common-2.1.0.jar",
+    "sha256": "76db6be533bd730fb361c2feb12a2c26d9952824746847da82601ef81f082643"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/53e470c1fd7b4b2092af299bf74430f9/transformed/core-runtime-2.0.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/30-core-runtime-2.0.0-api.jar",
+    "sha256": "f2bb0c416fd68cc9273e1b4ffd59e1b5003d3601f1a140027dc99f9f4810cccd"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/androidx.arch.core/core-common/2.1.0/b3152fc64428c9354344bd89848ecddc09b6f07e/core-common-2.1.0.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/31-core-common-2.1.0.jar",
+    "sha256": "fe1237bf029d063e7f29fe39aeaf73ef74c8b0a3658486fc29d3c54326653889"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/d781740d98a15676564383e80f070e67/transformed/interpolator-1.0.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/32-interpolator-1.0.0-api.jar",
+    "sha256": "41afedcf53756d2b0c05cc3479263a2d00bb981e1a4691be8649855919a199d1"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/androidx.annotation/annotation/1.2.0/57136ff68ee784c6e19db34ed4a175338fadfde1/annotation-1.2.0.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/33-annotation-1.2.0.jar",
+    "sha256": "9029262bddce116e6d02be499e4afdba21f24c239087b76b3b57d7e98b490a36"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/1bca89a76ef5974d0f671fa28a4c7cdd/transformed/threetenabp-1.3.1-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/34-threetenabp-1.3.1-api.jar",
+    "sha256": "26f79536ce15df4079f1d9ee06fe82a758462f78cf4d2e16411c1d712c267c98"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/org.threeten/threetenbp/1.5.1/1d66c467c82fa2d01858f196d3600069368a8ccb/threetenbp-1.5.1-no-tzdb.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/35-threetenbp-1.5.1-no-tzdb.jar",
+    "sha256": "2bf93650f997044f2995680319300a1f9782176b792bf09f8cbad3b845239f9f"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/b04e1c507518e9df0059125c2cb503e9/transformed/easyopencv-1.7.3-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/36-easyopencv-1.7.3-api.jar",
+    "sha256": "72d4b7491338e0e192172b48ed43059580f894295d31904609e9104a63da70db"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/d12f634baff5c7bd02bcfea60db22f2d/transformed/opencv-repackaged-bundled-dylibs-4.10.0-A-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/37-opencv-repackaged-bundled-dylibs-4.10.0-A-api.jar",
+    "sha256": "34df06a313c4c5d7d7bddb375d3b1eef7ad1a068654cf5e58381fb165c628504"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/gradle/caches/8.9/transforms/cddaf39690d95d692f4cea89dc17c674/transformed/apriltag-2.1.0-api.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/38-apriltag-2.1.0-api.jar",
+    "sha256": "410f85bd89ba21b02dd984671cf8ef1491bc51f7a6e060aa1b40143a3a1bb3a1"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/sdk/platforms/android-30/android.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/39-android.jar",
+    "sha256": "96ccfdc84d15fad4e22d76cbb8ef38b150a4b56327957067875ca7e18113a424"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/sdk/build-tools/34.0.0/core-lambda-stubs.jar",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/lib/40-core-lambda-stubs.jar",
+    "sha256": "f0404cf634498aec268ad9a3967b5ae8f0005280de0504e264a2a65b8f19745e"
+  },
+  {
+    "original": "/private/tmp/m5-03-tools/native/FtcRobotController/build/generated/source/buildConfig/debug/com/qualcomm/ftcrobotcontroller/BuildConfig.java",
+    "copied": "/private/tmp/m5-03-tools/shadow-base/generated/com/qualcomm/ftcrobotcontroller/BuildConfig.java",
+    "sha256": "1d751c24678ce82dcc3d2c7dcba75230afc1869f2926d85bdc926902477edc9c"
+  }
+]

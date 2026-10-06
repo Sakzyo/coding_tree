@@ -1,0 +1,27 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-evaluation/m5-03.test.ts:
+(pass) candidate launch separates editor Java from Gradle Java and uses only explicit paths [12.22ms]
+(pass) candidate rejects implicit runtimes, bad pins and unsupported hosts before launch [2.06ms]
+{"name":"FTC","valid":{"uri":"file:///private/tmp/m5-03-tools/native/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/FTCProbe.java","diagnostics":[{"range":{"start":{"line":0,"character":0},"end":{"line":0,"character":1}},"severity":2,"code":"32","source":"Java","message":"FTCProbe.java is not on the classpath of project TeamCode, only syntax errors are reported"}]},"definition":[],"completion":{"isIncomplete":false,"items":[]},"invalid":{"state":"unavailable","last":{"uri":"file:///private/tmp/m5-03-tools/native/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/FTCProbe.java","diagnostics":[{"range":{"start":{"line":0,"character":0},"end":{"line":0,"character":1}},"severity":2,"code":"32","source":"Java","message":"FTCProbe.java is not on the classpath of project TeamCode, only syntax errors are reported"}]}}}
+28 |     const result = await Bun.file(config.output).json()
+29 |     for (const item of result.cases) {
+30 |       console.log(JSON.stringify({ name: item.name, valid: item.valid, definition: item.definition, completion: item.completion, invalid: item.invalid }))
+31 |       expect(item.valid.state).not.toBe("unavailable")
+32 |       expect(item.valid.diagnostics.filter((diagnostic: { severity: number }) => diagnostic.severity === 1)).toEqual([])
+33 |       expect(item.definition.length).toBeGreaterThan(0)
+                                          ^
+error: expect(received).toBeGreaterThan(expected)
+
+Expected: > 0
+Received: 0
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-evaluation/m5-03.test.ts:33:38)
+(fail) real pinned JDT LS: FTC Android generated and pathing symbols resolve [117021.70ms]
+(skip) NOT RUN: Windows JDT LS FTC Android generated PedroPathing Road Runner import and process-tree disposal
+
+ 2 pass
+ 1 skip
+ 1 fail
+ 12 expect() calls
+Ran 4 tests across 1 file. [117.33s]

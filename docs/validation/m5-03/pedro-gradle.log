@@ -1,0 +1,40 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.9/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build
+> Task :FtcRobotController:preBuild UP-TO-DATE
+> Task :FtcRobotController:preDebugBuild UP-TO-DATE
+> Task :FtcRobotController:generateDebugBuildConfig
+> Task :FtcRobotController:generateDebugResValues
+> Task :FtcRobotController:generateDebugResources
+> Task :FtcRobotController:packageDebugResources
+> Task :TeamCode:preBuild UP-TO-DATE
+> Task :TeamCode:preDebugBuild UP-TO-DATE
+> Task :FtcRobotController:javaPreCompileDebug
+> Task :TeamCode:javaPreCompileDebug
+> Task :TeamCode:generateDebugResValues
+> Task :FtcRobotController:writeDebugAarMetadata
+> Task :FtcRobotController:parseDebugLocalResources
+> Task :FtcRobotController:compileDebugLibraryResources
+> Task :TeamCode:mapDebugSourceSetPaths
+> Task :TeamCode:generateDebugResources
+> Task :TeamCode:checkDebugAarMetadata
+> Task :FtcRobotController:generateDebugRFile
+> Task :TeamCode:mergeDebugResources
+
+> Task :FtcRobotController:compileDebugJavaWithJavac
+Note: /private/tmp/m5-03-tools/pedro/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/internal/FtcRobotControllerActivity.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :TeamCode:createDebugCompatibleScreenManifests
+> Task :FtcRobotController:extractDeepLinksDebug
+> Task :TeamCode:extractDeepLinksDebug
+> Task :FtcRobotController:bundleLibCompileToJarDebug
+> Task :FtcRobotController:processDebugManifest
+> Task :TeamCode:processDebugMainManifest
+> Task :TeamCode:processDebugManifest
+> Task :TeamCode:processDebugManifestForPackage
+> Task :TeamCode:processDebugResources
+> Task :TeamCode:compileDebugJavaWithJavac
+> Task :TeamCode:m503Snapshot
+
+BUILD SUCCESSFUL in 11s
+27 actionable tasks: 27 executed

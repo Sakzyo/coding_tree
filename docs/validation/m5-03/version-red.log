@@ -1,0 +1,93 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-adapters/java-import.test.ts:
+(pass) candidate launch separates editor Java from Gradle Java and uses only explicit paths [4.31ms]
+(pass) candidate rejects implicit runtimes, bad pins and unsupported hosts before launch [0.80ms]
+(pass) evaluation process tree cleanup after exit [121.40ms]
+(pass) evaluation process tree cleanup after abort [318.32ms]
+(pass) evaluation process tree cleanup after timeout [318.07ms]
+50 |     await rm(directory, { recursive: true, force: true })
+51 |   }
+52 | }, 5000)
+53 |
+54 | test("candidate rejects a nonnumeric editor version", () => {
+55 |   expect(() => JavaLanguageEvaluation.launch({ ...input, pins: { ...input.pins, editorJdk: { ...artifact, version: "unknown" } } })).toThrow("editor_requires_java_21")
+                                                                                                                                          ^
+error: expect(received).toThrow(expected)
+
+Expected substring: "editor_requires_java_21"
+
+Received function did not throw
+Received value: {
+  command: [
+    "/owned/editor/bin/java", "-Declipse.application=org.eclipse.jdt.ls.core.id1", "-Dosgi.bundles.defaultStartLevel=4",
+    "-Declipse.product=org.eclipse.jdt.ls.core.product", "-Xmx1G", "--add-modules=ALL-SYSTEM",
+    "--add-opens", "java.base/java.util=ALL-UNNAMED", "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+    "-jar", "/owned/server/plugins/launcher.jar", "-configuration", "/owned/config", "-data",
+    "/owned/workspace"
+  ],
+  settings: {
+    java: {
+      home: "/owned/editor",
+      configuration: {
+        updateBuildConfiguration: "automatic",
+        runtimes: [
+          {
+            name: "JavaSE-17",
+            path: "/owned/build",
+            default: true,
+          }
+        ],
+      },
+      import: {
+        gradle: {
+          enabled: true,
+          java: {
+            home: "/owned/build",
+          },
+          user: {
+            home: "/owned/gradle",
+          },
+          offline: {
+            enabled: true,
+          },
+          wrapper: {
+            enabled: false,
+          },
+        },
+        maven: {
+          enabled: false,
+        },
+      },
+      jdt: {
+        ls: {
+          androidSupport: {
+            enabled: true,
+          },
+        },
+      },
+    },
+  },
+}
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/java-import.test.ts:55:134)
+(fail) candidate rejects a nonnumeric editor version [1.30ms]
+55 |   expect(() => JavaLanguageEvaluation.launch({ ...input, pins: { ...input.pins, editorJdk: { ...artifact, version: "unknown" } } })).toThrow("editor_requires_java_21")
+56 | })
+57 |
+58 | test("candidate preserves the configured build JDK level", () => {
+59 |   const result = JavaLanguageEvaluation.launch({ ...input, pins: { ...input.pins, buildJdk: { ...artifact, version: "21.0.10" } } })
+60 |   expect(result.settings.java.configuration.runtimes[0].name).toBe("JavaSE-21")
+                                                                   ^
+error: expect(received).toBe(expected)
+
+Expected: "JavaSE-21"
+Received: "JavaSE-17"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/java-import.test.ts:60:63)
+(fail) candidate preserves the configured build JDK level [0.49ms]
+
+ 5 pass
+ 2 fail
+ 22 expect() calls
+Ran 7 tests across 1 file. [857.00ms]

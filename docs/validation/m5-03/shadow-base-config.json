@@ -1,0 +1,57 @@
+{
+  "pins": {
+    "editorJdk": {
+      "version": "21.0.10",
+      "source": "https://github.com/JetBrains/JetBrainsRuntime/tree/1351622c2ff2",
+      "license": "GPL-2.0-only WITH Classpath-exception-2.0",
+      "sha256": "639569199530233e2ee2309a2d3604a49487ff6e236b959e7f994f7c9d9fbf40"
+    },
+    "buildJdk": {
+      "version": "17.0.15",
+      "source": "https://github.com/corretto/corretto-17/releases/tag/17.0.15.6.1",
+      "license": "GPL-2.0-only WITH Classpath-exception-2.0",
+      "sha256": "ae13cba07d684b734658ccb9f1b8b8e13ed84078d22822e39406260189a0397a"
+    },
+    "jdtLs": {
+      "version": "1.46.1",
+      "source": "https://download.eclipse.org/jdtls/milestones/1.46.1/jdt-language-server-1.46.1-202504011455.tar.gz",
+      "license": "EPL-2.0",
+      "sha256": "f435fdf6db3aa0d1598ef0f11f80bb20e09e67009001382719c313eff07de02c"
+    }
+  },
+  "editorHome": "/Applications/Android Studio.app/Contents/jbr/Contents/Home",
+  "buildHome": "/Users/dylanxu/Library/Java/JavaVirtualMachines/corretto-17.0.15/Contents/Home",
+  "server": "/private/tmp/m5-03-tools/jdtls",
+  "launcher": "/private/tmp/m5-03-tools/jdtls/plugins/org.eclipse.equinox.launcher_1.7.0.v20250331-1702.jar",
+  "gradleHome": "/private/tmp/m5-03-tools/gradle",
+  "gradleInstall": "/Users/dylanxu/.gradle/wrapper/dists/gradle-8.9-bin/90cnw93cvbtalezasaz0blq0a/gradle-8.9",
+  "sdk": "/private/tmp/m5-03-tools/sdk",
+  "python": "/usr/bin/python3",
+  "root": "/private/tmp/m5-03-tools/shadow-base",
+  "cases": [
+    {
+      "name": "FTC",
+      "path": "/private/tmp/m5-03-tools/shadow-base/src/org/firstinspires/ftc/teamcode/FTCProbe.java",
+      "use": "DcMotor",
+      "member": "setPower",
+      "prefix": 3
+    },
+    {
+      "name": "Android",
+      "path": "/private/tmp/m5-03-tools/shadow-base/src/org/firstinspires/ftc/teamcode/AndroidProbe.java",
+      "use": "Build",
+      "member": "SDK_INT",
+      "prefix": 3
+    },
+    {
+      "name": "generated",
+      "path": "/private/tmp/m5-03-tools/shadow-base/src/org/firstinspires/ftc/teamcode/generatedProbe.java",
+      "use": "BuildConfig",
+      "member": "DEBUG",
+      "prefix": 3
+    }
+  ],
+  "output": "/Users/dylanxu/coding_tree/docs/validation/m5-03/shadow-base-result.json",
+  "mode": "classpath",
+  "serverArchive": "/private/tmp/m5-03-tools/jdtls.tar.gz"
+}

@@ -1,0 +1,72 @@
+[
+  {
+    "coordinate": "org.firstinspires.ftc:RobotCore:11.1.0",
+    "path": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/org.firstinspires.ftc/RobotCore/11.1.0/af5b8db77605992924276563ee167f527462bf39/RobotCore-11.1.0.pom",
+    "sha256": "7ad1f42b43baa570a4602620e537fdaa0f0d68503a3b4ca3f93578746a3cb904",
+    "cache_sha1": "af5b8db77605992924276563ee167f527462bf39",
+    "sha1_matches": true
+  },
+  {
+    "coordinate": "org.firstinspires.ftc:RobotCore:11.1.0",
+    "path": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/org.firstinspires.ftc/RobotCore/11.1.0/58745f810401dfa07bd71d6e750b5ddad54c149d/RobotCore-11.1.0.aar",
+    "sha256": "1e2af88a29dd784fcf85fbc7fc76aad8cb19dd47cfa5be796efeffb38c591343",
+    "cache_sha1": "58745f810401dfa07bd71d6e750b5ddad54c149d",
+    "sha1_matches": true
+  },
+  {
+    "coordinate": "com.android.tools.build:gradle:8.7.0",
+    "path": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/com.android.tools.build/gradle/8.7.0/dc72b94c74e31da237cc4c267503eeedcab90e01/gradle-8.7.0.jar",
+    "sha256": "1f56b870c409b61e79883aa4027a22c48cafc0cacd004f4def3f2dea1882faa5",
+    "cache_sha1": "dc72b94c74e31da237cc4c267503eeedcab90e01",
+    "sha1_matches": true
+  },
+  {
+    "coordinate": "com.pedropathing:core:2.1.2",
+    "path": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/com.pedropathing/core/2.1.2/9b16634d685429f4376b350098a0a33c26667aa1/core-2.1.2.pom",
+    "sha256": "b4a376f83bd29ccfa9cde99dd58f55d0d2cb45d974c617ed759c78da28dbdf31",
+    "cache_sha1": "9b16634d685429f4376b350098a0a33c26667aa1",
+    "sha1_matches": true
+  },
+  {
+    "coordinate": "com.pedropathing:core:2.1.2",
+    "path": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/com.pedropathing/core/2.1.2/38d512652a45b67ab44f1997b1c3ad6ddf25f179/core-2.1.2.jar",
+    "sha256": "b016cc37d06f02e2f241b3c32ff2bf9219baf56bdb875ff2af3d173c8adfd222",
+    "cache_sha1": "38d512652a45b67ab44f1997b1c3ad6ddf25f179",
+    "sha1_matches": true
+  },
+  {
+    "coordinate": "com.pedropathing:ftc:2.1.2",
+    "path": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/com.pedropathing/ftc/2.1.2/f3b4381d64d68c6a626baf1e42153bb0cdfda32e/ftc-2.1.2.pom",
+    "sha256": "d7959067d099fe41f702027fcdfd48d9923c3285ed1e604edd9c398d08382dd5",
+    "cache_sha1": "f3b4381d64d68c6a626baf1e42153bb0cdfda32e",
+    "sha1_matches": true
+  },
+  {
+    "coordinate": "com.pedropathing:ftc:2.1.2",
+    "path": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/com.pedropathing/ftc/2.1.2/3cd29c084f4f3278ee0386ad90c5681d46fa9731/ftc-2.1.2.aar",
+    "sha256": "2de9e0a3d45f133b8a77a03a44aebe204cd79a1117c6b8ae1706a707d140714d",
+    "cache_sha1": "3cd29c084f4f3278ee0386ad90c5681d46fa9731",
+    "sha1_matches": true
+  },
+  {
+    "coordinate": "com.pedropathing:telemetry:1.0.0",
+    "path": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/com.pedropathing/telemetry/1.0.0/ccf9c2d3672c0b623b5968f3051de8d204e14719/telemetry-1.0.0.pom",
+    "sha256": "6a9382550d8142dde4ae2700c3a7e258e588ea5bd119817eb6a1cda43e075074",
+    "cache_sha1": "ccf9c2d3672c0b623b5968f3051de8d204e14719",
+    "sha1_matches": true
+  },
+  {
+    "coordinate": "com.pedropathing:telemetry:1.0.0",
+    "path": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/com.pedropathing/telemetry/1.0.0/2d26ade773bf4e7547f523fc880a13f2848c3890/telemetry-1.0.0.aar",
+    "sha256": "00b0813585f08b27d7f5a8d6165e0ecfda36f5f3c8a1ce5bf9bbf008e8ac0cf7",
+    "cache_sha1": "2d26ade773bf4e7547f523fc880a13f2848c3890",
+    "sha1_matches": true
+  },
+  {
+    "coordinate": "com.acmerobotics.roadrunner:core:1.0.1",
+    "path": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/com.acmerobotics.roadrunner/core/1.0.1/a8c9ef12d43d3a416a0d3a624e6a1ca9e2b81fa8/core-1.0.1.jar",
+    "sha256": "a23f507bc28982be1340ce642e7494151c3ad540285093460e323a799ace8ba1",
+    "cache_sha1": "a8c9ef12d43d3a416a0d3a624e6a1ca9e2b81fa8",
+    "sha1_matches": true
+  }
+]

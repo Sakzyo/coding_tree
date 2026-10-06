@@ -1,0 +1,18 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-adapters/java-import.test.ts:
+1 | export * as JavaLanguageEvaluation from "./language-service"
+2 |
+3 | export function launch(_input: unknown): { command: string[]; settings: { java: { import: { gradle: { java: { home: string }; user: { home: string } } } } } } {
+4 |   throw new Error("not_implemented")
+                                       ^
+error: not_implemented
+      at launch (/Users/dylanxu/coding_tree/packages/core/src/ftc/java/language-service.ts:4:36)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/java-import.test.ts:13:41)
+(fail) candidate launch separates editor Java from Gradle Java and uses only explicit paths [0.15ms]
+(pass) candidate rejects implicit runtimes, bad pins and unsupported hosts before launch [0.08ms]
+
+ 1 pass
+ 1 fail
+ 3 expect() calls
+Ran 2 tests across 1 file. [11.00ms]

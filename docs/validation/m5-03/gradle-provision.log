@@ -1,0 +1,68 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.9/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build
+Checking the license for package Android SDK Platform-Tools in /private/tmp/m5-03-tools/sdk/licenses
+License for package Android SDK Platform-Tools accepted.
+Preparing "Install Android SDK Platform-Tools v.37.0.1".
+"Install Android SDK Platform-Tools v.37.0.1" ready.
+Installing Android SDK Platform-Tools in /private/tmp/m5-03-tools/sdk/platform-tools
+"Install Android SDK Platform-Tools v.37.0.1" complete.
+"Install Android SDK Platform-Tools v.37.0.1" finished.
+> Task :FtcRobotController:preBuild UP-TO-DATE
+> Task :FtcRobotController:preDebugBuild UP-TO-DATE
+> Task :FtcRobotController:generateDebugBuildConfig
+> Task :FtcRobotController:generateDebugResValues
+> Task :FtcRobotController:generateDebugResources
+> Task :FtcRobotController:packageDebugResources
+> Task :TeamCode:preBuild UP-TO-DATE
+> Task :TeamCode:preDebugBuild UP-TO-DATE
+> Task :FtcRobotController:javaPreCompileDebug
+> Task :TeamCode:javaPreCompileDebug
+> Task :FtcRobotController:parseDebugLocalResources
+> Task :FtcRobotController:compileDebugLibraryResources
+> Task :TeamCode:generateDebugResValues
+> Task :FtcRobotController:writeDebugAarMetadata
+> Task :TeamCode:mapDebugSourceSetPaths
+> Task :TeamCode:generateDebugResources
+> Task :TeamCode:checkDebugAarMetadata
+> Task :FtcRobotController:generateDebugRFile
+> Task :TeamCode:mergeDebugResources
+
+> Task :FtcRobotController:compileDebugJavaWithJavac
+Note: /private/tmp/m5-03-tools/native/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/internal/FtcRobotControllerActivity.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :TeamCode:createDebugCompatibleScreenManifests
+> Task :FtcRobotController:extractDeepLinksDebug
+> Task :TeamCode:extractDeepLinksDebug
+> Task :FtcRobotController:bundleLibCompileToJarDebug
+> Task :FtcRobotController:processDebugManifest
+> Task :TeamCode:processDebugMainManifest
+> Task :TeamCode:processDebugManifest
+> Task :TeamCode:processDebugManifestForPackage
+> Task :TeamCode:processDebugResources
+
+> Task :TeamCode:compileDebugJavaWithJavac FAILED
+/private/tmp/m5-03-tools/native/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/generatedProbe.java:2: error: cannot find symbol
+import org.firstinspires.ftc.teamcode.BuildConfig;
+                                     ^
+  symbol:   class BuildConfig
+  location: package org.firstinspires.ftc.teamcode
+/private/tmp/m5-03-tools/native/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/generatedProbe.java:4: error: cannot find symbol
+  boolean sample() { return BuildConfig.DEBUG; }
+                            ^
+  symbol:   variable BuildConfig
+  location: class generatedProbe
+2 errors
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':TeamCode:compileDebugJavaWithJavac'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+BUILD FAILED in 22s
+26 actionable tasks: 26 executed

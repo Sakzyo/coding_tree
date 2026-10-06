@@ -1,0 +1,1022 @@
+{
+  "root": "/private/tmp/m5-03-tools/pedro",
+  "cases": [
+    {
+      "name": "FTC",
+      "valid": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/FTCProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 0,
+                "character": 0
+              },
+              "end": {
+                "line": 0,
+                "character": 1
+              }
+            },
+            "severity": 2,
+            "code": "32",
+            "source": "Java",
+            "message": "FTCProbe.java is not on the classpath of project TeamCode, only syntax errors are reported"
+          }
+        ]
+      },
+      "definition": [],
+      "completion": {
+        "isIncomplete": false,
+        "items": []
+      },
+      "invalid": {
+        "state": "unavailable",
+        "last": {
+          "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/FTCProbe.java",
+          "diagnostics": [
+            {
+              "range": {
+                "start": {
+                  "line": 0,
+                  "character": 0
+                },
+                "end": {
+                  "line": 0,
+                  "character": 1
+                }
+              },
+              "severity": 2,
+              "code": "32",
+              "source": "Java",
+              "message": "FTCProbe.java is not on the classpath of project TeamCode, only syntax errors are reported"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Android",
+      "valid": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/AndroidProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 0,
+                "character": 0
+              },
+              "end": {
+                "line": 0,
+                "character": 1
+              }
+            },
+            "severity": 2,
+            "code": "32",
+            "source": "Java",
+            "message": "AndroidProbe.java is not on the classpath of project TeamCode, only syntax errors are reported"
+          }
+        ]
+      },
+      "definition": [],
+      "completion": {
+        "isIncomplete": false,
+        "items": []
+      },
+      "invalid": {
+        "state": "unavailable",
+        "last": {
+          "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/AndroidProbe.java",
+          "diagnostics": [
+            {
+              "range": {
+                "start": {
+                  "line": 0,
+                  "character": 0
+                },
+                "end": {
+                  "line": 0,
+                  "character": 1
+                }
+              },
+              "severity": 2,
+              "code": "32",
+              "source": "Java",
+              "message": "AndroidProbe.java is not on the classpath of project TeamCode, only syntax errors are reported"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "generated",
+      "valid": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/generatedProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 0,
+                "character": 0
+              },
+              "end": {
+                "line": 0,
+                "character": 1
+              }
+            },
+            "severity": 2,
+            "code": "32",
+            "source": "Java",
+            "message": "generatedProbe.java is not on the classpath of project TeamCode, only syntax errors are reported"
+          }
+        ]
+      },
+      "definition": [],
+      "completion": {
+        "isIncomplete": false,
+        "items": []
+      },
+      "invalid": {
+        "state": "unavailable",
+        "last": {
+          "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/generatedProbe.java",
+          "diagnostics": [
+            {
+              "range": {
+                "start": {
+                  "line": 0,
+                  "character": 0
+                },
+                "end": {
+                  "line": 0,
+                  "character": 1
+                }
+              },
+              "severity": 2,
+              "code": "32",
+              "source": "Java",
+              "message": "generatedProbe.java is not on the classpath of project TeamCode, only syntax errors are reported"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "pedro",
+      "valid": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/pedroProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 0,
+                "character": 0
+              },
+              "end": {
+                "line": 0,
+                "character": 1
+              }
+            },
+            "severity": 2,
+            "code": "32",
+            "source": "Java",
+            "message": "pedroProbe.java is not on the classpath of project TeamCode, only syntax errors are reported"
+          }
+        ]
+      },
+      "definition": [],
+      "completion": {
+        "isIncomplete": false,
+        "items": []
+      },
+      "invalid": {
+        "state": "unavailable",
+        "last": {
+          "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/pedroProbe.java",
+          "diagnostics": [
+            {
+              "range": {
+                "start": {
+                  "line": 0,
+                  "character": 0
+                },
+                "end": {
+                  "line": 0,
+                  "character": 1
+                }
+              },
+              "severity": 2,
+              "code": "32",
+              "source": "Java",
+              "message": "pedroProbe.java is not on the classpath of project TeamCode, only syntax errors are reported"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "initialize": {
+    "capabilities": {
+      "textDocumentSync": {
+        "openClose": true,
+        "change": 2,
+        "save": {
+          "includeText": true
+        }
+      },
+      "hoverProvider": true,
+      "completionProvider": {
+        "resolveProvider": true,
+        "triggerCharacters": [
+          ".",
+          "@",
+          "#",
+          "*",
+          " "
+        ]
+      },
+      "signatureHelpProvider": {
+        "triggerCharacters": [
+          "(",
+          ","
+        ]
+      },
+      "definitionProvider": true,
+      "typeDefinitionProvider": true,
+      "implementationProvider": true,
+      "referencesProvider": true,
+      "documentHighlightProvider": true,
+      "documentSymbolProvider": true,
+      "workspaceSymbolProvider": true,
+      "codeActionProvider": {
+        "codeActionKinds": [],
+        "resolveProvider": false
+      },
+      "codeLensProvider": {
+        "resolveProvider": true
+      },
+      "documentFormattingProvider": true,
+      "documentRangeFormattingProvider": true,
+      "documentOnTypeFormattingProvider": {
+        "firstTriggerCharacter": ";",
+        "moreTriggerCharacter": [
+          "\n",
+          "}"
+        ]
+      },
+      "renameProvider": {
+        "prepareProvider": true
+      },
+      "foldingRangeProvider": true,
+      "declarationProvider": true,
+      "executeCommandProvider": {
+        "commands": [
+          "java.project.import",
+          "java.project.changeImportedProjects",
+          "java.navigate.openTypeHierarchy",
+          "java.project.resolveStackTraceLocation",
+          "java.edit.handlePasteEvent",
+          "java.edit.stringFormatting",
+          "java.project.getSettings",
+          "java.project.resolveWorkspaceSymbol",
+          "java.project.upgradeGradle",
+          "java.project.createModuleInfo",
+          "java.vm.getAllInstalls",
+          "java.edit.organizeImports",
+          "java.project.refreshDiagnostics",
+          "java.project.removeFromSourcePath",
+          "java.project.listSourcePaths",
+          "java.project.updateSettings",
+          "java.project.getAll",
+          "java.reloadBundles",
+          "java.project.isTestFile",
+          "java.project.resolveText",
+          "java.project.getClasspaths",
+          "java.navigate.resolveTypeHierarchy",
+          "java.edit.smartSemicolonDetection",
+          "java.project.updateSourceAttachment",
+          "java.project.updateClassPaths",
+          "java.decompile",
+          "java.protobuf.generateSources",
+          "java.project.resolveSourceAttachment",
+          "java.project.updateJdk",
+          "java.project.addToSourcePath",
+          "java.completion.onDidSelect"
+        ]
+      },
+      "workspace": {
+        "workspaceFolders": {
+          "supported": true,
+          "changeNotifications": true
+        }
+      },
+      "typeHierarchyProvider": true,
+      "callHierarchyProvider": true,
+      "selectionRangeProvider": true,
+      "semanticTokensProvider": {
+        "legend": {
+          "tokenTypes": [
+            "namespace",
+            "class",
+            "interface",
+            "enum",
+            "enumMember",
+            "type",
+            "typeParameter",
+            "method",
+            "property",
+            "variable",
+            "parameter",
+            "modifier",
+            "keyword",
+            "annotation",
+            "annotationMember",
+            "record",
+            "recordComponent"
+          ],
+          "tokenModifiers": [
+            "abstract",
+            "static",
+            "readonly",
+            "deprecated",
+            "declaration",
+            "documentation",
+            "public",
+            "private",
+            "protected",
+            "native",
+            "generic",
+            "typeArgument",
+            "importDeclaration",
+            "constructor"
+          ]
+        },
+        "range": false,
+        "full": {
+          "delta": false
+        },
+        "documentSelector": [
+          {
+            "language": "java",
+            "scheme": "file"
+          },
+          {
+            "language": "java",
+            "scheme": "jdt"
+          }
+        ]
+      },
+      "inlayHintProvider": true
+    }
+  },
+  "notifications": [
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "Init..."
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "0% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "45% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "70% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "70% Starting Java Language Server - Build"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "70% Starting Java Language Server - Starting Gradle Daemon"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "70% Starting Java Language Server - Build"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "70% Starting Java Language Server - Run build"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "70% Starting Java Language Server - Run init scripts"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "70% Starting Java Language Server - Configure build"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "70% Starting Java Language Server - Resolve dependencies of :classpath"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "70% Starting Java Language Server - Resolve files of configuration ':classpath'"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "70% Starting Java Language Server - Configure project :FtcRobotController"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "70% Starting Java Language Server - Resolve dependencies of :classpath"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "70% Starting Java Language Server - Build model 'org.gradle.tooling.model.eclipse.EclipseProject' for root project 'pedro'"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "70% Starting Java Language Server - Synchronize Gradle project FtcRobotController with workspace project"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "70% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "ProjectStatus",
+        "message": "OK"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "100% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "1000% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "1005% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "1010% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "1100% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "1100% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "1100% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "1105% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "1110% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "1200% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "1200% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "1200% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "1205% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "1210% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "1300% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "1300% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Started",
+        "message": "Ready"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "1300% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "ServiceReady",
+        "message": "ServiceReady"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/progressReport",
+      "params": {
+        "id": "d4c1c60f-fb64-489f-a271-14ff9bcbb29d",
+        "task": "Running Gradle tasks",
+        "status": "Generating Android project sources files...",
+        "totalWork": 1,
+        "workDone": 0,
+        "complete": false
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/progressReport",
+      "params": {
+        "id": "d4c1c60f-fb64-489f-a271-14ff9bcbb29d",
+        "task": "Running Gradle tasks",
+        "status": "Generating Android project sources files...",
+        "totalWork": 1,
+        "workDone": 1,
+        "complete": true
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro/FtcRobotController",
+        "diagnostics": []
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode",
+        "diagnostics": []
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro",
+        "diagnostics": []
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro/gradle/wrapper/gradle-wrapper.properties",
+        "diagnostics": []
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "window/logMessage",
+      "params": {
+        "type": 1,
+        "message": "6 Oct 2026, 14:59:01 src/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\nsrc/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\nJava Model Exception: Error in Java Model (code 969): src/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\n\tat org.eclipse.jdt.internal.core.JavaElement.newNotPresentException(JavaElement.java:546)\n\tat org.eclipse.jdt.internal.core.PackageFragmentRoot.getUnderlyingResource(PackageFragmentRoot.java:768)\n\tat org.eclipse.jdt.internal.core.PackageFragment.getUnderlyingResource(PackageFragment.java:417)\n\tat org.eclipse.jdt.internal.core.Openable.getUnderlyingResource(Openable.java:333)\n\tat org.eclipse.jdt.internal.core.CompilationUnit.getUnderlyingResource(CompilationUnit.java:1094)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDiagnosticsHandler.collectNonJavaProblems(BaseDiagnosticsHandler.java:198)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDiagnosticsHandler.endReporting(BaseDiagnosticsHandler.java:149)\n\tat org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.reportProblems(ReconcileWorkingCopyOperation.java:157)\n\tat org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.executeOperation(ReconcileWorkingCopyOperation.java:126)\n\tat org.eclipse.jdt.internal.core.JavaModelOperation.run(JavaModelOperation.java:751)\n\tat org.eclipse.jdt.internal.core.JavaModelOperation.runOperation(JavaModelOperation.java:816)\n\tat org.eclipse.jdt.internal.core.CompilationUnit.reconcile(CompilationUnit.java:1430)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler.publishDiagnostics(BaseDocumentLifeCycleHandler.java:338)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler.publishDiagnostics(BaseDocumentLifeCycleHandler.java:301)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler$PublishDiagnosticJob.run(BaseDocumentLifeCycleHandler.java:798)\n\tat org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)\n"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/FTCProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 0,
+                "character": 0
+              },
+              "end": {
+                "line": 0,
+                "character": 1
+              }
+            },
+            "severity": 2,
+            "code": "32",
+            "source": "Java",
+            "message": "FTCProbe.java is not on the classpath of project TeamCode, only syntax errors are reported"
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "window/logMessage",
+      "params": {
+        "type": 1,
+        "message": "6 Oct 2026, 14:59:01 src/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\nsrc/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\nJava Model Exception: Error in Java Model (code 969): src/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\n\tat org.eclipse.jdt.internal.core.JavaElement.newNotPresentException(JavaElement.java:546)\n\tat org.eclipse.jdt.internal.core.PackageFragmentRoot.getUnderlyingResource(PackageFragmentRoot.java:768)\n\tat org.eclipse.jdt.internal.core.PackageFragment.getUnderlyingResource(PackageFragment.java:417)\n\tat org.eclipse.jdt.internal.core.Openable.getUnderlyingResource(Openable.java:333)\n\tat org.eclipse.jdt.internal.core.CompilationUnit.getUnderlyingResource(CompilationUnit.java:1094)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDiagnosticsHandler.collectNonJavaProblems(BaseDiagnosticsHandler.java:198)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDiagnosticsHandler.endReporting(BaseDiagnosticsHandler.java:149)\n\tat org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.reportProblems(ReconcileWorkingCopyOperation.java:157)\n\tat org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.executeOperation(ReconcileWorkingCopyOperation.java:126)\n\tat org.eclipse.jdt.internal.core.JavaModelOperation.run(JavaModelOperation.java:751)\n\tat org.eclipse.jdt.internal.core.JavaModelOperation.runOperation(JavaModelOperation.java:816)\n\tat org.eclipse.jdt.internal.core.CompilationUnit.reconcile(CompilationUnit.java:1430)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler.publishDiagnostics(BaseDocumentLifeCycleHandler.java:338)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler.publishDiagnostics(BaseDocumentLifeCycleHandler.java:301)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler$PublishDiagnosticJob.run(BaseDocumentLifeCycleHandler.java:798)\n\tat org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)\n"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/FTCProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 0,
+                "character": 0
+              },
+              "end": {
+                "line": 0,
+                "character": 1
+              }
+            },
+            "severity": 2,
+            "code": "32",
+            "source": "Java",
+            "message": "FTCProbe.java is not on the classpath of project TeamCode, only syntax errors are reported"
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/FTCProbe.java",
+        "diagnostics": []
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "window/logMessage",
+      "params": {
+        "type": 1,
+        "message": "6 Oct 2026, 14:59:11 src/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\nsrc/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\nJava Model Exception: Error in Java Model (code 969): src/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\n\tat org.eclipse.jdt.internal.core.JavaElement.newNotPresentException(JavaElement.java:546)\n\tat org.eclipse.jdt.internal.core.PackageFragmentRoot.getUnderlyingResource(PackageFragmentRoot.java:768)\n\tat org.eclipse.jdt.internal.core.PackageFragment.getUnderlyingResource(PackageFragment.java:417)\n\tat org.eclipse.jdt.internal.core.Openable.getUnderlyingResource(Openable.java:333)\n\tat org.eclipse.jdt.internal.core.CompilationUnit.getUnderlyingResource(CompilationUnit.java:1094)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDiagnosticsHandler.collectNonJavaProblems(BaseDiagnosticsHandler.java:198)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDiagnosticsHandler.endReporting(BaseDiagnosticsHandler.java:149)\n\tat org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.reportProblems(ReconcileWorkingCopyOperation.java:157)\n\tat org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.executeOperation(ReconcileWorkingCopyOperation.java:126)\n\tat org.eclipse.jdt.internal.core.JavaModelOperation.run(JavaModelOperation.java:751)\n\tat org.eclipse.jdt.internal.core.JavaModelOperation.runOperation(JavaModelOperation.java:816)\n\tat org.eclipse.jdt.internal.core.CompilationUnit.reconcile(CompilationUnit.java:1430)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler.publishDiagnostics(BaseDocumentLifeCycleHandler.java:338)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler.publishDiagnostics(BaseDocumentLifeCycleHandler.java:301)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler$PublishDiagnosticJob.run(BaseDocumentLifeCycleHandler.java:798)\n\tat org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)\n"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/AndroidProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 0,
+                "character": 0
+              },
+              "end": {
+                "line": 0,
+                "character": 1
+              }
+            },
+            "severity": 2,
+            "code": "32",
+            "source": "Java",
+            "message": "AndroidProbe.java is not on the classpath of project TeamCode, only syntax errors are reported"
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "window/logMessage",
+      "params": {
+        "type": 1,
+        "message": "6 Oct 2026, 14:59:12 src/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\nsrc/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\nJava Model Exception: Error in Java Model (code 969): src/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\n\tat org.eclipse.jdt.internal.core.JavaElement.newNotPresentException(JavaElement.java:546)\n\tat org.eclipse.jdt.internal.core.PackageFragmentRoot.getUnderlyingResource(PackageFragmentRoot.java:768)\n\tat org.eclipse.jdt.internal.core.PackageFragment.getUnderlyingResource(PackageFragment.java:417)\n\tat org.eclipse.jdt.internal.core.Openable.getUnderlyingResource(Openable.java:333)\n\tat org.eclipse.jdt.internal.core.CompilationUnit.getUnderlyingResource(CompilationUnit.java:1094)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDiagnosticsHandler.collectNonJavaProblems(BaseDiagnosticsHandler.java:198)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDiagnosticsHandler.endReporting(BaseDiagnosticsHandler.java:149)\n\tat org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.reportProblems(ReconcileWorkingCopyOperation.java:157)\n\tat org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.executeOperation(ReconcileWorkingCopyOperation.java:126)\n\tat org.eclipse.jdt.internal.core.JavaModelOperation.run(JavaModelOperation.java:751)\n\tat org.eclipse.jdt.internal.core.JavaModelOperation.runOperation(JavaModelOperation.java:816)\n\tat org.eclipse.jdt.internal.core.CompilationUnit.reconcile(CompilationUnit.java:1430)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler.publishDiagnostics(BaseDocumentLifeCycleHandler.java:338)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler.publishDiagnostics(BaseDocumentLifeCycleHandler.java:301)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler$PublishDiagnosticJob.run(BaseDocumentLifeCycleHandler.java:798)\n\tat org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)\n"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/AndroidProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 0,
+                "character": 0
+              },
+              "end": {
+                "line": 0,
+                "character": 1
+              }
+            },
+            "severity": 2,
+            "code": "32",
+            "source": "Java",
+            "message": "AndroidProbe.java is not on the classpath of project TeamCode, only syntax errors are reported"
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/AndroidProbe.java",
+        "diagnostics": []
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "window/logMessage",
+      "params": {
+        "type": 1,
+        "message": "6 Oct 2026, 14:59:22 src/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\nsrc/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\nJava Model Exception: Error in Java Model (code 969): src/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\n\tat org.eclipse.jdt.internal.core.JavaElement.newNotPresentException(JavaElement.java:546)\n\tat org.eclipse.jdt.internal.core.PackageFragmentRoot.getUnderlyingResource(PackageFragmentRoot.java:768)\n\tat org.eclipse.jdt.internal.core.PackageFragment.getUnderlyingResource(PackageFragment.java:417)\n\tat org.eclipse.jdt.internal.core.Openable.getUnderlyingResource(Openable.java:333)\n\tat org.eclipse.jdt.internal.core.CompilationUnit.getUnderlyingResource(CompilationUnit.java:1094)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDiagnosticsHandler.collectNonJavaProblems(BaseDiagnosticsHandler.java:198)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDiagnosticsHandler.endReporting(BaseDiagnosticsHandler.java:149)\n\tat org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.reportProblems(ReconcileWorkingCopyOperation.java:157)\n\tat org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.executeOperation(ReconcileWorkingCopyOperation.java:126)\n\tat org.eclipse.jdt.internal.core.JavaModelOperation.run(JavaModelOperation.java:751)\n\tat org.eclipse.jdt.internal.core.JavaModelOperation.runOperation(JavaModelOperation.java:816)\n\tat org.eclipse.jdt.internal.core.CompilationUnit.reconcile(CompilationUnit.java:1430)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler.publishDiagnostics(BaseDocumentLifeCycleHandler.java:338)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler.publishDiagnostics(BaseDocumentLifeCycleHandler.java:301)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler$PublishDiagnosticJob.run(BaseDocumentLifeCycleHandler.java:798)\n\tat org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)\n"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/generatedProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 0,
+                "character": 0
+              },
+              "end": {
+                "line": 0,
+                "character": 1
+              }
+            },
+            "severity": 2,
+            "code": "32",
+            "source": "Java",
+            "message": "generatedProbe.java is not on the classpath of project TeamCode, only syntax errors are reported"
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "window/logMessage",
+      "params": {
+        "type": 1,
+        "message": "6 Oct 2026, 14:59:23 src/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\nsrc/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\nJava Model Exception: Error in Java Model (code 969): src/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\n\tat org.eclipse.jdt.internal.core.JavaElement.newNotPresentException(JavaElement.java:546)\n\tat org.eclipse.jdt.internal.core.PackageFragmentRoot.getUnderlyingResource(PackageFragmentRoot.java:768)\n\tat org.eclipse.jdt.internal.core.PackageFragment.getUnderlyingResource(PackageFragment.java:417)\n\tat org.eclipse.jdt.internal.core.Openable.getUnderlyingResource(Openable.java:333)\n\tat org.eclipse.jdt.internal.core.CompilationUnit.getUnderlyingResource(CompilationUnit.java:1094)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDiagnosticsHandler.collectNonJavaProblems(BaseDiagnosticsHandler.java:198)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDiagnosticsHandler.endReporting(BaseDiagnosticsHandler.java:149)\n\tat org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.reportProblems(ReconcileWorkingCopyOperation.java:157)\n\tat org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.executeOperation(ReconcileWorkingCopyOperation.java:126)\n\tat org.eclipse.jdt.internal.core.JavaModelOperation.run(JavaModelOperation.java:751)\n\tat org.eclipse.jdt.internal.core.JavaModelOperation.runOperation(JavaModelOperation.java:816)\n\tat org.eclipse.jdt.internal.core.CompilationUnit.reconcile(CompilationUnit.java:1430)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler.publishDiagnostics(BaseDocumentLifeCycleHandler.java:338)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler.publishDiagnostics(BaseDocumentLifeCycleHandler.java:301)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler$PublishDiagnosticJob.run(BaseDocumentLifeCycleHandler.java:798)\n\tat org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)\n"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/generatedProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 0,
+                "character": 0
+              },
+              "end": {
+                "line": 0,
+                "character": 1
+              }
+            },
+            "severity": 2,
+            "code": "32",
+            "source": "Java",
+            "message": "generatedProbe.java is not on the classpath of project TeamCode, only syntax errors are reported"
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/generatedProbe.java",
+        "diagnostics": []
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "window/logMessage",
+      "params": {
+        "type": 1,
+        "message": "6 Oct 2026, 14:59:33 src/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\nsrc/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\nJava Model Exception: Error in Java Model (code 969): src/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\n\tat org.eclipse.jdt.internal.core.JavaElement.newNotPresentException(JavaElement.java:546)\n\tat org.eclipse.jdt.internal.core.PackageFragmentRoot.getUnderlyingResource(PackageFragmentRoot.java:768)\n\tat org.eclipse.jdt.internal.core.PackageFragment.getUnderlyingResource(PackageFragment.java:417)\n\tat org.eclipse.jdt.internal.core.Openable.getUnderlyingResource(Openable.java:333)\n\tat org.eclipse.jdt.internal.core.CompilationUnit.getUnderlyingResource(CompilationUnit.java:1094)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDiagnosticsHandler.collectNonJavaProblems(BaseDiagnosticsHandler.java:198)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDiagnosticsHandler.endReporting(BaseDiagnosticsHandler.java:149)\n\tat org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.reportProblems(ReconcileWorkingCopyOperation.java:157)\n\tat org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.executeOperation(ReconcileWorkingCopyOperation.java:126)\n\tat org.eclipse.jdt.internal.core.JavaModelOperation.run(JavaModelOperation.java:751)\n\tat org.eclipse.jdt.internal.core.JavaModelOperation.runOperation(JavaModelOperation.java:816)\n\tat org.eclipse.jdt.internal.core.CompilationUnit.reconcile(CompilationUnit.java:1430)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler.publishDiagnostics(BaseDocumentLifeCycleHandler.java:338)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler.publishDiagnostics(BaseDocumentLifeCycleHandler.java:301)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler$PublishDiagnosticJob.run(BaseDocumentLifeCycleHandler.java:798)\n\tat org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)\n"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/pedroProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 0,
+                "character": 0
+              },
+              "end": {
+                "line": 0,
+                "character": 1
+              }
+            },
+            "severity": 2,
+            "code": "32",
+            "source": "Java",
+            "message": "pedroProbe.java is not on the classpath of project TeamCode, only syntax errors are reported"
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "window/logMessage",
+      "params": {
+        "type": 1,
+        "message": "6 Oct 2026, 14:59:33 src/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\nsrc/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\nJava Model Exception: Error in Java Model (code 969): src/main/java/org/firstinspires/ftc/teamcode [in TeamCode] does not exist\n\tat org.eclipse.jdt.internal.core.JavaElement.newNotPresentException(JavaElement.java:546)\n\tat org.eclipse.jdt.internal.core.PackageFragmentRoot.getUnderlyingResource(PackageFragmentRoot.java:768)\n\tat org.eclipse.jdt.internal.core.PackageFragment.getUnderlyingResource(PackageFragment.java:417)\n\tat org.eclipse.jdt.internal.core.Openable.getUnderlyingResource(Openable.java:333)\n\tat org.eclipse.jdt.internal.core.CompilationUnit.getUnderlyingResource(CompilationUnit.java:1094)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDiagnosticsHandler.collectNonJavaProblems(BaseDiagnosticsHandler.java:198)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDiagnosticsHandler.endReporting(BaseDiagnosticsHandler.java:149)\n\tat org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.reportProblems(ReconcileWorkingCopyOperation.java:157)\n\tat org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.executeOperation(ReconcileWorkingCopyOperation.java:126)\n\tat org.eclipse.jdt.internal.core.JavaModelOperation.run(JavaModelOperation.java:751)\n\tat org.eclipse.jdt.internal.core.JavaModelOperation.runOperation(JavaModelOperation.java:816)\n\tat org.eclipse.jdt.internal.core.CompilationUnit.reconcile(CompilationUnit.java:1430)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler.publishDiagnostics(BaseDocumentLifeCycleHandler.java:338)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler.publishDiagnostics(BaseDocumentLifeCycleHandler.java:301)\n\tat org.eclipse.jdt.ls.core.internal.handlers.BaseDocumentLifeCycleHandler$PublishDiagnosticJob.run(BaseDocumentLifeCycleHandler.java:798)\n\tat org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)\n"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/pedroProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 0,
+                "character": 0
+              },
+              "end": {
+                "line": 0,
+                "character": 1
+              }
+            },
+            "severity": 2,
+            "code": "32",
+            "source": "Java",
+            "message": "pedroProbe.java is not on the classpath of project TeamCode, only syntax errors are reported"
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/pedro/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/pedroProbe.java",
+        "diagnostics": []
+      }
+    }
+  ],
+  "stderr": "Oct 06, 2026 2:58:47 PM org.apache.aries.spifly.BaseActivator log\nINFO: Registered provider ch.qos.logback.classic.servlet.LogbackServletContainerInitializer of service jakarta.servlet.ServletContainerInitializer in bundle ch.qos.logback.classic\nOct 06, 2026 2:58:47 PM org.apache.aries.spifly.BaseActivator log\nINFO: Registered provider ch.qos.logback.classic.spi.LogbackServiceProvider of service org.slf4j.spi.SLF4JServiceProvider in bundle ch.qos.logback.classic\n"
+}

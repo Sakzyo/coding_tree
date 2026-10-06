@@ -1,0 +1,81 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-evaluation/m5-03.test.ts:
+(pass) candidate launch separates editor Java from Gradle Java and uses only explicit paths [4.40ms]
+(pass) candidate rejects implicit runtimes, bad pins and unsupported hosts before launch [1.01ms]
+(pass) evaluation process tree cleanup after exit [121.60ms]
+(pass) evaluation process tree cleanup after abort [315.67ms]
+(pass) evaluation process tree cleanup after timeout [316.16ms]
+(pass) candidate rejects a nonnumeric editor version [0.61ms]
+(pass) candidate preserves the configured build JDK level [0.22ms]
+{"exit":0,"stdout":"","stderr":""}
+{"mode":"native","observations":[{"name":"FTC","valid":false,"definition":false,"completion":false,"invalid":false},{"name":"Android","valid":false,"definition":false,"completion":false,"invalid":false},{"name":"generated","valid":false,"definition":false,"completion":false,"invalid":false},{"name":"roadrunner","valid":false,"definition":false,"completion":false,"invalid":false}]}
+{"daemonCleanup":{"exit":0,"stdout":"Stopping Daemon(s)\n1 Daemon stopped\n","stderr":""}}
+48 |         completion: candidates.some((candidate) => candidate.label.startsWith(expected.member)),
+49 |         invalid: item.invalid.state !== "unavailable" && item.invalid.diagnostics?.some((diagnostic) => diagnostic.severity === 1 && diagnostic.message.includes("missingM503Symbol")),
+50 |       }
+51 |     })
+52 |     console.log(JSON.stringify({ mode: config.mode ?? "native", observations }))
+53 |     expect(observations).toEqual(config.cases.map((item: { name: string }) => ({ name: item.name, valid: true, definition: true, completion: true, invalid: true })))
+                              ^
+error: expect(received).toEqual(expected)
+
+  [
+    {
+-     "completion": true,
+-     "definition": true,
+-     "invalid": true,
++     "completion": false,
++     "definition": false,
++     "invalid": false,
+      "name": "FTC",
+-     "valid": true,
++     "valid": false,
+    },
+    {
+-     "completion": true,
+-     "definition": true,
+-     "invalid": true,
++     "completion": false,
++     "definition": false,
++     "invalid": false,
+      "name": "Android",
+-     "valid": true,
++     "valid": false,
+    },
+    {
+-     "completion": true,
+-     "definition": true,
+-     "invalid": true,
++     "completion": false,
++     "definition": false,
++     "invalid": false,
+      "name": "generated",
+-     "valid": true,
++     "valid": false,
+    },
+    {
+-     "completion": true,
+-     "definition": true,
+-     "invalid": true,
++     "completion": false,
++     "definition": false,
++     "invalid": false,
+      "name": "roadrunner",
+-     "valid": true,
++     "valid": false,
+    },
+  ]
+
+- Expected  - 16
++ Received  + 16
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-evaluation/m5-03.test.ts:53:26)
+(fail) real pinned JDT LS: FTC Android generated and pathing symbols resolve [60568.61ms]
+(skip) NOT RUN: Windows JDT LS FTC Android generated PedroPathing Road Runner import and process-tree disposal
+
+ 7 pass
+ 1 skip
+ 1 fail
+ 27 expect() calls
+Ran 9 tests across 1 file. [61.42s]

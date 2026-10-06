@@ -1,0 +1,63 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-evaluation/m5-03.test.ts:
+(pass) candidate launch separates editor Java from Gradle Java and uses only explicit paths [4.76ms]
+(pass) candidate rejects implicit runtimes, bad pins and unsupported hosts before launch [0.85ms]
+(pass) evaluation process tree cleanup after exit [121.00ms]
+(pass) evaluation process tree cleanup after abort [314.98ms]
+(pass) evaluation process tree cleanup after timeout [316.76ms]
+(pass) candidate rejects a nonnumeric editor version [0.75ms]
+(pass) candidate preserves the configured build JDK level [0.35ms]
+(pass) candidate cannot manufacture a runtime name from a nonnumeric build JDK pin [0.23ms]
+(skip) real pinned JDT LS: FTC Android generated and pathing symbols resolve
+(skip) NOT RUN: Windows JDT LS FTC Android generated PedroPathing Road Runner import and process-tree disposal
+
+test/ftc-adapters/action-boundary-probe.test.ts:
+(pass) owned process tree is gone after exit, including TERM-resistant inherited-pipe descendants [127.09ms]
+(pass) owned process tree is gone after timeout, including TERM-resistant inherited-pipe descendants [264.33ms]
+(pass) owned process tree is gone after abort, including TERM-resistant inherited-pipe descendants [264.43ms]
+123 | async function probe(mode: "http" | "websocket", restricted: boolean, gradle?: string) {
+124 |   const received: string[] = []
+125 |   const directory = await mkdtemp(path.join(tmpdir(), "m9-07-"))
+126 |   const cleanup = { safe: true }
+127 |   try {
+128 |     const server = Bun.serve({
+                             ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at probe (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/action-boundary-probe.test.ts:128:24)
+(fail) unrestricted absolute binary reaches owned HTTP broker despite filtered PATH [5.76ms]
+123 | async function probe(mode: "http" | "websocket", restricted: boolean, gradle?: string) {
+124 |   const received: string[] = []
+125 |   const directory = await mkdtemp(path.join(tmpdir(), "m9-07-"))
+126 |   const cleanup = { safe: true }
+127 |   try {
+128 |     const server = Bun.serve({
+                             ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at probe (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/action-boundary-probe.test.ts:128:24)
+(fail) unrestricted process can send a dashboard-style WebSocket write [0.51ms]
+(skip) macOS candidate permits local development subprocess execution
+(skip) macOS candidate denies HTTP access to owned controller/broker fixture
+(skip) macOS candidate denies dashboard-style WebSocket writes
+(skip) real absolute ADB binary executes with filtered PATH (version only)
+(skip) real offline Gradle task reaches owned broker fixture without isolation
+(skip) NOT RUN: Windows process, USB, controller/broker and embedded dashboard isolation
+(skip) NOT RUN: macOS physical USB API and real controller HTTP/WebSocket denial
+(skip) NOT RUN: production extension/MCP descendants and broker capability isolation
+(skip) NOT RUN: real Electron embedded controls, preload/IPC, navigation and permissions
+
+test/ftc-adapters/java-import.test.ts:
+
+ 11 pass
+ 11 skip
+ 2 fail
+ 41 expect() calls
+Ran 24 tests across 3 files. [1.53s]

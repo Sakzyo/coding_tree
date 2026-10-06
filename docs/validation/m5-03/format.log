@@ -1,0 +1,4 @@
+packages/core/src/ftc/java/language-service.ts 43ms (unchanged)
+packages/core/test/ftc-adapters/java-import.test.ts 19ms (unchanged)
+packages/core/test/ftc-adapters/fixtures/java-import/owned.ts 9ms (unchanged)
+packages/core/test/ftc-evaluation/m5-03.test.ts 16ms (unchanged)

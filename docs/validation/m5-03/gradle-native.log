@@ -1,0 +1,102 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.9/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build
+WARNING: platform-tools package is not installed.
+
+> Task :TeamCode:m503Classpath FAILED
+M503_BOOT=/private/tmp/m5-03-tools/sdk/platforms/android-30/android.jar:/private/tmp/m5-03-tools/sdk/build-tools/34.0.0/core-lambda-stubs.jar
+
+FAILURE: Build failed with an exception.
+
+* Where:
+Initialization script '/private/tmp/m5-03-tools/native-init.gradle' line: 1
+
+* What went wrong:
+Execution failed for task ':TeamCode:m503Classpath'.
+> Could not resolve all files for configuration ':TeamCode:debugCompileClasspath'.
+   > Could not download appcompat-1.2.0.aar (androidx.appcompat:appcompat:1.2.0): No cached version available for offline mode
+   > The consumer was configured to find a library for use during compile-time, preferably optimized for Android, as well as attribute 'com.android.build.api.attributes.AgpVersionAttr' with value '8.7.0', attribute 'com.android.build.api.attributes.BuildTypeAttr' with value 'debug', attribute 'org.jetbrains.kotlin.platform.type' with value 'androidJvm'. However we cannot choose between the following variants of project :FtcRobotController:
+       - Configuration ':FtcRobotController:debugApiElements' variant android-classes-jar declares a component for use during compile-time, as well as attribute 'com.android.build.api.attributes.AgpVersionAttr' with value '8.7.0', attribute 'com.android.build.api.attributes.BuildTypeAttr' with value 'debug':
+           - Unmatched attributes:
+               - Doesn't say anything about its component category (required a library)
+               - Doesn't say anything about its target Java environment (preferred optimized for Android)
+               - Doesn't say anything about org.jetbrains.kotlin.platform.type (required 'androidJvm')
+               - Provides attribute 'artifactType' with value 'android-classes-jar' but the consumer didn't ask for it
+               - Provides attribute 'com.android.build.gradle.internal.attributes.VariantAttr' with value 'debug' but the consumer didn't ask for it
+               - Provides its elements packaged as a jar but the consumer didn't ask for it
+       - Configuration ':FtcRobotController:debugApiElements' variant android-lint declares a component for use during compile-time, as well as attribute 'com.android.build.api.attributes.AgpVersionAttr' with value '8.7.0', attribute 'com.android.build.api.attributes.BuildTypeAttr' with value 'debug':
+           - Unmatched attributes:
+               - Doesn't say anything about its component category (required a library)
+               - Doesn't say anything about its target Java environment (preferred optimized for Android)
+               - Doesn't say anything about org.jetbrains.kotlin.platform.type (required 'androidJvm')
+               - Provides attribute 'artifactType' with value 'android-lint' but the consumer didn't ask for it
+               - Provides attribute 'com.android.build.gradle.internal.attributes.VariantAttr' with value 'debug' but the consumer didn't ask for it
+               - Provides its elements packaged as a jar but the consumer didn't ask for it
+       - Configuration ':FtcRobotController:debugApiElements' variant android-lint-local-aar declares a component for use during compile-time, as well as attribute 'com.android.build.api.attributes.AgpVersionAttr' with value '8.7.0', attribute 'com.android.build.api.attributes.BuildTypeAttr' with value 'debug':
+           - Unmatched attributes:
+               - Doesn't say anything about its component category (required a library)
+               - Doesn't say anything about its target Java environment (preferred optimized for Android)
+               - Doesn't say anything about org.jetbrains.kotlin.platform.type (required 'androidJvm')
+               - Provides attribute 'artifactType' with value 'android-lint-local-aar' but the consumer didn't ask for it
+               - Provides attribute 'com.android.build.gradle.internal.attributes.VariantAttr' with value 'debug' but the consumer didn't ask for it
+       - Configuration ':FtcRobotController:debugApiElements' variant android-manifest declares a component for use during compile-time, as well as attribute 'com.android.build.api.attributes.AgpVersionAttr' with value '8.7.0', attribute 'com.android.build.api.attributes.BuildTypeAttr' with value 'debug':
+           - Unmatched attributes:
+               - Doesn't say anything about its component category (required a library)
+               - Doesn't say anything about its target Java environment (preferred optimized for Android)
+               - Doesn't say anything about org.jetbrains.kotlin.platform.type (required 'androidJvm')
+               - Provides attribute 'artifactType' with value 'android-manifest' but the consumer didn't ask for it
+               - Provides attribute 'com.android.build.gradle.internal.attributes.VariantAttr' with value 'debug' but the consumer didn't ask for it
+       - Configuration ':FtcRobotController:debugApiElements' variant android-renderscript declares a component for use during compile-time, as well as attribute 'com.android.build.api.attributes.AgpVersionAttr' with value '8.7.0', attribute 'com.android.build.api.attributes.BuildTypeAttr' with value 'debug':
+           - Unmatched attributes:
+               - Doesn't say anything about its component category (required a library)
+               - Doesn't say anything about its target Java environment (preferred optimized for Android)
+               - Doesn't say anything about org.jetbrains.kotlin.platform.type (required 'androidJvm')
+               - Provides attribute 'artifactType' with value 'android-renderscript' but the consumer didn't ask for it
+               - Provides attribute 'com.android.build.gradle.internal.attributes.VariantAttr' with value 'debug' but the consumer didn't ask for it
+       - Configuration ':FtcRobotController:debugApiElements' variant android-symbol-with-package-name declares a component for use during compile-time, as well as attribute 'com.android.build.api.attributes.AgpVersionAttr' with value '8.7.0', attribute 'com.android.build.api.attributes.BuildTypeAttr' with value 'debug':
+           - Unmatched attributes:
+               - Doesn't say anything about its component category (required a library)
+               - Doesn't say anything about its target Java environment (preferred optimized for Android)
+               - Doesn't say anything about org.jetbrains.kotlin.platform.type (required 'androidJvm')
+               - Provides attribute 'artifactType' with value 'android-symbol-with-package-name' but the consumer didn't ask for it
+               - Provides attribute 'com.android.build.gradle.internal.attributes.VariantAttr' with value 'debug' but the consumer didn't ask for it
+       - Configuration ':FtcRobotController:debugApiElements' variant jar declares a component for use during compile-time, as well as attribute 'com.android.build.api.attributes.AgpVersionAttr' with value '8.7.0', attribute 'com.android.build.api.attributes.BuildTypeAttr' with value 'debug':
+           - Unmatched attributes:
+               - Doesn't say anything about its component category (required a library)
+               - Doesn't say anything about its target Java environment (preferred optimized for Android)
+               - Doesn't say anything about org.jetbrains.kotlin.platform.type (required 'androidJvm')
+               - Provides attribute 'artifactType' with value 'jar' but the consumer didn't ask for it
+               - Provides attribute 'com.android.build.gradle.internal.attributes.VariantAttr' with value 'debug' but the consumer didn't ask for it
+               - Provides its elements packaged as a jar but the consumer didn't ask for it
+       - Configuration ':FtcRobotController:debugApiElements' variant r-class-jar declares a component for use during compile-time, as well as attribute 'com.android.build.api.attributes.AgpVersionAttr' with value '8.7.0', attribute 'com.android.build.api.attributes.BuildTypeAttr' with value 'debug':
+           - Unmatched attributes:
+               - Doesn't say anything about its component category (required a library)
+               - Doesn't say anything about its target Java environment (preferred optimized for Android)
+               - Doesn't say anything about org.jetbrains.kotlin.platform.type (required 'androidJvm')
+               - Provides attribute 'artifactType' with value 'r-class-jar' but the consumer didn't ask for it
+               - Provides attribute 'com.android.build.gradle.internal.attributes.VariantAttr' with value 'debug' but the consumer didn't ask for it
+               - Provides its elements packaged as a jar but the consumer didn't ask for it
+   > Could not download fragment-1.1.0.aar (androidx.fragment:fragment:1.1.0): No cached version available for offline mode
+   > Could not download appcompat-resources-1.2.0.aar (androidx.appcompat:appcompat-resources:1.2.0): No cached version available for offline mode
+   > Could not download activity-1.0.0.aar (androidx.activity:activity:1.0.0): No cached version available for offline mode
+   > Could not download core-1.3.0.aar (androidx.core:core:1.3.0): No cached version available for offline mode
+   > Could not download lifecycle-runtime-2.1.0.aar (androidx.lifecycle:lifecycle-runtime:2.1.0): No cached version available for offline mode
+   > Could not download versionedparcelable-1.1.0.aar (androidx.versionedparcelable:versionedparcelable:1.1.0): No cached version available for offline mode
+   > Could not download lifecycle-viewmodel-2.1.0.aar (androidx.lifecycle:lifecycle-viewmodel:2.1.0): No cached version available for offline mode
+   > Could not download savedstate-1.0.0.aar (androidx.savedstate:savedstate:1.0.0): No cached version available for offline mode
+   > Could not download lifecycle-livedata-2.0.0.aar (androidx.lifecycle:lifecycle-livedata:2.0.0): No cached version available for offline mode
+   > Could not download lifecycle-livedata-core-2.0.0.aar (androidx.lifecycle:lifecycle-livedata-core:2.0.0): No cached version available for offline mode
+   > Could not download lifecycle-common-2.1.0.jar (androidx.lifecycle:lifecycle-common:2.1.0): No cached version available for offline mode
+   > Could not download core-runtime-2.0.0.aar (androidx.arch.core:core-runtime:2.0.0): No cached version available for offline mode
+   > Could not download core-common-2.1.0.jar (androidx.arch.core:core-common:2.1.0): No cached version available for offline mode
+   > Could not download annotation-1.2.0.jar (androidx.annotation:annotation:1.2.0): No cached version available for offline mode
+
+* Try:
+> Ambiguity errors are explained in more detail at https://docs.gradle.org/8.9/userguide/variant_model.html#sub:variant-ambiguity.
+> Review the variant matching algorithm at https://docs.gradle.org/8.9/userguide/variant_attributes.html#sec:abm_algorithm.
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 7s
+1 actionable task: 1 executed

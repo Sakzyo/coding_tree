@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-evaluation/m5-03.test.ts:
+(pass) candidate launch separates editor Java from Gradle Java and uses only explicit paths [4.09ms]
+(pass) candidate rejects implicit runtimes, bad pins and unsupported hosts before launch [0.83ms]
+(pass) evaluation process tree cleanup after exit [121.08ms]
+(pass) evaluation process tree cleanup after abort [318.33ms]
+(pass) evaluation process tree cleanup after timeout [316.46ms]
+(pass) candidate rejects a nonnumeric editor version [0.60ms]
+(pass) candidate preserves the configured build JDK level [0.23ms]
+(pass) candidate cannot manufacture a runtime name from a nonnumeric build JDK pin [0.20ms]
+{"exit":0,"stdout":"","stderr":""}
+{"mode":"classpath","observations":[{"name":"FTC","valid":true,"definition":true,"completion":true,"invalid":true},{"name":"Android","valid":true,"definition":true,"completion":true,"invalid":true},{"name":"generated","valid":true,"definition":true,"completion":true,"invalid":true},{"name":"pedro","valid":true,"definition":true,"completion":true,"invalid":true}]}
+{"daemonCleanup":{"exit":0,"stdout":"No Gradle daemons are running.\n","stderr":""}}
+(pass) real pinned JDT LS: FTC Android generated and pathing symbols resolve [12772.25ms]
+(skip) NOT RUN: Windows JDT LS FTC Android generated PedroPathing Road Runner import and process-tree disposal
+
+ 9 pass
+ 1 skip
+ 0 fail
+ 28 expect() calls
+Ran 10 tests across 1 file. [13.63s]

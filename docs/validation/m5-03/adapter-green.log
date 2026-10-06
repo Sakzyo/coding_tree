@@ -1,0 +1,13 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-adapters/java-import.test.ts:
+(pass) candidate launch separates editor Java from Gradle Java and uses only explicit paths [4.27ms]
+(pass) candidate rejects implicit runtimes, bad pins and unsupported hosts before launch [0.78ms]
+(pass) evaluation process tree cleanup after exit [121.17ms]
+(pass) evaluation process tree cleanup after abort [318.74ms]
+(pass) evaluation process tree cleanup after timeout [316.06ms]
+
+ 5 pass
+ 0 fail
+ 20 expect() calls
+Ran 5 tests across 1 file. [856.00ms]

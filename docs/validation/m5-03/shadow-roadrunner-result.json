@@ -1,0 +1,969 @@
+{
+  "root": "/private/tmp/m5-03-tools/shadow-roadrunner",
+  "cases": [
+    {
+      "name": "FTC",
+      "valid": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/FTCProbe.java",
+        "diagnostics": []
+      },
+      "definition": [
+        {
+          "uri": "jdt://contents/3-RobotCore-11.1.0-api.jar/com.qualcomm.robotcore.hardware/DcMotor.class?=shadow-roadrunner/lib%5C/3-RobotCore-11.1.0-api.jar%3Ccom.qualcomm.robotcore.hardware(DcMotor.class",
+          "range": {
+            "start": {
+              "line": 5,
+              "character": 17
+            },
+            "end": {
+              "line": 5,
+              "character": 24
+            }
+          }
+        }
+      ],
+      "completion": {
+        "isIncomplete": false,
+        "items": [
+          {
+            "label": "setDirection(Direction arg0) : void",
+            "kind": 2,
+            "detail": "DcMotorSimple.setDirection(Direction arg0) : void",
+            "sortText": "999999035",
+            "filterText": "setDirection",
+            "insertText": "setDirection",
+            "insertTextFormat": 2,
+            "insertTextMode": 2,
+            "textEdit": {
+              "range": {
+                "start": {
+                  "line": 3,
+                  "character": 37
+                },
+                "end": {
+                  "line": 3,
+                  "character": 40
+                }
+              },
+              "newText": "setDirection"
+            },
+            "command": {
+              "title": "",
+              "command": "java.completion.onDidSelect",
+              "arguments": [
+                "0",
+                "0"
+              ]
+            },
+            "data": {
+              "pid": "0",
+              "rid": "0"
+            }
+          },
+          {
+            "label": "setMode(RunMode arg0) : void",
+            "kind": 2,
+            "detail": "DcMotor.setMode(RunMode arg0) : void",
+            "sortText": "999999035",
+            "filterText": "setMode",
+            "insertText": "setMode",
+            "insertTextFormat": 2,
+            "insertTextMode": 2,
+            "textEdit": {
+              "range": {
+                "start": {
+                  "line": 3,
+                  "character": 37
+                },
+                "end": {
+                  "line": 3,
+                  "character": 40
+                }
+              },
+              "newText": "setMode"
+            },
+            "command": {
+              "title": "",
+              "command": "java.completion.onDidSelect",
+              "arguments": [
+                "0",
+                "1"
+              ]
+            },
+            "data": {
+              "pid": "1",
+              "rid": "0"
+            }
+          },
+          {
+            "label": "setMotorType(MotorConfigurationType arg0) : void",
+            "kind": 2,
+            "detail": "DcMotor.setMotorType(MotorConfigurationType arg0) : void",
+            "sortText": "999999035",
+            "filterText": "setMotorType",
+            "insertText": "setMotorType",
+            "insertTextFormat": 2,
+            "insertTextMode": 2,
+            "textEdit": {
+              "range": {
+                "start": {
+                  "line": 3,
+                  "character": 37
+                },
+                "end": {
+                  "line": 3,
+                  "character": 40
+                }
+              },
+              "newText": "setMotorType"
+            },
+            "command": {
+              "title": "",
+              "command": "java.completion.onDidSelect",
+              "arguments": [
+                "0",
+                "2"
+              ]
+            },
+            "data": {
+              "pid": "2",
+              "rid": "0"
+            }
+          },
+          {
+            "label": "setPowerFloat() : void",
+            "kind": 2,
+            "detail": "DcMotor.setPowerFloat() : void",
+            "deprecated": true,
+            "sortText": "999999035",
+            "filterText": "setPowerFloat",
+            "insertText": "setPowerFloat",
+            "insertTextFormat": 2,
+            "insertTextMode": 2,
+            "textEdit": {
+              "range": {
+                "start": {
+                  "line": 3,
+                  "character": 37
+                },
+                "end": {
+                  "line": 3,
+                  "character": 40
+                }
+              },
+              "newText": "setPowerFloat"
+            },
+            "command": {
+              "title": "",
+              "command": "java.completion.onDidSelect",
+              "arguments": [
+                "0",
+                "3"
+              ]
+            },
+            "data": {
+              "pid": "3",
+              "rid": "0"
+            }
+          },
+          {
+            "label": "setPower(double arg0) : void",
+            "kind": 2,
+            "detail": "DcMotorSimple.setPower(double arg0) : void",
+            "sortText": "999999035",
+            "filterText": "setPower",
+            "insertText": "setPower",
+            "insertTextFormat": 2,
+            "insertTextMode": 2,
+            "textEdit": {
+              "range": {
+                "start": {
+                  "line": 3,
+                  "character": 37
+                },
+                "end": {
+                  "line": 3,
+                  "character": 40
+                }
+              },
+              "newText": "setPower"
+            },
+            "command": {
+              "title": "",
+              "command": "java.completion.onDidSelect",
+              "arguments": [
+                "0",
+                "4"
+              ]
+            },
+            "data": {
+              "pid": "4",
+              "rid": "0"
+            }
+          },
+          {
+            "label": "setTargetPosition(int arg0) : void",
+            "kind": 2,
+            "detail": "DcMotor.setTargetPosition(int arg0) : void",
+            "sortText": "999999035",
+            "filterText": "setTargetPosition",
+            "insertText": "setTargetPosition",
+            "insertTextFormat": 2,
+            "insertTextMode": 2,
+            "textEdit": {
+              "range": {
+                "start": {
+                  "line": 3,
+                  "character": 37
+                },
+                "end": {
+                  "line": 3,
+                  "character": 40
+                }
+              },
+              "newText": "setTargetPosition"
+            },
+            "command": {
+              "title": "",
+              "command": "java.completion.onDidSelect",
+              "arguments": [
+                "0",
+                "5"
+              ]
+            },
+            "data": {
+              "pid": "5",
+              "rid": "0"
+            }
+          },
+          {
+            "label": "setZeroPowerBehavior(ZeroPowerBehavior arg0) : void",
+            "kind": 2,
+            "detail": "DcMotor.setZeroPowerBehavior(ZeroPowerBehavior arg0) : void",
+            "sortText": "999999035",
+            "filterText": "setZeroPowerBehavior",
+            "insertText": "setZeroPowerBehavior",
+            "insertTextFormat": 2,
+            "insertTextMode": 2,
+            "textEdit": {
+              "range": {
+                "start": {
+                  "line": 3,
+                  "character": 37
+                },
+                "end": {
+                  "line": 3,
+                  "character": 40
+                }
+              },
+              "newText": "setZeroPowerBehavior"
+            },
+            "command": {
+              "title": "",
+              "command": "java.completion.onDidSelect",
+              "arguments": [
+                "0",
+                "6"
+              ]
+            },
+            "data": {
+              "pid": "6",
+              "rid": "0"
+            }
+          }
+        ]
+      },
+      "invalid": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/FTCProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 3,
+                "character": 37
+              },
+              "end": {
+                "line": 3,
+                "character": 54
+              }
+            },
+            "severity": 1,
+            "code": "67108964",
+            "source": "Java",
+            "message": "The method missingM503Symbol(double) is undefined for the type DcMotor"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Android",
+      "valid": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/AndroidProbe.java",
+        "diagnostics": []
+      },
+      "definition": [
+        {
+          "uri": "jdt://contents/45-android.jar/android.os/Build.class?=shadow-roadrunner/lib%5C/45-android.jar%3Candroid.os(Build.class",
+          "range": {
+            "start": {
+              "line": 6,
+              "character": 13
+            },
+            "end": {
+              "line": 6,
+              "character": 18
+            }
+          }
+        }
+      ],
+      "completion": {
+        "isIncomplete": false,
+        "items": [
+          {
+            "label": "SDK_INT : int",
+            "kind": 21,
+            "detail": "Build.VERSION.SDK_INT : int",
+            "sortText": "999998698",
+            "filterText": "SDK_INT",
+            "insertText": "SDK_INT",
+            "insertTextFormat": 2,
+            "insertTextMode": 2,
+            "textEdit": {
+              "range": {
+                "start": {
+                  "line": 3,
+                  "character": 38
+                },
+                "end": {
+                  "line": 3,
+                  "character": 41
+                }
+              },
+              "newText": "SDK_INT"
+            },
+            "command": {
+              "title": "",
+              "command": "java.completion.onDidSelect",
+              "arguments": [
+                "2",
+                "0"
+              ]
+            },
+            "data": {
+              "pid": "0",
+              "rid": "2"
+            }
+          },
+          {
+            "label": "SDK : String",
+            "kind": 21,
+            "detail": "Build.VERSION.SDK : String",
+            "deprecated": true,
+            "sortText": "999999114",
+            "filterText": "SDK",
+            "insertText": "SDK",
+            "insertTextFormat": 2,
+            "insertTextMode": 2,
+            "textEdit": {
+              "range": {
+                "start": {
+                  "line": 3,
+                  "character": 38
+                },
+                "end": {
+                  "line": 3,
+                  "character": 41
+                }
+              },
+              "newText": "SDK"
+            },
+            "command": {
+              "title": "",
+              "command": "java.completion.onDidSelect",
+              "arguments": [
+                "2",
+                "1"
+              ]
+            },
+            "data": {
+              "pid": "1",
+              "rid": "2"
+            }
+          }
+        ]
+      },
+      "invalid": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/AndroidProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 3,
+                "character": 38
+              },
+              "end": {
+                "line": 3,
+                "character": 55
+              }
+            },
+            "severity": 1,
+            "code": "33554502",
+            "source": "Java",
+            "message": "missingM503Symbol cannot be resolved or is not a field"
+          }
+        ]
+      }
+    },
+    {
+      "name": "generated",
+      "valid": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/generatedProbe.java",
+        "diagnostics": []
+      },
+      "definition": [
+        {
+          "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/generated/com/qualcomm/ftcrobotcontroller/BuildConfig.java",
+          "range": {
+            "start": {
+              "line": 5,
+              "character": 19
+            },
+            "end": {
+              "line": 5,
+              "character": 30
+            }
+          }
+        }
+      ],
+      "completion": {
+        "isIncomplete": false,
+        "items": [
+          {
+            "label": "DEBUG : boolean",
+            "kind": 21,
+            "detail": "BuildConfig.DEBUG : boolean",
+            "sortText": "999998698",
+            "filterText": "DEBUG",
+            "insertText": "DEBUG",
+            "insertTextFormat": 2,
+            "insertTextMode": 2,
+            "textEdit": {
+              "range": {
+                "start": {
+                  "line": 3,
+                  "character": 40
+                },
+                "end": {
+                  "line": 3,
+                  "character": 43
+                }
+              },
+              "newText": "DEBUG"
+            },
+            "command": {
+              "title": "",
+              "command": "java.completion.onDidSelect",
+              "arguments": [
+                "4",
+                "0"
+              ]
+            },
+            "data": {
+              "pid": "0",
+              "rid": "4"
+            }
+          }
+        ]
+      },
+      "invalid": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/generatedProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 3,
+                "character": 40
+              },
+              "end": {
+                "line": 3,
+                "character": 57
+              }
+            },
+            "severity": 1,
+            "code": "33554502",
+            "source": "Java",
+            "message": "missingM503Symbol cannot be resolved or is not a field"
+          }
+        ]
+      }
+    },
+    {
+      "name": "roadrunner",
+      "valid": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/roadrunnerProbe.java",
+        "diagnostics": []
+      },
+      "definition": [
+        {
+          "uri": "jdt://contents/11-core-1.0.1.jar/com.acmerobotics.roadrunner/Pose2d.class?=shadow-roadrunner/lib%5C/11-core-1.0.1.jar%3Ccom.acmerobotics.roadrunner(Pose2d.class",
+          "range": {
+            "start": {
+              "line": 18,
+              "character": 19
+            },
+            "end": {
+              "line": 18,
+              "character": 25
+            }
+          }
+        }
+      ],
+      "completion": {
+        "isIncomplete": false,
+        "items": [
+          {
+            "label": "position : Vector2d",
+            "kind": 5,
+            "detail": "Pose2d.position : Vector2d",
+            "sortText": "999999034",
+            "filterText": "position",
+            "insertText": "position",
+            "insertTextFormat": 2,
+            "insertTextMode": 2,
+            "textEdit": {
+              "range": {
+                "start": {
+                  "line": 3,
+                  "character": 43
+                },
+                "end": {
+                  "line": 3,
+                  "character": 46
+                }
+              },
+              "newText": "position"
+            },
+            "command": {
+              "title": "",
+              "command": "java.completion.onDidSelect",
+              "arguments": [
+                "6",
+                "0"
+              ]
+            },
+            "data": {
+              "pid": "0",
+              "rid": "6"
+            }
+          }
+        ]
+      },
+      "invalid": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/roadrunnerProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 3,
+                "character": 43
+              },
+              "end": {
+                "line": 3,
+                "character": 60
+              }
+            },
+            "severity": 1,
+            "code": "33554502",
+            "source": "Java",
+            "message": "missingM503Symbol cannot be resolved or is not a field"
+          }
+        ]
+      }
+    }
+  ],
+  "initialize": {
+    "capabilities": {
+      "textDocumentSync": {
+        "openClose": true,
+        "change": 2,
+        "save": {
+          "includeText": true
+        }
+      },
+      "hoverProvider": true,
+      "completionProvider": {
+        "resolveProvider": true,
+        "triggerCharacters": [
+          ".",
+          "@",
+          "#",
+          "*",
+          " "
+        ]
+      },
+      "signatureHelpProvider": {
+        "triggerCharacters": [
+          "(",
+          ","
+        ]
+      },
+      "definitionProvider": true,
+      "typeDefinitionProvider": true,
+      "implementationProvider": true,
+      "referencesProvider": true,
+      "documentHighlightProvider": true,
+      "documentSymbolProvider": true,
+      "workspaceSymbolProvider": true,
+      "codeActionProvider": {
+        "codeActionKinds": [],
+        "resolveProvider": false
+      },
+      "codeLensProvider": {
+        "resolveProvider": true
+      },
+      "documentFormattingProvider": true,
+      "documentRangeFormattingProvider": true,
+      "documentOnTypeFormattingProvider": {
+        "firstTriggerCharacter": ";",
+        "moreTriggerCharacter": [
+          "\n",
+          "}"
+        ]
+      },
+      "renameProvider": {
+        "prepareProvider": true
+      },
+      "foldingRangeProvider": true,
+      "declarationProvider": true,
+      "executeCommandProvider": {
+        "commands": [
+          "java.project.import",
+          "java.project.changeImportedProjects",
+          "java.navigate.openTypeHierarchy",
+          "java.project.resolveStackTraceLocation",
+          "java.edit.handlePasteEvent",
+          "java.edit.stringFormatting",
+          "java.project.getSettings",
+          "java.project.resolveWorkspaceSymbol",
+          "java.project.upgradeGradle",
+          "java.project.createModuleInfo",
+          "java.vm.getAllInstalls",
+          "java.edit.organizeImports",
+          "java.project.refreshDiagnostics",
+          "java.project.removeFromSourcePath",
+          "java.project.listSourcePaths",
+          "java.project.updateSettings",
+          "java.project.getAll",
+          "java.reloadBundles",
+          "java.project.isTestFile",
+          "java.project.resolveText",
+          "java.project.getClasspaths",
+          "java.navigate.resolveTypeHierarchy",
+          "java.edit.smartSemicolonDetection",
+          "java.project.updateSourceAttachment",
+          "java.project.updateClassPaths",
+          "java.decompile",
+          "java.protobuf.generateSources",
+          "java.project.resolveSourceAttachment",
+          "java.project.updateJdk",
+          "java.project.addToSourcePath",
+          "java.completion.onDidSelect"
+        ]
+      },
+      "workspace": {
+        "workspaceFolders": {
+          "supported": true,
+          "changeNotifications": true
+        }
+      },
+      "typeHierarchyProvider": true,
+      "callHierarchyProvider": true,
+      "selectionRangeProvider": true,
+      "semanticTokensProvider": {
+        "legend": {
+          "tokenTypes": [
+            "namespace",
+            "class",
+            "interface",
+            "enum",
+            "enumMember",
+            "type",
+            "typeParameter",
+            "method",
+            "property",
+            "variable",
+            "parameter",
+            "modifier",
+            "keyword",
+            "annotation",
+            "annotationMember",
+            "record",
+            "recordComponent"
+          ],
+          "tokenModifiers": [
+            "abstract",
+            "static",
+            "readonly",
+            "deprecated",
+            "declaration",
+            "documentation",
+            "public",
+            "private",
+            "protected",
+            "native",
+            "generic",
+            "typeArgument",
+            "importDeclaration",
+            "constructor"
+          ]
+        },
+        "range": false,
+        "full": {
+          "delta": false
+        },
+        "documentSelector": [
+          {
+            "language": "java",
+            "scheme": "file"
+          },
+          {
+            "language": "java",
+            "scheme": "jdt"
+          }
+        ]
+      },
+      "inlayHintProvider": true
+    }
+  },
+  "notifications": [
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "Init..."
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "0% Starting Java Language Server"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "ProjectStatus",
+        "message": "OK"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "100% Starting Java Language Server - Refreshing '/shadow-roadrunner'."
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Started",
+        "message": "Ready"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "Starting",
+        "message": "100% Starting Java Language Server - Refreshing '/shadow-roadrunner'."
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "language/status",
+      "params": {
+        "type": "ServiceReady",
+        "message": "ServiceReady"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner",
+        "diagnostics": []
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/FTCProbe.java",
+        "diagnostics": []
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/FTCProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 3,
+                "character": 37
+              },
+              "end": {
+                "line": 3,
+                "character": 54
+              }
+            },
+            "severity": 1,
+            "code": "67108964",
+            "source": "Java",
+            "message": "The method missingM503Symbol(double) is undefined for the type DcMotor"
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/FTCProbe.java",
+        "diagnostics": []
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/AndroidProbe.java",
+        "diagnostics": []
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/AndroidProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 3,
+                "character": 38
+              },
+              "end": {
+                "line": 3,
+                "character": 55
+              }
+            },
+            "severity": 1,
+            "code": "33554502",
+            "source": "Java",
+            "message": "missingM503Symbol cannot be resolved or is not a field"
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/AndroidProbe.java",
+        "diagnostics": []
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/generatedProbe.java",
+        "diagnostics": []
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/generatedProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 3,
+                "character": 40
+              },
+              "end": {
+                "line": 3,
+                "character": 57
+              }
+            },
+            "severity": 1,
+            "code": "33554502",
+            "source": "Java",
+            "message": "missingM503Symbol cannot be resolved or is not a field"
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/generatedProbe.java",
+        "diagnostics": []
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/roadrunnerProbe.java",
+        "diagnostics": []
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/roadrunnerProbe.java",
+        "diagnostics": [
+          {
+            "range": {
+              "start": {
+                "line": 3,
+                "character": 43
+              },
+              "end": {
+                "line": 3,
+                "character": 60
+              }
+            },
+            "severity": 1,
+            "code": "33554502",
+            "source": "Java",
+            "message": "missingM503Symbol cannot be resolved or is not a field"
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "textDocument/publishDiagnostics",
+      "params": {
+        "uri": "file:///private/tmp/m5-03-tools/shadow-roadrunner/src/org/firstinspires/ftc/teamcode/roadrunnerProbe.java",
+        "diagnostics": []
+      }
+    }
+  ],
+  "stderr": "Oct 06, 2026 3:05:02 PM org.apache.aries.spifly.BaseActivator log\nINFO: Registered provider ch.qos.logback.classic.servlet.LogbackServletContainerInitializer of service jakarta.servlet.ServletContainerInitializer in bundle ch.qos.logback.classic\nOct 06, 2026 3:05:02 PM org.apache.aries.spifly.BaseActivator log\nINFO: Registered provider ch.qos.logback.classic.spi.LogbackServiceProvider of service org.slf4j.spi.SLF4JServiceProvider in bundle ch.qos.logback.classic\n"
+}

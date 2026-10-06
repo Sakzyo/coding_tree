@@ -1,0 +1,2 @@
+31686 79630 31686 /bin/zsh -c ps -axo pid,ppid,pgid,command | rg 'm503-lsp|probe.py|GradleDaemon' > docs/validation/m5-03/process-check.log\012cat docs/validation/m5-03/process-check.log
+31688 31686 31686 rg m503-lsp|probe.py|GradleDaemon

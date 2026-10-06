@@ -1,0 +1,52 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-adapters/java-import.test.ts:
+(pass) candidate launch separates editor Java from Gradle Java and uses only explicit paths [4.24ms]
+(pass) candidate rejects implicit runtimes, bad pins and unsupported hosts before launch [0.80ms]
+35 |   const controller = new AbortController()
+36 |   const timer = setTimeout(() => controller.abort(), 200)
+37 |   const running = run(["/bin/sh", path.join(import.meta.dir, "fixtures/action-boundary/tree.sh"), file, mode], { timeout: mode === "timeout" ? 200 : 2000, signal: mode === "abort" ? controller.signal : undefined })
+38 |   try {
+39 |     const result = await Promise.race([running.then(() => "finished", () => "finished"), Bun.sleep(1000).then(() => "stalled")])
+40 |     expect(result).toBe("finished")
+                        ^
+error: expect(received).toBe(expected)
+
+Expected: "finished"
+Received: "stalled"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/java-import.test.ts:40:20)
+(fail) evaluation process tree cleanup after exit [1016.95ms]
+35 |   const controller = new AbortController()
+36 |   const timer = setTimeout(() => controller.abort(), 200)
+37 |   const running = run(["/bin/sh", path.join(import.meta.dir, "fixtures/action-boundary/tree.sh"), file, mode], { timeout: mode === "timeout" ? 200 : 2000, signal: mode === "abort" ? controller.signal : undefined })
+38 |   try {
+39 |     const result = await Promise.race([running.then(() => "finished", () => "finished"), Bun.sleep(1000).then(() => "stalled")])
+40 |     expect(result).toBe("finished")
+                        ^
+error: expect(received).toBe(expected)
+
+Expected: "finished"
+Received: "stalled"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/java-import.test.ts:40:20)
+(fail) evaluation process tree cleanup after abort [1006.62ms]
+35 |   const controller = new AbortController()
+36 |   const timer = setTimeout(() => controller.abort(), 200)
+37 |   const running = run(["/bin/sh", path.join(import.meta.dir, "fixtures/action-boundary/tree.sh"), file, mode], { timeout: mode === "timeout" ? 200 : 2000, signal: mode === "abort" ? controller.signal : undefined })
+38 |   try {
+39 |     const result = await Promise.race([running.then(() => "finished", () => "finished"), Bun.sleep(1000).then(() => "stalled")])
+40 |     expect(result).toBe("finished")
+                        ^
+error: expect(received).toBe(expected)
+
+Expected: "finished"
+Received: "stalled"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/java-import.test.ts:40:20)
+(fail) evaluation process tree cleanup after timeout [1008.56ms]
+
+ 2 pass
+ 3 fail
+ 11 expect() calls
+Ran 5 tests across 1 file. [3.14s]

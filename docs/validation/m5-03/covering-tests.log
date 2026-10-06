@@ -1,0 +1,39 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-evaluation/m5-03.test.ts:
+(pass) candidate launch separates editor Java from Gradle Java and uses only explicit paths [4.27ms]
+(pass) candidate rejects implicit runtimes, bad pins and unsupported hosts before launch [0.79ms]
+(pass) evaluation process tree cleanup after exit [121.12ms]
+(pass) evaluation process tree cleanup after abort [319.99ms]
+(pass) evaluation process tree cleanup after timeout [318.44ms]
+(pass) candidate rejects a nonnumeric editor version [0.39ms]
+(pass) candidate preserves the configured build JDK level [0.17ms]
+(pass) candidate cannot manufacture a runtime name from a nonnumeric build JDK pin [0.17ms]
+(skip) real pinned JDT LS: FTC Android generated and pathing symbols resolve
+(skip) NOT RUN: Windows JDT LS FTC Android generated PedroPathing Road Runner import and process-tree disposal
+
+test/ftc-adapters/action-boundary-probe.test.ts:
+(pass) owned process tree is gone after exit, including TERM-resistant inherited-pipe descendants [126.66ms]
+(pass) owned process tree is gone after timeout, including TERM-resistant inherited-pipe descendants [266.17ms]
+(pass) owned process tree is gone after abort, including TERM-resistant inherited-pipe descendants [267.40ms]
+{"mode":"http","restricted":false,"launcher":"absolute-bun","exit":0,"stdout":"probe_ready\n","stderr":"","received":["POST /broker"]}
+(pass) unrestricted absolute binary reaches owned HTTP broker despite filtered PATH [43.28ms]
+{"mode":"websocket","restricted":false,"launcher":"absolute-bun","exit":0,"stdout":"probe_ready\n","stderr":"","received":["probe"]}
+(pass) unrestricted process can send a dashboard-style WebSocket write [25.77ms]
+(skip) macOS candidate permits local development subprocess execution
+(skip) macOS candidate denies HTTP access to owned controller/broker fixture
+(skip) macOS candidate denies dashboard-style WebSocket writes
+(skip) real absolute ADB binary executes with filtered PATH (version only)
+(skip) real offline Gradle task reaches owned broker fixture without isolation
+(skip) NOT RUN: Windows process, USB, controller/broker and embedded dashboard isolation
+(skip) NOT RUN: macOS physical USB API and real controller HTTP/WebSocket denial
+(skip) NOT RUN: production extension/MCP descendants and broker capability isolation
+(skip) NOT RUN: real Electron embedded controls, preload/IPC, navigation and permissions
+
+test/ftc-adapters/java-import.test.ts:
+
+ 13 pass
+ 11 skip
+ 0 fail
+ 45 expect() calls
+Ran 24 tests across 3 files. [1.59s]

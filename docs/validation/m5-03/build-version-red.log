@@ -1,0 +1,79 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-adapters/java-import.test.ts:
+(pass) candidate launch separates editor Java from Gradle Java and uses only explicit paths [4.24ms]
+(pass) candidate rejects implicit runtimes, bad pins and unsupported hosts before launch [0.81ms]
+(pass) evaluation process tree cleanup after exit [121.58ms]
+(pass) evaluation process tree cleanup after abort [316.95ms]
+(pass) evaluation process tree cleanup after timeout [315.30ms]
+(pass) candidate rejects a nonnumeric editor version [0.70ms]
+(pass) candidate preserves the configured build JDK level [0.31ms]
+59 |   const result = JavaLanguageEvaluation.launch({ ...input, pins: { ...input.pins, buildJdk: { ...artifact, version: "21.0.10" } } })
+60 |   expect(result.settings.java.configuration.runtimes[0].name).toBe("JavaSE-21")
+61 | })
+62 |
+63 | test("candidate cannot manufacture a runtime name from a nonnumeric build JDK pin", () => {
+64 |   expect(() => JavaLanguageEvaluation.launch({ ...input, pins: { ...input.pins, buildJdk: { ...artifact, version: "unknown" } } })).toThrow()
+                                                                                                                                         ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  command: [
+    "/owned/editor/bin/java", "-Declipse.application=org.eclipse.jdt.ls.core.id1", "-Dosgi.bundles.defaultStartLevel=4",
+    "-Declipse.product=org.eclipse.jdt.ls.core.product", "-Xmx1G", "--add-modules=ALL-SYSTEM",
+    "--add-opens", "java.base/java.util=ALL-UNNAMED", "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+    "-jar", "/owned/server/plugins/launcher.jar", "-configuration", "/owned/config", "-data",
+    "/owned/workspace"
+  ],
+  settings: {
+    java: {
+      home: "/owned/editor",
+      configuration: {
+        updateBuildConfiguration: "automatic",
+        runtimes: [
+          {
+            name: "JavaSE-NaN",
+            path: "/owned/build",
+            default: true,
+          }
+        ],
+      },
+      import: {
+        gradle: {
+          enabled: true,
+          java: {
+            home: "/owned/build",
+          },
+          user: {
+            home: "/owned/gradle",
+          },
+          offline: {
+            enabled: true,
+          },
+          wrapper: {
+            enabled: false,
+          },
+        },
+        maven: {
+          enabled: false,
+        },
+      },
+      jdt: {
+        ls: {
+          androidSupport: {
+            enabled: true,
+          },
+        },
+      },
+    },
+  },
+}
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/java-import.test.ts:64:133)
+(fail) candidate cannot manufacture a runtime name from a nonnumeric build JDK pin [0.58ms]
+
+ 7 pass
+ 1 fail
+ 23 expect() calls
+Ran 8 tests across 1 file. [858.00ms]

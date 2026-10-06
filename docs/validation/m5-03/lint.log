@@ -1,0 +1,3 @@
+$ oxlint packages/core/src/ftc/java/language-service.ts packages/core/test/ftc-adapters/java-import.test.ts packages/core/test/ftc-adapters/fixtures/java-import/owned.ts "packages/core/test/ftc-evaluation/m5-03.test.ts"
+Found 0 warnings and 0 errors.
+Finished in 601ms on 4 files with 130 rules using 10 threads.

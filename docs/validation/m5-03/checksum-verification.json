@@ -1,0 +1,27 @@
+[
+  {
+    "artifact": "org.firstinspires.ftc:RobotCore:11.1.0",
+    "official_sha256": "1e2af88a29dd784fcf85fbc7fc76aad8cb19dd47cfa5be796efeffb38c591343",
+    "local_sha256": "1e2af88a29dd784fcf85fbc7fc76aad8cb19dd47cfa5be796efeffb38c591343",
+    "matches": true
+  },
+  {
+    "artifact": "com.pedropathing:core:2.1.2",
+    "official_sha256": "b016cc37d06f02e2f241b3c32ff2bf9219baf56bdb875ff2af3d173c8adfd222",
+    "local_sha256": "b016cc37d06f02e2f241b3c32ff2bf9219baf56bdb875ff2af3d173c8adfd222",
+    "matches": true
+  },
+  {
+    "artifact": "com.pedropathing:ftc:2.1.2",
+    "official_sha256": "2de9e0a3d45f133b8a77a03a44aebe204cd79a1117c6b8ae1706a707d140714d",
+    "local_sha256": "2de9e0a3d45f133b8a77a03a44aebe204cd79a1117c6b8ae1706a707d140714d",
+    "matches": true
+  },
+  {
+    "artifact": "com.acmerobotics.roadrunner:core:1.0.1",
+    "download_sha256": "a23f507bc28982be1340ce642e7494151c3ad540285093460e323a799ace8ba1",
+    "gradle_sha256": "a23f507bc28982be1340ce642e7494151c3ad540285093460e323a799ace8ba1",
+    "matches": true,
+    "note": "Same primary URL fetched independently; publisher checksum endpoints returned 404."
+  }
+]

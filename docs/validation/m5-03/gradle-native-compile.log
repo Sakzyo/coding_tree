@@ -1,0 +1,39 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.9/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build
+> Task :FtcRobotController:preBuild UP-TO-DATE
+> Task :FtcRobotController:preDebugBuild UP-TO-DATE
+> Task :FtcRobotController:generateDebugBuildConfig
+> Task :FtcRobotController:generateDebugResValues UP-TO-DATE
+> Task :FtcRobotController:generateDebugResources UP-TO-DATE
+> Task :FtcRobotController:packageDebugResources UP-TO-DATE
+> Task :FtcRobotController:parseDebugLocalResources UP-TO-DATE
+> Task :FtcRobotController:generateDebugRFile UP-TO-DATE
+> Task :FtcRobotController:javaPreCompileDebug UP-TO-DATE
+
+> Task :FtcRobotController:compileDebugJavaWithJavac
+Note: /private/tmp/m5-03-tools/native/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/internal/FtcRobotControllerActivity.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :TeamCode:preBuild UP-TO-DATE
+> Task :TeamCode:preDebugBuild UP-TO-DATE
+> Task :TeamCode:javaPreCompileDebug UP-TO-DATE
+> Task :FtcRobotController:compileDebugLibraryResources UP-TO-DATE
+> Task :FtcRobotController:writeDebugAarMetadata UP-TO-DATE
+> Task :TeamCode:checkDebugAarMetadata UP-TO-DATE
+> Task :TeamCode:generateDebugResValues UP-TO-DATE
+> Task :FtcRobotController:bundleLibCompileToJarDebug
+> Task :TeamCode:mapDebugSourceSetPaths UP-TO-DATE
+> Task :TeamCode:generateDebugResources UP-TO-DATE
+> Task :TeamCode:mergeDebugResources UP-TO-DATE
+> Task :TeamCode:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :FtcRobotController:extractDeepLinksDebug UP-TO-DATE
+> Task :FtcRobotController:processDebugManifest UP-TO-DATE
+> Task :TeamCode:extractDeepLinksDebug UP-TO-DATE
+> Task :TeamCode:processDebugMainManifest UP-TO-DATE
+> Task :TeamCode:processDebugManifest UP-TO-DATE
+> Task :TeamCode:processDebugManifestForPackage UP-TO-DATE
+> Task :TeamCode:processDebugResources UP-TO-DATE
+> Task :TeamCode:compileDebugJavaWithJavac
+
+BUILD SUCCESSFUL in 8s
+26 actionable tasks: 4 executed, 22 up-to-date

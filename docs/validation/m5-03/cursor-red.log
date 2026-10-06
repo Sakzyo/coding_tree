@@ -1,0 +1,24 @@
+F
+======================================================================
+FAIL: test_shared_variable_prefix_does_not_move_cursor_before_member (probe_test.CompletionPosition)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/fixtures/java-import/probe_test.py", line 10, in test_shared_variable_prefix_does_not_move_cursor_before_member
+    self.assertEqual((line, column), (3, 46))
+AssertionError: Tuples differ: (3, 26) != (3, 46)
+
+First differing element 1:
+26
+46
+
+- (3, 26)
+?     ^
+
++ (3, 46)
+?     ^
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (failures=1)

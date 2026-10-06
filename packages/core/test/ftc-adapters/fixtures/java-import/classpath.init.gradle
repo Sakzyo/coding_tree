@@ -1,0 +1,20 @@
+import groovy.json.JsonOutput
+
+// Evaluation-only export of the actual Android Java compiler inputs; never edits build files.
+allprojects {
+    afterEvaluate { project ->
+        if (project.path == ':TeamCode') {
+            tasks.register('m503Snapshot') {
+                dependsOn 'compileDebugJavaWithJavac'
+                doLast {
+                    def compiler = tasks.named('compileDebugJavaWithJavac').get()
+                    rootProject.file('m503-classpath.json').text = JsonOutput.prettyPrint(JsonOutput.toJson([
+                        classpath: compiler.classpath.files.collect { it.absolutePath },
+                        boot: compiler.options.bootstrapClasspath.files.collect { it.absolutePath },
+                        sources: compiler.source.files.collect { it.absolutePath }
+                    ]))
+                }
+            }
+        }
+    }
+}
