@@ -1,0 +1,1985 @@
+M2-01 independent review package
+Base: e65f6c386b4abc97582d4814eb98a9ae3c97045a
+Head: 917fc044bad306de4428e24fb8c2655bfff50e12
+
+917fc044b feat(ftc): associate canonical project folders
+
+ docs/validation/M2-01-implementation.md            |  71 ++++
+ docs/validation/m2-01/core-typecheck-initial.log   |  13 +
+ docs/validation/m2-01/core-typecheck.log           |   1 +
+ docs/validation/m2-01/covering.log                 |  41 ++
+ docs/validation/m2-01/focused-final.log            |  21 +
+ docs/validation/m2-01/format-initial.log           |   3 +
+ docs/validation/m2-01/format-write.log             |   2 +
+ docs/validation/m2-01/format.log                   |   2 +
+ docs/validation/m2-01/green-expanded.log           |  20 +
+ docs/validation/m2-01/green.log                    |  16 +
+ docs/validation/m2-01/lint-initial.log             |  20 +
+ docs/validation/m2-01/lint.log                     |   2 +
+ docs/validation/m2-01/migration-check.log          |   4 +
+ docs/validation/m2-01/migration-generate.log       |   4 +
+ docs/validation/m2-01/red-expanded.log             |  29 ++
+ docs/validation/m2-01/red.log                      |  10 +
+ docs/validation/m2-01/report-format.log            |   1 +
+ docs/validation/m2-01/schema-contracts.log         |  20 +
+ docs/validation/m2-01/schema-typecheck.log         |   1 +
+ docs/validation/m2-01/snapshot-delta.json          |  68 ++++
+ docs/validation/m2-01/source-sha256.txt            |   9 +
+ packages/core/schema.json                          | 253 +++++++++---
+ packages/core/src/database/migration.gen.ts        |   1 +
+ .../20261006121634_ftc-project-association.ts      |  18 +
+ packages/core/src/database/schema.gen.ts           |   8 +
+ packages/core/src/ftc/projects.ts                  |  54 +++
+ packages/core/src/ftc/projects/sql.ts              |  59 +++
+ .../core/test/ftc/projects-and-chats/m2-01.test.ts | 423 +++++++++++++++++++++
+ packages/schema/src/ftc-project.ts                 |  26 ++
+ packages/schema/src/index.ts                       |   1 +
+ 30 files changed, 1153 insertions(+), 48 deletions(-)
+
+diff --git a/docs/validation/M2-01-implementation.md b/docs/validation/M2-01-implementation.md
+new file mode 100644
+index 000000000..b32d28597
+--- /dev/null
++++ b/docs/validation/M2-01-implementation.md
+@@ -0,0 +1,71 @@
++# M2-01 implementation evidence
++
++Date: 2026-10-06. Host: Darwin arm64. Bun: 1.3.14 (`0d9b296a`), executable `/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun`.
++
++Reviewed/tested base: `e65f6c386b4abc97582d4814eb98a9ae3c97045a`. Validation ran against that revision plus the task-owned implementation in the commit introducing this report. The exact tested source bytes are recorded in [source-sha256.txt](m2-01/source-sha256.txt); resolve the delivery revision with `git log -1 --format=%H -- docs/validation/M2-01-implementation.md`. Concurrent coordinator documentation is excluded from this change.
++
++## Delivered behavior and identity decision
++
++`FtcProject.ProjectContext` is the canonical Schema contract. Its `projectID` uses the existing `Project.ID` schema but identifies **one M2 canonical-root association**, generated as `ftc_<UUID>`. It must never be passed to legacy Project APIs. `location` uses existing `Location.Info` and retains the existing host `location.project.id` and `directory`. The canonical local root, not either ID alone, defines execution ownership for subsequent gate work. This representation was confirmed by the coordinator before functional implementation because existing Git clones may share a host project ID and non-Git folders resolve to `global`.
++
++The injected folder-identity/access port resolves aliases and inspects accessibility without writing project files. The Effect service rejects relative canonical/host directories, a mismatched Location directory, and explicit workspace placement. Both create and open associate an already prepared accessible folder. The private SQLite adapter atomically upserts by canonical root, preserves the local association ID, and refreshes its explicit host mapping on reopen. It neither imports existing Project/Session implementations nor writes their tables. No Session ID/schema or future Chat/Gate contract was added.
++
++The service owns no import-time resources or global state. Its caller supplies the repository connection within its scope. Folder-port interruption before persistence leaves no association; a committed atomic association is durable and reconciled by retry, rather than rolled back after an ambiguous interruption. No active execution state is restored.
++
++## Commands and results
++
++All commands used `PATH=/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64:$PATH` and isolated `OPENCODE_TEST_HOME=/private/tmp/m2-01-env/home`, plus `XDG_DATA_HOME`, `XDG_CONFIG_HOME`, `XDG_CACHE_HOME`, `XDG_STATE_HOME` under `/private/tmp/m2-01-env/{data,config,cache,state}`. Database files and project fixtures were separate temporary directories managed by `tmpdir()` and scoped SQLite layers.
++
++| Command                                                                                             | Cwd               | Exit / result                                                                | Evidence                                               |
++| --------------------------------------------------------------------------------------------------- | ----------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------ |
++| `bun test ./test/ftc/projects-and-chats/m2-01.test.ts` (RED)                                        | `packages/core`   | 1; 0 pass, 1 fail, 0 assertions reached                                      | [red.log](m2-01/red.log)                               |
++| Same selection, expanded RED                                                                        | `packages/core`   | 1; 1 pass, 7 fail, 6 assertions                                              | [red-expanded.log](m2-01/red-expanded.log)             |
++| Same selection, first GREEN                                                                         | `packages/core`   | 0; 8 pass, 30 assertions                                                     | [green.log](m2-01/green.log)                           |
++| Same selection, expanded verification                                                               | `packages/core`   | 0; 12 pass, 46 assertions                                                    | [green-expanded.log](m2-01/green-expanded.log)         |
++| Same selection, final                                                                               | `packages/core`   | 0; 13 pass, 50 assertions                                                    | [focused-final.log](m2-01/focused-final.log)           |
++| `bun test ./test/ftc/projects-and-chats/m2-01.test.ts ./test/database-migration.test.ts`            | `packages/core`   | 0; 31 pass, 89 assertions; includes 18 migration regressions / 39 assertions | [covering.log](m2-01/covering.log)                     |
++| `bun script/migration.ts --name ftc-project-association`                                            | `packages/core`   | 0; generated one task migration and shared artifacts                         | [migration-generate.log](m2-01/migration-generate.log) |
++| `bun script/migration.ts --check`                                                                   | `packages/core`   | 0; snapshot, full schema and registry current                                | [migration-check.log](m2-01/migration-check.log)       |
++| `bun typecheck`                                                                                     | `packages/core`   | 0                                                                            | [core-typecheck.log](m2-01/core-typecheck.log)         |
++| `bun typecheck`                                                                                     | `packages/schema` | 0                                                                            | [schema-typecheck.log](m2-01/schema-typecheck.log)     |
++| `bun test ./test/contract-hygiene.test.ts ./test/compatibility.test.ts ./test/v1-isolation.test.ts` | `packages/schema` | 0; 8 pass, 17 assertions                                                     | [schema-contracts.log](m2-01/schema-contracts.log)     |
++| `bunx oxlint <eight TypeScript paths below>`                                                        | repository root   | 0; 0 warnings, 0 errors                                                      | [lint.log](m2-01/lint.log)                             |
++| `bunx prettier --check <same eight paths>`                                                          | repository root   | 0                                                                            | [format.log](m2-01/format.log)                         |
++| `git diff --check`                                                                                  | repository root   | 0                                                                            | Terminal check before staging                          |
++
++Exact lint/format paths:
++
++```text
++packages/schema/src/ftc-project.ts
++packages/schema/src/index.ts
++packages/core/src/ftc/projects.ts
++packages/core/src/ftc/projects/sql.ts
++packages/core/test/ftc/projects-and-chats/m2-01.test.ts
++packages/core/src/database/migration/20261006121634_ftc-project-association.ts
++packages/core/src/database/migration.gen.ts
++packages/core/src/database/schema.gen.ts
++```
++
++RED used compiling contract/service/repository scaffolding that explicitly failed with `M2-01 association is not implemented`; SQLite initialization completed first. It was a missing operation rather than a missing import or malformed harness. Expanded RED included a five-second cancellation-test timeout because the unimplemented operation never reached the port's start barrier; final interruption/release assertions pass. Four later verification tests checked already implemented failure/lifecycle/mapping/migration behavior; no separate RED is claimed for those tests.
++
++The initial Core typecheck found three test expectation arguments missing canonical brands; those were fixed. Initial lint found object stringification and spreading a Schema class; these were fixed by reading the SQL error message and constructing Location fields explicitly. Initial formatting found the test file unformatted; the final check passes. Earlier diagnostics are retained in `core-typecheck-initial.log`, `lint-initial.log`, and `format-initial.log`.
++
++## Assertion map and validation boundaries
++
++| Test area             | Actual evidence                                                                                                                                               | Boundary                                                                                                                    |
++| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
++| Folder aliases/reopen | Real directory and symlink, Java/manifest files, two closed/reopened SQLite scopes; identical association/context and preserved file list, modes and contents | Supplied `fs.realpath`/stat/read-access fixture; no production filesystem adapter or platform-wide case-normalization claim |
++| Shared host IDs       | Two real roots and copied manifests remain distinct for both `global` and `shared-remote`; reopen preserves membership identity                               | Host resolver IDs are explicit fixtures; existing Git resolver was inspected, not composed or mutated                       |
++| Concurrency           | Eight independent SQLite connections concurrently open one canonical root; one stored row and one association ID                                              | In-process connections, not a multi-process stress/performance proof                                                        |
++| Folder errors         | Real missing path and regular file; injected EACCES result; no association and unchanged file                                                                 | Permission denial is injected to avoid user/sandbox permission ambiguity                                                    |
++| Cancellation          | Interrupt while the identity port is pending; port finalizer runs, no row                                                                                     | Does not claim a forced cancellation at the exact SQLite commit instruction                                                 |
++| Invalid placement     | Directory mismatch, relative canonical/host directories and explicit workspace are rejected before persistence                                                | Implicit local placement only, matching current Location policy                                                             |
++| Database failure      | Real SQLite `PRAGMA query_only=ON` rejects writes with structured retry error, no partial row; fresh scope successfully retries                               | No disk-full/corrupt-storage fault injection                                                                                |
++| Scope independence    | Same root in two separate database files receives distinct associations; original database still reopens its original ID                                      | No app restart or live host composition                                                                                     |
++| Host identity refresh | Reopen changes persisted host mapping while retaining association ID/canonical root                                                                           | No broader existing Project ID migration semantics                                                                          |
++| Migration             | All prior tracked migrations create the old schema; seeded Project row survives new migration and rerun; new association works                                | Real temporary database only; no production database touched                                                                |
++| Schema                | Exact Core/Schema facade identity and existing Project/Location schema identity; optional omission and unique identifiers; affected contract suites           | No Protocol/Server change or SDK generation required                                                                        |
++
++The generated snapshot has exactly seven added DDL records, all belonging to `ftc_project_association`, and zero removed or changed existing DDL records; [snapshot-delta.json](m2-01/snapshot-delta.json) records the structural comparison against the base. Snapshot UUID/line wrapping are generator output. The new migration creates only the task table; the registry gains one entry and the generated full schema gains that table. No generated artifacts or earlier migrations were hand-edited.
++
++NOT RUN: full unrelated Core external suites; Schema event-manifest suite (two known unrelated baseline failures in the dispatch brief); production folder binding/composition; actual Electron/server restart; Windows filesystem/SQLite execution; robot/toolchain/model work; future chats/gates/Session admission. Tests do not assert execution ownership behavior that belongs to later M2 tasks. No project SDK/dependency/template contents were changed.
+diff --git a/docs/validation/m2-01/core-typecheck-initial.log b/docs/validation/m2-01/core-typecheck-initial.log
+new file mode 100644
+index 000000000..c43ffb743
+--- /dev/null
++++ b/docs/validation/m2-01/core-typecheck-initial.log
+@@ -0,0 +1,13 @@
++$ tsgo --noEmit
++test/ftc/projects-and-chats/m2-01.test.ts(339,37): error TS2769: No overload matches this call.
++  The last overload gave the following error.
++    Argument of type 'string' is not assignable to parameter of type 'string & Brand<"AbsolutePath">'.
++      Type 'string' is not assignable to type 'Brand<"AbsolutePath">'.
++test/ftc/projects-and-chats/m2-01.test.ts(375,42): error TS2769: No overload matches this call.
++  The last overload gave the following error.
++    Argument of type 'string' is not assignable to parameter of type 'string & Brand<"Project.ID">'.
++      Type 'string' is not assignable to type 'Brand<"Project.ID">'.
++test/ftc/projects-and-chats/m2-01.test.ts(403,41): error TS2769: No overload matches this call.
++  The last overload gave the following error.
++    Argument of type 'string' is not assignable to parameter of type 'string & Brand<"AbsolutePath">'.
++      Type 'string' is not assignable to type 'Brand<"AbsolutePath">'.
+diff --git a/docs/validation/m2-01/core-typecheck.log b/docs/validation/m2-01/core-typecheck.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m2-01/core-typecheck.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/docs/validation/m2-01/covering.log b/docs/validation/m2-01/covering.log
+new file mode 100644
+index 000000000..2d935a75d
+--- /dev/null
++++ b/docs/validation/m2-01/covering.log
+@@ -0,0 +1,41 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc/projects-and-chats/m2-01.test.ts:
++(pass) folder aliases reopen one project [112.71ms]
++(pass) distinct local roots retain distinct association IDs with host ID global [49.75ms]
++(pass) distinct local roots retain distinct association IDs with host ID shared-remote [12.00ms]
++(pass) concurrent independent connections associate one canonical root exactly once [33.09ms]
++(pass) unavailable folder and regular file fail without associations or project-file edits [18.19ms]
++(pass) denied access is propagated before persistence [6.87ms]
++(pass) interrupting folder resolution leaves no association and releases its scope [48.20ms]
++(pass) inconsistent or nonlocal folder identities fail before persistence [21.55ms]
++(pass) association contract reuses canonical schemas and encodes optional fields without undefined [1.21ms]
++(pass) SQLite write failure is recoverable and does not create a partial association [20.12ms]
++(pass) fresh independent database scopes do not inherit another repository's associations [21.80ms]
++(pass) reopen refreshes the explicit host mapping without changing canonical ownership [12.73ms]
++(pass) tracked upgrade preserves existing project data and supports a new association [20.63ms]
++
++test/database-migration.test.ts:
++(pass) DatabaseMigration > defaults missing workspace names while preserving legacy workspace data [1.37ms]
++(pass) DatabaseMigration > imports unnamed legacy Drizzle journal entries by their actual migration timestamps [0.69ms]
++(pass) DatabaseMigration > rejects unknown legacy Drizzle journal timestamps instead of guessing completed migrations [0.53ms]
++(pass) DatabaseMigration > serializes concurrent embedded initialization for one database path [14.81ms]
++(pass) DatabaseMigration > applies tracked migrations to an empty database [3.46ms]
++(pass) DatabaseMigration > rejects a non-empty database without a session table [1.17ms]
++(pass) DatabaseMigration > backfills existing Context Epoch rows to the build agent [1.65ms]
++(pass) DatabaseMigration > keeps legacy credential fields nullable [2.00ms]
++(pass) DatabaseMigration > resets beta history and rebuilds event-sourced Session input storage [5.51ms]
++(pass) DatabaseMigration > preserves canonical V1 state and restarts its event stream [9.22ms]
++(pass) DatabaseMigration > resets incompatible projected Session messages before adding sequence order [1.34ms]
++(pass) DatabaseMigration > runs session usage backfill in order with schema changes [0.81ms]
++(pass) DatabaseMigration > normalizes Windows storage paths and leaves POSIX paths untouched [0.85ms]
++(pass) DatabaseMigration > maps native Windows paths through database columns [0.03ms]
++(pass) DatabaseMigration > imports existing drizzle migration state [0.44ms]
++(pass) DatabaseMigration > does not replay a migrated session metadata column [1.30ms]
++(pass) DatabaseMigration > accepts the temporary replacement session metadata migration id [0.63ms]
++(pass) DatabaseMigration > skips drizzle import when migration table already has state [0.40ms]
++
++ 31 pass
++ 0 fail
++ 89 expect() calls
++Ran 31 tests across 2 files. [777.00ms]
+diff --git a/docs/validation/m2-01/focused-final.log b/docs/validation/m2-01/focused-final.log
+new file mode 100644
+index 000000000..5d7e0a5c4
+--- /dev/null
++++ b/docs/validation/m2-01/focused-final.log
+@@ -0,0 +1,21 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc/projects-and-chats/m2-01.test.ts:
++(pass) folder aliases reopen one project [24.93ms]
++(pass) distinct local roots retain distinct association IDs with host ID global [7.75ms]
++(pass) distinct local roots retain distinct association IDs with host ID shared-remote [8.08ms]
++(pass) concurrent independent connections associate one canonical root exactly once [10.63ms]
++(pass) unavailable folder and regular file fail without associations or project-file edits [5.56ms]
++(pass) denied access is propagated before persistence [5.01ms]
++(pass) interrupting folder resolution leaves no association and releases its scope [5.94ms]
++(pass) inconsistent or nonlocal folder identities fail before persistence [6.45ms]
++(pass) association contract reuses canonical schemas and encodes optional fields without undefined [0.29ms]
++(pass) SQLite write failure is recoverable and does not create a partial association [8.16ms]
++(pass) fresh independent database scopes do not inherit another repository's associations [9.70ms]
++(pass) reopen refreshes the explicit host mapping without changing canonical ownership [5.41ms]
++(pass) tracked upgrade preserves existing project data and supports a new association [15.44ms]
++
++ 13 pass
++ 0 fail
++ 50 expect() calls
++Ran 13 tests across 1 file. [186.00ms]
+diff --git a/docs/validation/m2-01/format-initial.log b/docs/validation/m2-01/format-initial.log
+new file mode 100644
+index 000000000..0773a77b0
+--- /dev/null
++++ b/docs/validation/m2-01/format-initial.log
+@@ -0,0 +1,3 @@
++Checking formatting...
++[warn] packages/core/test/ftc/projects-and-chats/m2-01.test.ts
++[warn] Code style issues found in the above file. Run Prettier with --write to fix.
+diff --git a/docs/validation/m2-01/format-write.log b/docs/validation/m2-01/format-write.log
+new file mode 100644
+index 000000000..f0ef5f337
+--- /dev/null
++++ b/docs/validation/m2-01/format-write.log
+@@ -0,0 +1,2 @@
++packages/core/src/ftc/projects/sql.ts 20ms (unchanged)
++packages/core/test/ftc/projects-and-chats/m2-01.test.ts 28ms
+diff --git a/docs/validation/m2-01/format.log b/docs/validation/m2-01/format.log
+new file mode 100644
+index 000000000..4aa0d16e7
+--- /dev/null
++++ b/docs/validation/m2-01/format.log
+@@ -0,0 +1,2 @@
++Checking formatting...
++All matched files use Prettier code style!
+diff --git a/docs/validation/m2-01/green-expanded.log b/docs/validation/m2-01/green-expanded.log
+new file mode 100644
+index 000000000..9cf2f4a8a
+--- /dev/null
++++ b/docs/validation/m2-01/green-expanded.log
+@@ -0,0 +1,20 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc/projects-and-chats/m2-01.test.ts:
++(pass) folder aliases reopen one project [22.76ms]
++(pass) distinct local roots retain distinct association IDs despite a shared existing project ID [7.33ms]
++(pass) concurrent independent connections associate one canonical root exactly once [13.69ms]
++(pass) unavailable folder and regular file fail without associations or project-file edits [7.78ms]
++(pass) denied access is propagated before persistence [6.49ms]
++(pass) interrupting folder resolution leaves no association and releases its scope [12.33ms]
++(pass) inconsistent or nonlocal folder identities fail before persistence [7.98ms]
++(pass) association contract reuses canonical schemas and encodes optional fields without undefined [0.40ms]
++(pass) SQLite write failure is recoverable and does not create a partial association [12.53ms]
++(pass) fresh independent database scopes do not inherit another repository's associations [9.66ms]
++(pass) reopen refreshes the explicit host mapping without changing canonical ownership [4.75ms]
++(pass) tracked upgrade preserves existing project data and supports a new association [16.09ms]
++
++ 12 pass
++ 0 fail
++ 46 expect() calls
++Ran 12 tests across 1 file. [192.00ms]
+diff --git a/docs/validation/m2-01/green.log b/docs/validation/m2-01/green.log
+new file mode 100644
+index 000000000..ef56deea4
+--- /dev/null
++++ b/docs/validation/m2-01/green.log
+@@ -0,0 +1,16 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc/projects-and-chats/m2-01.test.ts:
++(pass) folder aliases reopen one project [46.80ms]
++(pass) distinct local roots retain distinct association IDs despite a shared existing project ID [54.61ms]
++(pass) concurrent independent connections associate one canonical root exactly once [103.68ms]
++(pass) unavailable folder and regular file fail without associations or project-file edits [21.74ms]
++(pass) denied access is propagated before persistence [14.58ms]
++(pass) interrupting folder resolution leaves no association and releases its scope [12.80ms]
++(pass) inconsistent or nonlocal folder identities fail before persistence [52.74ms]
++(pass) association contract reuses canonical schemas and encodes optional fields without undefined [1.63ms]
++
++ 8 pass
++ 0 fail
++ 30 expect() calls
++Ran 8 tests across 1 file. [392.00ms]
+diff --git a/docs/validation/m2-01/lint-initial.log b/docs/validation/m2-01/lint-initial.log
+new file mode 100644
+index 000000000..9b947a06f
+--- /dev/null
++++ b/docs/validation/m2-01/lint-initial.log
+@@ -0,0 +1,20 @@
++
++  ! typescript-eslint(no-base-to-string): 'cause' may use Object's default stringification format ('[object Object]') when stringified.
++    ,-[packages/core/src/ftc/projects/sql.ts:59:28]
++ 58 |             root: folder.canonicalRoot,
++ 59 |             detail: String(cause),
++    :                            ^^^^^
++ 60 |             recovery: "retry",
++    `----
++  help: Consider picking a property (e.g. `user.name`), using a formatter (or `JSON.stringify`), or implementing a custom `toString()`/`toLocaleString()` on the type.
++
++  ! typescript-eslint(no-misused-spread): Using the spread operator on class instances will lose their class prototype.
++     ,-[packages/core/test/ftc/projects-and-chats/m2-01.test.ts:110:45]
++ 109 |               ...folder,
++ 110 |               location: new Location.Info({ ...folder.location, project: { ...folder.location.project, id: hostID } }),
++     :                                             ^^^^^^^^^^^^^^^^^^
++ 111 |             })),
++     `----
++
++Found 2 warnings and 0 errors.
++Finished in 793ms on 8 files with 130 rules using 10 threads.
+diff --git a/docs/validation/m2-01/lint.log b/docs/validation/m2-01/lint.log
+new file mode 100644
+index 000000000..5315250d6
+--- /dev/null
++++ b/docs/validation/m2-01/lint.log
+@@ -0,0 +1,2 @@
++Found 0 warnings and 0 errors.
++Finished in 668ms on 8 files with 130 rules using 10 threads.
+diff --git a/docs/validation/m2-01/migration-check.log b/docs/validation/m2-01/migration-check.log
+new file mode 100644
+index 000000000..9569add58
+--- /dev/null
++++ b/docs/validation/m2-01/migration-check.log
+@@ -0,0 +1,4 @@
++Reading config file '/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-check-jvhSfM/incremental.config.ts'
++No schema changes, nothing to migrate 😴
++Reading config file '/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-check-jvhSfM/full.config.ts'
++[✓] Your SQL migration ➜ /var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-check-jvhSfM/full/20261006121910_schema/migration.sql 🚀
+diff --git a/docs/validation/m2-01/migration-generate.log b/docs/validation/m2-01/migration-generate.log
+new file mode 100644
+index 000000000..53b2ec9d3
+--- /dev/null
++++ b/docs/validation/m2-01/migration-generate.log
+@@ -0,0 +1,4 @@
++Reading config file '/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-BPaGRG/incremental.config.ts'
++[✓] Your SQL migration ➜ /var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-BPaGRG/incremental/20261006121634_ftc-project-association/migration.sql 🚀
++Reading config file '/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-BPaGRG/full.config.ts'
++[✓] Your SQL migration ➜ /var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-BPaGRG/full/20261006121635_schema/migration.sql 🚀
+diff --git a/docs/validation/m2-01/red-expanded.log b/docs/validation/m2-01/red-expanded.log
+new file mode 100644
+index 000000000..26d3732e3
+--- /dev/null
++++ b/docs/validation/m2-01/red-expanded.log
+@@ -0,0 +1,29 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc/projects-and-chats/m2-01.test.ts:
++error: M2-01 association is not implemented
++M2-01 association is not implemented
++(fail) folder aliases reopen one project [15.66ms]
++error: M2-01 association is not implemented
++M2-01 association is not implemented
++(fail) distinct local roots retain distinct association IDs despite a shared existing project ID [6.64ms]
++error: M2-01 association is not implemented
++M2-01 association is not implemented
++(fail) concurrent independent connections associate one canonical root exactly once [8.91ms]
++error: M2-01 association is not implemented
++M2-01 association is not implemented
++(fail) unavailable folder and regular file fail without associations or project-file edits [4.48ms]
++error: M2-01 association is not implemented
++M2-01 association is not implemented
++(fail) denied access is propagated before persistence [4.47ms]
++(fail) interrupting folder resolution leaves no association and releases its scope [5000.00ms]
++  ^ this test timed out after 5000ms.
++error: M2-01 association is not implemented
++M2-01 association is not implemented
++(fail) inconsistent or nonlocal folder identities fail before persistence [8.58ms]
++(pass) association contract reuses canonical schemas and encodes optional fields without undefined [2.73ms]
++
++ 1 pass
++ 7 fail
++ 6 expect() calls
++Ran 8 tests across 1 file. [5.12s]
+diff --git a/docs/validation/m2-01/red.log b/docs/validation/m2-01/red.log
+new file mode 100644
+index 000000000..c77289a95
+--- /dev/null
++++ b/docs/validation/m2-01/red.log
+@@ -0,0 +1,10 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc/projects-and-chats/m2-01.test.ts:
++error: M2-01 association is not implemented
++M2-01 association is not implemented
++(fail) folder aliases reopen one project [24.16ms]
++
++ 0 pass
++ 1 fail
++Ran 1 test across 1 file. [115.00ms]
+diff --git a/docs/validation/m2-01/report-format.log b/docs/validation/m2-01/report-format.log
+new file mode 100644
+index 000000000..9e3255bf0
+--- /dev/null
++++ b/docs/validation/m2-01/report-format.log
+@@ -0,0 +1 @@
++docs/validation/M2-01-implementation.md 20ms
+diff --git a/docs/validation/m2-01/schema-contracts.log b/docs/validation/m2-01/schema-contracts.log
+new file mode 100644
+index 000000000..d8030ab93
+--- /dev/null
++++ b/docs/validation/m2-01/schema-contracts.log
+@@ -0,0 +1,20 @@
++bun test v1.3.14 (0d9b296a)
++
++test/contract-hygiene.test.ts:
++(pass) contract hygiene > optional properties preserve transformations and omit undefined while encoding [1.23ms]
++(pass) contract hygiene > todo status and priority preserve arbitrary strings [0.03ms]
++(pass) contract hygiene > current ID constructors expose create [3.97ms]
++(pass) contract hygiene > reusable public identifiers are stable and unique [0.09ms]
++(pass) contract hygiene > current source avoids Any and mutable contract wrappers [1.80ms]
++
++test/compatibility.test.ts:
++(pass) schema compatibility > moved class schemas remain constructible [0.13ms]
++
++test/v1-isolation.test.ts:
++(pass) compatibility entrypoints preserve isolated V1 schema identity [0.02ms]
++(pass) current source does not import the V1 subtree directly [0.91ms]
++
++ 8 pass
++ 0 fail
++ 17 expect() calls
++Ran 8 tests across 3 files. [76.00ms]
+diff --git a/docs/validation/m2-01/schema-typecheck.log b/docs/validation/m2-01/schema-typecheck.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m2-01/schema-typecheck.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/docs/validation/m2-01/snapshot-delta.json b/docs/validation/m2-01/snapshot-delta.json
+new file mode 100644
+index 000000000..8a68270e6
+--- /dev/null
++++ b/docs/validation/m2-01/snapshot-delta.json
+@@ -0,0 +1,68 @@
++{
++  "base_revision": "e65f6c386b4abc97582d4814eb98a9ae3c97045a",
++  "removed_ddl": [],
++  "added_ddl": [
++    {
++      "name": "ftc_project_association",
++      "entityType": "tables"
++    },
++    {
++      "type": "text",
++      "notNull": false,
++      "autoincrement": false,
++      "default": null,
++      "generated": null,
++      "name": "canonical_root",
++      "entityType": "columns",
++      "table": "ftc_project_association"
++    },
++    {
++      "type": "text",
++      "notNull": true,
++      "autoincrement": false,
++      "default": null,
++      "generated": null,
++      "name": "project_id",
++      "entityType": "columns",
++      "table": "ftc_project_association"
++    },
++    {
++      "type": "text",
++      "notNull": true,
++      "autoincrement": false,
++      "default": null,
++      "generated": null,
++      "name": "host_project_id",
++      "entityType": "columns",
++      "table": "ftc_project_association"
++    },
++    {
++      "type": "text",
++      "notNull": true,
++      "autoincrement": false,
++      "default": null,
++      "generated": null,
++      "name": "host_project_directory",
++      "entityType": "columns",
++      "table": "ftc_project_association"
++    },
++    {
++      "columns": [
++        "canonical_root"
++      ],
++      "nameExplicit": false,
++      "name": "ftc_project_association_pk",
++      "table": "ftc_project_association",
++      "entityType": "pks"
++    },
++    {
++      "columns": [
++        "project_id"
++      ],
++      "nameExplicit": false,
++      "name": "ftc_project_association_project_id_unique",
++      "entityType": "uniques",
++      "table": "ftc_project_association"
++    }
++  ]
++}
+diff --git a/docs/validation/m2-01/source-sha256.txt b/docs/validation/m2-01/source-sha256.txt
+new file mode 100644
+index 000000000..189c06e19
+--- /dev/null
++++ b/docs/validation/m2-01/source-sha256.txt
+@@ -0,0 +1,9 @@
++2927a77305d89bccac05294fe2b5fda4882c50240cfc443fecbcd7d8730e46aa  packages/schema/src/ftc-project.ts
++b4e67f8dd4e505a58e68930ef7a63cf30d6b46d41d307a56e7b9e14875fc225f  packages/schema/src/index.ts
++5024e63ed0581d9532c2fcbe3924e86e3bf602c7b36117e35250e2abd0dd87bb  packages/core/src/ftc/projects.ts
++e50f4ba26ef05da8b09081a7502a73ebbe0afccfb0f22cf57f1cff27ab42dd23  packages/core/src/ftc/projects/sql.ts
++27ef9c9309a073ef4c872448bfad59778590aedc374c815ff897260171c080d9  packages/core/test/ftc/projects-and-chats/m2-01.test.ts
++3bee655c9b19fe753d8785ddc880e5fe6857a35273ffa7e0386b4ddcae8323c0  packages/core/schema.json
++963da81bb96a9ec64edd660e094fc29a808a05e73ff74e270aa7c249855bac3c  packages/core/src/database/migration.gen.ts
++2780aa2cc2b19189a9959b35a1a9707b5b734f4db51af1850a8d685b01cd6262  packages/core/src/database/schema.gen.ts
++27fbcc93d47070e6d9f0df838876b351a27c263ba43309965380d5c8ab0bae87  packages/core/src/database/migration/20261006121634_ftc-project-association.ts
+diff --git a/packages/core/schema.json b/packages/core/schema.json
+index d0eeeebd5..d438d00c5 100644
+--- a/packages/core/schema.json
++++ b/packages/core/schema.json
+@@ -1,68 +1,74 @@
+ {
+   "version": "7",
+   "dialect": "sqlite",
+-  "id": "f14a9b18-8207-487e-a3d3-227e629ba9ad",
+-  "prevIds": ["169a0f0f-d58f-479f-b024-fa1c7b9a09db"],
++  "id": "d3fb1ce7-b53c-4fd3-9965-ce7dd5c1cb0b",
++  "prevIds": [
++    "f14a9b18-8207-487e-a3d3-227e629ba9ad"
++  ],
+   "ddl": [
+     {
+       "name": "workspace",
+       "entityType": "tables"
+     },
+     {
+       "name": "data_migration",
+       "entityType": "tables"
+     },
+     {
+       "name": "account_state",
+       "entityType": "tables"
+     },
+     {
+       "name": "account",
+       "entityType": "tables"
+     },
+     {
+       "name": "control_account",
+       "entityType": "tables"
+     },
+     {
+       "name": "credential",
+       "entityType": "tables"
+     },
+     {
+       "name": "event_sequence",
+       "entityType": "tables"
+     },
+     {
+       "name": "event",
+       "entityType": "tables"
+     },
++    {
++      "name": "ftc_project_association",
++      "entityType": "tables"
++    },
+     {
+       "name": "permission",
+       "entityType": "tables"
+     },
+     {
+       "name": "project_directory",
+       "entityType": "tables"
+     },
+     {
+       "name": "project",
+       "entityType": "tables"
+     },
+     {
+       "name": "message",
+       "entityType": "tables"
+     },
+     {
+       "name": "part",
+       "entityType": "tables"
+     },
+     {
+       "name": "session_context_epoch",
+       "entityType": "tables"
+     },
+     {
+       "name": "session_input",
+       "entityType": "tables"
+     },
+     {
+       "name": "session_message",
+@@ -513,60 +519,100 @@
+     {
+       "type": "integer",
+       "notNull": true,
+       "autoincrement": false,
+       "default": null,
+       "generated": null,
+       "name": "seq",
+       "entityType": "columns",
+       "table": "event"
+     },
+     {
+       "type": "text",
+       "notNull": true,
+       "autoincrement": false,
+       "default": null,
+       "generated": null,
+       "name": "type",
+       "entityType": "columns",
+       "table": "event"
+     },
+     {
+       "type": "text",
+       "notNull": true,
+       "autoincrement": false,
+       "default": null,
+       "generated": null,
+       "name": "data",
+       "entityType": "columns",
+       "table": "event"
+     },
++    {
++      "type": "text",
++      "notNull": false,
++      "autoincrement": false,
++      "default": null,
++      "generated": null,
++      "name": "canonical_root",
++      "entityType": "columns",
++      "table": "ftc_project_association"
++    },
++    {
++      "type": "text",
++      "notNull": true,
++      "autoincrement": false,
++      "default": null,
++      "generated": null,
++      "name": "project_id",
++      "entityType": "columns",
++      "table": "ftc_project_association"
++    },
++    {
++      "type": "text",
++      "notNull": true,
++      "autoincrement": false,
++      "default": null,
++      "generated": null,
++      "name": "host_project_id",
++      "entityType": "columns",
++      "table": "ftc_project_association"
++    },
++    {
++      "type": "text",
++      "notNull": true,
++      "autoincrement": false,
++      "default": null,
++      "generated": null,
++      "name": "host_project_directory",
++      "entityType": "columns",
++      "table": "ftc_project_association"
++    },
+     {
+       "type": "text",
+       "notNull": false,
+       "autoincrement": false,
+       "default": null,
+       "generated": null,
+       "name": "id",
+       "entityType": "columns",
+       "table": "permission"
+     },
+     {
+       "type": "text",
+       "notNull": true,
+       "autoincrement": false,
+       "default": null,
+       "generated": null,
+       "name": "project_id",
+       "entityType": "columns",
+       "table": "permission"
+     },
+     {
+       "type": "text",
+       "notNull": true,
+       "autoincrement": false,
+       "default": null,
+       "generated": null,
+       "name": "action",
+       "entityType": "columns",
+       "table": "permission"
+     },
+@@ -1454,330 +1500,432 @@
+       "type": "text",
+       "notNull": true,
+       "autoincrement": false,
+       "default": null,
+       "generated": null,
+       "name": "url",
+       "entityType": "columns",
+       "table": "session_share"
+     },
+     {
+       "type": "integer",
+       "notNull": true,
+       "autoincrement": false,
+       "default": null,
+       "generated": null,
+       "name": "time_created",
+       "entityType": "columns",
+       "table": "session_share"
+     },
+     {
+       "type": "integer",
+       "notNull": true,
+       "autoincrement": false,
+       "default": null,
+       "generated": null,
+       "name": "time_updated",
+       "entityType": "columns",
+       "table": "session_share"
+     },
+     {
+-      "columns": ["project_id"],
++      "columns": [
++        "project_id"
++      ],
+       "tableTo": "project",
+-      "columnsTo": ["id"],
++      "columnsTo": [
++        "id"
++      ],
+       "onUpdate": "NO ACTION",
+       "onDelete": "CASCADE",
+       "nameExplicit": false,
+       "name": "fk_workspace_project_id_project_id_fk",
+       "entityType": "fks",
+       "table": "workspace"
+     },
+     {
+-      "columns": ["active_account_id"],
++      "columns": [
++        "active_account_id"
++      ],
+       "tableTo": "account",
+-      "columnsTo": ["id"],
++      "columnsTo": [
++        "id"
++      ],
+       "onUpdate": "NO ACTION",
+       "onDelete": "SET NULL",
+       "nameExplicit": false,
+       "name": "fk_account_state_active_account_id_account_id_fk",
+       "entityType": "fks",
+       "table": "account_state"
+     },
+     {
+-      "columns": ["aggregate_id"],
++      "columns": [
++        "aggregate_id"
++      ],
+       "tableTo": "event_sequence",
+-      "columnsTo": ["aggregate_id"],
++      "columnsTo": [
++        "aggregate_id"
++      ],
+       "onUpdate": "NO ACTION",
+       "onDelete": "CASCADE",
+       "nameExplicit": false,
+       "name": "fk_event_aggregate_id_event_sequence_aggregate_id_fk",
+       "entityType": "fks",
+       "table": "event"
+     },
+     {
+-      "columns": ["project_id"],
++      "columns": [
++        "project_id"
++      ],
+       "tableTo": "project",
+-      "columnsTo": ["id"],
++      "columnsTo": [
++        "id"
++      ],
+       "onUpdate": "NO ACTION",
+       "onDelete": "CASCADE",
+       "nameExplicit": false,
+       "name": "fk_permission_project_id_project_id_fk",
+       "entityType": "fks",
+       "table": "permission"
+     },
+     {
+-      "columns": ["project_id"],
++      "columns": [
++        "project_id"
++      ],
+       "tableTo": "project",
+-      "columnsTo": ["id"],
++      "columnsTo": [
++        "id"
++      ],
+       "onUpdate": "NO ACTION",
+       "onDelete": "CASCADE",
+       "nameExplicit": false,
+       "name": "fk_project_directory_project_id_project_id_fk",
+       "entityType": "fks",
+       "table": "project_directory"
+     },
+     {
+-      "columns": ["session_id"],
++      "columns": [
++        "session_id"
++      ],
+       "tableTo": "session",
+-      "columnsTo": ["id"],
++      "columnsTo": [
++        "id"
++      ],
+       "onUpdate": "NO ACTION",
+       "onDelete": "CASCADE",
+       "nameExplicit": false,
+       "name": "fk_message_session_id_session_id_fk",
+       "entityType": "fks",
+       "table": "message"
+     },
+     {
+-      "columns": ["message_id"],
++      "columns": [
++        "message_id"
++      ],
+       "tableTo": "message",
+-      "columnsTo": ["id"],
++      "columnsTo": [
++        "id"
++      ],
+       "onUpdate": "NO ACTION",
+       "onDelete": "CASCADE",
+       "nameExplicit": false,
+       "name": "fk_part_message_id_message_id_fk",
+       "entityType": "fks",
+       "table": "part"
+     },
+     {
+-      "columns": ["session_id"],
++      "columns": [
++        "session_id"
++      ],
+       "tableTo": "session",
+-      "columnsTo": ["id"],
++      "columnsTo": [
++        "id"
++      ],
+       "onUpdate": "NO ACTION",
+       "onDelete": "CASCADE",
+       "nameExplicit": false,
+       "name": "fk_session_context_epoch_session_id_session_id_fk",
+       "entityType": "fks",
+       "table": "session_context_epoch"
+     },
+     {
+-      "columns": ["session_id"],
++      "columns": [
++        "session_id"
++      ],
+       "tableTo": "session",
+-      "columnsTo": ["id"],
++      "columnsTo": [
++        "id"
++      ],
+       "onUpdate": "NO ACTION",
+       "onDelete": "CASCADE",
+       "nameExplicit": false,
+       "name": "fk_session_input_session_id_session_id_fk",
+       "entityType": "fks",
+       "table": "session_input"
+     },
+     {
+-      "columns": ["session_id"],
++      "columns": [
++        "session_id"
++      ],
+       "tableTo": "session",
+-      "columnsTo": ["id"],
++      "columnsTo": [
++        "id"
++      ],
+       "onUpdate": "NO ACTION",
+       "onDelete": "CASCADE",
+       "nameExplicit": false,
+       "name": "fk_session_message_session_id_session_id_fk",
+       "entityType": "fks",
+       "table": "session_message"
+     },
+     {
+-      "columns": ["project_id"],
++      "columns": [
++        "project_id"
++      ],
+       "tableTo": "project",
+-      "columnsTo": ["id"],
++      "columnsTo": [
++        "id"
++      ],
+       "onUpdate": "NO ACTION",
+       "onDelete": "CASCADE",
+       "nameExplicit": false,
+       "name": "fk_session_project_id_project_id_fk",
+       "entityType": "fks",
+       "table": "session"
+     },
+     {
+-      "columns": ["session_id"],
++      "columns": [
++        "session_id"
++      ],
+       "tableTo": "session",
+-      "columnsTo": ["id"],
++      "columnsTo": [
++        "id"
++      ],
+       "onUpdate": "NO ACTION",
+       "onDelete": "CASCADE",
+       "nameExplicit": false,
+       "name": "fk_todo_session_id_session_id_fk",
+       "entityType": "fks",
+       "table": "todo"
+     },
+     {
+-      "columns": ["session_id"],
++      "columns": [
++        "session_id"
++      ],
+       "tableTo": "session",
+-      "columnsTo": ["id"],
++      "columnsTo": [
++        "id"
++      ],
+       "onUpdate": "NO ACTION",
+       "onDelete": "CASCADE",
+       "nameExplicit": false,
+       "name": "fk_session_share_session_id_session_id_fk",
+       "entityType": "fks",
+       "table": "session_share"
+     },
+     {
+-      "columns": ["email", "url"],
++      "columns": [
++        "email",
++        "url"
++      ],
+       "nameExplicit": false,
+       "name": "control_account_pk",
+       "entityType": "pks",
+       "table": "control_account"
+     },
+     {
+-      "columns": ["project_id", "directory"],
++      "columns": [
++        "project_id",
++        "directory"
++      ],
+       "nameExplicit": false,
+       "name": "project_directory_pk",
+       "entityType": "pks",
+       "table": "project_directory"
+     },
+     {
+-      "columns": ["session_id", "position"],
++      "columns": [
++        "session_id",
++        "position"
++      ],
+       "nameExplicit": false,
+       "name": "todo_pk",
+       "entityType": "pks",
+       "table": "todo"
+     },
+     {
+-      "columns": ["id"],
++      "columns": [
++        "id"
++      ],
+       "nameExplicit": false,
+       "name": "workspace_pk",
+       "table": "workspace",
+       "entityType": "pks"
+     },
+     {
+-      "columns": ["name"],
++      "columns": [
++        "name"
++      ],
+       "nameExplicit": false,
+       "name": "data_migration_pk",
+       "table": "data_migration",
+       "entityType": "pks"
+     },
+     {
+-      "columns": ["id"],
++      "columns": [
++        "id"
++      ],
+       "nameExplicit": false,
+       "name": "account_state_pk",
+       "table": "account_state",
+       "entityType": "pks"
+     },
+     {
+-      "columns": ["id"],
++      "columns": [
++        "id"
++      ],
+       "nameExplicit": false,
+       "name": "account_pk",
+       "table": "account",
+       "entityType": "pks"
+     },
+     {
+-      "columns": ["id"],
++      "columns": [
++        "id"
++      ],
+       "nameExplicit": false,
+       "name": "credential_pk",
+       "table": "credential",
+       "entityType": "pks"
+     },
+     {
+-      "columns": ["aggregate_id"],
++      "columns": [
++        "aggregate_id"
++      ],
+       "nameExplicit": false,
+       "name": "event_sequence_pk",
+       "table": "event_sequence",
+       "entityType": "pks"
+     },
+     {
+-      "columns": ["id"],
++      "columns": [
++        "id"
++      ],
+       "nameExplicit": false,
+       "name": "event_pk",
+       "table": "event",
+       "entityType": "pks"
+     },
+     {
+-      "columns": ["id"],
++      "columns": [
++        "canonical_root"
++      ],
++      "nameExplicit": false,
++      "name": "ftc_project_association_pk",
++      "table": "ftc_project_association",
++      "entityType": "pks"
++    },
++    {
++      "columns": [
++        "id"
++      ],
+       "nameExplicit": false,
+       "name": "permission_pk",
+       "table": "permission",
+       "entityType": "pks"
+     },
+     {
+-      "columns": ["id"],
++      "columns": [
++        "id"
++      ],
+       "nameExplicit": false,
+       "name": "project_pk",
+       "table": "project",
+       "entityType": "pks"
+     },
+     {
+-      "columns": ["id"],
++      "columns": [
++        "id"
++      ],
+       "nameExplicit": false,
+       "name": "message_pk",
+       "table": "message",
+       "entityType": "pks"
+     },
+     {
+-      "columns": ["id"],
++      "columns": [
++        "id"
++      ],
+       "nameExplicit": false,
+       "name": "part_pk",
+       "table": "part",
+       "entityType": "pks"
+     },
+     {
+-      "columns": ["session_id"],
++      "columns": [
++        "session_id"
++      ],
+       "nameExplicit": false,
+       "name": "session_context_epoch_pk",
+       "table": "session_context_epoch",
+       "entityType": "pks"
+     },
+     {
+-      "columns": ["id"],
++      "columns": [
++        "id"
++      ],
+       "nameExplicit": false,
+       "name": "session_input_pk",
+       "table": "session_input",
+       "entityType": "pks"
+     },
+     {
+-      "columns": ["id"],
++      "columns": [
++        "id"
++      ],
+       "nameExplicit": false,
+       "name": "session_message_pk",
+       "table": "session_message",
+       "entityType": "pks"
+     },
+     {
+-      "columns": ["id"],
++      "columns": [
++        "id"
++      ],
+       "nameExplicit": false,
+       "name": "session_pk",
+       "table": "session",
+       "entityType": "pks"
+     },
+     {
+-      "columns": ["session_id"],
++      "columns": [
++        "session_id"
++      ],
+       "nameExplicit": false,
+       "name": "session_share_pk",
+       "table": "session_share",
+       "entityType": "pks"
+     },
+     {
+       "columns": [
+         {
+           "value": "aggregate_id",
+           "isExpression": false
+         },
+         {
+           "value": "seq",
+           "isExpression": false
+         }
+       ],
+       "isUnique": true,
+       "where": null,
+       "origin": "manual",
+       "name": "event_aggregate_seq_idx",
+       "entityType": "indexes",
+       "table": "event"
+     },
+     {
+       "columns": [
+         {
+           "value": "aggregate_id",
+           "isExpression": false
+         },
+         {
+@@ -2038,34 +2186,43 @@
+       "entityType": "indexes",
+       "table": "session"
+     },
+     {
+       "columns": [
+         {
+           "value": "parent_id",
+           "isExpression": false
+         }
+       ],
+       "isUnique": false,
+       "where": null,
+       "origin": "manual",
+       "name": "session_parent_idx",
+       "entityType": "indexes",
+       "table": "session"
+     },
+     {
+       "columns": [
+         {
+           "value": "session_id",
+           "isExpression": false
+         }
+       ],
+       "isUnique": false,
+       "where": null,
+       "origin": "manual",
+       "name": "todo_session_idx",
+       "entityType": "indexes",
+       "table": "todo"
++    },
++    {
++      "columns": [
++        "project_id"
++      ],
++      "nameExplicit": false,
++      "name": "ftc_project_association_project_id_unique",
++      "entityType": "uniques",
++      "table": "ftc_project_association"
+     }
+   ],
+   "renames": []
+-}
++}
+\ No newline at end of file
+diff --git a/packages/core/src/database/migration.gen.ts b/packages/core/src/database/migration.gen.ts
+index e6ea4eaa1..b83143189 100644
+--- a/packages/core/src/database/migration.gen.ts
++++ b/packages/core/src/database/migration.gen.ts
+@@ -13,32 +13,33 @@ export const migrations = (
+     import("./migration/20260312043431_session_message_cursor"),
+     import("./migration/20260323234822_events"),
+     import("./migration/20260410174513_workspace-name"),
+     import("./migration/20260413175956_chief_energizer"),
+     import("./migration/20260423070820_add_icon_url_override"),
+     import("./migration/20260427172553_slow_nightmare"),
+     import("./migration/20260428004200_add_session_path"),
+     import("./migration/20260501142318_next_venus"),
+     import("./migration/20260504145000_add_sync_owner"),
+     import("./migration/20260507164347_add_workspace_time"),
+     import("./migration/20260510033149_session_usage"),
+     import("./migration/20260511000411_data_migration_state"),
+     import("./migration/20260511173437_session-metadata"),
+     import("./migration/20260601010001_normalize_storage_paths"),
+     import("./migration/20260601202201_amazing_prowler"),
+     import("./migration/20260602002951_lowly_union_jack"),
+     import("./migration/20260602182828_add_project_directories"),
+     import("./migration/20260603001617_session_message_projection_indexes"),
+     import("./migration/20260603040000_session_message_projection_order"),
+     import("./migration/20260603141458_session_input_inbox"),
+     import("./migration/20260603160727_jittery_ezekiel_stane"),
+     import("./migration/20260604172448_event_sourced_session_input"),
+     import("./migration/20260605003541_add_session_context_snapshot"),
+     import("./migration/20260605042240_add_context_epoch_agent"),
+     import("./migration/20260611035744_credential"),
+     import("./migration/20260611192811_lush_chimera"),
+     import("./migration/20260612174303_project_dir_strategy"),
+     import("./migration/20260622142730_simplify_session_context_epoch"),
+     import("./migration/20260622170816_reset_v2_session_state"),
+     import("./migration/20260622202450_simplify_session_input"),
++    import("./migration/20261006121634_ftc-project-association"),
+   ])
+ ).map((module) => module.default) satisfies DatabaseMigration.Migration[]
+diff --git a/packages/core/src/database/migration/20261006121634_ftc-project-association.ts b/packages/core/src/database/migration/20261006121634_ftc-project-association.ts
+new file mode 100644
+index 000000000..608f2673e
+--- /dev/null
++++ b/packages/core/src/database/migration/20261006121634_ftc-project-association.ts
+@@ -0,0 +1,18 @@
++import { Effect } from "effect"
++import type { DatabaseMigration } from "../migration"
++
++export default {
++  id: "20261006121634_ftc-project-association",
++  up(tx) {
++    return Effect.gen(function* () {
++      yield* tx.run(`
++        CREATE TABLE \`ftc_project_association\` (
++          \`canonical_root\` text PRIMARY KEY,
++          \`project_id\` text NOT NULL UNIQUE,
++          \`host_project_id\` text NOT NULL,
++          \`host_project_directory\` text NOT NULL
++        );
++      `)
++    })
++  },
++} satisfies DatabaseMigration.Migration
+diff --git a/packages/core/src/database/schema.gen.ts b/packages/core/src/database/schema.gen.ts
+index ed60fde6c..db349ee9d 100644
+--- a/packages/core/src/database/schema.gen.ts
++++ b/packages/core/src/database/schema.gen.ts
+@@ -59,60 +59,68 @@ export default {
+       yield* tx.run(`
+         CREATE TABLE \`credential\` (
+           \`id\` text PRIMARY KEY,
+           \`integration_id\` text,
+           \`label\` text NOT NULL,
+           \`value\` text NOT NULL,
+           \`connector_id\` text,
+           \`method_id\` text,
+           \`active\` integer,
+           \`time_created\` integer NOT NULL,
+           \`time_updated\` integer NOT NULL
+         );
+       `)
+       yield* tx.run(`
+         CREATE TABLE \`event_sequence\` (
+           \`aggregate_id\` text PRIMARY KEY,
+           \`seq\` integer NOT NULL,
+           \`owner_id\` text
+         );
+       `)
+       yield* tx.run(`
+         CREATE TABLE \`event\` (
+           \`id\` text PRIMARY KEY,
+           \`aggregate_id\` text NOT NULL,
+           \`seq\` integer NOT NULL,
+           \`type\` text NOT NULL,
+           \`data\` text NOT NULL,
+           CONSTRAINT \`fk_event_aggregate_id_event_sequence_aggregate_id_fk\` FOREIGN KEY (\`aggregate_id\`) REFERENCES \`event_sequence\`(\`aggregate_id\`) ON DELETE CASCADE
+         );
+       `)
++      yield* tx.run(`
++        CREATE TABLE \`ftc_project_association\` (
++          \`canonical_root\` text PRIMARY KEY,
++          \`project_id\` text NOT NULL UNIQUE,
++          \`host_project_id\` text NOT NULL,
++          \`host_project_directory\` text NOT NULL
++        );
++      `)
+       yield* tx.run(`
+         CREATE TABLE \`permission\` (
+           \`id\` text PRIMARY KEY,
+           \`project_id\` text NOT NULL,
+           \`action\` text NOT NULL,
+           \`resource\` text NOT NULL,
+           \`time_created\` integer NOT NULL,
+           \`time_updated\` integer NOT NULL,
+           CONSTRAINT \`fk_permission_project_id_project_id_fk\` FOREIGN KEY (\`project_id\`) REFERENCES \`project\`(\`id\`) ON DELETE CASCADE
+         );
+       `)
+       yield* tx.run(`
+         CREATE TABLE \`project_directory\` (
+           \`project_id\` text NOT NULL,
+           \`directory\` text NOT NULL,
+           \`type\` text,
+           \`strategy\` text,
+           \`time_created\` integer NOT NULL,
+           CONSTRAINT \`project_directory_pk\` PRIMARY KEY(\`project_id\`, \`directory\`),
+           CONSTRAINT \`fk_project_directory_project_id_project_id_fk\` FOREIGN KEY (\`project_id\`) REFERENCES \`project\`(\`id\`) ON DELETE CASCADE
+         );
+       `)
+       yield* tx.run(`
+         CREATE TABLE \`project\` (
+           \`id\` text PRIMARY KEY,
+           \`worktree\` text NOT NULL,
+           \`vcs\` text,
+           \`name\` text,
+           \`icon_url\` text,
+           \`icon_url_override\` text,
+diff --git a/packages/core/src/ftc/projects.ts b/packages/core/src/ftc/projects.ts
+new file mode 100644
+index 000000000..7a52cbdb1
+--- /dev/null
++++ b/packages/core/src/ftc/projects.ts
+@@ -0,0 +1,54 @@
++export * as FtcProjects from "./projects"
++
++import { Context, Effect, Layer } from "effect"
++import path from "node:path"
++import { FtcProject } from "@opencode-ai/schema/ftc-project"
++
++export { ProjectContext, FolderRequest, AssociationError } from "@opencode-ai/schema/ftc-project"
++
++/** Resolves symlink/case aliases, inspects directory access, and supplies existing host identity without file edits. */
++export interface FolderIdentity {
++  readonly resolve: (
++    input: FtcProject.FolderRequest,
++  ) => Effect.Effect<Omit<FtcProject.ProjectContext, "projectID">, FtcProject.AssociationError>
++}
++
++export interface Repository {
++  readonly associate: (
++    folder: Omit<FtcProject.ProjectContext, "projectID">,
++  ) => Effect.Effect<FtcProject.ProjectContext, FtcProject.AssociationError>
++}
++
++export interface Interface {
++  readonly createProject: (
++    input: FtcProject.FolderRequest,
++  ) => Effect.Effect<FtcProject.ProjectContext, FtcProject.AssociationError>
++  readonly openProject: (
++    input: FtcProject.FolderRequest,
++  ) => Effect.Effect<FtcProject.ProjectContext, FtcProject.AssociationError>
++}
++
++export class Service extends Context.Service<Service, Interface>()("@opencode/FtcProjects") {}
++
++/**
++ * Construct within the owning Location scope; the caller owns the injected repository connection.
++ * Interruption before association leaves no row. Once the atomic write commits, retry reconciles by root.
++ */
++export const layer = (folders: FolderIdentity, repository: Repository) => {
++  const associate = Effect.fn("FtcProjects.associate")(function* (input: FtcProject.FolderRequest) {
++    const folder = yield* folders.resolve(input)
++    if (
++      !path.isAbsolute(folder.canonicalRoot) ||
++      folder.location.directory !== folder.canonicalRoot ||
++      !path.isAbsolute(folder.location.project.directory) ||
++      folder.location.workspaceID !== undefined
++    )
++      return yield* Effect.fail({
++        code: "invalid_folder_identity",
++        root: input.root,
++        recovery: "select_accessible_folder",
++      } satisfies FtcProject.AssociationError)
++    return yield* repository.associate(folder)
++  })
++  return Layer.succeed(Service, { createProject: associate, openProject: associate })
++}
+diff --git a/packages/core/src/ftc/projects/sql.ts b/packages/core/src/ftc/projects/sql.ts
+new file mode 100644
+index 000000000..eaf0f8600
+--- /dev/null
++++ b/packages/core/src/ftc/projects/sql.ts
+@@ -0,0 +1,59 @@
++export * as ProjectAssociations from "./sql"
++
++import type { EffectDrizzleSqlite } from "@opencode-ai/effect-drizzle-sqlite"
++import { FtcProject } from "@opencode-ai/schema/ftc-project"
++import { Location } from "@opencode-ai/schema/location"
++import { Project } from "@opencode-ai/schema/project"
++import { text, sqliteTable } from "drizzle-orm/sqlite-core"
++import { Effect } from "effect"
++import { absoluteColumn } from "../../database/path"
++import type { FtcProjects } from "../projects"
++
++export const ProjectAssociationTable = sqliteTable("ftc_project_association", {
++  canonical_root: absoluteColumn().primaryKey(),
++  project_id: text().$type<Project.ID>().notNull().unique(),
++  host_project_id: text().$type<Project.ID>().notNull(),
++  host_project_directory: absoluteColumn().notNull(),
++})
++
++export function make(db: EffectDrizzleSqlite.EffectSQLiteDatabase): FtcProjects.Repository {
++  return {
++    associate: (folder) =>
++      Effect.gen(function* () {
++        const [row] = yield* db
++          .insert(ProjectAssociationTable)
++          .values({
++            canonical_root: folder.canonicalRoot,
++            project_id: Project.ID.make(`ftc_${crypto.randomUUID()}`),
++            host_project_id: folder.location.project.id,
++            host_project_directory: folder.location.project.directory,
++          })
++          .onConflictDoUpdate({
++            target: ProjectAssociationTable.canonical_root,
++            set: {
++              host_project_id: folder.location.project.id,
++              host_project_directory: folder.location.project.directory,
++            },
++          })
++          .returning()
++          .all()
++        return {
++          projectID: row.project_id,
++          canonicalRoot: row.canonical_root,
++          location: new Location.Info({
++            directory: row.canonical_root,
++            project: { id: row.host_project_id, directory: row.host_project_directory },
++          }),
++        }
++      }).pipe(
++        Effect.mapError(
++          (cause): FtcProject.AssociationError => ({
++            code: "association_store_failed",
++            root: folder.canonicalRoot,
++            detail: cause.message,
++            recovery: "retry",
++          }),
++        ),
++      ),
++  }
++}
+diff --git a/packages/core/test/ftc/projects-and-chats/m2-01.test.ts b/packages/core/test/ftc/projects-and-chats/m2-01.test.ts
+new file mode 100644
+index 000000000..2c4f90a4b
+--- /dev/null
++++ b/packages/core/test/ftc/projects-and-chats/m2-01.test.ts
+@@ -0,0 +1,423 @@
++import { expect, test } from "bun:test"
++import fs from "node:fs/promises"
++import path from "node:path"
++import { SqliteClient } from "@effect/sql-sqlite-bun"
++import { EffectDrizzleSqlite } from "@opencode-ai/effect-drizzle-sqlite"
++import { FtcProject } from "@opencode-ai/schema/ftc-project"
++import { Location } from "@opencode-ai/schema/location"
++import { Project } from "@opencode-ai/schema/project"
++import { Workspace } from "@opencode-ai/schema/workspace"
++import { AbsolutePath } from "@opencode-ai/schema/schema"
++import { Deferred, Effect, Fiber, Result, Schema } from "effect"
++import { sql } from "drizzle-orm"
++import { DatabaseMigration } from "../../../src/database/migration"
++import { migrations } from "../../../src/database/migration.gen"
++import { FtcProjects } from "../../../src/ftc/projects"
++import { ProjectAssociations } from "../../../src/ftc/projects/sql"
++import { tmpdir } from "../../fixture/tmpdir"
++
++const folders: FtcProjects.FolderIdentity = {
++  resolve: ({ root }) =>
++    Effect.tryPromise({
++      try: async () => {
++        const directory = AbsolutePath.make(await fs.realpath(root))
++        if (!(await fs.stat(directory)).isDirectory()) throw new Error("not_a_directory")
++        await fs.access(directory, fs.constants.R_OK)
++        return {
++          canonicalRoot: directory,
++          location: new Location.Info({
++            directory,
++            project: { id: Project.ID.global, directory: AbsolutePath.make(path.parse(directory).root) },
++          }),
++        }
++      },
++      catch: (cause): FtcProject.AssociationError => ({
++        code: "folder_unavailable",
++        root,
++        detail: String(cause),
++        recovery: "select_accessible_folder",
++      }),
++    }),
++}
++
++function run<A, E>(filename: string, effect: Effect.Effect<A, E, FtcProjects.Service>, identity = folders) {
++  return Effect.runPromise(
++    Effect.gen(function* () {
++      const db = yield* EffectDrizzleSqlite.makeWithDefaults()
++      yield* DatabaseMigration.apply(db)
++      return yield* effect.pipe(Effect.provide(FtcProjects.layer(identity, ProjectAssociations.make(db))))
++    }).pipe(Effect.provide(SqliteClient.layer({ filename })), Effect.scoped),
++  )
++}
++
++test("folder aliases reopen one project", async () => {
++  await using tmp = await tmpdir()
++  const root = AbsolutePath.make(path.join(tmp.path, "team"))
++  const aliasRoot = AbsolutePath.make(path.join(tmp.path, "alias"))
++  await fs.mkdir(root)
++  await fs.mkdir(path.join(root, "TeamCode"))
++  await Bun.write(path.join(root, "TeamCode/Main.java"), "// student code\n")
++  await Bun.write(path.join(root, "ftc-project.json"), '{"name":"team"}\n')
++  await fs.symlink(root, aliasRoot)
++  const beforeFiles = await files(root)
++  const filename = path.join(tmp.path, "local.sqlite")
++  const opened = await run(
++    filename,
++    Effect.gen(function* () {
++      const projects = yield* FtcProjects.Service
++      return yield* projects.createProject({ root })
++    }),
++  )
++  const alias = await run(
++    filename,
++    Effect.gen(function* () {
++      const projects = yield* FtcProjects.Service
++      return yield* projects.openProject({ root: aliasRoot })
++    }),
++  )
++  expect(alias.projectID).toBe(opened.projectID)
++  expect(alias).toEqual(opened)
++  expect(alias.canonicalRoot).toBe(root)
++  expect(alias.location.directory).toBe(root)
++  expect(alias.location.project.id).toBe(Project.ID.global)
++  expect(alias.projectID).not.toBe(Project.ID.global)
++  const afterFiles = await files(root)
++  expect(afterFiles).toEqual(beforeFiles)
++})
++
++async function files(root: string) {
++  return Promise.all(
++    (await fs.readdir(root, { recursive: true })).sort().map(async (name) => {
++      const file = path.join(root, name)
++      const stat = await fs.lstat(file)
++      return { name, mode: stat.mode, content: stat.isFile() ? await Bun.file(file).text() : null }
++    }),
++  )
++}
++
++test.each([Project.ID.global, Project.ID.make("shared-remote")])(
++  "distinct local roots retain distinct association IDs with host ID %s",
++  async (hostID) => {
++    await using tmp = await tmpdir()
++    const filename = path.join(tmp.path, "local.sqlite")
++    const identity: FtcProjects.FolderIdentity = {
++      resolve: (input) =>
++        folders.resolve(input).pipe(
++          Effect.map((folder) => ({
++            ...folder,
++            location: new Location.Info({
++              directory: folder.location.directory,
++              project: { ...folder.location.project, id: hostID },
++            }),
++          })),
++        ),
++    }
++    const roots = await Promise.all(
++      ["first", "second"].map(async (name) => {
++        const root = AbsolutePath.make(path.join(tmp.path, name))
++        await fs.mkdir(root)
++        await Bun.write(path.join(root, "ftc-project.json"), '{"id":"copied"}')
++        return root
++      }),
++    )
++    const contexts = await run(
++      filename,
++      Effect.gen(function* () {
++        const projects = yield* FtcProjects.Service
++        return yield* Effect.forEach(roots, (root) => projects.openProject({ root }))
++      }),
++      identity,
++    )
++    expect(contexts[0].projectID).not.toBe(contexts[1].projectID)
++    expect(contexts.map((context) => context.canonicalRoot)).toEqual(roots)
++    expect(contexts.map((context) => context.location.project.id)).toEqual([hostID, hostID])
++    const reopened = await run(
++      filename,
++      Effect.gen(function* () {
++        const projects = yield* FtcProjects.Service
++        return yield* Effect.forEach(roots, (root) => projects.createProject({ root }))
++      }),
++      identity,
++    )
++    expect(reopened).toEqual(contexts)
++  },
++)
++
++test("concurrent independent connections associate one canonical root exactly once", async () => {
++  await using tmp = await tmpdir()
++  const root = AbsolutePath.make(path.join(tmp.path, "team"))
++  await fs.mkdir(root)
++  const filename = path.join(tmp.path, "local.sqlite")
++  const results = await Promise.all(
++    Array.from({ length: 8 }, () =>
++      run(
++        filename,
++        Effect.gen(function* () {
++          const projects = yield* FtcProjects.Service
++          return yield* projects.openProject({ root })
++        }),
++      ),
++    ),
++  )
++  expect(new Set(results.map((context) => context.projectID)).size).toBe(1)
++  expect(await rows(filename)).toHaveLength(1)
++})
++
++test("unavailable folder and regular file fail without associations or project-file edits", async () => {
++  await using tmp = await tmpdir()
++  const filename = path.join(tmp.path, "local.sqlite")
++  const file = AbsolutePath.make(path.join(tmp.path, "student.java"))
++  await Bun.write(file, "// preserve me")
++  const results = await run(
++    filename,
++    Effect.gen(function* () {
++      const projects = yield* FtcProjects.Service
++      return yield* Effect.forEach([AbsolutePath.make(path.join(tmp.path, "missing")), file], (root) =>
++        projects.createProject({ root }).pipe(Effect.result),
++      )
++    }),
++  )
++  expect(results.every(Result.isFailure)).toBe(true)
++  expect(results.filter(Result.isFailure).map((result) => result.failure.code)).toEqual([
++    "folder_unavailable",
++    "folder_unavailable",
++  ])
++  expect(await rows(filename)).toEqual([])
++  expect(await Bun.file(file).text()).toBe("// preserve me")
++})
++
++test("denied access is propagated before persistence", async () => {
++  await using tmp = await tmpdir()
++  const filename = path.join(tmp.path, "local.sqlite")
++  const root = AbsolutePath.make(tmp.path)
++  const denied: FtcProject.AssociationError = {
++    code: "folder_unavailable",
++    root,
++    detail: "EACCES",
++    recovery: "select_accessible_folder",
++  }
++  const result = await run(
++    filename,
++    Effect.gen(function* () {
++      const projects = yield* FtcProjects.Service
++      return yield* projects.openProject({ root }).pipe(Effect.result)
++    }),
++    { resolve: () => Effect.fail(denied) },
++  )
++  expect(Result.isFailure(result) && result.failure).toEqual(denied)
++  expect(await rows(filename)).toEqual([])
++})
++
++test("interrupting folder resolution leaves no association and releases its scope", async () => {
++  await using tmp = await tmpdir()
++  const filename = path.join(tmp.path, "local.sqlite")
++  const started = Deferred.makeUnsafe<void>()
++  const released = Deferred.makeUnsafe<void>()
++  await run(
++    filename,
++    Effect.gen(function* () {
++      const projects = yield* FtcProjects.Service
++      const fiber = yield* projects.createProject({ root: AbsolutePath.make(tmp.path) }).pipe(Effect.forkChild)
++      yield* Deferred.await(started)
++      yield* Fiber.interrupt(fiber)
++      expect(yield* Deferred.isDone(released)).toBe(true)
++    }),
++    {
++      resolve: () =>
++        Effect.scoped(
++          Effect.gen(function* () {
++            yield* Effect.addFinalizer(() => Deferred.succeed(released, undefined))
++            yield* Deferred.succeed(started, undefined)
++            return yield* Effect.never
++          }),
++        ),
++    },
++  )
++  expect(await rows(filename)).toEqual([])
++})
++
++async function rows(filename: string) {
++  return Effect.runPromise(
++    Effect.gen(function* () {
++      const db = yield* EffectDrizzleSqlite.makeWithDefaults()
++      return yield* db.all(sql`SELECT * FROM ftc_project_association`)
++    }).pipe(Effect.provide(SqliteClient.layer({ filename })), Effect.scoped),
++  )
++}
++
++test("inconsistent or nonlocal folder identities fail before persistence", async () => {
++  await using tmp = await tmpdir()
++  const filename = path.join(tmp.path, "local.sqlite")
++  const root = AbsolutePath.make(tmp.path)
++  const locations = [
++    {
++      canonicalRoot: root,
++      location: new Location.Info({
++        directory: AbsolutePath.make(path.join(root, "other")),
++        project: { id: Project.ID.global, directory: root },
++      }),
++    },
++    {
++      canonicalRoot: root,
++      location: new Location.Info({
++        directory: root,
++        workspaceID: Workspace.ID.make("wrk_future"),
++        project: { id: Project.ID.global, directory: root },
++      }),
++    },
++    {
++      canonicalRoot: root,
++      location: new Location.Info({
++        directory: root,
++        project: { id: Project.ID.global, directory: AbsolutePath.make("relative") },
++      }),
++    },
++    {
++      canonicalRoot: AbsolutePath.make("relative"),
++      location: new Location.Info({
++        directory: AbsolutePath.make("relative"),
++        project: { id: Project.ID.global, directory: root },
++      }),
++    },
++  ]
++  for (const identity of locations) {
++    const result = await run(
++      filename,
++      Effect.gen(function* () {
++        const projects = yield* FtcProjects.Service
++        return yield* projects.openProject({ root }).pipe(Effect.result)
++      }),
++      { resolve: () => Effect.succeed(identity) },
++    )
++    expect(Result.isFailure(result) && result.failure.code).toBe("invalid_folder_identity")
++  }
++  expect(await rows(filename)).toEqual([])
++})
++
++test("association contract reuses canonical schemas and encodes optional fields without undefined", () => {
++  expect(FtcProjects.ProjectContext).toBe(FtcProject.ProjectContext)
++  expect(FtcProject.ProjectContext.fields.projectID).toBe(Project.ID)
++  expect(FtcProject.ProjectContext.fields.location).toBe(Location.Info)
++  expect(
++    Schema.encodeSync(FtcProject.AssociationError)({
++      code: "association_store_failed",
++      root: undefined,
++      detail: undefined,
++      recovery: "retry",
++    }),
++  ).toEqual({ code: "association_store_failed", recovery: "retry" })
++  const identifiers = [FtcProject.ProjectContext, FtcProject.FolderRequest, FtcProject.AssociationError].map(
++    (schema) => schema.ast.annotations?.identifier,
++  )
++  expect(identifiers.every((identifier) => typeof identifier === "string")).toBe(true)
++  expect(new Set(identifiers).size).toBe(3)
++})
++
++test("SQLite write failure is recoverable and does not create a partial association", async () => {
++  await using tmp = await tmpdir()
++  const filename = path.join(tmp.path, "local.sqlite")
++  const result = await Effect.runPromise(
++    Effect.gen(function* () {
++      const db = yield* EffectDrizzleSqlite.makeWithDefaults()
++      yield* DatabaseMigration.apply(db)
++      yield* db.run(sql`PRAGMA query_only = ON`)
++      return yield* Effect.gen(function* () {
++        const projects = yield* FtcProjects.Service
++        return yield* projects.openProject({ root: AbsolutePath.make(tmp.path) }).pipe(Effect.result)
++      }).pipe(Effect.provide(FtcProjects.layer(folders, ProjectAssociations.make(db))))
++    }).pipe(Effect.provide(SqliteClient.layer({ filename })), Effect.scoped),
++  )
++  expect(Result.isFailure(result) && result.failure.code).toBe("association_store_failed")
++  expect(Result.isFailure(result) && result.failure.recovery).toBe("retry")
++  expect(await rows(filename)).toEqual([])
++  const opened = await run(
++    filename,
++    Effect.gen(function* () {
++      const projects = yield* FtcProjects.Service
++      return yield* projects.openProject({ root: AbsolutePath.make(tmp.path) })
++    }),
++  )
++  expect(opened.canonicalRoot).toBe(AbsolutePath.make(tmp.path))
++})
++
++test("fresh independent database scopes do not inherit another repository's associations", async () => {
++  await using tmp = await tmpdir()
++  const open = Effect.gen(function* () {
++    const projects = yield* FtcProjects.Service
++    return yield* projects.openProject({ root: AbsolutePath.make(tmp.path) })
++  })
++  const first = await run(path.join(tmp.path, "first.sqlite"), open)
++  const second = await run(path.join(tmp.path, "second.sqlite"), open)
++  expect(first.projectID).not.toBe(second.projectID)
++  expect((await run(path.join(tmp.path, "first.sqlite"), open)).projectID).toBe(first.projectID)
++})
++
++test("reopen refreshes the explicit host mapping without changing canonical ownership", async () => {
++  await using tmp = await tmpdir()
++  const filename = path.join(tmp.path, "local.sqlite")
++  const root = AbsolutePath.make(tmp.path)
++  const open = Effect.gen(function* () {
++    const projects = yield* FtcProjects.Service
++    return yield* projects.openProject({ root })
++  })
++  const before = await run(filename, open)
++  const after = await run(filename, open, {
++    resolve: () =>
++      Effect.succeed({
++        canonicalRoot: root,
++        location: new Location.Info({
++          directory: root,
++          project: { id: Project.ID.make("shared-remote"), directory: root },
++        }),
++      }),
++  })
++  expect(after.projectID).toBe(before.projectID)
++  expect(after.canonicalRoot).toBe(before.canonicalRoot)
++  expect(after.location.project.id).toBe(Project.ID.make("shared-remote"))
++  expect(await rows(filename)).toEqual([
++    {
++      canonical_root: root,
++      project_id: before.projectID,
++      host_project_id: "shared-remote",
++      host_project_directory: root,
++    },
++  ])
++})
++
++test("tracked upgrade preserves existing project data and supports a new association", async () => {
++  await using tmp = await tmpdir()
++  const filename = path.join(tmp.path, "local.sqlite")
++  await Effect.runPromise(
++    Effect.gen(function* () {
++      const db = yield* EffectDrizzleSqlite.makeWithDefaults()
++      const index = migrations.findIndex((migration) => migration.id.endsWith("_ftc-project-association"))
++      expect(index).toBeGreaterThan(0)
++      yield* DatabaseMigration.applyOnly(db, migrations.slice(0, index))
++      yield* db.run(
++        sql`INSERT INTO project (id, worktree, name, time_created, time_updated, sandboxes) VALUES ('existing', '/team', 'Student project', 1, 2, '[]')`,
++      )
++      yield* DatabaseMigration.apply(db)
++      const opened = yield* Effect.gen(function* () {
++        const projects = yield* FtcProjects.Service
++        return yield* projects.openProject({ root: AbsolutePath.make(tmp.path) })
++      }).pipe(Effect.provide(FtcProjects.layer(folders, ProjectAssociations.make(db))))
++      expect(opened.canonicalRoot).toBe(AbsolutePath.make(tmp.path))
++      expect(yield* db.all(sql`SELECT id, worktree, name, time_created, time_updated, sandboxes FROM project`)).toEqual(
++        [
++          {
++            id: "existing",
++            worktree: "/team",
++            name: "Student project",
++            time_created: 1,
++            time_updated: 2,
++            sandboxes: "[]",
++          },
++        ],
++      )
++      yield* DatabaseMigration.apply(db)
++      expect(yield* db.all(sql`SELECT project_id FROM ftc_project_association`)).toEqual([
++        { project_id: opened.projectID },
++      ])
++    }).pipe(Effect.provide(SqliteClient.layer({ filename })), Effect.scoped),
++  )
++})
+diff --git a/packages/schema/src/ftc-project.ts b/packages/schema/src/ftc-project.ts
+new file mode 100644
+index 000000000..785b00c13
+--- /dev/null
++++ b/packages/schema/src/ftc-project.ts
+@@ -0,0 +1,26 @@
++export * as FtcProject from "./ftc-project"
++
++import { Schema } from "effect"
++import { Location } from "./location"
++import { Project } from "./project"
++import { AbsolutePath, optional } from "./schema"
++
++export interface ProjectContext extends Schema.Schema.Type<typeof ProjectContext> {}
++export const ProjectContext = Schema.Struct({
++  // Local association ID. Never pass this to legacy Project APIs; use location.project.id.
++  projectID: Project.ID,
++  // Execution ownership is keyed by this canonical root, independent of the host project ID.
++  canonicalRoot: AbsolutePath,
++  location: Location.Info,
++}).annotate({ identifier: "FtcProject.ProjectContext" })
++
++export interface FolderRequest extends Schema.Schema.Type<typeof FolderRequest> {}
++export const FolderRequest = Schema.Struct({ root: AbsolutePath }).annotate({ identifier: "FtcProject.FolderRequest" })
++
++export interface AssociationError extends Schema.Schema.Type<typeof AssociationError> {}
++export const AssociationError = Schema.Struct({
++  code: Schema.Literals(["folder_unavailable", "invalid_folder_identity", "association_store_failed"]),
++  root: optional(AbsolutePath),
++  detail: optional(Schema.String),
++  recovery: Schema.Literals(["select_accessible_folder", "retry"]),
++}).annotate({ identifier: "FtcProject.AssociationError" })
+diff --git a/packages/schema/src/index.ts b/packages/schema/src/index.ts
+index 840451bcc..002bea3d8 100644
+--- a/packages/schema/src/index.ts
++++ b/packages/schema/src/index.ts
+@@ -1,30 +1,31 @@
+ export { Agent } from "./agent"
+ export { Command } from "./command"
+ export { Connection } from "./connection"
+ export { Credential } from "./credential"
+ export { Event } from "./event"
+ export { FileSystem } from "./filesystem"
+ export { FtcController } from "./ftc-controller"
+ export { FtcEnvironment } from "./ftc-environment"
++export { FtcProject } from "./ftc-project"
+ export { Integration } from "./integration"
+ export { LLM } from "./llm"
+ export { Location } from "./location"
+ export { Model } from "./model"
+ export { Permission } from "./permission"
+ export { PermissionSaved } from "./permission-saved"
+ export { Project } from "./project"
+ export { ProjectCopy } from "./project-copy"
+ export { Provider } from "./provider"
+ export { Reference } from "./reference"
+ export { Revert } from "./revert"
+ export { Session } from "./session"
+ export { SessionInput } from "./session-input"
+ export { SessionMessage } from "./session-message"
+ export { Skill } from "./skill"
+ export { Pty } from "./pty"
+ export { PtyTicket } from "./pty-ticket"
+ export { Question } from "./question"
+ export { Workspace } from "./workspace"
+ export { Prompt, Source, FileAttachment, AgentAttachment } from "./prompt"
+ export { PromptInput } from "./prompt-input"
+ export * from "./schema"

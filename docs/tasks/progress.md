@@ -3,7 +3,7 @@
 Date: 2026-10-06
 Planning baseline: `d7aca195c`
 
-**Implementation progress: 0 / 12 modules complete; 2 / 94 tasks complete.**
+**Implementation progress: 0 / 12 modules complete; 3 / 94 tasks complete.**
 
 These checkboxes track future development, not completion of this planning document. The existing OpenCode foundation is reused, but its presence does not prove that the FTC tasks are done. Both inputs describe unimplemented or unevaluated product work, so every implementation box starts unchecked.
 
@@ -12,7 +12,7 @@ These checkboxes track future development, not completion of this planning docum
 ## Module checklist
 
 - [ ] **M1 — [Desktop workspace](desktop-workspace.md)** — 0 / 14 tasks.
-- [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 0 / 6 tasks.
+- [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 1 / 6 tasks.
 - [ ] **M3 — [Agent and context](agent-and-context.md)** — 0 / 7 tasks.
 - [ ] **M4 — [Environment and compatibility](environment-and-compatibility.md)** — 1 / 7 tasks.
 - [ ] **M5 — [Java development](java-development.md)** — 0 / 8 tasks.
@@ -220,6 +220,8 @@ Preflight: [dependency/ownership scan](../validation/execution-preflight.md), [e
 
 | M8-04 | `/root/m8_04` | BLOCKED | Available-host subset approved at `7c11931c2`; real ADB/hardware/Windows/identity/log/dashboard gates open | [Report](../validation/M8-04-implementation.md), [review](../validation/M8-04-review.md); no production promotion |
 
+| M2-01 | `/root/m2_01` | IN_PROGRESS | No prerequisites; four task files, canonical Schema export, generated migration files and owned report/logs | [Brief](../validation/M2-01-brief.md); canonical-root associations with actual temporary SQLite and preserved files |
+
 Recorded execution priority: M9-07 evaluation first; M4-01 then early M5-03 evaluation; M8-01 then early M8-04 evaluation. Current task states above and latest execution entries below supersede this initial ordering. Continue independent canonical-contract work when evaluation gates block. Only coordinator edits this ledger/checklists; one product-code writer at a time.
 
 - Tooling: pinned Bun 1.3.14 and 4663 locked packages installed successfully. Baseline Session suite passes 127/127 with isolated test data; Schema baseline has two existing event-manifest expectation failures; App/Schema typechecks pass. [Evidence](../validation/baseline.md).
@@ -346,3 +348,14 @@ Explicit continuation received. Reconciled `ftc-workspace` at `858c8d070afedde5e
 - M8-04 fix round 1/5 candidate `7c11931c2a5af1f711dd2d584d15727259141398`: canonical trimmed/nonempty declaration checks, eight real-reader regressions RED→GREEN; covering selection 87 pass / 5 explicit skips / 0 fail / 203 assertions, Core types and scoped lint/format pass. Fix report has exact commands/results/logs. Same reviewer receives fix-only package from `3e9a64ca554408608ef6078c2e154123f3f687ad`; scoped verdict pending.
 
 - M8-04 fix round 1/5 complete (1 Important addressed, 0 open; `3e9a64ca5`..`7c11931c2`). Scoped independent review approves specification/quality of the available-host subset with no new findings. Prior acquisition-interruption Minor remains deferred. Full task **BLOCKED**, unchecked: actual controller/Windows/production ADB/resource graph/identity/log/freshness/dashboard evidence unavailable. Counts **2/94 tasks, 0/12 modules**. Next M2-01 canonical project association.
+
+- M2-01 dispatched to fresh `/root/m2_01`, sole product writer, review base `e65f6c386b4abc97582d4814eb98a9ae3c97045a`. Allowed task files, Schema barrel and explicitly reserved generated migration/snapshot/registry files only. Existing database/migration paths remain unchanged since passing recorded baseline. Verify alias/root identity, persistent reopen, non-mutating folder inspection, distinct roots despite shared upstream IDs, concurrency/failure/cleanup as relevant, migration regression/check, Core/Schema types and scoped lint/format. Public context must map local root to existing Project/Location/Session identities explicitly. Counts **2/94 tasks, 0/12 modules**.
+
+- Ruling (M2-01 identity mapping): canonical ProjectContext.projectID identifies a persisted M2 association per canonicalRoot using the existing Project.ID schema; Location.Info retains the separate existing host project.id/directory and directory=canonicalRoot. Persist both in M2's row without writing/FK into existing Project tables. Reason: the existing resolver shares IDs across roots, while planned createChat({projectID}) must address one local association; high-level-design.md:241 requires explicit mapping. Consequence if wrong/misused: passing an association ID to a host Project API would resolve incorrectly, so document the distinction and test shared upstream IDs/location consistency. Canonical-root gate remains the owner key.
+- M2-01 initial behavioral RED established with actual temporary SQLite initialization: 0 pass/1 fail, explicit not-implemented association behavior, no import/migration harness failure. Identity mapping confirmed to worker; implementation proceeds.
+
+- M2-01 interim: 13 new association tests plus 18 migration regressions pass (31 total / 89 assertions); 8 affected Schema contracts / 17 assertions pass. Cases include actual symlink/reopen/content preservation, shared upstream IDs across distinct roots, eight concurrent database connections, cancellation/access/write errors, mapping refresh, fresh scopes and migration preserving existing Project rows. Final types/lint/format/report/commit pending. Prepared M2-02 brief with explicit canonical ChatRef Schema and generated migration ownership, pending reviewed M2-01.
+
+- M2-01 candidate `917fc044bad306de4428e24fb8c2655bfff50e12` enters **IN_REVIEW** against `e65f6c386b4abc97582d4814eb98a9ae3c97045a`. Focused association + migration suite 31 pass / 89 assertions; Core/Schema types, 8 Schema contracts, migration check, lint/format pass. Generator structural audit records only seven new DDL records for the M2-owned table, no changed/removed existing DDL. [Report](../validation/M2-01-implementation.md). Independent reviewer receives complete stable diff; task remains unchecked, counts **2/94 tasks, 0/12 modules**.
+
+- M2-01 **DONE** at `917fc044bad306de4428e24fb8c2655bfff50e12`: independent specification and quality review passes with no findings; coordinator verified all nine tested source hashes against current files. Checked exactly task entry and five substeps. [Review](../validation/M2-01-review.md). Counts **3/94 tasks, 0/12 modules**. Production folder binding/Windows and later chat/gate behavior remain outside this isolated task.

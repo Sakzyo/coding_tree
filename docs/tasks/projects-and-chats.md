@@ -49,7 +49,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 ## Task checklist
 
-- [ ] [M2-01 — Associate canonical project folders](#m2-01)
+- [x] [M2-01 — Associate canonical project folders](#m2-01)
 - [ ] [M2-02 — Persist separate chat-to-Session membership](#m2-02)
 - [ ] [M2-03 — Acquire one atomic project execution lease](#m2-03)
 - [ ] [M2-04 — Submit without admitting a busy chat's draft](#m2-04)
@@ -68,16 +68,16 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 **Interfaces:** Consumes a folder-identity port and private repository. Produces `createProject({ root }): ProjectContext` and `openProject({ root }): ProjectContext`; creation associates an already prepared folder, while M6/M5 own template edits.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/projects-and-chats/m2-01.test.ts`, add `folder aliases reopen one project`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/projects-and-chats/m2-01.test.ts`, add `folder aliases reopen one project`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(alias.projectID).toBe(opened.projectID); expect(afterFiles).toEqual(beforeFiles)
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/projects-and-chats/m2-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Resolve canonical filesystem identity before association; inspect folder access without modifying project files. Persist associations with snake_case columns; generate migrations through the existing Core migration workflow and test reopen.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/projects-and-chats/m2-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): associate canonical project folders`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/projects-and-chats/m2-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Resolve canonical filesystem identity before association; inspect folder access without modifying project files. Persist associations with snake_case columns; generate migrations through the existing Core migration workflow and test reopen.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/projects-and-chats/m2-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): associate canonical project folders`.
 
 <a id="m2-02"></a>
 
