@@ -33,3 +33,42 @@ export const DiscoveryError = Schema.Struct({
   detail: optional(Schema.String),
   exitCode: optional(Schema.Int),
 }).annotate({ identifier: "FtcController.DiscoveryError" })
+
+export interface EndpointError extends Schema.Schema.Type<typeof EndpointError> {}
+export const EndpointError = Schema.Struct({
+  code: Schema.Literals([
+    "candidate_unavailable",
+    "protocol_unknown",
+    "forward_conflict",
+    "forward_failed",
+    "forward_invalid",
+    "endpoint_invalid",
+    "resource_missing",
+    "resource_invalid",
+    "socket_disconnected",
+    "frame_invalid",
+    "frame_unsupported",
+  ]),
+  resource: optional(Schema.String),
+}).annotate({ identifier: "FtcController.EndpointError" })
+
+export interface ProtocolEvidence extends Schema.Schema.Type<typeof ProtocolEvidence> {}
+export const ProtocolEvidence = Schema.Struct({
+  profileRevision: Text,
+  evidenceKind: Schema.Literals(["source-derived-fixture", "controller-observation"]),
+  deployment: Schema.Literal("unverified"),
+  identity: Schema.Literal("unknown"),
+  readEndpoints: Schema.Struct({
+    httpOrigin: Text,
+    dataOrigin: Text,
+    dashboard: Schema.Literal("blocked_unmediated_routes"),
+    logs: Schema.Literal("unknown"),
+  }),
+  resources: Schema.Array(Schema.Struct({ path: Text, state: Schema.Literals(["observed", "missing"]) })),
+  plugins: Schema.Array(
+    Schema.Struct({ id: Text, version: Text, frontendVersion: Text, svelteHash: Schema.NullOr(Text) }),
+  ),
+  blockedPlugins: Schema.Array(Text),
+  sample: optional(Schema.Struct({ pluginID: Text, messageID: Text, data: Schema.Json })),
+  freshness: Schema.Literal("unknown"),
+}).annotate({ identifier: "FtcController.ProtocolEvidence" })

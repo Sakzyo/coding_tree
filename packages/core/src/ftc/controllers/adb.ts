@@ -82,3 +82,52 @@ function parseCandidate(line: string): FtcController.ControllerCandidate | undef
     ],
   }
 }
+
+export interface ForwardTransport {
+  // Host implementation must atomically allocate without rebinding, compensate failed
+  // acquisitions, and close only this lease. Raw forwarding is bidirectional.
+  readonly open: (request: {
+    readonly serial: string
+    readonly localPort: 0
+    readonly remotePort: number
+    readonly noRebind: true
+  }) => Effect.Effect<
+    {
+      readonly localPort: number
+      readonly close: Effect.Effect<void, FtcController.EndpointError>
+    },
+    FtcController.EndpointError
+  >
+}
+
+export function forwardPanels(
+  candidate: FtcController.ControllerCandidate,
+  revision: string,
+  transport: ForwardTransport,
+): Effect.Effect<
+  { readonly httpOrigin: string; readonly dataOrigin: string },
+  FtcController.EndpointError,
+  Scope.Scope
+> {
+  return Effect.gen(function* () {
+    if (candidate.state !== "available" || candidate.authorization !== "authorized")
+      return yield* Effect.fail({ code: "candidate_unavailable" as const })
+    if (revision !== "11d69a98e39c43a7d9edc5932275897c034f7a30")
+      return yield* Effect.fail({ code: "protocol_unknown" as const })
+    const ports = yield* Effect.forEach([8001, 8002], (remotePort) =>
+      Effect.acquireRelease(
+        transport.open({ serial: candidate.transportAddress, localPort: 0, remotePort, noRebind: true }),
+        // Cleanup failure must remain visible in the scope exit, never a false success.
+        (lease) => lease.close.pipe(Effect.orDie),
+      ).pipe(
+        Effect.flatMap((lease) =>
+          Number.isInteger(lease.localPort) && lease.localPort > 0 && lease.localPort <= 65535
+            ? Effect.succeed(lease.localPort)
+            : Effect.fail({ code: "forward_invalid" as const }),
+        ),
+      ),
+    )
+    if (ports[0] === ports[1]) return yield* Effect.fail({ code: "forward_invalid" as const })
+    return { httpOrigin: `http://127.0.0.1:${ports[0]}`, dataOrigin: `ws://127.0.0.1:${ports[1]}` }
+  })
+}
