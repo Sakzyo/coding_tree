@@ -1,0 +1,737 @@
+88890fecf feat(ftc): validate compatibility profiles
+
+ docs/validation/M4-01-implementation.md            |  73 ++++++
+ docs/validation/m4-01/core-typecheck.log           |   1 +
+ docs/validation/m4-01/focused-final.log            |  39 +++
+ docs/validation/m4-01/format.log                   |   2 +
+ docs/validation/m4-01/green.log                    |  32 +++
+ docs/validation/m4-01/lint.log                     |   3 +
+ docs/validation/m4-01/optional-red.log.gz          | Bin 0 -> 1329 bytes
+ docs/validation/m4-01/red.log.gz                   | Bin 0 -> 2133 bytes
+ docs/validation/m4-01/schema-contracts.log         |  20 ++
+ docs/validation/m4-01/schema-suite.log.gz          | Bin 0 -> 94882 bytes
+ docs/validation/m4-01/schema-typecheck.log         |   1 +
+ packages/core/resources/ftc/compatibility.json     |   4 +
+ packages/core/src/ftc/environment/catalog.ts       |  49 ++++
+ .../environment-and-compatibility/m4-01.test.ts    | 266 +++++++++++++++++++++
+ packages/schema/src/ftc-environment.ts             | 109 +++++++++
+ packages/schema/src/index.ts                       |   1 +
+ 16 files changed, 600 insertions(+)
+
+diff --git a/docs/validation/M4-01-implementation.md b/docs/validation/M4-01-implementation.md
+new file mode 100644
+index 000000000..5ebe67307
+--- /dev/null
++++ b/docs/validation/M4-01-implementation.md
+@@ -0,0 +1,73 @@
++# M4-01 — Compatibility profile validation
++
++Date: 2026-10-06 (verification completed around 05:43 UTC). Task: M4-01. Primary requirement: ENV-04; supporting contracts for ENV-01–ENV-06 and PRJ-01. Acceptance scenarios AC-01, AC-02 and AC-06 remain integration/evaluation gates, not completed by this task.
++
++Review base and tested checkout HEAD: `705d41839dc1e64e12343c62777ce500e022d3a1`. Verification ran on that revision plus this task's five source files. The focused `feat(ftc): validate compatibility profiles` commit contains this report; resolve its exact revision with `git log -1 --format=%H -- docs/validation/M4-01-implementation.md`. The source blob identities below identify the precise tested implementation without a self-referential commit hash.
++
++Environment: macOS 26.5.2 (25F84), Darwin arm64, Bun 1.3.14 from `/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun`. Commands prefix that directory to PATH. Core test runs set `OPENCODE_TEST_HOME=/private/tmp/ftc-m4-01/home` and `XDG_DATA_HOME`, `XDG_CONFIG_HOME`, `XDG_CACHE_HOME`, `XDG_STATE_HOME` to `/private/tmp/ftc-m4-01/{data,config,cache,state}` respectively. No installed FTC tools, user app, network download or robot is used by the focused tests.
++
++## Behavior and contracts
++
++`FtcEnvironment` defines readonly, serializable, validated host/resources/artifact/evaluation/profile/project-version/catalog/request/result/reason schemas. The Schema root barrel exposes the same canonical values. A profile pins independent editor and build JDKs, JDT LS, FTC SDK, Android Gradle plugin, Android SDK, ADB and Gradle wrapper. Each artifact carries its pinned version, HTTPS source, nonblank license and SHA256 metadata. The profile records exact evaluated OS versions, architecture, resource thresholds and evaluation references.
++
++`resolveProfile({ host, projectVersions, catalog })` is pure and synchronous. It validates the entire request, rejects unknown keys and malformed metadata, and returns a complete profile only when exactly one eligible combination matches. It does not combine artifacts from different profiles. Unsupported results carry stable language-independent reason codes with profile/component identity where applicable. It starts no processes or I/O and does not mutate the input.
++
++The checked-in `compatibility.json` is an empty production catalog. It contains no supported FTC combination or synthetic fixture. All fixture versions (including editor Java 21/build Java 17), resource numbers, OS versions, URLs, checksums and evaluation references are explicitly synthetic. The test-only synthetic Windows and macOS profiles establish resolver behavior, not actual platform compatibility. An evaluated-shaped record does not independently prove its evidence is authentic or that a real host was tested; evaluation tasks own publication of genuine production entries.
++
++## Rulings
++
++- Multiple matching combinations return `unsupported` with `ambiguous_profiles`; catalog order never chooses a version. Duplicate profile IDs fail validation. This prevents arbitrary upgrades; if an explicit default is needed later, its selection policy needs a separate contract.
++- Omitted project version fields are unconstrained, supporting new projects and partial detection. Supplied values must match exactly. An empty/partial snapshot never chooses arbitrarily among multiple matches. Coordinator approved this ruling. This does not certify unresolved imported dependencies or readiness; later inspection/setup owns those checks.
++- Invalid metadata in any catalog entry rejects the request, rather than silently using a different entry. Unknown project-version keys are rejected instead of being ignored. A later expansion must explicitly add any permitted dependency fields.
++- Exact OS versions are used rather than guessing minima/ranges. Production OS support/resource minima remain unevaluated because the production catalog is empty.
++- Coordinator requires the focused Core resolver suite and affected Schema regressions rather than the TDD skill's blanket full Core suite: this new pure resolver has no existing callers. Full Core tests were not run. No shared checklist/ledger was edited.
++
++## Verification
++
++Paths in this table are relative to the repository root. Each command's actual exit status was captured before printing its log tail.
++
++| Command                                                                                                                                                                                                                                                                 | Cwd               | Exit/result                                    | Evidence                                                     |
++| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- | ---------------------------------------------- | ------------------------------------------------------------ |
++| `bun test ./test/ftc/environment-and-compatibility/m4-01.test.ts` (RED)                                                                                                                                                                                                 | `packages/core`   | 1; 0 pass, 24 fail, 33 assertions              | [RED](m4-01/red.log.gz)                                      |
++| Same focused command (initial GREEN)                                                                                                                                                                                                                                    | `packages/core`   | 0; 24 pass, 0 fail, 46 assertions              | [GREEN](m4-01/green.log)                                     |
++| Same command after adding optional-constraint regressions (RED)                                                                                                                                                                                                         | `packages/core`   | 1; 28 pass, 3 fail, 59 assertions              | [optional RED](m4-01/optional-red.log.gz)                    |
++| Same focused command (final GREEN)                                                                                                                                                                                                                                      | `packages/core`   | 0; 31 pass, 0 fail, 63 assertions              | [final](m4-01/focused-final.log)                             |
++| `bun typecheck`                                                                                                                                                                                                                                                         | `packages/schema` | 0                                              | [Schema types](m4-01/schema-typecheck.log)                   |
++| `bun typecheck`                                                                                                                                                                                                                                                         | `packages/core`   | 0                                              | [Core types](m4-01/core-typecheck.log)                       |
++| `bun test ./test/contract-hygiene.test.ts ./test/compatibility.test.ts ./test/v1-isolation.test.ts`                                                                                                                                                                     | `packages/schema` | 0; 8 pass, 0 fail, 17 assertions               | [contract regressions](m4-01/schema-contracts.log)           |
++| `bun test`                                                                                                                                                                                                                                                              | `packages/schema` | 1; 13 pass, 2 baseline failures, 42 assertions | [full raw log, gzip](m4-01/schema-suite.log.gz)              |
++| `bun run lint -- packages/schema/src/ftc-environment.ts packages/schema/src/index.ts packages/core/src/ftc/environment/catalog.ts packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts`                                                                   | repository root   | 0; 0 warnings/errors                           | [lint](m4-01/lint.log)                                       |
++| `bunx --no-install prettier --check packages/schema/src/ftc-environment.ts packages/schema/src/index.ts packages/core/src/ftc/environment/catalog.ts packages/core/resources/ftc/compatibility.json packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts` | repository root   | 0                                              | [format](m4-01/format.log)                                   |
++| `git diff --check`                                                                                                                                                                                                                                                      | repository root   | 0                                              | Self-review; repeated for the staged task diff before commit |
++
++The initial RED used a callable admission scaffold that always returned unsupported with no reasons. Failures were behavioral assertions, not missing imports/dependencies. The scaffold was replaced by the actual implementation. The optional-constraint cycle failed specifically on three new cases before optional schemas/matching were added. Additional contract checks caught a missing AST identifier on the refined Catalog schema; putting its identifier annotation before the uniqueness check fixed it. An initial Core typecheck found a widened test table reason-code string; making that literal table readonly resolved it.
++
++Known unchanged Schema failures: `public event manifest > owns the complete public event surface` (outdated expected 55, actual 58), and `public event manifest > uses canonical definitions for current public events` (outdated fixed event slice). Both match [the coordinator baseline](baseline.md). No event definitions or manifests were changed.
++
++## Assertion mapping
++
++| Task/requirement boundary                         | Tests/assertions                                                                                                                                                                                      |
++| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
++| M4-01 / ENV-04 independent coherent runtimes      | Named `profile pins independent editor and build runtimes`: Java 21 and 17, pinned JDT LS, unsupported outside SDK; whole-combination selection rejects newer mismatched profile                      |
++| ENV-04 selected host compatibility                | Five OS/version/architecture/memory/disk rejection cases; threshold equality succeeds; synthetic Windows/x64 selection                                                                                |
++| ENV-05 / PRJ-01 exact imported requirements       | Four supplied version mismatches return component reasons and preserve input; unknown project dependencies rejected; full catalog order/input preservation                                            |
++| ENV-02 / ENV-06 future asset preparation boundary | Invalid artifact version/source/license/checksum rejected; valid profile retains all asset metadata; no download/cache/readiness claim                                                                |
++| M4-01 evaluation publication boundary             | Unevaluated, absent provenance, empty/blank evidence, duplicate IDs, ambiguous matches, synthetic-to-production provenance rejected; actual empty production JSON decodes and returns `no_profiles`   |
++| New-project/partial detection boundary            | Empty/partial project constraints permit one profile, while missing constraints with two candidates return ambiguity                                                                                  |
++| Canonical Schema boundary                         | JSON result round trip, undefined optional fields omitted in encoding, exact root/direct schema identity, ten unique stable public identifiers; package typechecks verify readonly inferred contracts |
++
++## Self-review and unrun gates
++
++Self-review covered the complete assigned source, input validation, candidate matching, ambiguity, source metadata, profile evaluation status, readonly Schema interfaces, schema identity, runtime dependency direction and scoped changes. No additional issue remains in this task. Independent review is coordinator-owned. The only shared source edit is the explicitly allowed Schema barrel export.
++
++Not run: real clean-host setup on macOS/Windows, Java tooling import/completion/diagnostics, actual FTC Gradle build, artifact downloads/checksum verification against remote assets, prepared-offline operation, model/content inventory, controllers, robot operation and release acceptance scenarios. These belong to M4-02 onward and the named M5/platform/integration evaluations. Matching partial constraints does not establish environment readiness. Metadata validation does not verify an artifact's bytes or license obligations.
++
++## Tested source identities
++
++| File                                                                 | Git blob SHA                               |
++| -------------------------------------------------------------------- | ------------------------------------------ |
++| `packages/schema/src/ftc-environment.ts`                             | `5737f7a62423706e25043fd306c72726d8c9c4b4` |
++| `packages/schema/src/index.ts`                                       | `3c60571343f0d305e73964dd70638221f6e0f100` |
++| `packages/core/src/ftc/environment/catalog.ts`                       | `9968c08c910d71eea2638b8dc1b12fefc5cbc054` |
++| `packages/core/resources/ftc/compatibility.json`                     | `e857990e9636dc6eb4a98dbe83dbc23e90022730` |
++| `packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts` | `5d26694e4811b883f9ddefbfa4c2dd5a3a5ab9ab` |
+diff --git a/docs/validation/m4-01/core-typecheck.log b/docs/validation/m4-01/core-typecheck.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m4-01/core-typecheck.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/docs/validation/m4-01/focused-final.log b/docs/validation/m4-01/focused-final.log
+new file mode 100644
+index 000000000..968031b1a
+--- /dev/null
++++ b/docs/validation/m4-01/focused-final.log
+@@ -0,0 +1,39 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc/environment-and-compatibility/m4-01.test.ts:
++(pass) profile pins independent editor and build runtimes [11.25ms]
++(pass) rejects incompatible host OS [0.94ms]
++(pass) rejects incompatible host OS version [0.53ms]
++(pass) rejects incompatible host architecture [0.25ms]
++(pass) rejects incompatible host memory [0.37ms]
++(pass) rejects incompatible host disk [0.22ms]
++(pass) preserves incompatible project requirement ftcSdk [0.34ms]
++(pass) preserves incompatible project requirement androidGradlePlugin [0.22ms]
++(pass) preserves incompatible project requirement androidSdk [0.17ms]
++(pass) preserves incompatible project requirement gradleWrapper [0.15ms]
++(pass) selects a whole matching combination without mixing newer components [0.31ms]
++(pass) rejects invalid artifact version metadata [0.57ms]
++(pass) rejects invalid artifact source metadata [0.14ms]
++(pass) rejects invalid artifact license metadata [0.13ms]
++(pass) rejects invalid artifact sha256 metadata [0.09ms]
++(pass) rejects invalid host resources and unpinned project versions [0.20ms]
++(pass) unevaluated profiles cannot be selected [0.19ms]
++(pass) evaluated profiles require evidence [0.20ms]
++(pass) rejects absent or malformed evaluation provenance  [0.25ms]
++(pass) rejects absent or malformed evaluation provenance {"status":"evaluated","kind":"platform","evidence":[" "]} [0.19ms]
++(pass) rejects duplicate profile identities [0.20ms]
++(pass) does not choose arbitrarily between multiple matching combinations [0.19ms]
++(pass) production catalogs cannot claim synthetic evaluations as support [0.14ms]
++(pass) supports independently supplied Windows profiles [0.14ms]
++(pass) empty production catalog reports no evaluated compatibility profiles [3.60ms]
++(pass) unknown project dependencies are not silently ignored [0.13ms]
++(pass) omitted project constraints permit the one evaluated combination {} [0.36ms]
++(pass) omitted project constraints permit the one evaluated combination {"ftcSdk":"fixture-ftc"} [0.12ms]
++(pass) missing project constraints never choose the newest matching profile [0.23ms]
++(pass) profile selection is unchanged by catalog order [0.39ms]
++(pass) resolved records serialize through the canonical readonly contracts [0.95ms]
++
++ 31 pass
++ 0 fail
++ 63 expect() calls
++Ran 31 tests across 1 file. [165.00ms]
+diff --git a/docs/validation/m4-01/format.log b/docs/validation/m4-01/format.log
+new file mode 100644
+index 000000000..4aa0d16e7
+--- /dev/null
++++ b/docs/validation/m4-01/format.log
+@@ -0,0 +1,2 @@
++Checking formatting...
++All matched files use Prettier code style!
+diff --git a/docs/validation/m4-01/green.log b/docs/validation/m4-01/green.log
+new file mode 100644
+index 000000000..b51a0c37b
+--- /dev/null
++++ b/docs/validation/m4-01/green.log
+@@ -0,0 +1,32 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc/environment-and-compatibility/m4-01.test.ts:
++(pass) profile pins independent editor and build runtimes [13.87ms]
++(pass) rejects incompatible host OS [0.33ms]
++(pass) rejects incompatible host OS version [0.15ms]
++(pass) rejects incompatible host architecture [0.18ms]
++(pass) rejects incompatible host memory [0.22ms]
++(pass) rejects incompatible host disk [0.14ms]
++(pass) preserves incompatible project requirement ftcSdk [0.51ms]
++(pass) preserves incompatible project requirement androidGradlePlugin [0.16ms]
++(pass) preserves incompatible project requirement androidSdk [0.11ms]
++(pass) preserves incompatible project requirement gradleWrapper [0.10ms]
++(pass) selects a whole matching combination without mixing newer components [0.24ms]
++(pass) rejects invalid artifact version metadata [0.41ms]
++(pass) rejects invalid artifact source metadata [0.10ms]
++(pass) rejects invalid artifact license metadata [0.08ms]
++(pass) rejects invalid artifact sha256 metadata [0.08ms]
++(pass) rejects invalid host resources and unpinned project versions [0.09ms]
++(pass) unevaluated profiles cannot be selected [0.14ms]
++(pass) evaluated profiles require evidence [0.16ms]
++(pass) rejects absent or malformed evaluation provenance  [0.12ms]
++(pass) rejects absent or malformed evaluation provenance {"status":"evaluated","kind":"platform","evidence":[" "]} [0.14ms]
++(pass) rejects duplicate profile identities [0.16ms]
++(pass) does not choose arbitrarily between multiple matching combinations [0.15ms]
++(pass) production catalogs cannot claim synthetic evaluations as support [0.13ms]
++(pass) supports independently supplied Windows profiles [0.12ms]
++
++ 24 pass
++ 0 fail
++ 46 expect() calls
++Ran 24 tests across 1 file. [167.00ms]
+diff --git a/docs/validation/m4-01/lint.log b/docs/validation/m4-01/lint.log
+new file mode 100644
+index 000000000..a0acb9e72
+--- /dev/null
++++ b/docs/validation/m4-01/lint.log
+@@ -0,0 +1,3 @@
++$ oxlint packages/schema/src/ftc-environment.ts packages/schema/src/index.ts packages/core/src/ftc/environment/catalog.ts "packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts"
++Found 0 warnings and 0 errors.
++Finished in 2.3s on 4 files with 130 rules using 10 threads.
+diff --git a/docs/validation/m4-01/optional-red.log.gz b/docs/validation/m4-01/optional-red.log.gz
+new file mode 100644
+index 000000000..248f4a9f4
+Binary files /dev/null and b/docs/validation/m4-01/optional-red.log.gz differ
+diff --git a/docs/validation/m4-01/red.log.gz b/docs/validation/m4-01/red.log.gz
+new file mode 100644
+index 000000000..437a3a31b
+Binary files /dev/null and b/docs/validation/m4-01/red.log.gz differ
+diff --git a/docs/validation/m4-01/schema-contracts.log b/docs/validation/m4-01/schema-contracts.log
+new file mode 100644
+index 000000000..31f877285
+--- /dev/null
++++ b/docs/validation/m4-01/schema-contracts.log
+@@ -0,0 +1,20 @@
++bun test v1.3.14 (0d9b296a)
++
++test/contract-hygiene.test.ts:
++(pass) contract hygiene > optional properties preserve transformations and omit undefined while encoding [10.25ms]
++(pass) contract hygiene > todo status and priority preserve arbitrary strings [0.09ms]
++(pass) contract hygiene > current ID constructors expose create [0.62ms]
++(pass) contract hygiene > reusable public identifiers are stable and unique [0.27ms]
++(pass) contract hygiene > current source avoids Any and mutable contract wrappers [2.40ms]
++
++test/compatibility.test.ts:
++(pass) schema compatibility > moved class schemas remain constructible [0.49ms]
++
++test/v1-isolation.test.ts:
++(pass) compatibility entrypoints preserve isolated V1 schema identity [0.12ms]
++(pass) current source does not import the V1 subtree directly [1.52ms]
++
++ 8 pass
++ 0 fail
++ 17 expect() calls
++Ran 8 tests across 3 files. [194.00ms]
+diff --git a/docs/validation/m4-01/schema-suite.log.gz b/docs/validation/m4-01/schema-suite.log.gz
+new file mode 100644
+index 000000000..c3fc6879b
+Binary files /dev/null and b/docs/validation/m4-01/schema-suite.log.gz differ
+diff --git a/docs/validation/m4-01/schema-typecheck.log b/docs/validation/m4-01/schema-typecheck.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m4-01/schema-typecheck.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/packages/core/resources/ftc/compatibility.json b/packages/core/resources/ftc/compatibility.json
+new file mode 100644
+index 000000000..e857990e9
+--- /dev/null
++++ b/packages/core/resources/ftc/compatibility.json
+@@ -0,0 +1,4 @@
++{
++  "kind": "production",
++  "profiles": []
++}
+diff --git a/packages/core/src/ftc/environment/catalog.ts b/packages/core/src/ftc/environment/catalog.ts
+new file mode 100644
+index 000000000..9968c08c9
+--- /dev/null
++++ b/packages/core/src/ftc/environment/catalog.ts
+@@ -0,0 +1,49 @@
++export * as FtcEnvironmentCatalog from "./catalog"
++
++import { FtcEnvironment } from "@opencode-ai/schema/ftc-environment"
++import { Option, Schema } from "effect"
++
++export function resolveProfile(input: unknown): FtcEnvironment.ResolveResult {
++  const request = Schema.decodeUnknownOption(FtcEnvironment.ResolveRequest, { onExcessProperty: "error" })(input)
++  if (Option.isNone(request)) return { kind: "unsupported", reasons: [{ code: "invalid_input" }] }
++  if (request.value.catalog.profiles.length === 0) return { kind: "unsupported", reasons: [{ code: "no_profiles" }] }
++
++  const candidates = request.value.catalog.profiles.map((profile) => ({
++    profile,
++    reasons: incompatibilities(request.value, profile),
++  }))
++  const matches = candidates.filter((candidate) => candidate.reasons.length === 0)
++  if (matches.length === 1) return { kind: "matched", profile: matches[0].profile }
++  if (matches.length > 1) return { kind: "unsupported", reasons: [{ code: "ambiguous_profiles" }] }
++  return { kind: "unsupported", reasons: candidates.flatMap((candidate) => candidate.reasons) }
++}
++
++function incompatibilities(
++  request: FtcEnvironment.ResolveRequest,
++  profile: FtcEnvironment.Profile,
++): FtcEnvironment.Reason[] {
++  if (profile.evaluation.status !== "evaluated") return [{ code: "unevaluated_profile", profileID: profile.id }]
++  // Fixture provenance is selectable only through an explicitly synthetic catalog.
++  if (profile.evaluation.kind !== (request.catalog.kind === "synthetic" ? "synthetic" : "platform"))
++    return [{ code: "evaluation_kind", profileID: profile.id }]
++
++  return [
++    ...(profile.os !== request.host.os ? [{ code: "host_os" as const, profileID: profile.id }] : []),
++    ...(!profile.osVersions.includes(request.host.osVersion)
++      ? [{ code: "host_version" as const, profileID: profile.id }]
++      : []),
++    ...(profile.architecture !== request.host.architecture
++      ? [{ code: "host_architecture" as const, profileID: profile.id }]
++      : []),
++    ...(request.host.resources.memoryBytes < profile.resources.memoryBytes ||
++    request.host.resources.diskBytes < profile.resources.diskBytes
++      ? [{ code: "host_resources" as const, profileID: profile.id }]
++      : []),
++    ...(["ftcSdk", "androidGradlePlugin", "androidSdk", "gradleWrapper"] as const).flatMap((component) =>
++      request.projectVersions[component] !== undefined &&
++      request.projectVersions[component] !== profile[component].version
++        ? [{ code: "project_version" as const, profileID: profile.id, component }]
++        : [],
++    ),
++  ]
++}
+diff --git a/packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts b/packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts
+new file mode 100644
+index 000000000..5d26694e4
+--- /dev/null
++++ b/packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts
+@@ -0,0 +1,266 @@
++import { expect, test } from "bun:test"
++import { FtcEnvironment } from "@opencode-ai/schema"
++import { Profile } from "@opencode-ai/schema/ftc-environment"
++import { Schema } from "effect"
++import { resolveProfile } from "../../../src/ftc/environment/catalog"
++
++// All versions, URLs, checksums, resource thresholds and evidence here are synthetic.
++const artifact = (version: string) => ({
++  version,
++  source: "https://fixtures.invalid/tool.zip",
++  license: "fixture-license",
++  sha256: "a".repeat(64),
++})
++const profile = {
++  id: "synthetic-macos-arm64",
++  os: "macos",
++  osVersions: ["fixture-os"],
++  architecture: "arm64",
++  resources: { memoryBytes: 8, diskBytes: 16 },
++  editorJdk: artifact("21"),
++  buildJdk: artifact("17"),
++  jdtLs: artifact("fixture-jdt"),
++  ftcSdk: artifact("fixture-ftc"),
++  androidGradlePlugin: artifact("fixture-agp"),
++  androidSdk: artifact("fixture-android"),
++  adb: artifact("fixture-adb"),
++  gradleWrapper: artifact("fixture-gradle"),
++  evaluation: { status: "evaluated", kind: "synthetic", evidence: ["fixture://M4-01"] },
++}
++const host = {
++  os: "macos",
++  osVersion: "fixture-os",
++  architecture: "arm64",
++  resources: { memoryBytes: 8, diskBytes: 16 },
++}
++const projectVersions = {
++  ftcSdk: "fixture-ftc",
++  androidGradlePlugin: "fixture-agp",
++  androidSdk: "fixture-android",
++  gradleWrapper: "fixture-gradle",
++}
++const catalog = { kind: "synthetic", profiles: [profile] }
++
++test("profile pins independent editor and build runtimes", () => {
++  const result = resolveProfile({ host, projectVersions, catalog })
++  expect(result.kind).toBe("matched")
++  if (result.kind !== "matched") throw new Error("Expected a matched synthetic profile")
++  const selected = result.profile
++  expect(selected.editorJdk.version).toBe("21")
++  expect(selected.buildJdk.version).toBe("17")
++  expect(selected.jdtLs.version).toBe("fixture-jdt")
++  const unsupported = resolveProfile({ host, projectVersions: { ...projectVersions, ftcSdk: "outside" }, catalog })
++  expect(unsupported.kind).toBe("unsupported")
++})
++
++test.each([
++  ["OS", { ...host, os: "windows" }, "host_os"],
++  ["OS version", { ...host, osVersion: "unmeasured-os" }, "host_version"],
++  ["architecture", { ...host, architecture: "x64" }, "host_architecture"],
++  ["memory", { ...host, resources: { memoryBytes: 7, diskBytes: 16 } }, "host_resources"],
++  ["disk", { ...host, resources: { memoryBytes: 8, diskBytes: 15 } }, "host_resources"],
++] as const)("rejects incompatible host %s", (_, host, code) => {
++  const result = resolveProfile({ host, projectVersions, catalog })
++  expect(result.kind).toBe("unsupported")
++  if (result.kind !== "unsupported") throw new Error("Expected unsupported host")
++  expect(result.reasons).toContainEqual({ code, profileID: profile.id })
++})
++
++test.each(["ftcSdk", "androidGradlePlugin", "androidSdk", "gradleWrapper"])(
++  "preserves incompatible project requirement %s",
++  (component) => {
++    const input = { host, projectVersions: { ...projectVersions, [component]: "outside" }, catalog }
++    const before = JSON.stringify(input)
++    const result = resolveProfile(input)
++    expect(result.kind).toBe("unsupported")
++    if (result.kind !== "unsupported") throw new Error("Expected unsupported project")
++    expect(result.reasons).toContainEqual({ code: "project_version", profileID: profile.id, component })
++    expect(JSON.stringify(input)).toBe(before)
++  },
++)
++
++test("selects a whole matching combination without mixing newer components", () => {
++  const result = resolveProfile({
++    host,
++    projectVersions,
++    catalog: {
++      kind: "synthetic",
++      profiles: [
++        { ...profile, id: "synthetic-other", editorJdk: artifact("99"), ftcSdk: artifact("outside") },
++        profile,
++      ],
++    },
++  })
++  expect(result.kind).toBe("matched")
++  if (result.kind !== "matched") throw new Error("Expected a matched synthetic profile")
++  expect(result.profile.id).toBe("synthetic-macos-arm64")
++  expect(result.profile.editorJdk.version).toBe("21")
++  expect(result.profile.ftcSdk.version).toBe("fixture-ftc")
++})
++
++test.each([
++  ["version", ""],
++  ["source", "not-a-url"],
++  ["license", " "],
++  ["sha256", "not-a-checksum"],
++])("rejects invalid artifact %s metadata", (field, value) => {
++  const result = resolveProfile({
++    host,
++    projectVersions,
++    catalog: { ...catalog, profiles: [{ ...profile, buildJdk: { ...profile.buildJdk, [field]: value } }] },
++  })
++  expect(result).toEqual({ kind: "unsupported", reasons: [{ code: "invalid_input" }] })
++})
++
++test("rejects invalid host resources and unpinned project versions", () => {
++  expect(
++    resolveProfile({ host: { ...host, resources: { memoryBytes: -1, diskBytes: 16 } }, projectVersions, catalog }),
++  ).toEqual({ kind: "unsupported", reasons: [{ code: "invalid_input" }] })
++  expect(resolveProfile({ host, projectVersions: { ...projectVersions, ftcSdk: "latest" }, catalog })).toEqual({
++    kind: "unsupported",
++    reasons: [{ code: "invalid_input" }],
++  })
++})
++
++test("unevaluated profiles cannot be selected", () => {
++  expect(
++    resolveProfile({
++      host,
++      projectVersions,
++      catalog: { ...catalog, profiles: [{ ...profile, evaluation: { status: "unevaluated" } }] },
++    }),
++  ).toEqual({ kind: "unsupported", reasons: [{ code: "unevaluated_profile", profileID: profile.id }] })
++})
++
++test("evaluated profiles require evidence", () => {
++  expect(
++    resolveProfile({
++      host,
++      projectVersions,
++      catalog: { ...catalog, profiles: [{ ...profile, evaluation: { ...profile.evaluation, evidence: [] } }] },
++    }),
++  ).toEqual({ kind: "unsupported", reasons: [{ code: "invalid_input" }] })
++})
++
++test.each([undefined, { status: "evaluated", kind: "platform", evidence: [" "] }])(
++  "rejects absent or malformed evaluation provenance %j",
++  (evaluation) => {
++    expect(
++      resolveProfile({ host, projectVersions, catalog: { ...catalog, profiles: [{ ...profile, evaluation }] } }),
++    ).toEqual({ kind: "unsupported", reasons: [{ code: "invalid_input" }] })
++  },
++)
++
++test("rejects duplicate profile identities", () => {
++  expect(resolveProfile({ host, projectVersions, catalog: { ...catalog, profiles: [profile, profile] } })).toEqual({
++    kind: "unsupported",
++    reasons: [{ code: "invalid_input" }],
++  })
++})
++
++test("does not choose arbitrarily between multiple matching combinations", () => {
++  expect(
++    resolveProfile({
++      host,
++      projectVersions,
++      catalog: {
++        ...catalog,
++        profiles: [profile, { ...profile, id: "synthetic-alternative", editorJdk: artifact("22") }],
++      },
++    }),
++  ).toEqual({ kind: "unsupported", reasons: [{ code: "ambiguous_profiles" }] })
++})
++
++test("production catalogs cannot claim synthetic evaluations as support", () => {
++  expect(resolveProfile({ host, projectVersions, catalog: { ...catalog, kind: "production" } })).toEqual({
++    kind: "unsupported",
++    reasons: [{ code: "evaluation_kind", profileID: profile.id }],
++  })
++})
++
++test("supports independently supplied Windows profiles", () => {
++  const result = resolveProfile({
++    host: { ...host, os: "windows", architecture: "x64" },
++    projectVersions,
++    catalog: {
++      ...catalog,
++      profiles: [{ ...profile, id: "synthetic-windows-x64", os: "windows", architecture: "x64" }],
++    },
++  })
++  expect(result.kind).toBe("matched")
++  if (result.kind !== "matched") throw new Error("Expected a matched synthetic profile")
++  expect(result.profile.id).toBe("synthetic-windows-x64")
++})
++
++test("empty production catalog reports no evaluated compatibility profiles", async () => {
++  const production = await Bun.file(new URL("../../../resources/ftc/compatibility.json", import.meta.url)).json()
++  expect(Schema.decodeUnknownSync(FtcEnvironment.Catalog)(production)).toEqual({ kind: "production", profiles: [] })
++  expect(resolveProfile({ host, projectVersions, catalog: production })).toEqual({
++    kind: "unsupported",
++    reasons: [{ code: "no_profiles" }],
++  })
++})
++
++test("unknown project dependencies are not silently ignored", () => {
++  expect(resolveProfile({ host, projectVersions: { ...projectVersions, unknownDependency: "1" }, catalog })).toEqual({
++    kind: "unsupported",
++    reasons: [{ code: "invalid_input" }],
++  })
++})
++
++test.each([{}, { ftcSdk: "fixture-ftc" }])(
++  "omitted project constraints permit the one evaluated combination %j",
++  (projectVersions) => {
++    const result = resolveProfile({ host, projectVersions, catalog })
++    expect(result.kind).toBe("matched")
++    if (result.kind !== "matched") throw new Error("Expected a matched synthetic profile")
++    expect(result.profile.buildJdk.version).toBe("17")
++    expect(result.profile.gradleWrapper.version).toBe("fixture-gradle")
++  },
++)
++
++test("missing project constraints never choose the newest matching profile", () => {
++  expect(
++    resolveProfile({
++      host,
++      projectVersions: {},
++      catalog: {
++        ...catalog,
++        profiles: [profile, { ...profile, id: "synthetic-newer", ftcSdk: artifact("fixture-newer") }],
++      },
++    }),
++  ).toEqual({ kind: "unsupported", reasons: [{ code: "ambiguous_profiles" }] })
++})
++
++test("profile selection is unchanged by catalog order", () => {
++  const other = { ...profile, id: "synthetic-incompatible", ftcSdk: artifact("outside") }
++  const before = JSON.stringify(catalog)
++  const result = resolveProfile({ host, projectVersions, catalog: { ...catalog, profiles: [other, profile] } })
++  expect(resolveProfile({ host, projectVersions, catalog: { ...catalog, profiles: [profile, other] } })).toEqual(result)
++  expect(JSON.stringify(catalog)).toBe(before)
++})
++
++test("resolved records serialize through the canonical readonly contracts", () => {
++  const result = resolveProfile({ host, projectVersions, catalog })
++  expect(Schema.decodeUnknownSync(FtcEnvironment.ResolveResult)(JSON.parse(JSON.stringify(result)))).toEqual(result)
++  expect(
++    Schema.encodeSync(FtcEnvironment.Reason)({ code: "invalid_input", profileID: undefined, component: undefined }),
++  ).toEqual({ code: "invalid_input" })
++  expect(FtcEnvironment.Profile).toBe(Profile)
++  const identifiers = [
++    FtcEnvironment.Resources,
++    FtcEnvironment.Host,
++    FtcEnvironment.Artifact,
++    FtcEnvironment.Evaluation,
++    FtcEnvironment.Profile,
++    FtcEnvironment.ProjectVersions,
++    FtcEnvironment.Catalog,
++    FtcEnvironment.ResolveRequest,
++    FtcEnvironment.Reason,
++    FtcEnvironment.ResolveResult,
++  ].map((schema) => schema.ast.annotations?.identifier)
++  expect(
++    identifiers.every((identifier) => typeof identifier === "string" && identifier.startsWith("FtcEnvironment.")),
++  ).toBe(true)
++  expect(new Set(identifiers).size).toBe(10)
++})
+diff --git a/packages/schema/src/ftc-environment.ts b/packages/schema/src/ftc-environment.ts
+new file mode 100644
+index 000000000..5737f7a62
+--- /dev/null
++++ b/packages/schema/src/ftc-environment.ts
+@@ -0,0 +1,109 @@
++export * as FtcEnvironment from "./ftc-environment"
++
++import { Schema } from "effect"
++import { NonNegativeInt, optional } from "./schema"
++
++const Text = Schema.String.check(Schema.isMinLength(1), Schema.isTrimmed())
++const Version = Text.check(Schema.isPattern(/^(?!(?:latest|next|nightly)$)[A-Za-z0-9][A-Za-z0-9._+-]*$/))
++const Bytes = NonNegativeInt.check(Schema.isLessThanOrEqualTo(Number.MAX_SAFE_INTEGER))
++const Os = Schema.Literals(["macos", "windows"])
++const Architecture = Schema.Literals(["arm64", "x64"])
++
++export interface Resources extends Schema.Schema.Type<typeof Resources> {}
++export const Resources = Schema.Struct({
++  memoryBytes: Bytes,
++  diskBytes: Bytes,
++}).annotate({ identifier: "FtcEnvironment.Resources" })
++
++export interface Host extends Schema.Schema.Type<typeof Host> {}
++export const Host = Schema.Struct({
++  os: Os,
++  osVersion: Text,
++  architecture: Architecture,
++  resources: Resources,
++}).annotate({ identifier: "FtcEnvironment.Host" })
++
++export interface Artifact extends Schema.Schema.Type<typeof Artifact> {}
++export const Artifact = Schema.Struct({
++  version: Version,
++  source: Text.check(Schema.makeFilter((value) => URL.canParse(value) && new URL(value).protocol === "https:")),
++  license: Text,
++  sha256: Text.check(Schema.isPattern(/^[a-fA-F0-9]{64}$/)),
++}).annotate({ identifier: "FtcEnvironment.Artifact" })
++
++export type Evaluation = typeof Evaluation.Type
++export const Evaluation = Schema.Union([
++  Schema.Struct({ status: Schema.Literal("unevaluated") }),
++  Schema.Struct({
++    status: Schema.Literal("evaluated"),
++    kind: Schema.Literals(["synthetic", "platform"]),
++    evidence: Schema.Array(Text).check(Schema.isMinLength(1)),
++  }),
++]).annotate({ identifier: "FtcEnvironment.Evaluation" })
++
++export interface Profile extends Schema.Schema.Type<typeof Profile> {}
++export const Profile = Schema.Struct({
++  id: Text,
++  os: Os,
++  osVersions: Schema.Array(Text).check(Schema.isMinLength(1)),
++  architecture: Architecture,
++  resources: Resources,
++  editorJdk: Artifact,
++  buildJdk: Artifact,
++  jdtLs: Artifact,
++  ftcSdk: Artifact,
++  androidGradlePlugin: Artifact,
++  androidSdk: Artifact,
++  adb: Artifact,
++  gradleWrapper: Artifact,
++  evaluation: Evaluation,
++}).annotate({ identifier: "FtcEnvironment.Profile" })
++
++export interface ProjectVersions extends Schema.Schema.Type<typeof ProjectVersions> {}
++export const ProjectVersions = Schema.Struct({
++  ftcSdk: optional(Version),
++  androidGradlePlugin: optional(Version),
++  androidSdk: optional(Version),
++  gradleWrapper: optional(Version),
++}).annotate({ identifier: "FtcEnvironment.ProjectVersions" })
++
++export interface Catalog extends Schema.Schema.Type<typeof Catalog> {}
++export const Catalog = Schema.Struct({
++  kind: Schema.Literals(["production", "synthetic"]),
++  profiles: Schema.Array(Profile),
++})
++  .annotate({ identifier: "FtcEnvironment.Catalog" })
++  .check(
++    Schema.makeFilter((value) => new Set(value.profiles.map((profile) => profile.id)).size === value.profiles.length),
++  )
++
++export interface ResolveRequest extends Schema.Schema.Type<typeof ResolveRequest> {}
++export const ResolveRequest = Schema.Struct({
++  host: Host,
++  projectVersions: ProjectVersions,
++  catalog: Catalog,
++}).annotate({ identifier: "FtcEnvironment.ResolveRequest" })
++
++export interface Reason extends Schema.Schema.Type<typeof Reason> {}
++export const Reason = Schema.Struct({
++  code: Schema.Literals([
++    "invalid_input",
++    "no_profiles",
++    "unevaluated_profile",
++    "evaluation_kind",
++    "host_os",
++    "host_version",
++    "host_architecture",
++    "host_resources",
++    "project_version",
++    "ambiguous_profiles",
++  ]),
++  profileID: optional(Text),
++  component: optional(Schema.Literals(["ftcSdk", "androidGradlePlugin", "androidSdk", "gradleWrapper"])),
++}).annotate({ identifier: "FtcEnvironment.Reason" })
++
++export type ResolveResult = typeof ResolveResult.Type
++export const ResolveResult = Schema.Union([
++  Schema.Struct({ kind: Schema.Literal("matched"), profile: Profile }),
++  Schema.Struct({ kind: Schema.Literal("unsupported"), reasons: Schema.Array(Reason).check(Schema.isMinLength(1)) }),
++]).annotate({ identifier: "FtcEnvironment.ResolveResult" })
+diff --git a/packages/schema/src/index.ts b/packages/schema/src/index.ts
+index b7c8e5110..3c6057134 100644
+--- a/packages/schema/src/index.ts
++++ b/packages/schema/src/index.ts
+@@ -1,28 +1,29 @@
+ export { Agent } from "./agent"
+ export { Command } from "./command"
+ export { Connection } from "./connection"
+ export { Credential } from "./credential"
+ export { Event } from "./event"
+ export { FileSystem } from "./filesystem"
++export { FtcEnvironment } from "./ftc-environment"
+ export { Integration } from "./integration"
+ export { LLM } from "./llm"
+ export { Location } from "./location"
+ export { Model } from "./model"
+ export { Permission } from "./permission"
+ export { PermissionSaved } from "./permission-saved"
+ export { Project } from "./project"
+ export { ProjectCopy } from "./project-copy"
+ export { Provider } from "./provider"
+ export { Reference } from "./reference"
+ export { Revert } from "./revert"
+ export { Session } from "./session"
+ export { SessionInput } from "./session-input"
+ export { SessionMessage } from "./session-message"
+ export { Skill } from "./skill"
+ export { Pty } from "./pty"
+ export { PtyTicket } from "./pty-ticket"
+ export { Question } from "./question"
+ export { Workspace } from "./workspace"
+ export { Prompt, Source, FileAttachment, AgentAttachment } from "./prompt"
+ export { PromptInput } from "./prompt-input"
+ export * from "./schema"

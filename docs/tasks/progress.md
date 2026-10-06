@@ -3,7 +3,7 @@
 Date: 2026-10-06
 Planning baseline: `d7aca195c`
 
-**Implementation progress: 0 / 12 modules complete; 0 / 94 tasks complete.**
+**Implementation progress: 0 / 12 modules complete; 1 / 94 tasks complete.**
 
 These checkboxes track future development, not completion of this planning document. The existing OpenCode foundation is reused, but its presence does not prove that the FTC tasks are done. Both inputs describe unimplemented or unevaluated product work, so every implementation box starts unchecked.
 
@@ -14,7 +14,7 @@ These checkboxes track future development, not completion of this planning docum
 - [ ] **M1 — [Desktop workspace](desktop-workspace.md)** — 0 / 14 tasks.
 - [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 0 / 6 tasks.
 - [ ] **M3 — [Agent and context](agent-and-context.md)** — 0 / 7 tasks.
-- [ ] **M4 — [Environment and compatibility](environment-and-compatibility.md)** — 0 / 7 tasks.
+- [ ] **M4 — [Environment and compatibility](environment-and-compatibility.md)** — 1 / 7 tasks.
 - [ ] **M5 — [Java development](java-development.md)** — 0 / 8 tasks.
 - [ ] **M6 — [FTC configuration and libraries](ftc-configuration-and-libraries.md)** — 0 / 6 tasks.
 - [ ] **M7 — [AI access and local inference](ai-access-and-local-inference.md)** — 0 / 8 tasks.
@@ -212,6 +212,47 @@ Preflight: [dependency/ownership scan](../validation/execution-preflight.md), [e
 
 | Task | Owner | Status | Dependencies / allowed paths | Evidence / next action |
 | --- | --- | --- | --- | --- |
-| M9-07 | `/root/m9_07` | IN_PROGRESS | None; four task files plus owned probe evidence; no production enablement | [Brief](../validation/M9-07-brief.md); evaluate available OS boundary, record unavailable Windows/physical gates |
+| M9-07 | `/root/m9_07` | BLOCKED | None; four task files plus owned probe evidence; no production enablement | [Brief](../validation/M9-07-brief.md); evaluate available OS boundary, record unavailable Windows/physical gates |
 
 Next schedule: M9-07 evaluation first; M4-01 then early M5-03 evaluation; M8-01 then early M8-04 evaluation. Continue independent canonical-contract work when evaluation gates block. Only coordinator edits this ledger/checklists; one product-code writer at a time.
+
+- Tooling: pinned Bun 1.3.14 and 4663 locked packages installed successfully. Baseline Session suite passes 127/127 with isolated test data; Schema baseline has two existing event-manifest expectation failures; App/Schema typechecks pass. [Evidence](../validation/baseline.md).
+- Read-only reviewer `/root/dependency_audit` completed [canonical-contract scheduling audit](../validation/dependency-audit.md). Ruling: publish M2 gate, M5 edit/artifact, and M8 identity/connection Schema records through their owners before consumers; explicitly reserve omitted Schema/API registration paths when needed. Fixture ports do not duplicate contracts or satisfy production evaluation gates.
+
+- M9-07 implementation candidate: `fbea951a3`; available host subset 8 pass / 4 explicitly NOT RUN / 0 fail; Core/Desktop typechecks and scoped lint/format pass. [Report](../validation/M9-07-implementation.md). Task gate remains BLOCKED by listed mandatory real-platform checks; independent review pending.
+
+- M9-07 independent review requires process-tree timeout cleanup and listener acquisition cleanup. [Review](../validation/M9-07-review.md). Fix round 1/5 assigned to the same implementer; no task completion credited.
+
+- M9-07 fix round 1/5 candidate `705d41839`: descendant-cleanup regression RED 3 failures, GREEN 3 pass / 12 assertions; host subset 11 pass / 4 NOT RUN / 36 assertions; Core/Desktop types, lint and format pass. Scoped re-review pending; external gates remain blocked.
+
+- M9-07 scoped re-review approved `705d41839`: both findings addressed, no new breakage. Feasible subset reviewed; task remains **BLOCKED**, checkbox open. Unblock requires Windows execution, physical controller/USB evidence, real broker/extension/Electron boundaries and isolated FTC build compatibility; see [gate rows](../validation/robot-action-isolation.md#unresolved-mandatory-gates).
+- M4-01 dispatched next, review base `705d41839dc1e64e12343c62777ce500e022d3a1`. Owner `/root/m4_01`; **IN_PROGRESS**; no prerequisites. Allowed four exact task paths plus its report/logs (Schema export only if required); [brief](../validation/M4-01-brief.md). Verification: focused actual resolver tests, Schema/Core types, scoped lint/format. Current counts **0/94 tasks, 0/12 modules**.
+
+- Ruling (M4-01): omitted project-version constraints are unconstrained for profile selection; supplied versions match exactly and multiple matches return unsupported/ambiguous. Profiles must still pin complete toolchains. Reason: new-project selection can precede dependency detection. Consequence: a matched selection alone does not certify an imported project whose dependencies remain unknown; inspection/readiness owns that gate.
+- M4-01 verification ruling: focused new resolver/Core tests plus full affected Schema suite, both package types and scoped lint/format satisfy this task. The user prompt requires affected regression checks; a blanket full Core run would include unrelated external/runtime suites. Integration milestone suites remain required later.
+
+- M4-01 candidate `88890fecfa5a40ecde88f08fbeb8308fe23076e0`; **IN_REVIEW** by `/root/m4_01_review`. Focused 31 pass / 63 assertions; Schema contracts 8 pass; Core/Schema types and lint/format pass; full Schema 13 pass / 2 unchanged baseline failures. [Report](../validation/M4-01-implementation.md), [complete task diff](../validation/M4-01-review.diff). Worker returned DONE_WITH_CONCERNS for existing baseline failures/unrun later evaluations; no completion credited until review.
+
+- M4-01 review found Important version-pinning gap: `latest.release`, `latest.integration` and `1.+` match despite being dynamic. [Review](../validation/M4-01-review.md). Status **IN_PROGRESS**, fix round 1/5 to same `/root/m4_01`; preserve exact build metadata and add artifact/constraint regressions. No task completion credited.
+
+- Existing production App benchmark baseline completed: 7/7 pass in 13.1 minutes, isolated preview/browser, App source unchanged. Raw output and status-bearing metrics saved in [baseline record](../validation/baseline.md#production-renderer-performance-baseline). No existing app/server restart. Future Session/timeline UI changes must compare applicable scenarios against this baseline.
+
+## Interrupted execution handoff — 2026-10-06
+
+Execution was interrupted while M4-01 fix round 1 was finishing. No new task dispatched after interruption. Reconciled live workers: `/root/m4_01` interrupted; M4/M9 reviewers completed; no active implementation worker. Completed benchmark process exited 0 and its preview listener closed.
+
+Current branch `ftc-workspace`, HEAD `88890fecfa5a40ecde88f08fbeb8308fe23076e0`. **0/94 tasks, 0/12 modules complete**. M9-07 available subset approved at `705d41839`; full task BLOCKED by recorded platform/physical gates. M4-01 remains IN_PROGRESS; initial candidate committed, review fix remains uncommitted in Schema/test/report and `docs/validation/m4-01/fix1-*` evidence. Fix report states 54 focused passes/89 assertions, 8 Schema contract passes, Schema/Core types and scoped lint/format pass; independent scoped re-review is still required. Do not credit task completion yet.
+
+Next action on explicit resumption: resume same `/root/m4_01` to reconcile its existing fix and complete scoped commit; avoid repeating completed tests unless code changes or evidence is invalid. Give same `/root/m4_01_review` the fix-only stable diff from `88890fecfa5a40ecde88f08fbeb8308fe23076e0`, require verdict on dynamic selectors and new breakage. Then reconcile task/substep counts if approved. Only after M4-01 is complete dispatch M5-03 from prepared exact brief; then M8-01/M8-04. Preserve all uncommitted coordinator docs and worker files; no reset/cleanup. Main evidence checkpoint commit remains pending.
+
+## Resumed execution — 2026-10-06
+
+User explicitly requested continuation. Reconciled `ftc-workspace` at `88890fecfa5a40ecde88f08fbeb8308fe23076e0`; preserved all coordinator docs and pending M4-01 repair. Resumed same `/root/m4_01` for scoped commit; existing tested source identities/evidence retained. Next is scoped re-review, then M5-03 after completion. Counts remain **0/94 tasks, 0/12 modules**.
+
+- M4-01 fix round 1 committed `fff70c0e14d50d68cdc77865cd8d123394a8d059`; saved source blobs/evidence unchanged, 54 focused passes / 89 assertions and 8 Schema contract passes; types/lint/format pass. **IN_REVIEW** by same `/root/m4_01_review` against [fix-only diff](../validation/M4-01-fix1-review.diff).
+
+- M4-01 fix round 1 re-review found same pinning defect still open for Gradle `latest.milestone` / custom status family. **IN_PROGRESS**, round 2/5 to `/root/m4_01`, base `fff70c0e14d50d68cdc77865cd8d123394a8d059`. Reject whole `latest.<status>` family rather than enumerated examples; [review](../validation/M4-01-review.md). No new unrelated findings; no completion credited.
+
+- M4-01 fix round 2 committed `f7d2a93eabae724f29875a29840b000cee8749fb`; eight new RED failures then 62 passing tests / 97 assertions, Schema regressions 8/8, Core/Schema types and lint/format pass. **IN_REVIEW**, same reviewer and [fix-only diff](../validation/M4-01-fix2-review.diff).
+
+- M4-01 **DONE** at `f7d2a93eabae724f29875a29840b000cee8749fb`, final scoped review approved with no open findings. 62 focused tests / 97 assertions, 8 Schema contracts, both package types and lint/format pass; two unchanged Schema baseline failures remain unrelated. Canonical profile schemas and pure whole-combination resolver are ready; production catalog deliberately empty. Checked exactly M4-01 task and five substeps. **1/94 tasks, 0/12 modules**; next M5-03 evaluation.

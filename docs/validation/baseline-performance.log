@@ -1,0 +1,43 @@
+[1A[2K[2m[WebServer] [22m[0m[2m[35m$[0m [2m[1mvite build[0m
+
+[1A[2K[2m[WebServer] [22m(node:16320) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1A[2K[2m[WebServer] [22m/Users/dylanxu/coding_tree/node_modules/.bun/rollup@4.60.4/node_modules/rollup/dist/native.js:115
+[2m[WebServer] [22m		throw new Error(
+[2m[WebServer] [22m		      ^
+[2m[WebServer] [22m
+[2m[WebServer] [22mError: Cannot find module @rollup/rollup-darwin-arm64. npm has a bug related to optional dependencies (https://github.com/npm/cli/issues/4828). Please try `npm i` again after removing both package-lock.json and node_modules directory.
+[2m[WebServer] [22m    at requireWithFriendlyError (/Users/dylanxu/coding_tree/node_modules/[4m.bun[24m/rollup@4.60.4/node_modules/[4mrollup[24m/dist/native.js:115:9)
+[2m[WebServer] [22m    at Object.<anonymous> (/Users/dylanxu/coding_tree/node_modules/[4m.bun[24m/rollup@4.60.4/node_modules/[4mrollup[24m/dist/native.js:124:76)
+[2m[WebServer] [22m[90m    at Module._compile (node:internal/modules/cjs/loader:1929:14)[39m
+[2m[WebServer] [22m[90m    at Object..js (node:internal/modules/cjs/loader:2060:10)[39m
+[2m[WebServer] [22m[90m    at Module.load (node:internal/modules/cjs/loader:1651:32)[39m
+[2m[WebServer] [22m[90m    at Module._load (node:internal/modules/cjs/loader:1443:12)[39m
+[2m[WebServer] [22m[90m    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)[39m
+[2m[WebServer] [22m[90m    at loadCJSModuleWithModuleLoad (node:internal/modules/esm/translators:372:15)[39m
+[2m[WebServer] [22m[90m    at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:244:9)[39m
+[2m[WebServer] [22m[90m    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)[39m {
+[2m[WebServer] [22m  [cause]: Error: dlopen(/Users/dylanxu/coding_tree/node_modules/.bun/@rollup+rollup-darwin-arm64@4.60.4/node_modules/@rollup/rollup-darwin-arm64/rollup.darwin-arm64.node, 0x0001): tried: '/Users/dylanxu/coding_tree/node_modules/.bun/@rollup+rollup-darwin-arm64@4.60.4/node_modules/@rollup/rollup-darwin-arm64/rollup.darwin-arm64.node' (code signature in <03A89EAF-E29B-3A4B-AB06-D74CBCC8291D> '/Users/dylanxu/coding_tree/node_modules/.bun/@rollup+rollup-darwin-arm64@4.60.4/node_modules/@rollup/rollup-darwin-arm64/rollup.darwin-arm64.node' not valid for use in process: mapping process and mapped file (non-platform) have different Team IDs), '/System/Volumes/Preboot/Cryptexes/OS/Users/dylanxu/coding_tree/node_modules/.bun/@rollup+rollup-darwin-arm64@4.60.4/node_modules/@rollup/rollup-darwin-arm64/rollup.darwin-arm64.node' (no such file), '/Users/dylanxu/coding_tree/node_modules/.bun/@rollup+rollup-darwin-arm64@4.60.4/node_modules/@rollup/rollup-darwin-arm64/rollup.darwin-arm64.node' (code signature in <03A89EAF-E29B-3A4B-AB06-D74CBCC8291D> '/Users/dylanxu/coding_tree/node_modules/.bun/@rollup+rollup-darwin-arm64@4.60.4/node_modules/@rollup/rollup-darwin-arm64/rollup.darwin-arm64.node' not valid for use in process: mapping process and mapped file (non-platform) have different Team IDs)
+[2m[WebServer] [22m  [90m    at Object..node (node:internal/modules/cjs/loader:2087:18)[39m
+[2m[WebServer] [22m  [90m    at Module.load (node:internal/modules/cjs/loader:1651:32)[39m
+[2m[WebServer] [22m  [90m    at Module._load (node:internal/modules/cjs/loader:1443:12)[39m
+[2m[WebServer] [22m  [90m    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)[39m
+[2m[WebServer] [22m  [90m    at Module.require (node:internal/modules/cjs/loader:1674:12)[39m
+[2m[WebServer] [22m  [90m    at require (node:internal/modules/helpers:157:16)[39m
+[2m[WebServer] [22m      at requireWithFriendlyError (/Users/dylanxu/coding_tree/node_modules/[4m.bun[24m/rollup@4.60.4/node_modules/[4mrollup[24m/dist/native.js:97:10)
+[2m[WebServer] [22m      at Object.<anonymous> (/Users/dylanxu/coding_tree/node_modules/[4m.bun[24m/rollup@4.60.4/node_modules/[4mrollup[24m/dist/native.js:124:76)
+[2m[WebServer] [22m  [90m    at Module._compile (node:internal/modules/cjs/loader:1929:14)[39m
+[2m[WebServer] [22m  [90m    at Object..js (node:internal/modules/cjs/loader:2060:10)[39m {
+[2m[WebServer] [22m    code: [32m'ERR_DLOPEN_FAILED'[39m
+[2m[WebServer] [22m  }
+[2m[WebServer] [22m}
+
+[1A[2K[2m[WebServer] [22m
+[2m[WebServer] [22mNode.js v24.21.0
+
+[1A[2K[2m[WebServer] [22m[0m[31merror[0m[2m:[0m script [1m"build"[0m exited with code 1[0m
+
+Error: Process from config.webServer was not able to start. Exit code: 1
+
+[1A[2K

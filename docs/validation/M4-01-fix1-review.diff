@@ -1,0 +1,365 @@
+fff70c0e1 fix(ftc): reject dynamic compatibility versions
+
+ docs/validation/M4-01-implementation.md            |  22 +++++++-
+ docs/validation/m4-01/fix1-core-typecheck.log      |   1 +
+ docs/validation/m4-01/fix1-format.log              |   2 +
+ docs/validation/m4-01/fix1-green.log               |  62 +++++++++++++++++++++
+ docs/validation/m4-01/fix1-lint.log                |   3 +
+ docs/validation/m4-01/fix1-red.log.gz              | Bin 0 -> 2260 bytes
+ docs/validation/m4-01/fix1-schema-contracts.log    |  20 +++++++
+ docs/validation/m4-01/fix1-schema-typecheck.log    |   1 +
+ .../environment-and-compatibility/m4-01.test.ts    |  44 +++++++++++++++
+ packages/schema/src/ftc-environment.ts             |   7 ++-
+ 10 files changed, 160 insertions(+), 2 deletions(-)
+
+diff --git a/docs/validation/M4-01-implementation.md b/docs/validation/M4-01-implementation.md
+index 5ebe67307..ee579a464 100644
+--- a/docs/validation/M4-01-implementation.md
++++ b/docs/validation/M4-01-implementation.md
+@@ -35,39 +35,59 @@ Paths in this table are relative to the repository root. Each command's actual e
+ | `bun typecheck`                                                                                                                                                                                                                                                         | `packages/schema` | 0                                              | [Schema types](m4-01/schema-typecheck.log)                   |
+ | `bun typecheck`                                                                                                                                                                                                                                                         | `packages/core`   | 0                                              | [Core types](m4-01/core-typecheck.log)                       |
+ | `bun test ./test/contract-hygiene.test.ts ./test/compatibility.test.ts ./test/v1-isolation.test.ts`                                                                                                                                                                     | `packages/schema` | 0; 8 pass, 0 fail, 17 assertions               | [contract regressions](m4-01/schema-contracts.log)           |
+ | `bun test`                                                                                                                                                                                                                                                              | `packages/schema` | 1; 13 pass, 2 baseline failures, 42 assertions | [full raw log, gzip](m4-01/schema-suite.log.gz)              |
+ | `bun run lint -- packages/schema/src/ftc-environment.ts packages/schema/src/index.ts packages/core/src/ftc/environment/catalog.ts packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts`                                                                   | repository root   | 0; 0 warnings/errors                           | [lint](m4-01/lint.log)                                       |
+ | `bunx --no-install prettier --check packages/schema/src/ftc-environment.ts packages/schema/src/index.ts packages/core/src/ftc/environment/catalog.ts packages/core/resources/ftc/compatibility.json packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts` | repository root   | 0                                              | [format](m4-01/format.log)                                   |
+ | `git diff --check`                                                                                                                                                                                                                                                      | repository root   | 0                                              | Self-review; repeated for the staged task diff before commit |
+ 
+ The initial RED used a callable admission scaffold that always returned unsupported with no reasons. Failures were behavioral assertions, not missing imports/dependencies. The scaffold was replaced by the actual implementation. The optional-constraint cycle failed specifically on three new cases before optional schemas/matching were added. Additional contract checks caught a missing AST identifier on the refined Catalog schema; putting its identifier annotation before the uniqueness check fixed it. An initial Core typecheck found a widened test table reason-code string; making that literal table readonly resolved it.
+ 
+ Known unchanged Schema failures: `public event manifest > owns the complete public event surface` (outdated expected 55, actual 58), and `public event manifest > uses canonical definitions for current public events` (outdated fixed event slice). Both match [the coordinator baseline](baseline.md). No event definitions or manifests were changed.
+ 
+ ## Assertion mapping
+ 
+ | Task/requirement boundary                         | Tests/assertions                                                                                                                                                                                      |
+ | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+ | M4-01 / ENV-04 independent coherent runtimes      | Named `profile pins independent editor and build runtimes`: Java 21 and 17, pinned JDT LS, unsupported outside SDK; whole-combination selection rejects newer mismatched profile                      |
+ | ENV-04 selected host compatibility                | Five OS/version/architecture/memory/disk rejection cases; threshold equality succeeds; synthetic Windows/x64 selection                                                                                |
+ | ENV-05 / PRJ-01 exact imported requirements       | Four supplied version mismatches return component reasons and preserve input; unknown project dependencies rejected; full catalog order/input preservation                                            |
+ | ENV-02 / ENV-06 future asset preparation boundary | Invalid artifact version/source/license/checksum rejected; valid profile retains all asset metadata; no download/cache/readiness claim                                                                |
+ | M4-01 evaluation publication boundary             | Unevaluated, absent provenance, empty/blank evidence, duplicate IDs, ambiguous matches, synthetic-to-production provenance rejected; actual empty production JSON decodes and returns `no_profiles`   |
+ | New-project/partial detection boundary            | Empty/partial project constraints permit one profile, while missing constraints with two candidates return ambiguity                                                                                  |
+ | Canonical Schema boundary                         | JSON result round trip, undefined optional fields omitted in encoding, exact root/direct schema identity, ten unique stable public identifiers; package typechecks verify readonly inferred contracts |
+ 
+ ## Self-review and unrun gates
+ 
+ Self-review covered the complete assigned source, input validation, candidate matching, ambiguity, source metadata, profile evaluation status, readonly Schema interfaces, schema identity, runtime dependency direction and scoped changes. No additional issue remains in this task. Independent review is coordinator-owned. The only shared source edit is the explicitly allowed Schema barrel export.
+ 
+ Not run: real clean-host setup on macOS/Windows, Java tooling import/completion/diagnostics, actual FTC Gradle build, artifact downloads/checksum verification against remote assets, prepared-offline operation, model/content inventory, controllers, robot operation and release acceptance scenarios. These belong to M4-02 onward and the named M5/platform/integration evaluations. Matching partial constraints does not establish environment readiness. Metadata validation does not verify an artifact's bytes or license obligations.
+ 
+-## Tested source identities
++## Fix round 1 — Reject dynamic version selectors
++
++Independent review [M4-01-review](M4-01-review.md) found that the original shared Version schema admitted `latest.release`, `latest.integration` and `1.+`. This was an Important defect in pinning, missed by the initial self-review. Fix base: `88890fecfa5a40ecde88f08fbeb8308fe23076e0`; verified 2026-10-06 around 05:49 UTC in the same environment and isolated test directories. This section supersedes the original pinning assessment and focused-suite final result above.
++
++The shared validator now rejects Gradle latest selectors and bare latest/next/nightly case-insensitively. A plus must introduce nonempty exact build metadata, rejecting open-ended selectors such as `1.+`, `1.2+` and `1+`. Exact versions, prerelease versions and build metadata remain accepted. No resolver logic, catalog entries or other task contracts changed.
++
++Twenty regression cases independently exercise dynamic versions in an artifact and in supplied project constraints, including uppercase/mixed-case aliases. Three positive cases resolve exact artifact/project pairs (`8.7.3`, `8.7.3-rc.1`, `8.7.3+build.42`). Expectations use the actual resolver, with empty project constraints in artifact-negative tests so project mismatch cannot mask failed metadata validation. All values are synthetic test data.
++
++| Command                                                                                                                                        | Cwd               | Exit/result                        | Evidence                                        |
++| ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- | ---------------------------------- | ----------------------------------------------- |
++| `bun test ./test/ftc/environment-and-compatibility/m4-01.test.ts` (fix RED)                                                                    | `packages/core`   | 1; 34 pass, 20 fail, 89 assertions | [fix RED, raw gzip](m4-01/fix1-red.log.gz)      |
++| Same focused command (fix GREEN)                                                                                                               | `packages/core`   | 0; 54 pass, 0 fail, 89 assertions  | [fix GREEN](m4-01/fix1-green.log)               |
++| `bun typecheck`                                                                                                                                | `packages/schema` | 0                                  | [Schema types](m4-01/fix1-schema-typecheck.log) |
++| `bun typecheck`                                                                                                                                | `packages/core`   | 0                                  | [Core types](m4-01/fix1-core-typecheck.log)     |
++| `bun test ./test/contract-hygiene.test.ts ./test/compatibility.test.ts ./test/v1-isolation.test.ts`                                            | `packages/schema` | 0; 8 pass, 0 fail, 17 assertions   | [contracts](m4-01/fix1-schema-contracts.log)    |
++| `bun run lint -- packages/schema/src/ftc-environment.ts packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts`                    | repository root   | 0; 0 warnings/errors               | [lint](m4-01/fix1-lint.log)                     |
++| `bunx --no-install prettier --check packages/schema/src/ftc-environment.ts packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts` | repository root   | 0                                  | [format](m4-01/fix1-format.log)                 |
++
++The Schema source and test blob identities for the tested fix are `b81a8673f7b739342f9a92e66b24755718650575` and `e8817b99e0765cb04e59841ceffd579cc81a73e9` respectively; other source identities remain as below. Self-review verified both input boundaries use the shared validator and no code path or data outside the finding changed. Full Schema suite was not repeated at coordinator instruction: its two documented unchanged event-manifest failures remain known, and the affected Version boundary plus contract regressions were rerun. Full Core, platform/build and release gates remain unrun as above. No deferred new finding remains in this focused fix; independent rereview is coordinator-owned.
++
++## Original tested source identities
+ 
+ | File                                                                 | Git blob SHA                               |
+ | -------------------------------------------------------------------- | ------------------------------------------ |
+ | `packages/schema/src/ftc-environment.ts`                             | `5737f7a62423706e25043fd306c72726d8c9c4b4` |
+ | `packages/schema/src/index.ts`                                       | `3c60571343f0d305e73964dd70638221f6e0f100` |
+ | `packages/core/src/ftc/environment/catalog.ts`                       | `9968c08c910d71eea2638b8dc1b12fefc5cbc054` |
+ | `packages/core/resources/ftc/compatibility.json`                     | `e857990e9636dc6eb4a98dbe83dbc23e90022730` |
+ | `packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts` | `5d26694e4811b883f9ddefbfa4c2dd5a3a5ab9ab` |
+diff --git a/docs/validation/m4-01/fix1-core-typecheck.log b/docs/validation/m4-01/fix1-core-typecheck.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m4-01/fix1-core-typecheck.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/docs/validation/m4-01/fix1-format.log b/docs/validation/m4-01/fix1-format.log
+new file mode 100644
+index 000000000..4aa0d16e7
+--- /dev/null
++++ b/docs/validation/m4-01/fix1-format.log
+@@ -0,0 +1,2 @@
++Checking formatting...
++All matched files use Prettier code style!
+diff --git a/docs/validation/m4-01/fix1-green.log b/docs/validation/m4-01/fix1-green.log
+new file mode 100644
+index 000000000..f9453d3c6
+--- /dev/null
++++ b/docs/validation/m4-01/fix1-green.log
+@@ -0,0 +1,62 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc/environment-and-compatibility/m4-01.test.ts:
++(pass) profile pins independent editor and build runtimes [17.11ms]
++(pass) rejects incompatible host OS [0.60ms]
++(pass) rejects incompatible host OS version [0.38ms]
++(pass) rejects incompatible host architecture [0.25ms]
++(pass) rejects incompatible host memory [0.25ms]
++(pass) rejects incompatible host disk [0.22ms]
++(pass) preserves incompatible project requirement ftcSdk [2.85ms]
++(pass) preserves incompatible project requirement androidGradlePlugin [0.28ms]
++(pass) preserves incompatible project requirement androidSdk [0.22ms]
++(pass) preserves incompatible project requirement gradleWrapper [0.20ms]
++(pass) selects a whole matching combination without mixing newer components [0.47ms]
++(pass) rejects invalid artifact version metadata [0.77ms]
++(pass) rejects invalid artifact source metadata [0.39ms]
++(pass) rejects invalid artifact license metadata [0.15ms]
++(pass) rejects invalid artifact sha256 metadata [0.11ms]
++(pass) rejects invalid host resources and unpinned project versions [0.26ms]
++(pass) rejects dynamic artifact version latest.release [0.27ms]
++(pass) rejects dynamic artifact version latest.integration [0.16ms]
++(pass) rejects dynamic artifact version 1.+ [0.15ms]
++(pass) rejects dynamic artifact version 1.2+ [0.22ms]
++(pass) rejects dynamic artifact version 1+ [0.18ms]
++(pass) rejects dynamic artifact version LATEST [0.09ms]
++(pass) rejects dynamic artifact version Latest.Release [0.70ms]
++(pass) rejects dynamic artifact version LATEST.INTEGRATION [0.12ms]
++(pass) rejects dynamic artifact version NEXT [0.11ms]
++(pass) rejects dynamic artifact version Nightly [0.10ms]
++(pass) rejects dynamic supplied project constraint latest.release [0.17ms]
++(pass) rejects dynamic supplied project constraint latest.integration [0.10ms]
++(pass) rejects dynamic supplied project constraint 1.+ [0.05ms]
++(pass) rejects dynamic supplied project constraint 1.2+ [0.25ms]
++(pass) rejects dynamic supplied project constraint 1+ [0.05ms]
++(pass) rejects dynamic supplied project constraint LATEST [0.07ms]
++(pass) rejects dynamic supplied project constraint Latest.Release [0.05ms]
++(pass) rejects dynamic supplied project constraint LATEST.INTEGRATION [0.04ms]
++(pass) rejects dynamic supplied project constraint NEXT [0.05ms]
++(pass) rejects dynamic supplied project constraint Nightly [0.03ms]
++(pass) matches an exact artifact and project version 8.7.3 [1.18ms]
++(pass) matches an exact artifact and project version 8.7.3-rc.1 [1.86ms]
++(pass) matches an exact artifact and project version 8.7.3+build.42 [0.75ms]
++(pass) unevaluated profiles cannot be selected [0.40ms]
++(pass) evaluated profiles require evidence [0.35ms]
++(pass) rejects absent or malformed evaluation provenance  [0.18ms]
++(pass) rejects absent or malformed evaluation provenance {"status":"evaluated","kind":"platform","evidence":[" "]} [0.15ms]
++(pass) rejects duplicate profile identities [0.22ms]
++(pass) does not choose arbitrarily between multiple matching combinations [0.23ms]
++(pass) production catalogs cannot claim synthetic evaluations as support [0.16ms]
++(pass) supports independently supplied Windows profiles [0.18ms]
++(pass) empty production catalog reports no evaluated compatibility profiles [7.61ms]
++(pass) unknown project dependencies are not silently ignored [0.44ms]
++(pass) omitted project constraints permit the one evaluated combination {} [0.40ms]
++(pass) omitted project constraints permit the one evaluated combination {"ftcSdk":"fixture-ftc"} [0.11ms]
++(pass) missing project constraints never choose the newest matching profile [0.28ms]
++(pass) profile selection is unchanged by catalog order [0.37ms]
++(pass) resolved records serialize through the canonical readonly contracts [1.14ms]
++
++ 54 pass
++ 0 fail
++ 89 expect() calls
++Ran 54 tests across 1 file. [212.00ms]
+diff --git a/docs/validation/m4-01/fix1-lint.log b/docs/validation/m4-01/fix1-lint.log
+new file mode 100644
+index 000000000..18beb2f53
+--- /dev/null
++++ b/docs/validation/m4-01/fix1-lint.log
+@@ -0,0 +1,3 @@
++$ oxlint packages/schema/src/ftc-environment.ts "packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts"
++Found 0 warnings and 0 errors.
++Finished in 1.4s on 2 files with 130 rules using 10 threads.
+diff --git a/docs/validation/m4-01/fix1-red.log.gz b/docs/validation/m4-01/fix1-red.log.gz
+new file mode 100644
+index 000000000..d47fe8927
+Binary files /dev/null and b/docs/validation/m4-01/fix1-red.log.gz differ
+diff --git a/docs/validation/m4-01/fix1-schema-contracts.log b/docs/validation/m4-01/fix1-schema-contracts.log
+new file mode 100644
+index 000000000..031d5e4ff
+--- /dev/null
++++ b/docs/validation/m4-01/fix1-schema-contracts.log
+@@ -0,0 +1,20 @@
++bun test v1.3.14 (0d9b296a)
++
++test/contract-hygiene.test.ts:
++(pass) contract hygiene > optional properties preserve transformations and omit undefined while encoding [6.81ms]
++(pass) contract hygiene > todo status and priority preserve arbitrary strings [0.10ms]
++(pass) contract hygiene > current ID constructors expose create [0.65ms]
++(pass) contract hygiene > reusable public identifiers are stable and unique [0.12ms]
++(pass) contract hygiene > current source avoids Any and mutable contract wrappers [19.23ms]
++
++test/compatibility.test.ts:
++(pass) schema compatibility > moved class schemas remain constructible [8.95ms]
++
++test/v1-isolation.test.ts:
++(pass) compatibility entrypoints preserve isolated V1 schema identity [0.11ms]
++(pass) current source does not import the V1 subtree directly [4.24ms]
++
++ 8 pass
++ 0 fail
++ 17 expect() calls
++Ran 8 tests across 3 files. [308.00ms]
+diff --git a/docs/validation/m4-01/fix1-schema-typecheck.log b/docs/validation/m4-01/fix1-schema-typecheck.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m4-01/fix1-schema-typecheck.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts b/packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts
+index 5d26694e4..e8817b99e 100644
+--- a/packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts
++++ b/packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts
+@@ -95,60 +95,104 @@ test("selects a whole matching combination without mixing newer components", ()
+   if (result.kind !== "matched") throw new Error("Expected a matched synthetic profile")
+   expect(result.profile.id).toBe("synthetic-macos-arm64")
+   expect(result.profile.editorJdk.version).toBe("21")
+   expect(result.profile.ftcSdk.version).toBe("fixture-ftc")
+ })
+ 
+ test.each([
+   ["version", ""],
+   ["source", "not-a-url"],
+   ["license", " "],
+   ["sha256", "not-a-checksum"],
+ ])("rejects invalid artifact %s metadata", (field, value) => {
+   const result = resolveProfile({
+     host,
+     projectVersions,
+     catalog: { ...catalog, profiles: [{ ...profile, buildJdk: { ...profile.buildJdk, [field]: value } }] },
+   })
+   expect(result).toEqual({ kind: "unsupported", reasons: [{ code: "invalid_input" }] })
+ })
+ 
+ test("rejects invalid host resources and unpinned project versions", () => {
+   expect(
+     resolveProfile({ host: { ...host, resources: { memoryBytes: -1, diskBytes: 16 } }, projectVersions, catalog }),
+   ).toEqual({ kind: "unsupported", reasons: [{ code: "invalid_input" }] })
+   expect(resolveProfile({ host, projectVersions: { ...projectVersions, ftcSdk: "latest" }, catalog })).toEqual({
+     kind: "unsupported",
+     reasons: [{ code: "invalid_input" }],
+   })
+ })
+ 
++const selectors = [
++  "latest.release",
++  "latest.integration",
++  "1.+",
++  "1.2+",
++  "1+",
++  "LATEST",
++  "Latest.Release",
++  "LATEST.INTEGRATION",
++  "NEXT",
++  "Nightly",
++]
++
++test.each(selectors)("rejects dynamic artifact version %s", (version) => {
++  expect(
++    resolveProfile({
++      host,
++      projectVersions: {},
++      catalog: { ...catalog, profiles: [{ ...profile, androidGradlePlugin: artifact(version) }] },
++    }),
++  ).toEqual({ kind: "unsupported", reasons: [{ code: "invalid_input" }] })
++})
++
++test.each(selectors)("rejects dynamic supplied project constraint %s", (version) => {
++  expect(
++    resolveProfile({
++      host,
++      projectVersions: { ...projectVersions, androidGradlePlugin: version },
++      catalog,
++    }),
++  ).toEqual({ kind: "unsupported", reasons: [{ code: "invalid_input" }] })
++})
++
++test.each(["8.7.3", "8.7.3-rc.1", "8.7.3+build.42"])("matches an exact artifact and project version %s", (version) => {
++  const result = resolveProfile({
++    host,
++    projectVersions: { ...projectVersions, androidGradlePlugin: version },
++    catalog: { ...catalog, profiles: [{ ...profile, androidGradlePlugin: artifact(version) }] },
++  })
++  expect(result.kind).toBe("matched")
++  if (result.kind !== "matched") throw new Error("Expected a matched exact version")
++  expect(result.profile.androidGradlePlugin.version).toBe(version)
++})
++
+ test("unevaluated profiles cannot be selected", () => {
+   expect(
+     resolveProfile({
+       host,
+       projectVersions,
+       catalog: { ...catalog, profiles: [{ ...profile, evaluation: { status: "unevaluated" } }] },
+     }),
+   ).toEqual({ kind: "unsupported", reasons: [{ code: "unevaluated_profile", profileID: profile.id }] })
+ })
+ 
+ test("evaluated profiles require evidence", () => {
+   expect(
+     resolveProfile({
+       host,
+       projectVersions,
+       catalog: { ...catalog, profiles: [{ ...profile, evaluation: { ...profile.evaluation, evidence: [] } }] },
+     }),
+   ).toEqual({ kind: "unsupported", reasons: [{ code: "invalid_input" }] })
+ })
+ 
+ test.each([undefined, { status: "evaluated", kind: "platform", evidence: [" "] }])(
+   "rejects absent or malformed evaluation provenance %j",
+   (evaluation) => {
+     expect(
+       resolveProfile({ host, projectVersions, catalog: { ...catalog, profiles: [{ ...profile, evaluation }] } }),
+     ).toEqual({ kind: "unsupported", reasons: [{ code: "invalid_input" }] })
+   },
+ )
+ 
+ test("rejects duplicate profile identities", () => {
+diff --git a/packages/schema/src/ftc-environment.ts b/packages/schema/src/ftc-environment.ts
+index 5737f7a62..b81a8673f 100644
+--- a/packages/schema/src/ftc-environment.ts
++++ b/packages/schema/src/ftc-environment.ts
+@@ -1,37 +1,42 @@
+ export * as FtcEnvironment from "./ftc-environment"
+ 
+ import { Schema } from "effect"
+ import { NonNegativeInt, optional } from "./schema"
+ 
+ const Text = Schema.String.check(Schema.isMinLength(1), Schema.isTrimmed())
+-const Version = Text.check(Schema.isPattern(/^(?!(?:latest|next|nightly)$)[A-Za-z0-9][A-Za-z0-9._+-]*$/))
++// A plus may introduce exact build metadata, but never an open-ended Gradle selector.
++const Version = Text.check(
++  Schema.isPattern(
++    /^(?!(?:latest(?:\.(?:release|integration))?|next|nightly)$)[a-z0-9][a-z0-9._-]*(?:\+[a-z0-9][a-z0-9._-]*)?$/i,
++  ),
++)
+ const Bytes = NonNegativeInt.check(Schema.isLessThanOrEqualTo(Number.MAX_SAFE_INTEGER))
+ const Os = Schema.Literals(["macos", "windows"])
+ const Architecture = Schema.Literals(["arm64", "x64"])
+ 
+ export interface Resources extends Schema.Schema.Type<typeof Resources> {}
+ export const Resources = Schema.Struct({
+   memoryBytes: Bytes,
+   diskBytes: Bytes,
+ }).annotate({ identifier: "FtcEnvironment.Resources" })
+ 
+ export interface Host extends Schema.Schema.Type<typeof Host> {}
+ export const Host = Schema.Struct({
+   os: Os,
+   osVersion: Text,
+   architecture: Architecture,
+   resources: Resources,
+ }).annotate({ identifier: "FtcEnvironment.Host" })
+ 
+ export interface Artifact extends Schema.Schema.Type<typeof Artifact> {}
+ export const Artifact = Schema.Struct({
+   version: Version,
+   source: Text.check(Schema.makeFilter((value) => URL.canParse(value) && new URL(value).protocol === "https:")),
+   license: Text,
+   sha256: Text.check(Schema.isPattern(/^[a-fA-F0-9]{64}$/)),
+ }).annotate({ identifier: "FtcEnvironment.Artifact" })
+ 
+ export type Evaluation = typeof Evaluation.Type
+ export const Evaluation = Schema.Union([
+   Schema.Struct({ status: Schema.Literal("unevaluated") }),
+   Schema.Struct({

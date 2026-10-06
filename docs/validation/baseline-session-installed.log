@@ -1,0 +1,51 @@
+bun test v1.3.14 (0d9b296a)
+
+test/session-prompt.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+EPERM: operation not permitted, mkdir '/Users/dylanxu/.local/share/opencode'
+    path: "/Users/dylanxu/.local/share/opencode",
+ syscall: "mkdir",
+   errno: -1,
+    code: "EPERM"
+
+-------------------------------
+
+
+test/session-runner.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+EPERM: operation not permitted, mkdir '/Users/dylanxu/.local/share/opencode'
+    path: "/Users/dylanxu/.local/share/opencode",
+ syscall: "mkdir",
+   errno: -1,
+    code: "EPERM"
+
+-------------------------------
+
+
+test/session-run-coordinator.test.ts:
+(pass) SessionRunCoordinator > joins concurrent resumes for one key [24.43ms]
+(pass) SessionRunCoordinator > joins a wake-started execution without forcing a successor [3.43ms]
+(pass) SessionRunCoordinator > starts execution when woken while idle [1.54ms]
+(pass) SessionRunCoordinator > snapshots only active executions [9.55ms]
+(pass) SessionRunCoordinator > cleans active executions after failure and defect [3.61ms]
+(pass) SessionRunCoordinator > cleans active executions when its scope closes [1.69ms]
+(pass) SessionRunCoordinator > coalesces wakes received during active execution [1.71ms]
+(pass) SessionRunCoordinator > runs again when woken during the follow-up [2.01ms]
+(pass) SessionRunCoordinator > does nothing when interrupted while idle [1.27ms]
+(pass) SessionRunCoordinator > interrupts active execution and clears its pending wake [2.41ms]
+(pass) SessionRunCoordinator > runs a wake registered during interruption cleanup [6.01ms]
+(pass) SessionRunCoordinator > starts a resume registered during interruption cleanup [2.33ms]
+(pass) SessionRunCoordinator > starts one follow-up when a wake races with failure [2.03ms]
+(pass) SessionRunCoordinator > does not cancel execution when a joined waiter is interrupted [1.15ms]
+(pass) SessionRunCoordinator > runs different keys concurrently [1.53ms]
+(pass) SessionRunCoordinator > trampolines synchronous self-waking execution [242.63ms]
+
+ 16 pass
+ 2 fail
+ 2 errors
+ 25 expect() calls
+Ran 18 tests across 3 files. [1.74s]

@@ -1,0 +1,1287 @@
+{
+  "revision": "705d41839dc1e64e12343c62777ce500e022d3a1",
+  "runID": "ftc-baseline-705d41839",
+  "source": "baseline-performance-node26.log",
+  "records": [
+    {
+      "schemaVersion": 2,
+      "runID": "ftc-baseline-705d41839",
+      "name": "benchmarks cold and hot session tab switching",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "retry": 0,
+      "repeatEachIndex": 0,
+      "context": {
+        "project": "chromium",
+        "platform": "darwin"
+      },
+      "metrics": {
+        "results": {
+          "cold": [
+            {
+              "firstDestinationObservedMs": 58.19999998807907,
+              "firstCorrectObservedMs": 58.19999998807907,
+              "stableObservedMs": 83.7999999821186,
+              "wrongDestinationSamples": 0,
+              "blankSamples": 0,
+              "unknownSamples": 0,
+              "sourceSamples": 0,
+              "reviewFileHostMissingSamples": 0,
+              "reviewFileHostReplacedSamples": 0,
+              "reviewHeaders": [],
+              "reviewReplacedLevels": []
+            },
+            {
+              "firstDestinationObservedMs": 53.400000005960464,
+              "firstCorrectObservedMs": 53.400000005960464,
+              "stableObservedMs": 79.5,
+              "wrongDestinationSamples": 0,
+              "blankSamples": 0,
+              "unknownSamples": 0,
+              "sourceSamples": 0,
+              "reviewFileHostMissingSamples": 0,
+              "reviewFileHostReplacedSamples": 0,
+              "reviewHeaders": [],
+              "reviewReplacedLevels": []
+            },
+            {
+              "firstDestinationObservedMs": 53.30000001192093,
+              "firstCorrectObservedMs": 53.30000001192093,
+              "stableObservedMs": 72.2000000178814,
+              "wrongDestinationSamples": 0,
+              "blankSamples": 0,
+              "unknownSamples": 0,
+              "sourceSamples": 0,
+              "reviewFileHostMissingSamples": 0,
+              "reviewFileHostReplacedSamples": 0,
+              "reviewHeaders": [],
+              "reviewReplacedLevels": []
+            },
+            {
+              "firstDestinationObservedMs": 49.80000001192093,
+              "firstCorrectObservedMs": 49.80000001192093,
+              "stableObservedMs": 66.69999998807907,
+              "wrongDestinationSamples": 0,
+              "blankSamples": 0,
+              "unknownSamples": 0,
+              "sourceSamples": 0,
+              "reviewFileHostMissingSamples": 0,
+              "reviewFileHostReplacedSamples": 0,
+              "reviewHeaders": [],
+              "reviewReplacedLevels": []
+            },
+            {
+              "firstDestinationObservedMs": 46.099999994039536,
+              "firstCorrectObservedMs": 46.099999994039536,
+              "stableObservedMs": 72.5,
+              "wrongDestinationSamples": 0,
+              "blankSamples": 0,
+              "unknownSamples": 0,
+              "sourceSamples": 0,
+              "reviewFileHostMissingSamples": 0,
+              "reviewFileHostReplacedSamples": 0,
+              "reviewHeaders": [],
+              "reviewReplacedLevels": []
+            }
+          ],
+          "hot": [
+            {
+              "firstDestinationObservedMs": 4.200000017881393,
+              "firstCorrectObservedMs": 4.200000017881393,
+              "stableObservedMs": 36.5,
+              "wrongDestinationSamples": 0,
+              "blankSamples": 0,
+              "unknownSamples": 0,
+              "sourceSamples": 0,
+              "reviewFileHostMissingSamples": 0,
+              "reviewFileHostReplacedSamples": 0,
+              "reviewHeaders": [],
+              "reviewReplacedLevels": []
+            },
+            {
+              "firstDestinationObservedMs": 4.800000011920929,
+              "firstCorrectObservedMs": 4.800000011920929,
+              "stableObservedMs": 33.900000005960464,
+              "wrongDestinationSamples": 0,
+              "blankSamples": 0,
+              "unknownSamples": 0,
+              "sourceSamples": 0,
+              "reviewFileHostMissingSamples": 0,
+              "reviewFileHostReplacedSamples": 0,
+              "reviewHeaders": [],
+              "reviewReplacedLevels": []
+            },
+            {
+              "firstDestinationObservedMs": 6,
+              "firstCorrectObservedMs": 6,
+              "stableObservedMs": 37.400000005960464,
+              "wrongDestinationSamples": 0,
+              "blankSamples": 0,
+              "unknownSamples": 0,
+              "sourceSamples": 0,
+              "reviewFileHostMissingSamples": 0,
+              "reviewFileHostReplacedSamples": 0,
+              "reviewHeaders": [],
+              "reviewReplacedLevels": []
+            },
+            {
+              "firstDestinationObservedMs": 4.899999976158142,
+              "firstCorrectObservedMs": 4.899999976158142,
+              "stableObservedMs": 24.599999994039536,
+              "wrongDestinationSamples": 0,
+              "blankSamples": 0,
+              "unknownSamples": 0,
+              "sourceSamples": 0,
+              "reviewFileHostMissingSamples": 0,
+              "reviewFileHostReplacedSamples": 0,
+              "reviewHeaders": [],
+              "reviewReplacedLevels": []
+            },
+            {
+              "firstDestinationObservedMs": 9.799999982118607,
+              "firstCorrectObservedMs": 9.799999982118607,
+              "stableObservedMs": 39.599999994039536,
+              "wrongDestinationSamples": 0,
+              "blankSamples": 0,
+              "unknownSamples": 0,
+              "sourceSamples": 0,
+              "reviewFileHostMissingSamples": 0,
+              "reviewFileHostReplacedSamples": 0,
+              "reviewHeaders": [],
+              "reviewReplacedLevels": []
+            }
+          ]
+        },
+        "summary": {
+          "cold": {
+            "firstDestinationObservedMs": {
+              "min": 46.099999994039536,
+              "median": 53.30000001192093,
+              "max": 58.19999998807907,
+              "missing": 0
+            },
+            "firstCorrectObservedMs": {
+              "min": 46.099999994039536,
+              "median": 53.30000001192093,
+              "max": 58.19999998807907,
+              "missing": 0
+            },
+            "stableObservedMs": {
+              "min": 66.69999998807907,
+              "median": 72.5,
+              "max": 83.7999999821186,
+              "missing": 0
+            }
+          },
+          "hot": {
+            "firstDestinationObservedMs": {
+              "min": 4.200000017881393,
+              "median": 4.899999976158142,
+              "max": 9.799999982118607,
+              "missing": 0
+            },
+            "firstCorrectObservedMs": {
+              "min": 4.200000017881393,
+              "median": 4.899999976158142,
+              "max": 9.799999982118607,
+              "missing": 0
+            },
+            "stableObservedMs": {
+              "min": 24.599999994039536,
+              "median": 36.5,
+              "max": 39.599999994039536,
+              "missing": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "runID": "ftc-baseline-705d41839",
+      "name": "benchmarks v2 session tab switching with and without the review pane",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "retry": 0,
+      "repeatEachIndex": 0,
+      "context": {
+        "project": "chromium",
+        "platform": "darwin",
+        "runs": 5,
+        "reviewDiffs": 72
+      },
+      "metrics": {
+        "results": {
+          "closed": {
+            "cold": [
+              {
+                "firstDestinationObservedMs": 52.5,
+                "firstCorrectObservedMs": 52.5,
+                "stableObservedMs": 58.599999994039536,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [],
+                "reviewReplacedLevels": []
+              },
+              {
+                "firstDestinationObservedMs": 48.10000002384186,
+                "firstCorrectObservedMs": 48.10000002384186,
+                "stableObservedMs": 73.5,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [],
+                "reviewReplacedLevels": []
+              },
+              {
+                "firstDestinationObservedMs": 48.30000001192093,
+                "firstCorrectObservedMs": 48.30000001192093,
+                "stableObservedMs": 54.900000005960464,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [],
+                "reviewReplacedLevels": []
+              },
+              {
+                "firstDestinationObservedMs": 49.19999998807907,
+                "firstCorrectObservedMs": 49.19999998807907,
+                "stableObservedMs": 56.69999998807907,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [],
+                "reviewReplacedLevels": []
+              },
+              {
+                "firstDestinationObservedMs": 47.69999998807907,
+                "firstCorrectObservedMs": 47.69999998807907,
+                "stableObservedMs": 74.09999999403954,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [],
+                "reviewReplacedLevels": []
+              }
+            ],
+            "hot": [
+              {
+                "firstDestinationObservedMs": 5,
+                "firstCorrectObservedMs": 5,
+                "stableObservedMs": 33.29999998211861,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [],
+                "reviewReplacedLevels": []
+              },
+              {
+                "firstDestinationObservedMs": 5.399999976158142,
+                "firstCorrectObservedMs": 5.399999976158142,
+                "stableObservedMs": 33,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [],
+                "reviewReplacedLevels": []
+              },
+              {
+                "firstDestinationObservedMs": 4.5999999940395355,
+                "firstCorrectObservedMs": 4.5999999940395355,
+                "stableObservedMs": 30.799999982118607,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [],
+                "reviewReplacedLevels": []
+              },
+              {
+                "firstDestinationObservedMs": 4.600000023841858,
+                "firstCorrectObservedMs": 4.600000023841858,
+                "stableObservedMs": 34.70000001788139,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [],
+                "reviewReplacedLevels": []
+              },
+              {
+                "firstDestinationObservedMs": 5,
+                "firstCorrectObservedMs": 5,
+                "stableObservedMs": 35.80000001192093,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [],
+                "reviewReplacedLevels": []
+              }
+            ]
+          },
+          "open": {
+            "cold": [
+              {
+                "firstDestinationObservedMs": 18.899999976158142,
+                "firstCorrectObservedMs": 18.899999976158142,
+                "stableObservedMs": 38.5,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [
+                  "Mgenerated-000.tssrc/review/+3-3"
+                ],
+                "reviewReplacedLevels": []
+              },
+              {
+                "firstDestinationObservedMs": 36.10000002384186,
+                "firstCorrectObservedMs": 36.10000002384186,
+                "stableObservedMs": 54,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [
+                  "Mgenerated-000.tssrc/review/+3-3"
+                ],
+                "reviewReplacedLevels": []
+              },
+              {
+                "firstDestinationObservedMs": 12.799999982118607,
+                "firstCorrectObservedMs": 12.799999982118607,
+                "stableObservedMs": 40.29999998211861,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [
+                  "Mgenerated-000.tssrc/review/+3-3"
+                ],
+                "reviewReplacedLevels": []
+              },
+              {
+                "firstDestinationObservedMs": 12.400000005960464,
+                "firstCorrectObservedMs": 12.400000005960464,
+                "stableObservedMs": 54.69999998807907,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [
+                  "Mgenerated-000.tssrc/review/+3-3"
+                ],
+                "reviewReplacedLevels": []
+              },
+              {
+                "firstDestinationObservedMs": 19.900000005960464,
+                "firstCorrectObservedMs": 19.900000005960464,
+                "stableObservedMs": 42.900000005960464,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [
+                  "Mgenerated-000.tssrc/review/+3-3"
+                ],
+                "reviewReplacedLevels": []
+              }
+            ],
+            "hot": [
+              {
+                "firstDestinationObservedMs": 7.5999999940395355,
+                "firstCorrectObservedMs": 7.5999999940395355,
+                "stableObservedMs": 28.599999994039536,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [
+                  "Mgenerated-000.tssrc/review/+3-3"
+                ],
+                "reviewReplacedLevels": []
+              },
+              {
+                "firstDestinationObservedMs": 7.800000011920929,
+                "firstCorrectObservedMs": 7.800000011920929,
+                "stableObservedMs": 29.099999994039536,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [
+                  "Mgenerated-000.tssrc/review/+3-3"
+                ],
+                "reviewReplacedLevels": []
+              },
+              {
+                "firstDestinationObservedMs": 8.199999988079071,
+                "firstCorrectObservedMs": 8.199999988079071,
+                "stableObservedMs": 26.099999994039536,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [
+                  "Mgenerated-000.tssrc/review/+3-3"
+                ],
+                "reviewReplacedLevels": []
+              },
+              {
+                "firstDestinationObservedMs": 7.4000000059604645,
+                "firstCorrectObservedMs": 7.4000000059604645,
+                "stableObservedMs": 45,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [
+                  "Mgenerated-000.tssrc/review/+3-3"
+                ],
+                "reviewReplacedLevels": []
+              },
+              {
+                "firstDestinationObservedMs": 7.300000011920929,
+                "firstCorrectObservedMs": 7.300000011920929,
+                "stableObservedMs": 38.400000005960464,
+                "wrongDestinationSamples": 0,
+                "blankSamples": 0,
+                "unknownSamples": 0,
+                "sourceSamples": 0,
+                "reviewFileHostMissingSamples": 0,
+                "reviewFileHostReplacedSamples": 0,
+                "reviewHeaders": [
+                  "Mgenerated-000.tssrc/review/+3-3"
+                ],
+                "reviewReplacedLevels": []
+              }
+            ]
+          }
+        },
+        "summary": {
+          "closed": {
+            "cold": {
+              "firstDestinationObservedMs": {
+                "min": 47.69999998807907,
+                "median": 48.30000001192093,
+                "max": 52.5,
+                "missing": 0
+              },
+              "firstCorrectObservedMs": {
+                "min": 47.69999998807907,
+                "median": 48.30000001192093,
+                "max": 52.5,
+                "missing": 0
+              },
+              "stableObservedMs": {
+                "min": 54.900000005960464,
+                "median": 58.599999994039536,
+                "max": 74.09999999403954,
+                "missing": 0
+              }
+            },
+            "hot": {
+              "firstDestinationObservedMs": {
+                "min": 4.5999999940395355,
+                "median": 5,
+                "max": 5.399999976158142,
+                "missing": 0
+              },
+              "firstCorrectObservedMs": {
+                "min": 4.5999999940395355,
+                "median": 5,
+                "max": 5.399999976158142,
+                "missing": 0
+              },
+              "stableObservedMs": {
+                "min": 30.799999982118607,
+                "median": 33.29999998211861,
+                "max": 35.80000001192093,
+                "missing": 0
+              }
+            }
+          },
+          "open": {
+            "cold": {
+              "firstDestinationObservedMs": {
+                "min": 12.400000005960464,
+                "median": 18.899999976158142,
+                "max": 36.10000002384186,
+                "missing": 0
+              },
+              "firstCorrectObservedMs": {
+                "min": 12.400000005960464,
+                "median": 18.899999976158142,
+                "max": 36.10000002384186,
+                "missing": 0
+              },
+              "stableObservedMs": {
+                "min": 38.5,
+                "median": 42.900000005960464,
+                "max": 54.69999998807907,
+                "missing": 0
+              }
+            },
+            "hot": {
+              "firstDestinationObservedMs": {
+                "min": 7.300000011920929,
+                "median": 7.5999999940395355,
+                "max": 8.199999988079071,
+                "missing": 0
+              },
+              "firstCorrectObservedMs": {
+                "min": 7.300000011920929,
+                "median": 7.5999999940395355,
+                "max": 8.199999988079071,
+                "missing": 0
+              },
+              "stableObservedMs": {
+                "min": 26.099999994039536,
+                "median": 29.099999994039536,
+                "max": 45,
+                "missing": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "runID": "ftc-baseline-705d41839",
+      "name": "performance: session timeline streaming > streams assistant text without remounting or oscillating",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "retry": 0,
+      "repeatEachIndex": 0,
+      "context": {
+        "project": "chromium",
+        "platform": "darwin",
+        "cpuThrottle": 30,
+        "profileCPU": false,
+        "profileVisual": false,
+        "minimal": false,
+        "queuedDeltas": 160,
+        "historyTurns": 320,
+        "eventBatch": 1,
+        "newLayoutDesigns": false,
+        "reviewPane": "closed",
+        "reviewDiffs": 0
+      },
+      "metrics": {
+        "endToEndInitialContentObservedMs": 367.32654199999524,
+        "capabilities": {
+          "visual": false,
+          "geometry": true
+        },
+        "completionObservedMs": 172701.80000001192,
+        "deltasPerSecond": 0.9264524168247751,
+        "rafGapSamples": 886,
+        "rafCallbackRate": 5.096227238816392,
+        "observedProgressWindowRafCallbackRate": 4.973820748005729,
+        "observedProgressWindowRafGapP95Ms": 650.8000000000029,
+        "observedProgressWindowRafGaps": 839,
+        "maxObservedProgressIndex": 160,
+        "observedProgressTransitions": 51,
+        "rafGapP50Ms": 99.5,
+        "rafGapP95Ms": 649.2999999999884,
+        "rafGapP99Ms": 1000.1000000000058,
+        "maxRafGapMs": 1950,
+        "rafGapsOver33Ms": 673,
+        "rafGapsOver50Ms": 583,
+        "missedFrameBudgetEquivalents": 9547,
+        "longestRafGapOver33MsStreak": 18,
+        "longTaskCount": 471,
+        "longTaskTimeMs": 119113,
+        "visual": null,
+        "geometry": {
+          "maxDistancePx": 0,
+          "finalDistancePx": 0,
+          "final": {
+            "scrollTop": 72684,
+            "scrollHeight": 73282,
+            "clientHeight": 598,
+            "distance": 0,
+            "virtualHeight": 73218,
+            "headerHeight": 64
+          },
+          "distanceTransitionsPx": [
+            0
+          ],
+          "bottomDriftTransitions": 0,
+          "blankSamples": 0
+        },
+        "rowReplaced": false,
+        "markdownReplaced": false,
+        "domTextCharacters": 3515,
+        "deliveredDeltas": 160,
+        "pendingDeltas": 0,
+        "reviewPane": null
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "runID": "ftc-baseline-705d41839",
+      "name": "performance: session timeline streaming > streams assistant text in v2 with review pane closed",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "retry": 0,
+      "repeatEachIndex": 0,
+      "context": {
+        "project": "chromium",
+        "platform": "darwin",
+        "cpuThrottle": 30,
+        "profileCPU": false,
+        "profileVisual": false,
+        "minimal": false,
+        "queuedDeltas": 160,
+        "historyTurns": 320,
+        "eventBatch": 1,
+        "newLayoutDesigns": true,
+        "reviewPane": "closed",
+        "reviewDiffs": 0
+      },
+      "metrics": {
+        "endToEndInitialContentObservedMs": 419.8467090000049,
+        "capabilities": {
+          "visual": false,
+          "geometry": true
+        },
+        "completionObservedMs": 169045.40000000596,
+        "deltasPerSecond": 0.9464912976040422,
+        "rafGapSamples": 879,
+        "rafCallbackRate": 5.156030153824662,
+        "observedProgressWindowRafCallbackRate": 5.0444481361612965,
+        "observedProgressWindowRafGapP95Ms": 650.1000000000058,
+        "observedProgressWindowRafGaps": 832,
+        "maxObservedProgressIndex": 160,
+        "observedProgressTransitions": 51,
+        "rafGapP50Ms": 99.19999999998254,
+        "rafGapP95Ms": 650.1000000000058,
+        "rafGapP99Ms": 784.1000000000058,
+        "maxRafGapMs": 1283.4000000000233,
+        "rafGapsOver33Ms": 664,
+        "rafGapsOver50Ms": 599,
+        "missedFrameBudgetEquivalents": 9352,
+        "longestRafGapOver33MsStreak": 20,
+        "longTaskCount": 442,
+        "longTaskTimeMs": 115285,
+        "visual": null,
+        "geometry": {
+          "maxDistancePx": 0,
+          "finalDistancePx": 0,
+          "final": {
+            "scrollTop": 72684,
+            "scrollHeight": 73282,
+            "clientHeight": 598,
+            "distance": 0,
+            "virtualHeight": 73218,
+            "headerHeight": 64
+          },
+          "distanceTransitionsPx": [
+            0
+          ],
+          "bottomDriftTransitions": 0,
+          "blankSamples": 0
+        },
+        "rowReplaced": false,
+        "markdownReplaced": false,
+        "domTextCharacters": 3515,
+        "deliveredDeltas": 160,
+        "pendingDeltas": 0,
+        "reviewPane": null
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "runID": "ftc-baseline-705d41839",
+      "name": "performance: session timeline streaming > streams assistant text in v2 with review diffs and pane closed",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "retry": 0,
+      "repeatEachIndex": 0,
+      "context": {
+        "project": "chromium",
+        "platform": "darwin",
+        "cpuThrottle": 30,
+        "profileCPU": false,
+        "profileVisual": false,
+        "minimal": false,
+        "queuedDeltas": 160,
+        "historyTurns": 320,
+        "eventBatch": 1,
+        "newLayoutDesigns": true,
+        "reviewPane": "closed",
+        "reviewDiffs": 72
+      },
+      "metrics": {
+        "endToEndInitialContentObservedMs": 393.67083299998194,
+        "capabilities": {
+          "visual": false,
+          "geometry": true
+        },
+        "completionObservedMs": 178210.10000002384,
+        "deltasPerSecond": 0.8978166781791751,
+        "rafGapSamples": 853,
+        "rafCallbackRate": 4.750993364204105,
+        "observedProgressWindowRafCallbackRate": 4.708929644805608,
+        "observedProgressWindowRafGapP95Ms": 682.6999999999971,
+        "observedProgressWindowRafGaps": 821,
+        "maxObservedProgressIndex": 160,
+        "observedProgressTransitions": 51,
+        "rafGapP50Ms": 100.09999999999854,
+        "rafGapP95Ms": 682.6999999999971,
+        "rafGapP99Ms": 1016.6000000000058,
+        "maxRafGapMs": 2100,
+        "rafGapsOver33Ms": 667,
+        "rafGapsOver50Ms": 592,
+        "missedFrameBudgetEquivalents": 9922,
+        "longestRafGapOver33MsStreak": 46,
+        "longTaskCount": 511,
+        "longTaskTimeMs": 125920,
+        "visual": null,
+        "geometry": {
+          "maxDistancePx": 0,
+          "finalDistancePx": 0,
+          "final": {
+            "scrollTop": 73072,
+            "scrollHeight": 73670,
+            "clientHeight": 598,
+            "distance": 0,
+            "virtualHeight": 73606,
+            "headerHeight": 64
+          },
+          "distanceTransitionsPx": [
+            0
+          ],
+          "bottomDriftTransitions": 0,
+          "blankSamples": 0
+        },
+        "rowReplaced": false,
+        "markdownReplaced": false,
+        "domTextCharacters": 3515,
+        "deliveredDeltas": 160,
+        "pendingDeltas": 0,
+        "reviewPane": null
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "runID": "ftc-baseline-705d41839",
+      "name": "performance: session timeline streaming > streams assistant text in v2 with review pane open",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "retry": 0,
+      "repeatEachIndex": 0,
+      "context": {
+        "project": "chromium",
+        "platform": "darwin",
+        "cpuThrottle": 30,
+        "profileCPU": false,
+        "profileVisual": false,
+        "minimal": false,
+        "queuedDeltas": 160,
+        "historyTurns": 320,
+        "eventBatch": 1,
+        "newLayoutDesigns": true,
+        "reviewPane": "open",
+        "reviewDiffs": 72
+      },
+      "metrics": {
+        "endToEndInitialContentObservedMs": 397.3167919999687,
+        "capabilities": {
+          "visual": false,
+          "geometry": true
+        },
+        "completionObservedMs": 192395.79999998212,
+        "deltasPerSecond": 0.8316189854457054,
+        "rafGapSamples": 854,
+        "rafCallbackRate": 4.4055367795775116,
+        "observedProgressWindowRafCallbackRate": 4.368948912174502,
+        "observedProgressWindowRafGapP95Ms": 650,
+        "observedProgressWindowRafGaps": 817,
+        "maxObservedProgressIndex": 160,
+        "observedProgressTransitions": 51,
+        "rafGapP50Ms": 133.4320000000007,
+        "rafGapP95Ms": 650.1000000000004,
+        "rafGapP99Ms": 832.3999999999942,
+        "maxRafGapMs": 1650,
+        "rafGapsOver33Ms": 704,
+        "rafGapsOver50Ms": 635,
+        "missedFrameBudgetEquivalents": 10781,
+        "longestRafGapOver33MsStreak": 21,
+        "longTaskCount": 740,
+        "longTaskTimeMs": 141585,
+        "visual": null,
+        "geometry": {
+          "maxDistancePx": 0,
+          "finalDistancePx": 0,
+          "final": {
+            "scrollTop": 73215,
+            "scrollHeight": 73813,
+            "clientHeight": 598,
+            "distance": 0,
+            "virtualHeight": 73749,
+            "headerHeight": 64
+          },
+          "distanceTransitionsPx": [
+            0
+          ],
+          "bottomDriftTransitions": 0,
+          "blankSamples": 0
+        },
+        "rowReplaced": false,
+        "markdownReplaced": false,
+        "domTextCharacters": 3515,
+        "deliveredDeltas": 160,
+        "pendingDeltas": 0,
+        "reviewPane": {
+          "summary": {
+            "samples": 7,
+            "firstReadyObservedMs": 140.40000000596046,
+            "stableReadyObservedMs": 149.90000000596046,
+            "notReadySamples": 3,
+            "maxDiffViewers": 1,
+            "maxDiffLines": 0,
+            "maxCodeBlocks": 0
+          },
+          "samples": [
+            {
+              "observedAtMs": 12.799999982118607,
+              "panelVisible": false,
+              "header": "",
+              "diffViewers": 0,
+              "diffLines": 0,
+              "codeBlocks": 0,
+              "ready": false
+            },
+            {
+              "observedAtMs": 29.299999982118607,
+              "panelVisible": false,
+              "header": "",
+              "diffViewers": 0,
+              "diffLines": 0,
+              "codeBlocks": 0,
+              "ready": false
+            },
+            {
+              "observedAtMs": 97.19999998807907,
+              "panelVisible": true,
+              "header": "ReviewGit changesLoading...Loading changes...",
+              "diffViewers": 0,
+              "diffLines": 0,
+              "codeBlocks": 0,
+              "ready": false
+            },
+            {
+              "observedAtMs": 140.40000000596046,
+              "panelVisible": true,
+              "header": "Mgenerated-000.tssrc/review/+3-3",
+              "diffViewers": 1,
+              "diffLines": 0,
+              "codeBlocks": 0,
+              "ready": true
+            },
+            {
+              "observedAtMs": 140.69999998807907,
+              "panelVisible": true,
+              "header": "Mgenerated-000.tssrc/review/+3-3",
+              "diffViewers": 1,
+              "diffLines": 0,
+              "codeBlocks": 0,
+              "ready": true
+            },
+            {
+              "observedAtMs": 149.90000000596046,
+              "panelVisible": true,
+              "header": "Mgenerated-000.tssrc/review/+3-3",
+              "diffViewers": 1,
+              "diffLines": 0,
+              "codeBlocks": 0,
+              "ready": true
+            },
+            {
+              "observedAtMs": 162.7999999821186,
+              "panelVisible": true,
+              "header": "Mgenerated-000.tssrc/review/+3-3",
+              "diffViewers": 1,
+              "diffLines": 0,
+              "codeBlocks": 0,
+              "ready": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "schemaVersion": 2,
+      "runID": "ftc-baseline-705d41839",
+      "name": "performance: review pane > loads v2 review diffs and switches active files",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "retry": 0,
+      "repeatEachIndex": 0,
+      "context": {
+        "project": "chromium",
+        "platform": "darwin",
+        "historyTurns": 72,
+        "reviewDiffs": 72
+      },
+      "metrics": {
+        "open": {
+          "summary": {
+            "samples": 7,
+            "firstReadyObservedMs": 154,
+            "stableReadyObservedMs": 167,
+            "notReadySamples": 3,
+            "maxDiffViewers": 1,
+            "maxDiffLines": 0,
+            "maxCodeBlocks": 0
+          },
+          "samples": [
+            {
+              "observedAtMs": 14.600000023841858,
+              "panelVisible": false,
+              "header": "",
+              "diffViewers": 0,
+              "diffLines": 0,
+              "codeBlocks": 0,
+              "ready": false
+            },
+            {
+              "observedAtMs": 31,
+              "panelVisible": false,
+              "header": "",
+              "diffViewers": 0,
+              "diffLines": 0,
+              "codeBlocks": 0,
+              "ready": false
+            },
+            {
+              "observedAtMs": 107.80000001192093,
+              "panelVisible": true,
+              "header": "ReviewGit changesLoading...Loading changes...",
+              "diffViewers": 0,
+              "diffLines": 0,
+              "codeBlocks": 0,
+              "ready": false
+            },
+            {
+              "observedAtMs": 154,
+              "panelVisible": true,
+              "header": "Mgenerated-000.tssrc/review/+3-3",
+              "diffViewers": 1,
+              "diffLines": 0,
+              "codeBlocks": 0,
+              "ready": true
+            },
+            {
+              "observedAtMs": 166.2000000178814,
+              "panelVisible": true,
+              "header": "Mgenerated-000.tssrc/review/+3-3",
+              "diffViewers": 1,
+              "diffLines": 0,
+              "codeBlocks": 0,
+              "ready": true
+            },
+            {
+              "observedAtMs": 167,
+              "panelVisible": true,
+              "header": "Mgenerated-000.tssrc/review/+3-3",
+              "diffViewers": 1,
+              "diffLines": 0,
+              "codeBlocks": 0,
+              "ready": true
+            },
+            {
+              "observedAtMs": 182.5,
+              "panelVisible": true,
+              "header": "Mgenerated-000.tssrc/review/+3-3",
+              "diffViewers": 1,
+              "diffLines": 0,
+              "codeBlocks": 0,
+              "ready": true
+            }
+          ]
+        },
+        "switches": [
+          {
+            "summary": {
+              "samples": 6,
+              "firstReadyObservedMs": 80,
+              "stableReadyObservedMs": 115.80000001192093,
+              "notReadySamples": 3,
+              "maxDiffViewers": 1,
+              "maxDiffLines": 0,
+              "maxCodeBlocks": 0
+            },
+            "samples": [
+              {
+                "observedAtMs": 11.800000011920929,
+                "panelVisible": true,
+                "header": "Mgenerated-000.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": false
+              },
+              {
+                "observedAtMs": 55.400000005960464,
+                "panelVisible": true,
+                "header": "Mgenerated-000.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": false
+              },
+              {
+                "observedAtMs": 55.900000005960464,
+                "panelVisible": true,
+                "header": "Mgenerated-000.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": false
+              },
+              {
+                "observedAtMs": 80,
+                "panelVisible": true,
+                "header": "Mgenerated-001.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": true
+              },
+              {
+                "observedAtMs": 81.30000001192093,
+                "panelVisible": true,
+                "header": "Mgenerated-001.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": true
+              },
+              {
+                "observedAtMs": 115.80000001192093,
+                "panelVisible": true,
+                "header": "Mgenerated-001.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": true
+              }
+            ]
+          },
+          {
+            "summary": {
+              "samples": 7,
+              "firstReadyObservedMs": 152,
+              "stableReadyObservedMs": 215.80000001192093,
+              "notReadySamples": 3,
+              "maxDiffViewers": 1,
+              "maxDiffLines": 0,
+              "maxCodeBlocks": 0
+            },
+            "samples": [
+              {
+                "observedAtMs": 30.30000001192093,
+                "panelVisible": true,
+                "header": "Mgenerated-001.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": false
+              },
+              {
+                "observedAtMs": 47.599999994039536,
+                "panelVisible": true,
+                "header": "Mgenerated-001.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": false
+              },
+              {
+                "observedAtMs": 85.09999999403954,
+                "panelVisible": true,
+                "header": "Mgenerated-001.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": false
+              },
+              {
+                "observedAtMs": 152,
+                "panelVisible": true,
+                "header": "Mgenerated-002.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": true
+              },
+              {
+                "observedAtMs": 212.7000000178814,
+                "panelVisible": true,
+                "header": "Mgenerated-002.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": true
+              },
+              {
+                "observedAtMs": 215.80000001192093,
+                "panelVisible": true,
+                "header": "Mgenerated-002.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": true
+              },
+              {
+                "observedAtMs": 233.5,
+                "panelVisible": true,
+                "header": "Mgenerated-002.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": true
+              }
+            ]
+          },
+          {
+            "summary": {
+              "samples": 8,
+              "firstReadyObservedMs": 96.5,
+              "stableReadyObservedMs": 130,
+              "notReadySamples": 4,
+              "maxDiffViewers": 1,
+              "maxDiffLines": 0,
+              "maxCodeBlocks": 0
+            },
+            "samples": [
+              {
+                "observedAtMs": 23.400000005960464,
+                "panelVisible": true,
+                "header": "Mgenerated-002.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": false
+              },
+              {
+                "observedAtMs": 26.69999998807907,
+                "panelVisible": true,
+                "header": "Mgenerated-002.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": false
+              },
+              {
+                "observedAtMs": 52.30000001192093,
+                "panelVisible": true,
+                "header": "Mgenerated-002.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": false
+              },
+              {
+                "observedAtMs": 57.80000001192093,
+                "panelVisible": true,
+                "header": "Mgenerated-002.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": false
+              },
+              {
+                "observedAtMs": 96.5,
+                "panelVisible": true,
+                "header": "Mgenerated-003.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": true
+              },
+              {
+                "observedAtMs": 116.09999999403954,
+                "panelVisible": true,
+                "header": "Mgenerated-003.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": true
+              },
+              {
+                "observedAtMs": 130,
+                "panelVisible": true,
+                "header": "Mgenerated-003.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": true
+              },
+              {
+                "observedAtMs": 144,
+                "panelVisible": true,
+                "header": "Mgenerated-003.tssrc/review/+3-3",
+                "diffViewers": 1,
+                "diffLines": 0,
+                "codeBlocks": 0,
+                "ready": true
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

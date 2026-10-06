@@ -1,0 +1,24 @@
+$ bun test --conditions=solid --only-failures --preload ./happydom.ts ./src
+bun test v1.3.14 (0d9b296a)
+
+src/i18n/desktop-native.test.ts:
+118 |   })
+119 | 
+120 |   test("uses Unicode likely subtags for script-sensitive bundles", () => {
+121 |     expect(detectDesktopNativeLocale(["zh-TW"])).toBe("zht")
+122 |     expect(detectDesktopNativeLocale(["zh-SG"])).toBe("zh")
+123 |     expect(detectDesktopNativeLocale(["pa-PK"])).toBe("pa")
+                                                       ^
+error: expect(received).toBe(expected)
+
+Expected: "pa"
+Received: "en"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/src/i18n/desktop-native.test.ts:123:50)
+(fail) desktop native locale detection > uses Unicode likely subtags for script-sensitive bundles [0.49ms]
+
+ 723 pass
+ 1 fail
+ 3017 expect() calls
+Ran 724 tests across 103 files. [1.98s]
+error: script "test:unit" exited with code 1

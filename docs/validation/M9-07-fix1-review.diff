@@ -1,0 +1,483 @@
+M9-07 fix round 1
+Base fbea951a370db94684350fdbee9f9a89ab0bb80f
+Head 705d41839dc1e64e12343c62777ce500e022d3a1
+
+705d41839 test(ftc): clean up isolation probe descendants
+
+ docs/validation/M9-07-implementation.md            |  23 +++
+ docs/validation/m9-07/fix-1-core-typecheck.log     |   1 +
+ docs/validation/m9-07/fix-1-desktop-typecheck.log  |   1 +
+ docs/validation/m9-07/fix-1-format.log             |   2 +
+ docs/validation/m9-07/fix-1-green.log              |  12 ++
+ docs/validation/m9-07/fix-1-lint.log               |   3 +
+ docs/validation/m9-07/fix-1-macos.log              |  31 ++++
+ docs/validation/m9-07/fix-1-red.log                |  51 ++++++
+ docs/validation/robot-action-isolation.md          |   6 +
+ .../ftc-adapters/action-boundary-probe.test.ts     | 202 ++++++++++++++++-----
+ .../ftc-adapters/fixtures/action-boundary/tree.sh  |   9 +
+ 11 files changed, 292 insertions(+), 49 deletions(-)
+
+diff --git a/docs/validation/M9-07-implementation.md b/docs/validation/M9-07-implementation.md
+index ff0c93628..9a85f104d 100644
+--- a/docs/validation/M9-07-implementation.md
++++ b/docs/validation/M9-07-implementation.md
+@@ -45,10 +45,33 @@ Initial dependency-unavailable typecheck attempts exited 127 (`tsgo` missing). B
+ 
+ All endpoint traffic is to owned `127.0.0.1` fixtures. Network restrictions are tested as real OS behavior on this host. The fixture uses a harmless `probe` payload and acknowledgement, not a versioned real Panels command. No mocks or global resets replace a product module. Fixture tests cannot promote robot-action acceptance.
+ 
+ ## Remaining blockers and review concerns
+ 
+ All mandatory unrun rows are individually recorded in [robot-action-isolation.md](robot-action-isolation.md#unresolved-mandatory-gates): Windows; physical USB/ADB/controller; real controller HTTP/WS and forwarding; isolated FTC/Gradle compatibility; extension/MCP hosts and descendants; real broker capability channels; embedded Electron/Panel controls and bridge; packaged support; physical action/approval/replay scenarios.
+ 
+ The macOS profile's `deny iokit*` is **not validated** by the loopback tests. Its default-allow filesystem/process access does not demonstrate authority separation from a real broker. The candidate remains experimental; no production mechanism is selected. Existing generic Bash is still unrestricted and must not be used as an approved FTC execution path. The unused disabled policy is a prerequisite decision for M1-09/M9-08, not enforcement.
+ 
+ Source review checked Bash's stated host-user authority, application tool registration and Electron window preferences. Those observations guided the probes; they do not substitute for real platform evidence. Parent/coordinator owns independent review, baseline comparison, shared progress and all later task scheduling. The M9-07 task must remain open even though the feasible automated subset passes.
++
++## Independent-review fix round 1 — owned probe cleanup
++
++Fix baseline: `fbea951a370db94684350fdbee9f9a89ab0bb80f`; date 2026-10-06. **BLOCKED status and every external release gate remain unchanged.** The important finding was that a directly killed/exited parent could leave a descendant and inherited output streams alive. The related acquisition finding was that the listener started before temporary-directory allocation entered cleanup.
++
++The runner now starts each POSIX probe in an owned process group. Normal leader exit, deadline expiry, AbortSignal cancellation and registered SIGINT/SIGTERM callbacks share one cleanup promise. Cleanup sends TERM to the group, allows 100 ms, escalates to KILL, and checks group disappearance for at most 1 second. Returned output and cancellation wait for cleanup. Cleanup failure fails the probe and retains its temporary project/cache with an explicit diagnostic. Windows execution fails closed in this runner until a separate process-tree adapter is evaluated; no Windows support is claimed. This is cleanup of the owned, non-escaping fixture process group, **not containment of hostile descendants that create another session**.
++
++A real `/bin/sh` fixture starts a harmless 30-second sleep that ignores TERM and holds inherited output pipes. Three tests cover leader exit, timeout and AbortSignal cancellation. Each requires bounded completion and verifies both recorded PIDs no longer exist before safety cleanup. The independent test-finally cleanup prevents the intentional RED run from leaving its children alive. SIGINT/SIGTERM callbacks use the same cancellation path but direct OS-signal interruption was not separately exercised. The listener is now created inside the acquired directory's cleanup scope; listener disposal finishes before directory deletion, including listener-allocation failures.
++
++All commands use the previously recorded Bun PATH. No production source changed in this fix.
++
++| Command / cwd                                                                                                                                 | Result                                                                          | Evidence                                                         |
++| --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
++| `bun test ./test/ftc-adapters/action-boundary-probe.test.ts --test-name-pattern 'owned process tree'`, `packages/core`, before implementation | Exit 1; **0 pass, 3 fail, 3 assertions**; all three stalled with retained pipes | [fix-1-red.log](m9-07/fix-1-red.log)                             |
++| Same focused command after implementation                                                                                                     | Exit 0; **3 pass, 0 fail, 12 assertions**                                       | [fix-1-green.log](m9-07/fix-1-green.log)                         |
++| Exact host environment from the reproduction section, `bun test ./test/ftc-evaluation/m9-07.test.ts`, `packages/core`                         | Exit 0; **11 pass, 4 explicit NOT RUN skips, 0 fail, 36 assertions**            | [fix-1-macos.log](m9-07/fix-1-macos.log)                         |
++| `bun typecheck`, `packages/core`                                                                                                              | Exit 0                                                                          | [fix-1-core-typecheck.log](m9-07/fix-1-core-typecheck.log)       |
++| `bun typecheck`, `packages/desktop`                                                                                                           | Exit 0                                                                          | [fix-1-desktop-typecheck.log](m9-07/fix-1-desktop-typecheck.log) |
++| Same four-file scoped `bun run lint` command recorded above, root                                                                             | Exit 0; 0 warnings/errors                                                       | [fix-1-lint.log](m9-07/fix-1-lint.log)                           |
++| Same six-file `bun run prettier --check` command recorded above, root                                                                         | Exit 0                                                                          | [fix-1-format.log](m9-07/fix-1-format.log)                       |
++| `/bin/sh -n packages/core/test/ftc-adapters/fixtures/action-boundary/tree.sh`, root                                                           | Exit 0                                                                          | Shell fixture syntax check                                       |
++
++Initial post-fix lint warned about typed error assertions and a direct throw inside test-finally. Reusing the small signal helper and narrowing the error structurally resolved them; focused tests, the full host evaluation and Core typecheck were rerun afterward. Desktop source was untouched after its successful check. Original run evidence remains intact; this section supersedes its automated totals. No shared task ledger/checklist was edited.
+diff --git a/docs/validation/m9-07/fix-1-core-typecheck.log b/docs/validation/m9-07/fix-1-core-typecheck.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m9-07/fix-1-core-typecheck.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/docs/validation/m9-07/fix-1-desktop-typecheck.log b/docs/validation/m9-07/fix-1-desktop-typecheck.log
+new file mode 100644
+index 000000000..526f7e8e5
+--- /dev/null
++++ b/docs/validation/m9-07/fix-1-desktop-typecheck.log
+@@ -0,0 +1 @@
++$ tsgo -b
+diff --git a/docs/validation/m9-07/fix-1-format.log b/docs/validation/m9-07/fix-1-format.log
+new file mode 100644
+index 000000000..4aa0d16e7
+--- /dev/null
++++ b/docs/validation/m9-07/fix-1-format.log
+@@ -0,0 +1,2 @@
++Checking formatting...
++All matched files use Prettier code style!
+diff --git a/docs/validation/m9-07/fix-1-green.log b/docs/validation/m9-07/fix-1-green.log
+new file mode 100644
+index 000000000..5f63fe24d
+--- /dev/null
++++ b/docs/validation/m9-07/fix-1-green.log
+@@ -0,0 +1,12 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-adapters/action-boundary-probe.test.ts:
++(pass) owned process tree is gone after exit, including TERM-resistant inherited-pipe descendants [113.31ms]
++(pass) owned process tree is gone after timeout, including TERM-resistant inherited-pipe descendants [266.48ms]
++(pass) owned process tree is gone after abort, including TERM-resistant inherited-pipe descendants [266.08ms]
++
++ 3 pass
++ 11 filtered out
++ 0 fail
++ 12 expect() calls
++Ran 3 tests across 1 file. [665.00ms]
+diff --git a/docs/validation/m9-07/fix-1-lint.log b/docs/validation/m9-07/fix-1-lint.log
+new file mode 100644
+index 000000000..071be7aa4
+--- /dev/null
++++ b/docs/validation/m9-07/fix-1-lint.log
+@@ -0,0 +1,3 @@
++$ oxlint packages/desktop/src/main/panels-policy.ts "packages/core/test/ftc-evaluation/m9-07.test.ts" packages/core/test/ftc-adapters/action-boundary-probe.test.ts packages/core/test/ftc-adapters/fixtures/action-boundary/process.ts
++Found 0 warnings and 0 errors.
++Finished in 791ms on 4 files with 130 rules using 10 threads.
+diff --git a/docs/validation/m9-07/fix-1-macos.log b/docs/validation/m9-07/fix-1-macos.log
+new file mode 100644
+index 000000000..d0b76f6e3
+--- /dev/null
++++ b/docs/validation/m9-07/fix-1-macos.log
+@@ -0,0 +1,31 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-evaluation/m9-07.test.ts:
++(pass) owned process tree is gone after exit, including TERM-resistant inherited-pipe descendants [111.46ms]
++(pass) owned process tree is gone after timeout, including TERM-resistant inherited-pipe descendants [265.12ms]
++(pass) owned process tree is gone after abort, including TERM-resistant inherited-pipe descendants [265.10ms]
++{"mode":"http","restricted":false,"launcher":"absolute-bun","exit":0,"stdout":"probe_ready\n","stderr":"","received":["POST /broker"]}
++(pass) unrestricted absolute binary reaches owned HTTP broker despite filtered PATH [28.70ms]
++{"mode":"websocket","restricted":false,"launcher":"absolute-bun","exit":0,"stdout":"probe_ready\n","stderr":"","received":["probe"]}
++(pass) unrestricted process can send a dashboard-style WebSocket write [22.61ms]
++{"control":"sandbox-startup","exit":0,"stdout":"42\n","stderr":""}
++(pass) macOS candidate permits local development subprocess execution [32.26ms]
++{"mode":"http","restricted":true,"launcher":"absolute-bun","exit":1,"stdout":"probe_ready\n","stderr":"error: Was there a typo in the url or port?\n  path: \"http://127.0.0.1:53851/broker\",\n errno: 0,\n  code: \"FailedToOpenSocket\"\n\n\nBun v1.3.14 (macOS arm64)\n","received":[]}
++(pass) macOS candidate denies HTTP access to owned controller/broker fixture [41.16ms]
++{"mode":"websocket","restricted":true,"launcher":"absolute-bun","exit":1,"stdout":"probe_ready\n","stderr":"20 |       if (event.data === \"received\") resolve()\n21 |       else reject(new Error(\"unexpected_response\"))\n22 |     }\n23 |     socket.onerror = () => {\n24 |       clearTimeout(timeout)\n25 |       reject(new Error(\"websocket_denied\"))\n                      ^\nerror: websocket_denied\n      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/fixtures/action-boundary/process.ts:25:18)\n\nBun v1.3.14 (macOS arm64)\n","received":[]}
++(pass) macOS candidate denies dashboard-style WebSocket writes [34.21ms]
++{"control":"adb-version-only","exit":0,"stdout":"Android Debug Bridge version 1.0.41\nVersion 35.0.1-11580240\nInstalled as /Users/dylanxu/Library/Android/sdk/platform-tools/adb\nRunning on Darwin 25.5.0 (arm64)\n","stderr":""}
++(pass) real absolute ADB binary executes with filtered PATH (version only) [29.26ms]
++{"mode":"http","restricted":false,"launcher":"gradle","exit":0,"stdout":"\nWelcome to Gradle 8.9!\n\nHere are the highlights of this release:\n - Enhanced Error and Warning Messages\n - IDE Integration Improvements\n - Daemon JVM Information\n\nFor more details see https://docs.gradle.org/8.9/release-notes.html\n\nTo honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.9/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.\nDaemon will be stopped at the end of the build \n> Task :boundaryProbe\n\nBUILD SUCCESSFUL in 7s\n1 actionable task: 1 executed\n","stderr":"","received":["POST /broker"]}
++(pass) real offline Gradle task reaches owned broker fixture without isolation [7415.10ms]
++(skip) NOT RUN: Windows process, USB, controller/broker and embedded dashboard isolation
++(skip) NOT RUN: macOS physical USB API and real controller HTTP/WebSocket denial
++(skip) NOT RUN: production extension/MCP descendants and broker capability isolation
++(skip) NOT RUN: real Electron embedded controls, preload/IPC, navigation and permissions
++(pass) M9-07 keeps unverified embedded dashboard and controls disabled [0.18ms]
++
++ 11 pass
++ 4 skip
++ 0 fail
++ 36 expect() calls
++Ran 15 tests across 1 file. [8.26s]
+diff --git a/docs/validation/m9-07/fix-1-red.log b/docs/validation/m9-07/fix-1-red.log
+new file mode 100644
+index 000000000..02248baf5
+--- /dev/null
++++ b/docs/validation/m9-07/fix-1-red.log
+@@ -0,0 +1,51 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-adapters/action-boundary-probe.test.ts:
++43 |     try {
++44 |       const outcome = await Promise.race([
++45 |         running.then(() => "finished", () => "finished"),
++46 |         Bun.sleep(2000).then(() => "stalled"),
++47 |       ])
++48 |       expect(outcome).toBe("finished")
++                           ^
++error: expect(received).toBe(expected)
++
++Expected: "finished"
++Received: "stalled"
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/action-boundary-probe.test.ts:48:23)
++(fail) owned process tree is gone after exit, including TERM-resistant inherited-pipe descendants [2010.20ms]
++43 |     try {
++44 |       const outcome = await Promise.race([
++45 |         running.then(() => "finished", () => "finished"),
++46 |         Bun.sleep(2000).then(() => "stalled"),
++47 |       ])
++48 |       expect(outcome).toBe("finished")
++                           ^
++error: expect(received).toBe(expected)
++
++Expected: "finished"
++Received: "stalled"
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/action-boundary-probe.test.ts:48:23)
++(fail) owned process tree is gone after timeout, including TERM-resistant inherited-pipe descendants [2004.79ms]
++43 |     try {
++44 |       const outcome = await Promise.race([
++45 |         running.then(() => "finished", () => "finished"),
++46 |         Bun.sleep(2000).then(() => "stalled"),
++47 |       ])
++48 |       expect(outcome).toBe("finished")
++                           ^
++error: expect(received).toBe(expected)
++
++Expected: "finished"
++Received: "stalled"
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/action-boundary-probe.test.ts:48:23)
++(fail) owned process tree is gone after abort, including TERM-resistant inherited-pipe descendants [2004.81ms]
++
++ 0 pass
++ 11 filtered out
++ 3 fail
++ 3 expect() calls
++Ran 3 tests across 1 file. [6.03s]
+diff --git a/docs/validation/robot-action-isolation.md b/docs/validation/robot-action-isolation.md
+index 7b5ede8b7..016fb2b86 100644
+--- a/docs/validation/robot-action-isolation.md
++++ b/docs/validation/robot-action-isolation.md
+@@ -68,10 +68,16 @@ With optional environment variables absent, asset-dependent tests skip visibly;
+ | macOS direct USB APIs and real ADB server / physical controller                              | **NOT RUN** — no authorized physical control fixture. `deny iokit*` is unproven; ADB version does not test USB. No controller actions were authorized or executed.                                                                                                |
+ | Real controller HTTP/WebSockets and port forwarding                                          | **NOT RUN** — loopback protocol fixtures are not controller/transport validation.                                                                                                                                                                                 |
+ | Isolated Gradle/Android/FTC development compatibility                                        | **NOT RUN** — unrestricted fixture task ran; candidate-restricted real FTC build and JDK/Gradle daemon/cache behavior remain unverified.                                                                                                                          |
+ | Production extension/MCP hosts, inherited handles, descendants and escape attempts           | **NOT RUN** — no production adapters were composed. Generic subprocess evidence is not extension/MCP coverage.                                                                                                                                                    |
+ | Broker capability isolation                                                                  | **NOT RUN** — fixture HTTP listener has no real authentication/capability adapter. File-readable capabilities, Unix sockets, named pipes, Mach IPC, inherited handles and in-process privileges are not evaluated.                                                |
+ | Embedded controls and privileged bridge                                                      | **NOT RUN** — no Electron view was constructed. Real HTTP/WS write mediation, preload/IPC absence, navigation, redirects, frames, permissions, WebUSB and lifecycle still need proof. A view sandbox or disabled UI does not itself prevent robot-network writes. |
+ | Required packaged macOS/Windows support                                                      | **NOT RUN** — packaging, signing, platform stability and mechanism availability not established.                                                                                                                                                                  |
+ | Physical AC-10/AC-11 target/generation/build binding, contention, lost replies and no replay | **NOT RUN** — belongs to composed/physical M9-08/M9-09 work; no source/fixture test promotes these gates.                                                                                                                                                         |
+ 
+ M9-07 remains open. No production platform or controller combination is promoted. Full module behavior for M9-01–M9-06 is outside this evaluation; none is implicitly implemented by the fixture broker.
++
++## Review fix 1: subprocess lifetime
++
++The reviewed runner now owns a POSIX process group and confirms its termination before normal completion/cancellation and temporary-directory deletion. TERM-resistant descendants holding output pipes are covered for leader exit, timeout and AbortSignal cancellation; a cleanup failure retains the temporary directory and fails visibly. This is fixture lifecycle cleanup, not proof against a hostile process that escapes the group. Windows remains unimplemented/unverified.
++
++Latest [host output](m9-07/fix-1-macos.log): **11 pass, 4 NOT RUN skips, 0 fail, 36 assertions**. Three new cleanup regressions first failed and then passed; exact commands, separate logs and qualifications are in [the fix report](M9-07-implementation.md#independent-review-fix-round-1--owned-probe-cleanup). Every production/platform/physical gate above remains open.
+diff --git a/packages/core/test/ftc-adapters/action-boundary-probe.test.ts b/packages/core/test/ftc-adapters/action-boundary-probe.test.ts
+index b05030cad..1b0dbed00 100644
+--- a/packages/core/test/ftc-adapters/action-boundary-probe.test.ts
++++ b/packages/core/test/ftc-adapters/action-boundary-probe.test.ts
+@@ -1,89 +1,193 @@
+ import { expect, test } from "bun:test"
+ import { mkdtemp, rm } from "node:fs/promises"
+ import { tmpdir } from "node:os"
+ import path from "node:path"
+ 
+ const fixture = path.join(import.meta.dir, "fixtures/action-boundary/process.ts")
+ const profile = "(version 1)(allow default)(deny network*)(deny iokit*)"
+ const sandbox = process.platform === "darwin" && process.env.M9_SANDBOX_EXEC === "1"
+ 
+-async function run(command: string[], restricted = false, env: Record<string, string> = {}) {
++async function run(
++  command: string[],
++  restricted = false,
++  env: Record<string, string> = {},
++  options: { timeout?: number; signal?: AbortSignal } = {},
++) {
++  // Windows needs a separately evaluated Job Object adapter; never claim tree cleanup there.
++  if (process.platform === "win32") throw new Error("windows_process_tree_not_evaluated")
+   const child = Bun.spawn(restricted ? ["/usr/bin/sandbox-exec", "-p", profile, ...command] : command, {
++    detached: true,
+     env: { PATH: "/usr/bin:/bin", ...env },
+     stdout: "pipe",
+     stderr: "pipe",
+   })
+-  const timeout = setTimeout(() => child.kill(), 15000)
++  const cleanup: { pending?: Promise<void> } = {}
++  const stop = () =>
++    (cleanup.pending ??= stopGroup(child.pid).catch((cause) => {
++      throw new Error("probe_process_group_cleanup_failed", { cause })
++    }))
++  const cancelled = Promise.withResolvers<never>()
++  const cancel = () => {
++    void stop().then(() => cancelled.reject(new Error("probe_cancelled")), cancelled.reject)
++  }
++  const timeout = setTimeout(cancel, options.timeout ?? 15000)
++  options.signal?.addEventListener("abort", cancel, { once: true })
++  process.once("SIGINT", cancel)
++  process.once("SIGTERM", cancel)
++  if (options.signal?.aborted) cancel()
+   try {
+-    const [exit, stdout, stderr] = await Promise.all([
+-      child.exited,
+-      new Response(child.stdout).text(),
+-      new Response(child.stderr).text(),
++    const [exit, stdout, stderr] = await Promise.race([
++      Promise.all([
++        // A leader may exit while its descendants retain our output pipes.
++        child.exited.then(async (exit) => {
++          await stop()
++          return exit
++        }),
++        new Response(child.stdout).text(),
++        new Response(child.stderr).text(),
++      ]),
++      cancelled.promise,
+     ])
+     return { exit, stdout, stderr }
+   } finally {
+     clearTimeout(timeout)
+-    child.kill()
++    options.signal?.removeEventListener("abort", cancel)
++    process.removeListener("SIGINT", cancel)
++    process.removeListener("SIGTERM", cancel)
++    await stop()
+   }
+ }
+ 
++async function stopGroup(pid: number) {
++  if (!signalProcess(-pid, "SIGTERM")) return
++  await Bun.sleep(100)
++  signalProcess(-pid, "SIGKILL")
++  const deadline = Date.now() + 1000
++  while (signalProcess(-pid, 0)) {
++    if (Date.now() >= deadline) throw new Error("probe_process_group_cleanup_timeout")
++    await Bun.sleep(10)
++  }
++}
++
++function signalProcess(pid: number, signal: 0 | "SIGTERM" | "SIGKILL") {
++  try {
++    process.kill(pid, signal)
++    return true
++  } catch (error) {
++    if (error instanceof Error && "code" in error && error.code === "ESRCH") return false
++    throw error
++  }
++}
++
++test.skipIf(process.platform === "win32").each(["exit", "timeout", "abort"])(
++  "owned process tree is gone after %s, including TERM-resistant inherited-pipe descendants",
++  async (mode) => {
++    const directory = await mkdtemp(path.join(tmpdir(), "m9-07-tree-"))
++    const file = path.join(directory, "pids")
++    const controller = new AbortController()
++    const timer = setTimeout(() => controller.abort(), 150)
++    const running = run(
++      ["/bin/sh", path.join(import.meta.dir, "fixtures/action-boundary/tree.sh"), file, mode],
++      false,
++      {},
++      { timeout: mode === "timeout" ? 150 : 15000, signal: mode === "abort" ? controller.signal : undefined },
++    )
++    try {
++      const outcome = await Promise.race([
++        running.then(
++          () => "finished",
++          () => "finished",
++        ),
++        Bun.sleep(2000).then(() => "stalled"),
++      ])
++      expect(outcome).toBe("finished")
++      const pids = (await Bun.file(file).text()).trim().split(" ").map(Number)
++      expect(pids).toHaveLength(2)
++      for (const pid of pids) expect(() => process.kill(pid, 0)).toThrow()
++    } finally {
++      clearTimeout(timer)
++      // Independent safety cleanup also prevents the intentionally failing RED run leaking a child.
++      if (await Bun.file(file).exists()) {
++        for (const pid of (await Bun.file(file).text()).trim().split(" ").map(Number)) {
++          signalProcess(pid, "SIGKILL")
++        }
++      }
++      await running.catch(() => undefined)
++      await rm(directory, { recursive: true, force: true })
++    }
++  },
++  10000,
++)
++
+ // The endpoints and payloads are fixtures; children, sockets and OS restrictions are real.
+ async function probe(mode: "http" | "websocket", restricted: boolean, gradle?: string) {
+   const received: string[] = []
+-  const server = Bun.serve({
+-    hostname: "127.0.0.1",
+-    port: 0,
+-    fetch(request, server) {
+-      if (server.upgrade(request)) return undefined
+-      received.push(`${request.method} ${new URL(request.url).pathname}`)
+-      return new Response(null, { status: 204 })
+-    },
+-    websocket: {
+-      message(socket, message) {
+-        received.push(String(message))
+-        socket.send("received")
+-      },
+-    },
+-  })
+   const directory = await mkdtemp(path.join(tmpdir(), "m9-07-"))
++  const cleanup = { safe: true }
+   try {
+-    const endpoint = `${mode === "http" ? "http" : "ws"}://127.0.0.1:${server.port}/broker`
+-    const command = gradle
+-      ? [gradle, "--offline", "--no-daemon", "--console=plain", "-g", directory, "-p", directory, "boundaryProbe"]
+-      : [process.execPath, fixture, mode, endpoint]
+-    if (gradle) {
+-      await Bun.write(path.join(directory, "settings.gradle"), "rootProject.name = 'm9-07-probe'\n")
+-      await Bun.write(
+-        path.join(directory, "build.gradle"),
+-        "tasks.register('boundaryProbe') { doLast { def c = new URI(System.getenv('M9_ENDPOINT')).toURL().openConnection(); c.requestMethod = 'POST'; c.connectTimeout = 2000; c.readTimeout = 2000; assert c.responseCode == 204 } }\n",
+-      )
+-    }
+-    const result = await run(command, restricted, {
+-      M9_ENDPOINT: endpoint,
+-      ...(process.env.M9_JAVA_HOME ? { JAVA_HOME: process.env.M9_JAVA_HOME } : {}),
++    const server = Bun.serve({
++      hostname: "127.0.0.1",
++      port: 0,
++      fetch(request, server) {
++        if (server.upgrade(request)) return undefined
++        received.push(`${request.method} ${new URL(request.url).pathname}`)
++        return new Response(null, { status: 204 })
++      },
++      websocket: {
++        message(socket, message) {
++          received.push(String(message))
++          socket.send("received")
++        },
++      },
+     })
+-    console.log(JSON.stringify({ mode, restricted, launcher: gradle ? "gradle" : "absolute-bun", ...result, received }))
+-    if (!restricted) {
+-      expect(result.exit).toBe(0)
+-      expect(received).toEqual([mode === "http" ? "POST /broker" : "probe"])
+-      return
++    try {
++      const endpoint = `${mode === "http" ? "http" : "ws"}://127.0.0.1:${server.port}/broker`
++      const command = gradle
++        ? [gradle, "--offline", "--no-daemon", "--console=plain", "-g", directory, "-p", directory, "boundaryProbe"]
++        : [process.execPath, fixture, mode, endpoint]
++      if (gradle) {
++        await Bun.write(path.join(directory, "settings.gradle"), "rootProject.name = 'm9-07-probe'\n")
++        await Bun.write(
++          path.join(directory, "build.gradle"),
++          "tasks.register('boundaryProbe') { doLast { def c = new URI(System.getenv('M9_ENDPOINT')).toURL().openConnection(); c.requestMethod = 'POST'; c.connectTimeout = 2000; c.readTimeout = 2000; assert c.responseCode == 204 } }\n",
++        )
++      }
++      const result = await run(command, restricted, {
++        M9_ENDPOINT: endpoint,
++        ...(process.env.M9_JAVA_HOME ? { JAVA_HOME: process.env.M9_JAVA_HOME } : {}),
++      }).catch((error) => {
++        if (error instanceof Error && error.message === "probe_process_group_cleanup_failed") {
++          cleanup.safe = false
++          console.error(`Unconfirmed process cleanup; retaining fixture directory: ${directory}`)
++        }
++        throw error
++      })
++      console.log(
++        JSON.stringify({ mode, restricted, launcher: gradle ? "gradle" : "absolute-bun", ...result, received }),
++      )
++      if (!restricted) {
++        expect(result.exit).toBe(0)
++        expect(received).toEqual([mode === "http" ? "POST /broker" : "probe"])
++        return
++      }
++      // Reject failure to launch the sandbox: it is not evidence of a denied operation.
++      expect(result.stderr).not.toContain("sandbox_apply")
++      expect(result.stdout.trim()).toBe("probe_ready")
++      expect(result.stderr).toContain(mode === "http" ? "FailedToOpenSocket" : "websocket_denied")
++      expect(result.exit).not.toBe(0)
++      expect(received).toEqual([])
++    } finally {
++      await server.stop(true)
+     }
+-    // Reject failure to launch the sandbox: it is not evidence of a denied operation.
+-    expect(result.stderr).not.toContain("sandbox_apply")
+-    expect(result.stdout.trim()).toBe("probe_ready")
+-    expect(result.stderr).toContain(mode === "http" ? "FailedToOpenSocket" : "websocket_denied")
+-    expect(result.exit).not.toBe(0)
+-    expect(received).toEqual([])
+   } finally {
+-    await server.stop(true)
+-    await rm(directory, { recursive: true, force: true })
++    if (cleanup.safe) await rm(directory, { recursive: true, force: true })
+   }
+ }
+ 
+ test("unrestricted absolute binary reaches owned HTTP broker despite filtered PATH", () => probe("http", false))
+ test("unrestricted process can send a dashboard-style WebSocket write", () => probe("websocket", false))
+ 
+ test.skipIf(!sandbox)("macOS candidate permits local development subprocess execution", async () => {
+   const result = await run([process.execPath, "-e", "console.log(6 * 7)"], true)
+   console.log(JSON.stringify({ control: "sandbox-startup", ...result }))
+   expect(result.exit).toBe(0)
+diff --git a/packages/core/test/ftc-adapters/fixtures/action-boundary/tree.sh b/packages/core/test/ftc-adapters/fixtures/action-boundary/tree.sh
+new file mode 100644
+index 000000000..e217194f0
+--- /dev/null
++++ b/packages/core/test/ftc-adapters/fixtures/action-boundary/tree.sh
+@@ -0,0 +1,9 @@
++#!/bin/sh
++# Harmless child retains the output pipes and ignores TERM, like a stubborn daemon.
++trap '' TERM
++/bin/sleep 30 &
++printf '%s %s\n' "$$" "$!" > "$1"
++if [ "$2" = exit ]; then
++  exit 0
++fi
++wait

@@ -1,0 +1,509 @@
+M9-07 stable review package
+Base: 441ce9be5b914aa12ed918629663195f32e97d03
+Head: fbea951a370db94684350fdbee9f9a89ab0bb80f
+
+fbea951a3 test(ftc): evaluate robot action isolation
+
+ docs/validation/M9-07-implementation.md            |  54 ++++++++++
+ docs/validation/m9-07/core-typecheck.log           |   1 +
+ docs/validation/m9-07/default.log                  |  47 +++++++++
+ docs/validation/m9-07/desktop-typecheck.log        |   1 +
+ docs/validation/m9-07/environment.log              |  13 +++
+ docs/validation/m9-07/format.log                   |   2 +
+ docs/validation/m9-07/lint.log                     |   3 +
+ docs/validation/m9-07/macos.log                    |  28 +++++
+ docs/validation/m9-07/red.log                      |  14 +++
+ docs/validation/robot-action-isolation.md          |  77 ++++++++++++++
+ .../ftc-adapters/action-boundary-probe.test.ts     | 115 +++++++++++++++++++++
+ .../fixtures/action-boundary/process.ts            |  28 +++++
+ packages/core/test/ftc-evaluation/m9-07.test.ts    |  13 +++
+ packages/desktop/src/main/panels-policy.ts         |   7 ++
+ 14 files changed, 403 insertions(+)
+
+diff --git a/docs/validation/M9-07-implementation.md b/docs/validation/M9-07-implementation.md
+new file mode 100644
+index 000000000..ff0c93628
+--- /dev/null
++++ b/docs/validation/M9-07-implementation.md
+@@ -0,0 +1,54 @@
++# M9-07 implementation and evaluation handoff
++
++**Status: BLOCKED.** Task M9-07; date 2026-10-06; direct requirement ROB-07, related AI-04/PAN-01 and ROB-02–ROB-06; acceptance AC-10/AC-11 **not complete**. No checklist or shared progress file was edited by this worker.
++
++## Revision and scope
++
++Tested baseline/review base: `441ce9be5b914aa12ed918629663195f32e97d03`, branch `ftc-workspace`. This documentation checkpoint retains product baseline `d7aca195c0a47fadb0fc3788eefbe96f99ec68be`. The focused task commit is identified in the coordinator handoff; the tested delta consists only of:
++
++- `docs/validation/robot-action-isolation.md` and this report.
++- `docs/validation/m9-07/` raw output.
++- `packages/core/test/ftc-evaluation/m9-07.test.ts`.
++- `packages/core/test/ftc-adapters/action-boundary-probe.test.ts`.
++- `packages/core/test/ftc-adapters/fixtures/action-boundary/process.ts`.
++- `packages/desktop/src/main/panels-policy.ts`.
++
++No changes to existing command/build routes, module wiring, public APIs, generated clients, durable Session behavior or shared checklists. No real robot mutation occurred. No new dependency was introduced.
++
++The only production-source addition is an immutable **disabled evaluation decision**, with no consumer and no I/O. It is deliberately not advertised as enforced Electron isolation. The executable evaluation uses real child processes and owned loopback listeners, with fixture broker/controller messages and a generated local Gradle task. It does not instantiate M9's future production broker.
++
++## Commands and observed results
++
++Runtime prefix for all Bun commands: `PATH=/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64:$PATH`. Environment versions, candidate profile, required asset paths and optional `M9_*` values are documented in [the evidence record](robot-action-isolation.md). Tests are run from package directories. Lint/Prettier run from root.
++
++| Command / cwd                                                                                                                                                                                                                                                                                                                                   | Exit / count                                 | Evidence / interpretation                                                                                                                                                                                                                                  |
++| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
++| Initial `bun test ./test/ftc-evaluation/m9-07.test.ts`, `packages/core`                                                                                                                                                                                                                                                                         | 1; 0 pass, 1 fail, 1 import error            | [red.log](m9-07/red.log): policy module did not yet exist. This is missing-implementation setup evidence, **not a behavioral TDD failure**. The production addition is a static decision; process evaluations were not given artificial red/green results. |
++| Harness-contained `bun test ./test/ftc-evaluation/m9-07.test.ts`, `packages/core`, optional assets unset                                                                                                                                                                                                                                        | 1; 1 pass, 9 skip, 2 fail                    | [default.log](m9-07/default.log): fixture listeners could not bind inside the harness. Not a product isolation pass.                                                                                                                                       |
++| `M9_SANDBOX_EXEC=1 M9_ADB=… M9_GRADLE=… M9_JAVA_HOME=… bun test ./test/ftc-evaluation/m9-07.test.ts`, `packages/core`, approved host execution                                                                                                                                                                                                  | 0; **8 pass, 4 skip, 0 fail, 24 assertions** | [macos.log](m9-07/macos.log), final post-format/cleanup run. Exact environment assignment in evidence record.                                                                                                                                              |
++| `bun typecheck`, `packages/core`                                                                                                                                                                                                                                                                                                                | 0                                            | [core-typecheck.log](m9-07/core-typecheck.log), `tsgo --noEmit`.                                                                                                                                                                                           |
++| `bun typecheck`, `packages/desktop`                                                                                                                                                                                                                                                                                                             | 0                                            | [desktop-typecheck.log](m9-07/desktop-typecheck.log), `tsgo -b`.                                                                                                                                                                                           |
++| `bun run lint packages/desktop/src/main/panels-policy.ts packages/core/test/ftc-evaluation/m9-07.test.ts packages/core/test/ftc-adapters/action-boundary-probe.test.ts packages/core/test/ftc-adapters/fixtures/action-boundary/process.ts`, root                                                                                               | 0; 0 warnings, 0 errors                      | [lint.log](m9-07/lint.log).                                                                                                                                                                                                                                |
++| `bun run prettier --check packages/desktop/src/main/panels-policy.ts packages/core/test/ftc-evaluation/m9-07.test.ts packages/core/test/ftc-adapters/action-boundary-probe.test.ts packages/core/test/ftc-adapters/fixtures/action-boundary/process.ts docs/validation/robot-action-isolation.md docs/validation/M9-07-implementation.md`, root | 0                                            | [format.log](m9-07/format.log).                                                                                                                                                                                                                            |
++| `git diff --cached --check -- '*.ts' '*.md'`, root, task files only staged                                                                                                                                                                                                                                                                      | 0                                            | Source/document whitespace review before focused commit. Full check reports two trailing spaces in raw Bun diagnostic source excerpts in `default.log`; raw evidence is preserved unchanged.                                                               |
++
++Initial dependency-unavailable typecheck attempts exited 127 (`tsgo` missing). Both were rerun successfully after provisioning; the linked logs are final successful output. Initial lint found two warnings in new probe code; explicit `undefined` return and awaited server disposal resolved them. Initial format check found two files; Prettier corrected them. Final probe execution was repeated after those fixes.
++
++## Assertion inventory and evidence boundaries
++
++- Four static assertions: embedded view disabled, controls disabled, stable reason, frozen decision. No live Electron behavior claimed.
++- Two unrestricted loopback controls: each child must exit 0 and server must observe the exact HTTP or WS message (four assertions).
++- Restricted startup: child exit 0 and arithmetic output 42 (two assertions).
++- Two restricted loopback operations: no sandbox startup error, ready marker, protocol-specific denial, nonzero exit, no received messages (ten assertions). These actually execute the macOS candidate profile, outside the agent harness restriction.
++- Real ADB absolute binary: exit 0 and version output (two assertions). This is a PATH-filtering counterexample, not USB/controller isolation.
++- Real offline Gradle 8.9 fixture: exit 0 and exact owned HTTP POST (two assertions). This is an unrestricted build counterexample, not a candidate-isolated FTC build.
++
++All endpoint traffic is to owned `127.0.0.1` fixtures. Network restrictions are tested as real OS behavior on this host. The fixture uses a harmless `probe` payload and acknowledgement, not a versioned real Panels command. No mocks or global resets replace a product module. Fixture tests cannot promote robot-action acceptance.
++
++## Remaining blockers and review concerns
++
++All mandatory unrun rows are individually recorded in [robot-action-isolation.md](robot-action-isolation.md#unresolved-mandatory-gates): Windows; physical USB/ADB/controller; real controller HTTP/WS and forwarding; isolated FTC/Gradle compatibility; extension/MCP hosts and descendants; real broker capability channels; embedded Electron/Panel controls and bridge; packaged support; physical action/approval/replay scenarios.
++
++The macOS profile's `deny iokit*` is **not validated** by the loopback tests. Its default-allow filesystem/process access does not demonstrate authority separation from a real broker. The candidate remains experimental; no production mechanism is selected. Existing generic Bash is still unrestricted and must not be used as an approved FTC execution path. The unused disabled policy is a prerequisite decision for M1-09/M9-08, not enforcement.
++
++Source review checked Bash's stated host-user authority, application tool registration and Electron window preferences. Those observations guided the probes; they do not substitute for real platform evidence. Parent/coordinator owns independent review, baseline comparison, shared progress and all later task scheduling. The M9-07 task must remain open even though the feasible automated subset passes.
+diff --git a/docs/validation/m9-07/core-typecheck.log b/docs/validation/m9-07/core-typecheck.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m9-07/core-typecheck.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/docs/validation/m9-07/default.log b/docs/validation/m9-07/default.log
+new file mode 100644
+index 000000000..10ac796ce
+--- /dev/null
++++ b/docs/validation/m9-07/default.log
+@@ -0,0 +1,47 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-evaluation/m9-07.test.ts:
++28 | }
++29 | 
++30 | // The endpoints and payloads are fixtures; children, sockets and OS restrictions are real.
++31 | async function probe(mode: "http" | "websocket", restricted: boolean, gradle?: string) {
++32 |   const received: string[] = []
++33 |   const server = Bun.serve({
++                          ^
++error: Failed to start server. Is port 0 in use?
++ syscall: "listen",
++   errno: 0,
++    code: "EADDRINUSE"
++
++      at probe (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/action-boundary-probe.test.ts:33:22)
++(fail) unrestricted absolute binary reaches owned HTTP broker despite filtered PATH [7.00ms]
++28 | }
++29 | 
++30 | // The endpoints and payloads are fixtures; children, sockets and OS restrictions are real.
++31 | async function probe(mode: "http" | "websocket", restricted: boolean, gradle?: string) {
++32 |   const received: string[] = []
++33 |   const server = Bun.serve({
++                          ^
++error: Failed to start server. Is port 0 in use?
++ syscall: "listen",
++   errno: 0,
++    code: "EADDRINUSE"
++
++      at probe (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/action-boundary-probe.test.ts:33:22)
++(fail) unrestricted process can send a dashboard-style WebSocket write [0.22ms]
++(skip) macOS candidate permits local development subprocess execution
++(skip) macOS candidate denies HTTP access to owned controller/broker fixture
++(skip) macOS candidate denies dashboard-style WebSocket writes
++(skip) real absolute ADB binary executes with filtered PATH (version only)
++(skip) real offline Gradle task reaches owned broker fixture without isolation
++(skip) NOT RUN: Windows process, USB, controller/broker and embedded dashboard isolation
++(skip) NOT RUN: macOS physical USB API and real controller HTTP/WebSocket denial
++(skip) NOT RUN: production extension/MCP descendants and broker capability isolation
++(skip) NOT RUN: real Electron embedded controls, preload/IPC, navigation and permissions
++(pass) M9-07 keeps unverified embedded dashboard and controls disabled [0.05ms]
++
++ 1 pass
++ 9 skip
++ 2 fail
++ 4 expect() calls
++Ran 12 tests across 1 file. [29.00ms]
+diff --git a/docs/validation/m9-07/desktop-typecheck.log b/docs/validation/m9-07/desktop-typecheck.log
+new file mode 100644
+index 000000000..526f7e8e5
+--- /dev/null
++++ b/docs/validation/m9-07/desktop-typecheck.log
+@@ -0,0 +1 @@
++$ tsgo -b
+diff --git a/docs/validation/m9-07/environment.log b/docs/validation/m9-07/environment.log
+new file mode 100644
+index 000000000..d32556066
+--- /dev/null
++++ b/docs/validation/m9-07/environment.log
+@@ -0,0 +1,13 @@
++ProductName:		macOS
++ProductVersion:		26.5.2
++BuildVersion:		25F84
++arm64
++1.3.14
++Android Debug Bridge version 1.0.41
++Version 35.0.1-11580240
++Installed as /Users/dylanxu/Library/Android/sdk/platform-tools/adb
++Running on Darwin 25.5.0 (arm64)
++openjdk version "17.0.15" 2025-04-15 LTS
++OpenJDK Runtime Environment Corretto-17.0.15.6.1 (build 17.0.15+6-LTS)
++OpenJDK 64-Bit Server VM Corretto-17.0.15.6.1 (build 17.0.15+6-LTS, mixed mode, sharing)
++441ce9be5b914aa12ed918629663195f32e97d03
+diff --git a/docs/validation/m9-07/format.log b/docs/validation/m9-07/format.log
+new file mode 100644
+index 000000000..4aa0d16e7
+--- /dev/null
++++ b/docs/validation/m9-07/format.log
+@@ -0,0 +1,2 @@
++Checking formatting...
++All matched files use Prettier code style!
+diff --git a/docs/validation/m9-07/lint.log b/docs/validation/m9-07/lint.log
+new file mode 100644
+index 000000000..11c066eb6
+--- /dev/null
++++ b/docs/validation/m9-07/lint.log
+@@ -0,0 +1,3 @@
++$ oxlint packages/desktop/src/main/panels-policy.ts "packages/core/test/ftc-evaluation/m9-07.test.ts" packages/core/test/ftc-adapters/action-boundary-probe.test.ts packages/core/test/ftc-adapters/fixtures/action-boundary/process.ts
++Found 0 warnings and 0 errors.
++Finished in 688ms on 4 files with 130 rules using 10 threads.
+diff --git a/docs/validation/m9-07/macos.log b/docs/validation/m9-07/macos.log
+new file mode 100644
+index 000000000..4d0abafb7
+--- /dev/null
++++ b/docs/validation/m9-07/macos.log
+@@ -0,0 +1,28 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-evaluation/m9-07.test.ts:
++{"mode":"http","restricted":false,"launcher":"absolute-bun","exit":0,"stdout":"probe_ready\n","stderr":"","received":["POST /broker"]}
++(pass) unrestricted absolute binary reaches owned HTTP broker despite filtered PATH [25.33ms]
++{"mode":"websocket","restricted":false,"launcher":"absolute-bun","exit":0,"stdout":"probe_ready\n","stderr":"","received":["probe"]}
++(pass) unrestricted process can send a dashboard-style WebSocket write [18.33ms]
++{"control":"sandbox-startup","exit":0,"stdout":"42\n","stderr":""}
++(pass) macOS candidate permits local development subprocess execution [25.63ms]
++{"mode":"http","restricted":true,"launcher":"absolute-bun","exit":1,"stdout":"probe_ready\n","stderr":"error: Was there a typo in the url or port?\n  path: \"http://127.0.0.1:52009/broker\",\n errno: 0,\n  code: \"FailedToOpenSocket\"\n\n\nBun v1.3.14 (macOS arm64)\n","received":[]}
++(pass) macOS candidate denies HTTP access to owned controller/broker fixture [34.76ms]
++{"mode":"websocket","restricted":true,"launcher":"absolute-bun","exit":1,"stdout":"probe_ready\n","stderr":"20 |       if (event.data === \"received\") resolve()\n21 |       else reject(new Error(\"unexpected_response\"))\n22 |     }\n23 |     socket.onerror = () => {\n24 |       clearTimeout(timeout)\n25 |       reject(new Error(\"websocket_denied\"))\n                      ^\nerror: websocket_denied\n      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/fixtures/action-boundary/process.ts:25:18)\n\nBun v1.3.14 (macOS arm64)\n","received":[]}
++(pass) macOS candidate denies dashboard-style WebSocket writes [28.02ms]
++{"control":"adb-version-only","exit":0,"stdout":"Android Debug Bridge version 1.0.41\nVersion 35.0.1-11580240\nInstalled as /Users/dylanxu/Library/Android/sdk/platform-tools/adb\nRunning on Darwin 25.5.0 (arm64)\n","stderr":""}
++(pass) real absolute ADB binary executes with filtered PATH (version only) [24.34ms]
++{"mode":"http","restricted":false,"launcher":"gradle","exit":0,"stdout":"\nWelcome to Gradle 8.9!\n\nHere are the highlights of this release:\n - Enhanced Error and Warning Messages\n - IDE Integration Improvements\n - Daemon JVM Information\n\nFor more details see https://docs.gradle.org/8.9/release-notes.html\n\nTo honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.9/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.\nDaemon will be stopped at the end of the build \n> Task :boundaryProbe\n\nBUILD SUCCESSFUL in 6s\n1 actionable task: 1 executed\n","stderr":"","received":["POST /broker"]}
++(pass) real offline Gradle task reaches owned broker fixture without isolation [6667.63ms]
++(skip) NOT RUN: Windows process, USB, controller/broker and embedded dashboard isolation
++(skip) NOT RUN: macOS physical USB API and real controller HTTP/WebSocket denial
++(skip) NOT RUN: production extension/MCP descendants and broker capability isolation
++(skip) NOT RUN: real Electron embedded controls, preload/IPC, navigation and permissions
++(pass) M9-07 keeps unverified embedded dashboard and controls disabled [0.16ms]
++
++ 8 pass
++ 4 skip
++ 0 fail
++ 24 expect() calls
++Ran 12 tests across 1 file. [6.84s]
+diff --git a/docs/validation/m9-07/red.log b/docs/validation/m9-07/red.log
+new file mode 100644
+index 000000000..712a840cf
+--- /dev/null
++++ b/docs/validation/m9-07/red.log
+@@ -0,0 +1,14 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-evaluation/m9-07.test.ts:
++
++# Unhandled error between tests
++-------------------------------
++error: Cannot find module '../../../desktop/src/main/panels-policy' from '/Users/dylanxu/coding_tree/packages/core/test/ftc-evaluation/m9-07.test.ts'
++-------------------------------
++
++
++ 0 pass
++ 1 fail
++ 1 error
++Ran 1 test across 1 file. [15.00ms]
+diff --git a/docs/validation/robot-action-isolation.md b/docs/validation/robot-action-isolation.md
+new file mode 100644
+index 000000000..7b5ede8b7
+--- /dev/null
++++ b/docs/validation/robot-action-isolation.md
+@@ -0,0 +1,77 @@
++# M9-07 robot action isolation evaluation
++
++Status: **BLOCKED — no production combination approved.** Date: 2026-10-06.
++
++Requirement coverage: ROB-07 directly; AI-04/PAN-01 boundary implications; ROB-02–ROB-06 and AC-10/AC-11 remain dependent on M9-08/M9-09 and physical observations. This evaluation does not complete any acceptance scenario.
++
++Source revision: `441ce9be5b914aa12ed918629663195f32e97d03` (documentation checkpoint; product baseline `d7aca195c0a47fadb0fc3788eefbe96f99ec68be`) plus the assigned M9-07 diff. See [implementation record](M9-07-implementation.md). No existing command, build, extension, transport or window path is changed or enabled.
++
++## Decision
++
++Do not expose agent-controlled FTC command/build/extension routes or embedded Panels controls until M9-08 can enforce a proven boundary. The new immutable `panelsPolicy` records `embedded: false`, `controls: false`, `reason: isolation_unverified`. It is **not wired into Electron** and is not evidence that an existing view is blocked. M1-09/M9-08 must consume/enforce the decision before creating any dashboard view. Existing OpenCode Bash retains its host-user authority; it is not approved for the FTC execution boundary by this evaluation.
++
++A macOS experimental profile denies the tested loopback HTTP/WebSocket operations while permitting a simple Bun subprocess. It is not selected as a supported production mechanism. Its default-allow filesystem/process policy, untested broker capability transport, USB access, descendants and development compatibility leave important authority channels unresolved. Windows has no evidence. PATH filtering is rejected as isolation: actual absolute executables and an actual offline Gradle task reached the owned loopback fixtures.
++
++## Environment and prerequisites
++
++[Environment output](m9-07/environment.log): macOS 26.5.2 build 25F84, arm64; Bun 1.3.14 (`0d9b296a`); Android Debug Bridge 1.0.41 / platform tools 35.0.1-11580240; Amazon Corretto OpenJDK 17.0.15. Actual cached Gradle 8.9 was executed. `sandbox-exec` is the `/usr/bin` binary on this host; its profile is recorded below. Electron 42.3.3 is declared by the package, **not executed or validated here**. No FTC SDK, Panels revision, controller, controller transport or APK is claimed tested.
++
++Required assets for full evaluation: supported macOS and Windows hosts; pinned executable isolation mechanism and packaged launchers; real ADB and USB API probe with an authorized target; FTC/Android Gradle project and offline caches; production extension/MCP hosts and descendants; protected M9 broker with real IPC/capability transport; Electron embedded Panels view and versioned protocol; permitted physical Control Hub/phone and USB/Wi-Fi connections. Missing prerequisites below are NOT RUN, never passed by substitution.
++
++The evaluation uses Bun's built-in test runner and owned ephemeral `127.0.0.1` HTTP/WebSocket servers. Each subprocess receives a deliberately minimal environment and `PATH=/usr/bin:/bin`. It never executes ADB install/start/connect or contacts a real controller. The Gradle task writes only a temporary local project/cache and performs one fixture HTTP POST, then cleanup removes that directory. Gradle reports a single-use daemon even with `--no-daemon`; no repository/team Gradle code is run.
++
++## Reproduce
++
++From `packages/core`, with the following existing assets (adjust absolute asset paths to the evaluated installation and record new versions):
++
++```sh
++export PATH=/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64:$PATH
++export M9_SANDBOX_EXEC=1
++export M9_ADB=/Users/dylanxu/Library/Android/sdk/platform-tools/adb
++export M9_GRADLE=/Users/dylanxu/.gradle/wrapper/dists/gradle-8.9-bin/90cnw93cvbtalezasaz0blq0a/gradle-8.9/bin/gradle
++export M9_JAVA_HOME=/Users/dylanxu/Library/Java/JavaVirtualMachines/corretto-17.0.15/Contents/Home
++bun test ./test/ftc-evaluation/m9-07.test.ts
++```
++
++Run outside the agent harness sandbox with authorization for local fixture listeners and child processes. The harness sandbox is not product isolation. Initial harness-contained execution could not bind the fixture listener ([output](m9-07/default.log)); an initial standalone `sandbox-exec ... /usr/bin/true` also returned `sandbox_apply: Operation not permitted`. The identical harmless sandbox startup probe outside the harness exited 0. Neither initial failure is counted as a product deny result.
++
++Candidate profile passed to each restricted child:
++
++```scheme
++(version 1)(allow default)(deny network*)(deny iokit*)
++```
++
++The unrestricted control must reach the owned server. Restricted HTTP/WebSocket probes must show `probe_ready`, a protocol-specific failure, nonzero exit and **zero received messages**; a `sandbox_apply` failure cannot pass. A separate restricted arithmetic subprocess must start successfully. No endpoint denial is inferred solely from a nonzero exit.
++
++With optional environment variables absent, asset-dependent tests skip visibly; only local loopback controls and the disabled-policy assertion run. An unqualified green test run cannot establish supported isolation. The `action-boundary-probe.test.ts` adapter is also imported by the required evaluation entry point; the real process/socket assertions are not replaced with mocks.
++
++## Recorded results
++
++[Final host output](m9-07/macos.log): exit 0, **8 pass, 4 explicit NOT RUN skips, 0 fail, 24 assertions**, 12 tests in 1 entry point. Child processes and sockets are actual OS operations; controller/broker endpoints and the Gradle project are fixtures.
++
++| Probe                                         | Actual observation                                                              | Evidence class / conclusion                                                                                                     |
++| --------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
++| Absolute Bun path, filtered PATH, HTTP POST   | Child exit 0; owned broker fixture received exactly `POST /broker`              | Actual process/network; fixture broker. PATH is insufficient.                                                                   |
++| Dashboard-style WebSocket write, unrestricted | Child exit 0; owned socket received `probe` and acknowledged                    | Actual process/network; fixture message, not real Panels.                                                                       |
++| Restricted Bun arithmetic startup             | Exit 0; stdout `42`                                                             | Actual macOS profile launch. Only this simple development subprocess is shown compatible.                                       |
++| Restricted HTTP POST                          | Child reached `probe_ready`, `FailedToOpenSocket`, exit 1; zero server requests | Actual macOS restriction against local fixture only.                                                                            |
++| Restricted WebSocket write                    | Child reached `probe_ready`, `websocket_denied`, exit 1; zero server messages   | Actual macOS restriction against local fixture only.                                                                            |
++| Absolute real ADB binary with filtered PATH   | `adb version` exit 0, version 35.0.1-11580240                                   | Actual binary execution only; NOT a test of controller or ADB-server isolation.                                                 |
++| Real Gradle 8.9 offline task, unrestricted    | Build succeeded; fixture broker received `POST /broker`                         | Actual JVM/build execution, generated fixture project. Offline dependency mode does not isolate robot/broker network authority. |
++| Disabled immutable dashboard policy           | Four assertions pass                                                            | Static decision only; not Electron enforcement.                                                                                 |
++
++## Unresolved mandatory gates
++
++| Gate                                                                                         | Status and missing evidence                                                                                                                                                                                                                                       |
++| -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
++| Windows processes / ADB / USB / network / broker / Gradle / extensions / dashboard           | **NOT RUN** — no configured Windows execution host.                                                                                                                                                                                                               |
++| macOS direct USB APIs and real ADB server / physical controller                              | **NOT RUN** — no authorized physical control fixture. `deny iokit*` is unproven; ADB version does not test USB. No controller actions were authorized or executed.                                                                                                |
++| Real controller HTTP/WebSockets and port forwarding                                          | **NOT RUN** — loopback protocol fixtures are not controller/transport validation.                                                                                                                                                                                 |
++| Isolated Gradle/Android/FTC development compatibility                                        | **NOT RUN** — unrestricted fixture task ran; candidate-restricted real FTC build and JDK/Gradle daemon/cache behavior remain unverified.                                                                                                                          |
++| Production extension/MCP hosts, inherited handles, descendants and escape attempts           | **NOT RUN** — no production adapters were composed. Generic subprocess evidence is not extension/MCP coverage.                                                                                                                                                    |
++| Broker capability isolation                                                                  | **NOT RUN** — fixture HTTP listener has no real authentication/capability adapter. File-readable capabilities, Unix sockets, named pipes, Mach IPC, inherited handles and in-process privileges are not evaluated.                                                |
++| Embedded controls and privileged bridge                                                      | **NOT RUN** — no Electron view was constructed. Real HTTP/WS write mediation, preload/IPC absence, navigation, redirects, frames, permissions, WebUSB and lifecycle still need proof. A view sandbox or disabled UI does not itself prevent robot-network writes. |
++| Required packaged macOS/Windows support                                                      | **NOT RUN** — packaging, signing, platform stability and mechanism availability not established.                                                                                                                                                                  |
++| Physical AC-10/AC-11 target/generation/build binding, contention, lost replies and no replay | **NOT RUN** — belongs to composed/physical M9-08/M9-09 work; no source/fixture test promotes these gates.                                                                                                                                                         |
++
++M9-07 remains open. No production platform or controller combination is promoted. Full module behavior for M9-01–M9-06 is outside this evaluation; none is implicitly implemented by the fixture broker.
+diff --git a/packages/core/test/ftc-adapters/action-boundary-probe.test.ts b/packages/core/test/ftc-adapters/action-boundary-probe.test.ts
+new file mode 100644
+index 000000000..b05030cad
+--- /dev/null
++++ b/packages/core/test/ftc-adapters/action-boundary-probe.test.ts
+@@ -0,0 +1,115 @@
++import { expect, test } from "bun:test"
++import { mkdtemp, rm } from "node:fs/promises"
++import { tmpdir } from "node:os"
++import path from "node:path"
++
++const fixture = path.join(import.meta.dir, "fixtures/action-boundary/process.ts")
++const profile = "(version 1)(allow default)(deny network*)(deny iokit*)"
++const sandbox = process.platform === "darwin" && process.env.M9_SANDBOX_EXEC === "1"
++
++async function run(command: string[], restricted = false, env: Record<string, string> = {}) {
++  const child = Bun.spawn(restricted ? ["/usr/bin/sandbox-exec", "-p", profile, ...command] : command, {
++    env: { PATH: "/usr/bin:/bin", ...env },
++    stdout: "pipe",
++    stderr: "pipe",
++  })
++  const timeout = setTimeout(() => child.kill(), 15000)
++  try {
++    const [exit, stdout, stderr] = await Promise.all([
++      child.exited,
++      new Response(child.stdout).text(),
++      new Response(child.stderr).text(),
++    ])
++    return { exit, stdout, stderr }
++  } finally {
++    clearTimeout(timeout)
++    child.kill()
++  }
++}
++
++// The endpoints and payloads are fixtures; children, sockets and OS restrictions are real.
++async function probe(mode: "http" | "websocket", restricted: boolean, gradle?: string) {
++  const received: string[] = []
++  const server = Bun.serve({
++    hostname: "127.0.0.1",
++    port: 0,
++    fetch(request, server) {
++      if (server.upgrade(request)) return undefined
++      received.push(`${request.method} ${new URL(request.url).pathname}`)
++      return new Response(null, { status: 204 })
++    },
++    websocket: {
++      message(socket, message) {
++        received.push(String(message))
++        socket.send("received")
++      },
++    },
++  })
++  const directory = await mkdtemp(path.join(tmpdir(), "m9-07-"))
++  try {
++    const endpoint = `${mode === "http" ? "http" : "ws"}://127.0.0.1:${server.port}/broker`
++    const command = gradle
++      ? [gradle, "--offline", "--no-daemon", "--console=plain", "-g", directory, "-p", directory, "boundaryProbe"]
++      : [process.execPath, fixture, mode, endpoint]
++    if (gradle) {
++      await Bun.write(path.join(directory, "settings.gradle"), "rootProject.name = 'm9-07-probe'\n")
++      await Bun.write(
++        path.join(directory, "build.gradle"),
++        "tasks.register('boundaryProbe') { doLast { def c = new URI(System.getenv('M9_ENDPOINT')).toURL().openConnection(); c.requestMethod = 'POST'; c.connectTimeout = 2000; c.readTimeout = 2000; assert c.responseCode == 204 } }\n",
++      )
++    }
++    const result = await run(command, restricted, {
++      M9_ENDPOINT: endpoint,
++      ...(process.env.M9_JAVA_HOME ? { JAVA_HOME: process.env.M9_JAVA_HOME } : {}),
++    })
++    console.log(JSON.stringify({ mode, restricted, launcher: gradle ? "gradle" : "absolute-bun", ...result, received }))
++    if (!restricted) {
++      expect(result.exit).toBe(0)
++      expect(received).toEqual([mode === "http" ? "POST /broker" : "probe"])
++      return
++    }
++    // Reject failure to launch the sandbox: it is not evidence of a denied operation.
++    expect(result.stderr).not.toContain("sandbox_apply")
++    expect(result.stdout.trim()).toBe("probe_ready")
++    expect(result.stderr).toContain(mode === "http" ? "FailedToOpenSocket" : "websocket_denied")
++    expect(result.exit).not.toBe(0)
++    expect(received).toEqual([])
++  } finally {
++    await server.stop(true)
++    await rm(directory, { recursive: true, force: true })
++  }
++}
++
++test("unrestricted absolute binary reaches owned HTTP broker despite filtered PATH", () => probe("http", false))
++test("unrestricted process can send a dashboard-style WebSocket write", () => probe("websocket", false))
++
++test.skipIf(!sandbox)("macOS candidate permits local development subprocess execution", async () => {
++  const result = await run([process.execPath, "-e", "console.log(6 * 7)"], true)
++  console.log(JSON.stringify({ control: "sandbox-startup", ...result }))
++  expect(result.exit).toBe(0)
++  expect(result.stdout.trim()).toBe("42")
++})
++
++test.skipIf(!sandbox)("macOS candidate denies HTTP access to owned controller/broker fixture", () =>
++  probe("http", true),
++)
++test.skipIf(!sandbox)("macOS candidate denies dashboard-style WebSocket writes", () => probe("websocket", true))
++
++test.skipIf(!process.env.M9_ADB)("real absolute ADB binary executes with filtered PATH (version only)", async () => {
++  const result = await run([process.env.M9_ADB!, "version"])
++  console.log(JSON.stringify({ control: "adb-version-only", ...result }))
++  expect(result.exit).toBe(0)
++  expect(result.stdout).toContain("Android Debug Bridge version")
++})
++
++test.skipIf(!process.env.M9_GRADLE)(
++  "real offline Gradle task reaches owned broker fixture without isolation",
++  () => probe("http", false, process.env.M9_GRADLE),
++  30000,
++)
++
++// These release gates need separate assets/hosts. They must never become a fixture pass.
++test.skip("NOT RUN: Windows process, USB, controller/broker and embedded dashboard isolation", () => {})
++test.skip("NOT RUN: macOS physical USB API and real controller HTTP/WebSocket denial", () => {})
++test.skip("NOT RUN: production extension/MCP descendants and broker capability isolation", () => {})
++test.skip("NOT RUN: real Electron embedded controls, preload/IPC, navigation and permissions", () => {})
+diff --git a/packages/core/test/ftc-adapters/fixtures/action-boundary/process.ts b/packages/core/test/ftc-adapters/fixtures/action-boundary/process.ts
+new file mode 100644
+index 000000000..2af008e8c
+--- /dev/null
++++ b/packages/core/test/ftc-adapters/fixtures/action-boundary/process.ts
+@@ -0,0 +1,28 @@
++// Only owned loopback endpoints are permitted, including in unrestricted controls.
++const endpoint = new URL(process.argv[3])
++if (endpoint.hostname !== "127.0.0.1") throw new Error("loopback_required")
++console.log("probe_ready")
++if (process.argv[2] === "http") {
++  const response = await fetch(endpoint, { method: "POST", body: "probe", signal: AbortSignal.timeout(2000) })
++  if (response.status !== 204) throw new Error("unexpected_response")
++}
++if (process.argv[2] === "websocket") {
++  await new Promise<void>((resolve, reject) => {
++    const socket = new WebSocket(endpoint)
++    const timeout = setTimeout(() => {
++      socket.close()
++      reject(new Error("probe_timeout"))
++    }, 2000)
++    socket.onopen = () => socket.send("probe")
++    socket.onmessage = (event) => {
++      clearTimeout(timeout)
++      socket.close()
++      if (event.data === "received") resolve()
++      else reject(new Error("unexpected_response"))
++    }
++    socket.onerror = () => {
++      clearTimeout(timeout)
++      reject(new Error("websocket_denied"))
++    }
++  })
++}
+diff --git a/packages/core/test/ftc-evaluation/m9-07.test.ts b/packages/core/test/ftc-evaluation/m9-07.test.ts
+new file mode 100644
+index 000000000..c78eb158a
+--- /dev/null
++++ b/packages/core/test/ftc-evaluation/m9-07.test.ts
+@@ -0,0 +1,13 @@
++import { expect, test } from "bun:test"
++import { panelsPolicy } from "../../../desktop/src/main/panels-policy"
++
++// A disabled policy is an evaluation decision, not evidence of Electron enforcement.
++test("M9-07 keeps unverified embedded dashboard and controls disabled", () => {
++  expect(panelsPolicy.embedded).toBe(false)
++  expect(panelsPolicy.controls).toBe(false)
++  expect(panelsPolicy.reason).toBe("isolation_unverified")
++  expect(Object.isFrozen(panelsPolicy)).toBe(true)
++})
++
++// Include the real local process probes in the required evaluation entry point.
++import "../ftc-adapters/action-boundary-probe.test"
+diff --git a/packages/desktop/src/main/panels-policy.ts b/packages/desktop/src/main/panels-policy.ts
+new file mode 100644
+index 000000000..e1f4c41c0
+--- /dev/null
++++ b/packages/desktop/src/main/panels-policy.ts
+@@ -0,0 +1,7 @@
++// M9-07 evaluation decision only. M1-09/M9-08 must enforce this before creating a view.
++// No platform has complete controller, broker and embedded-control isolation evidence.
++export const panelsPolicy = Object.freeze({
++  embedded: false,
++  controls: false,
++  reason: "isolation_unverified",
++} as const)

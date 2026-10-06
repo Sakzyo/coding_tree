@@ -1,0 +1,7 @@
+Full original Bun output is losslessly retained in baseline-schema.log.gz.
+Baseline revision d7aca195c; no Schema changes.
+
+FAIL public event manifest > owns the complete public event surface (test/event-manifest.test.ts:12): expected 55, received 58.
+FAIL public event manifest > uses canonical definitions for current public events (test/event-manifest.test.ts:45): fixed slice differs.
+
+13 pass, 2 fail, 42 assertions, 15 tests across 6 files; exit 1.

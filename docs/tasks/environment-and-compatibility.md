@@ -51,7 +51,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 ## Task checklist
 
-- [ ] [M4-01 — Validate compatibility profiles](#m4-01)
+- [x] [M4-01 — Validate compatibility profiles](#m4-01)
 - [ ] [M4-02 — Inspect tools and imported project requirements](#m4-02)
 - [ ] [M4-03 — Guide setup through readiness checks](#m4-03)
 - [ ] [M4-04 — Download and prepare one missing prerequisite](#m4-04)
@@ -71,16 +71,18 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 **Interfaces:** Produces `resolveProfile({ host, projectVersions, catalog }): { kind: 'matched', profile } | { kind: 'unsupported', reasons }`; host contains OS, architecture and available resources.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts`, add `profile pins independent editor and build runtimes`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts`, add `profile pins independent editor and build runtimes`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(selected.editorJdk.version).toBe('21'); expect(selected.buildJdk.version).toBe('17'); expect(unsupported.kind).toBe('unsupported')
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/environment-and-compatibility/m4-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Use clearly labelled synthetic test profiles (21/17 are fixture values, not released FTC support claims). Encode coherent combinations, source/license/checksum metadata and evaluation status; never choose independently latest dependencies.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/environment-and-compatibility/m4-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): validate compatibility profiles`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/environment-and-compatibility/m4-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Use clearly labelled synthetic test profiles (21/17 are fixture values, not released FTC support claims). Encode coherent combinations, source/license/checksum metadata and evaluation status; never choose independently latest dependencies.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/environment-and-compatibility/m4-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): validate compatibility profiles`.
+
+Verified 2026-10-06 at `f7d2a93eabae724f29875a29840b000cee8749fb`: [implementation evidence](../validation/M4-01-implementation.md), [independent review](../validation/M4-01-review.md).
 
 <a id="m4-02"></a>
 

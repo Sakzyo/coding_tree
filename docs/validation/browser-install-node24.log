@@ -1,0 +1,57 @@
+Removing unused browser at /private/tmp/ftc-playwright/chromium-1217
+2026-10-06T05:29:18.514Z pw:install downloading Chrome Headless Shell 147.0.7727.15 (playwright chromium-headless-shell v1217) - attempt #1
+Downloading Chrome Headless Shell 147.0.7727.15 (playwright chromium-headless-shell v1217)[2m from https://cdn.playwright.dev/builds/cft/147.0.7727.15/mac-arm64/chrome-headless-shell-mac-arm64.zip[22m
+2026-10-06T05:29:18.518Z pw:install running download:
+2026-10-06T05:29:18.518Z pw:install -- from url: https://cdn.playwright.dev/builds/cft/147.0.7727.15/mac-arm64/chrome-headless-shell-mac-arm64.zip
+2026-10-06T05:29:18.518Z pw:install -- to location: /var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/playwright-download-pyICjZ/playwright-download-chromium-headless-shell-mac15-arm64-1217.zip
+2026-10-06T05:29:22.678Z pw:install -- response status code: 200
+2026-10-06T05:29:22.678Z pw:install -- is chunked: false
+2026-10-06T05:29:22.678Z pw:install -- total bytes: 96491915
+|                                                                                |   0% of 92 MiB
+|■■■■■■■■                                                                        |  10% of 92 MiB
+|■■■■■■■■■■■■■■■■                                                                |  20% of 92 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 92 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 92 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 92 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 92 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 92 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 92 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 92 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 92 MiB
+2026-10-06T05:30:02.541Z pw:install -- download complete, size: 96491915
+2026-10-06T05:30:02.541Z pw:install SUCCESS downloading Chrome Headless Shell 147.0.7727.15 (playwright chromium-headless-shell v1217)
+2026-10-06T05:30:02.541Z pw:install removing existing browser directory if any
+2026-10-06T05:30:02.542Z pw:install extracting archive
+2026-10-06T05:30:03.690Z pw:install fixing permissions at /private/tmp/ftc-playwright/chromium_headless_shell-1217/chrome-headless-shell-mac-arm64/chrome-headless-shell
+2026-10-06T05:30:03.695Z pw:install SUCCESS installing Chrome Headless Shell 147.0.7727.15 (playwright chromium-headless-shell v1217)
+Chrome Headless Shell 147.0.7727.15 (playwright chromium-headless-shell v1217) downloaded to /private/tmp/ftc-playwright/chromium_headless_shell-1217
+2026-10-06T05:30:03.700Z pw:install downloading FFmpeg (playwright ffmpeg v1011) - attempt #1
+Downloading FFmpeg (playwright ffmpeg v1011)[2m from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-mac-arm64.zip[22m
+2026-10-06T05:30:03.701Z pw:install running download:
+2026-10-06T05:30:03.701Z pw:install -- from url: https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-mac-arm64.zip
+2026-10-06T05:30:03.701Z pw:install -- to location: /var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/playwright-download-sMhLe5/playwright-download-ffmpeg-mac15-arm64-1011.zip
+2026-10-06T05:30:07.922Z pw:install -- response status code: 200
+2026-10-06T05:30:07.922Z pw:install -- is chunked: false
+2026-10-06T05:30:07.922Z pw:install -- total bytes: 1097141
+|                                                                                |   1% of 1 MiB
+|■■■■■■■■                                                                        |  10% of 1 MiB
+|■■■■■■■■■■■■■■■■                                                                |  21% of 1 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 1 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 1 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 1 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 1 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  71% of 1 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 1 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 1 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 1 MiB
+2026-10-06T05:30:09.054Z pw:install -- download complete, size: 1097141
+2026-10-06T05:30:09.054Z pw:install SUCCESS downloading FFmpeg (playwright ffmpeg v1011)
+2026-10-06T05:30:09.054Z pw:install removing existing browser directory if any
+2026-10-06T05:30:09.055Z pw:install extracting archive
+2026-10-06T05:30:09.083Z pw:install fixing permissions at /private/tmp/ftc-playwright/ffmpeg-1011/ffmpeg-mac
+2026-10-06T05:30:09.087Z pw:install SUCCESS installing FFmpeg (playwright ffmpeg v1011)
+FFmpeg (playwright ffmpeg v1011) downloaded to /private/tmp/ftc-playwright/ffmpeg-1011
+2026-10-06T05:30:09.088Z pw:install validating host requirements for "chromium-headless-shell"
+2026-10-06T05:30:09.089Z pw:install validation passed for chromium-headless-shell
+2026-10-06T05:30:09.089Z pw:install validating host requirements for "ffmpeg"
+2026-10-06T05:30:09.089Z pw:install validation passed for ffmpeg
