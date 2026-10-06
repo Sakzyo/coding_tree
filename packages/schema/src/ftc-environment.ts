@@ -141,6 +141,8 @@ export const ProbeRequest = Schema.Struct({
   host: Host,
   project: InspectionProject,
   expectedVersion: optional(Version),
+  // A read-only staged probe; host adapters must not discover a different installed tool.
+  path: optional(LocalPath),
 }).annotate({ identifier: "FtcEnvironment.ProbeRequest" })
 
 export type ProbeResult = typeof ProbeResult.Type
@@ -193,6 +195,10 @@ export const ReadinessStep = Schema.Struct({
     "build_unverified",
     "build_failed",
     "build_stale",
+    "license_required",
+    "download_failed",
+    "checksum_mismatch",
+    "preparation_failed",
   ]),
   recovery: Schema.Literals([
     "reuse",
@@ -218,10 +224,48 @@ export const Readiness = Schema.Struct({
 
 export interface PrepareRequest extends Schema.Schema.Type<typeof PrepareRequest> {}
 export const PrepareRequest = Schema.Struct({
-  choice: Schema.Literal("guided"),
+  choice: Schema.Literals(["guided", "automatic"]),
   profileID: Text,
   projectID: Project.ID.check(Schema.isMinLength(1), Schema.isTrimmed()),
 }).annotate({ identifier: "FtcEnvironment.PrepareRequest" })
+
+export interface PreparationRequest extends Schema.Schema.Type<typeof PreparationRequest> {}
+export const PreparationRequest = Schema.Struct({
+  projectID: Project.ID.check(Schema.isMinLength(1), Schema.isTrimmed()),
+  profileID: Text,
+  component: ToolComponent,
+  artifact: Artifact,
+  host: Host,
+}).annotate({ identifier: "FtcEnvironment.PreparationRequest" })
+
+// Trusted host approval evidence, never an agent/public prepare request field.
+export interface PreparationAuthorization extends Schema.Schema.Type<typeof PreparationAuthorization> {}
+export const PreparationAuthorization = Schema.Struct({
+  projectID: Project.ID.check(Schema.isMinLength(1), Schema.isTrimmed()),
+  profileID: Text,
+  component: ToolComponent,
+  artifact: Artifact,
+  licenseAccepted: Schema.Boolean,
+  systemPermissionGranted: Schema.Boolean,
+}).annotate({ identifier: "FtcEnvironment.PreparationAuthorization" })
+
+export interface PreparedAsset extends Schema.Schema.Type<typeof PreparedAsset> {}
+export const PreparedAsset = Schema.Struct({
+  archivePath: LocalPath,
+  path: LocalPath,
+}).annotate({ identifier: "FtcEnvironment.PreparedAsset" })
+
+export interface PreparationError extends Schema.Schema.Type<typeof PreparationError> {}
+export const PreparationError = Schema.Struct({
+  code: Schema.Literals([
+    "license_required",
+    "permission_denied",
+    "download_failed",
+    "checksum_mismatch",
+    "preparation_failed",
+    "invalid_response",
+  ]),
+}).annotate({ identifier: "FtcEnvironment.PreparationError" })
 
 export interface ReadinessRequest extends Schema.Schema.Type<typeof ReadinessRequest> {}
 export const ReadinessRequest = Schema.Struct({

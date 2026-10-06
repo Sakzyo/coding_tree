@@ -1,0 +1,8 @@
+$ tsgo --noEmit
+test/ftc/environment-and-compatibility/m4-04.test.ts(592,9): error TS2322: Type 'Effect<never, never, Scope>' is not assignable to type 'Effect<NonSharedUint8Array, { code: "download_failed"; }, never>'.
+  Type 'Scope' is not assignable to type 'never'.
+test/ftc/environment-and-compatibility/m4-04.test.ts(636,13): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '{ projectID: string & Brand<"Project.ID">; profileID: string; component: string; artifact: { version: string; source: string; license: string; sha256: string; }; licenseAccepted: boolean; systemPermissionGranted: boolean; }' is not assignable to parameter of type '{ readonly projectID: string & Brand<"Project.ID">; readonly profileID: string; readonly component: "adb" | "androidSdk" | "buildJdk" | "editorJdk" | "gradleWrapper"; readonly artifact: { ...; }; readonly licenseAccepted: boolean; readonly systemPermissionGranted: boolean; }'.
+      Types of property 'component' are incompatible.
+        Type 'string' is not assignable to type '"adb" | "androidSdk" | "buildJdk" | "editorJdk" | "gradleWrapper"'.

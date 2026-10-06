@@ -1,0 +1,104 @@
+
+  ! typescript-eslint(consistent-return): Function expected a return value.
+     ,-[packages/core/test/ftc/environment-and-compatibility/m4-04.test.ts:162:22]
+ 161 |             commit: (input: Preparation, asset: Asset) =>
+ 162 | ,->           Effect.gen(function* () {
+ 163 | |               if (state.failCommit) return yield* Effect.fail({ code: "preparation_failed" as const })
+ 164 | |               const destination = join(root, input.component)
+ 165 | |               yield* Effect.promise(() => rename(dirname(asset.path), destination))
+ 166 | |               completed.set(input.component, {
+ 167 | |                 archivePath: join(destination, "archive"),
+ 168 | |                 path: join(destination, "tool"),
+ 169 | |               })
+ 170 | |               commits.push(input.component)
+ 171 | `->           }),
+ 172 |           },
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/environment-and-compatibility/m4-04.test.ts:311:76]
+ 310 |       expect(supplied.cleanups).toHaveLength(2)
+ 311 |       expect(yield* Effect.promise(() => Bun.file(join(supplied.cleanups[1]!, "archive")).exists())).toBe(false)
+     :                                                        ^^^^^^^^^^|^^^^^^^^^^
+     :                                                                  `-- This expression already has the type 'string'
+ 312 |       supplied.state.holdStage = false
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/environment-and-compatibility/m4-04.test.ts:356:52]
+ 355 |     expect(supplied.cleanups).toHaveLength(1)
+ 356 |     expect(await Bun.file(join(supplied.cleanups[0]!, "archive")).exists()).toBe(false)
+     :                                ^^^^^^^^^^|^^^^^^^^^^
+     :                                          `-- This expression already has the type 'string'
+ 357 |     expect(Exit.isFailure(await Effect.runPromise(Effect.exit(saved.service.prepareEnvironment(request))))).toBe(true)
+     `----
+
+  ! typescript-eslint(consistent-return): Function expected a return value.
+     ,-[packages/core/src/ftc/environment.ts:662:16]
+ 661 |       return Effect.scoped(
+ 662 | ,->     Effect.gen(function* () {
+ 663 | |         const authorization = Schema.decodeUnknownOption(FtcEnvironment.PreparationAuthorization, {
+ 664 | |           onExcessProperty: "error",
+ 665 | |         })(yield* ports.authorization.read(request))
+ 666 | |         if (Option.isNone(authorization)) return yield* Effect.fail({ code: "invalid_response" as const })
+ 667 | |         const approved = authorization.value
+ 668 | |         if (
+ 669 | |           approved.projectID !== request.projectID ||
+ 670 | |           approved.profileID !== request.profileID ||
+ 671 | |           approved.component !== request.component ||
+ 672 | |           (["source", "version", "license", "sha256"] as const).some(
+ 673 | |             (key) => approved.artifact[key] !== request.artifact[key],
+ 674 | |           )
+ 675 | |         )
+ 676 | |           return yield* Effect.fail({ code: "invalid_response" as const })
+ 677 | |         if (!approved.licenseAccepted) return yield* Effect.fail({ code: "license_required" as const })
+ 678 | |         if (!approved.systemPermissionGranted) return yield* Effect.fail({ code: "permission_denied" as const })
+ 679 | |         const cached = yield* ports.cache.lookup(request)
+ 680 | |         const raw =
+ 681 | |           cached !== undefined
+ 682 | |             ? cached
+ 683 | |             : yield* Effect.gen(function* () {
+ 684 | |                 const bytes = yield* ports.download.fetch(request)
+ 685 | |                 if (new Bun.CryptoHasher("sha256").update(bytes).digest("hex") !== request.artifact.sha256.toLowerCase())
+ 686 | |                   return yield* Effect.fail({ code: "checksum_mismatch" as const })
+ 687 | |                 return yield* ports.cache.stage(request, bytes)
+ 688 | |               })
+ 689 | |         const decoded = Schema.decodeUnknownOption(FtcEnvironment.PreparedAsset, { onExcessProperty: "error" })(raw)
+ 690 | |         if (Option.isNone(decoded)) return yield* Effect.fail({ code: "invalid_response" as const })
+ 691 | |         const asset = decoded.value
+ 692 | |         const bytes = yield* Effect.tryPromise({
+ 693 | |           try: () => Bun.file(asset.archivePath).bytes(),
+ 694 | |           catch: () => ({ code: "preparation_failed" as const }),
+ 695 | |         })
+ 696 | |         if (new Bun.CryptoHasher("sha256").update(bytes).digest("hex") !== request.artifact.sha256.toLowerCase())
+ 697 | |           return yield* Effect.fail({ code: "checksum_mismatch" as const })
+ 698 | |         const exists = yield* Effect.tryPromise({
+ 699 | |           try: () => Bun.file(asset.path).exists(),
+ 700 | |           catch: () => ({ code: "preparation_failed" as const }),
+ 701 | |         })
+ 702 | |         if (!exists) return yield* Effect.fail({ code: "preparation_failed" as const })
+ 703 | |         const probe = Schema.decodeUnknownOption(FtcEnvironment.ProbeResult, { onExcessProperty: "error" })(
+ 704 | |           yield* probes
+ 705 | |             .inspect({
+ 706 | |               component: request.component,
+ 707 | |               host: request.host,
+ 708 | |               project,
+ 709 | |               expectedVersion: request.artifact.version,
+ 710 | |               path: asset.path,
+ 711 | |             })
+ 712 | |             .pipe(Effect.mapError(() => ({ code: "preparation_failed" as const }))),
+ 713 | |         )
+ 714 | |         if (
+ 715 | |           Option.isNone(probe) ||
+ 716 | |           probe.value.state !== "available" ||
+ 717 | |           probe.value.path !== asset.path ||
+ 718 | |           probe.value.version !== request.artifact.version
+ 719 | |         )
+ 720 | |           return yield* Effect.fail({ code: "preparation_failed" as const })
+ 721 | |         yield* ports.cache.commit(request, asset)
+ 722 | `->     }),
+ 723 |       ).pipe(
+     `----
+
+Found 4 warnings and 0 errors.
+Finished in 832ms on 4 files with 130 rules using 10 threads.

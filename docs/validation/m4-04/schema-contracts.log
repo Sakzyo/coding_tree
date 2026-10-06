@@ -1,0 +1,16 @@
+bun test v1.3.14 (0d9b296a)
+
+test/contract-hygiene.test.ts:
+(pass) contract hygiene > optional properties preserve transformations and omit undefined while encoding [2.85ms]
+(pass) contract hygiene > todo status and priority preserve arbitrary strings [0.08ms]
+(pass) contract hygiene > current ID constructors expose create [9.41ms]
+(pass) contract hygiene > reusable public identifiers are stable and unique [0.07ms]
+(pass) contract hygiene > current source avoids Any and mutable contract wrappers [3.86ms]
+
+test/compatibility.test.ts:
+(pass) schema compatibility > moved class schemas remain constructible [0.56ms]
+
+ 6 pass
+ 0 fail
+ 12 expect() calls
+Ran 6 tests across 2 files. [101.00ms]

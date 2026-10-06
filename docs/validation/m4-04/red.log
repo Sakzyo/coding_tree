@@ -1,0 +1,12 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/environment-and-compatibility/m4-04.test.ts:
+error
+{
+  code: "invalid_input",
+}
+(fail) retry preserves completed components [4.90ms]
+
+ 0 pass
+ 1 fail
+Ran 1 test across 1 file. [55.00ms]

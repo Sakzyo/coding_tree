@@ -1,0 +1,58 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/environment-and-compatibility/m4-04.test.ts:
+(pass) retry preserves completed components [17.39ms]
+(pass) corruptDownload never publishes partial assets [1.56ms]
+(pass) corruptStage never publishes partial assets [2.32ms]
+(pass) incompleteStage never publishes partial assets [1.24ms]
+(pass) wrongProbe never publishes partial assets [1.13ms]
+(pass) failDownload never publishes partial assets [0.69ms]
+(pass) failCommit never publishes partial assets [1.09ms]
+(pass) denyLicense blocks download and publication [1.69ms]
+(pass) denyPermission blocks download and publication [1.51ms]
+(pass) wrongAuthorization blocks download and publication [1.51ms]
+(pass) cancellation removes staged files and deliberate retry retains published components [3.14ms]
+(pass) one component per deliberate recheck and the shared build gate determines ready [5.28ms]
+(pass) disposal waits for staging cleanup, closes handles and prevents publication [2.31ms]
+(pass) automatic without supplied ports and public authorization/component overrides are rejected [0.74ms]
+298 |       ...supplied.ports,
+299 |       inspection: { ...supplied.ports.inspection, probes: { inspect: (input) => Effect.succeed(input.component === "gradleWrapper"
+300 |         ? { state: "missing" }
+301 |         : { state: "available", path: join(supplied.root, input.component), version: profile[input.component].version }) } },
+302 |     })), Effect.scoped))
+303 |     expect(result.readiness.steps.find((step) => step.id === "gradleWrapper")).toMatchObject({ state: "manual", recovery: "manual_setup" })
+                                                                                     ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "recovery": "manual_setup",
+-   "state": "manual",
++   "cause": "binary_missing",
++   "id": "gradleWrapper",
++   "recovery": "install",
++   "state": "missing",
+  }
+
+- Expected  - 2
++ Received  + 4
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-04.test.ts:303:80)
+(fail) automatic missing imported wrapper remains manual without download or replacement [1.06ms]
+330 |         }) },
+331 |         probes: { inspect: (input) => input.component === "buildJdk" ? supplied.ports.inspection.probes.inspect(input)
+332 |           : Effect.succeed({ state: "available", path: input.component === "gradleWrapper" ? join(context.project.root, "gradlew") : join(supplied.root, input.component), version: profile[input.component].version }) },
+333 |       },
+334 |     })), Effect.scoped))
+335 |     expect(result.readiness.state).not.toBe("ready")
+                                             ^
+error: expect(received).not.toBe(expected)
+
+Expected: not "ready"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-04.test.ts:335:40)
+(fail) a changed resolved profile after publication cannot become ready through the build gate [1.76ms]
+
+ 14 pass
+ 2 fail
+ 88 expect() calls
+Ran 16 tests across 1 file. [98.00ms]

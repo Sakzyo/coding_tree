@@ -1,0 +1,45 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/environment-and-compatibility/m4-04.test.ts:
+(pass) retry preserves completed components [16.43ms]
+(pass) corruptDownload never publishes partial assets [1.11ms]
+(pass) corruptStage never publishes partial assets [1.24ms]
+(pass) incompleteStage never publishes partial assets [1.08ms]
+(pass) wrongProbe never publishes partial assets [1.91ms]
+(pass) failDownload never publishes partial assets [0.69ms]
+(pass) failCommit never publishes partial assets [1.23ms]
+(pass) denyLicense blocks download and publication [1.65ms]
+(pass) denyPermission blocks download and publication [1.39ms]
+(pass) wrongAuthorization blocks download and publication [1.56ms]
+(pass) cancellation removes staged files and deliberate retry retains published components [3.15ms]
+(pass) one component per deliberate recheck and the shared build gate determines ready [4.87ms]
+(pass) disposal waits for staging cleanup, closes handles and prevents publication [2.04ms]
+(pass) automatic without supplied ports and public authorization/component overrides are rejected [0.77ms]
+298 |       ...supplied.ports,
+299 |       inspection: { ...supplied.ports.inspection, probes: { inspect: (input) => Effect.succeed(input.component === "gradleWrapper"
+300 |         ? { state: "missing" }
+301 |         : { state: "available", path: join(supplied.root, input.component), version: profile[input.component].version }) } },
+302 |     })), Effect.scoped))
+303 |     expect(result.readiness.steps.find((step) => step.id === "gradleWrapper")).toMatchObject({ state: "manual", recovery: "manual_setup" })
+                                                                                     ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "recovery": "manual_setup",
+-   "state": "manual",
++   "cause": "binary_missing",
++   "id": "gradleWrapper",
++   "recovery": "install",
++   "state": "missing",
+  }
+
+- Expected  - 2
++ Received  + 4
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-04.test.ts:303:80)
+(fail) automatic missing imported wrapper remains manual without download or replacement [0.94ms]
+
+ 14 pass
+ 1 fail
+ 87 expect() calls
+Ran 15 tests across 1 file. [101.00ms]

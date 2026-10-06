@@ -262,6 +262,7 @@ export interface SetupRun {
 
 export interface GuidedPorts {
   readonly inspection: EnvironmentAdapters.Ports
+  readonly automatic?: EnvironmentAdapters.Automatic
   readonly context: {
     readonly read: (
       input: FtcEnvironment.ReadinessRequest,
@@ -316,6 +317,8 @@ export const guidedLayer = (ports: GuidedPorts) =>
           )
           if (Option.isNone(decoded)) return yield* Effect.fail({ code: "invalid_input" as const })
           const request = decoded.value
+          if (request.choice === "automatic" && !ports.automatic)
+            return yield* Effect.fail({ code: "invalid_input" as const })
           const previous = runs.get(request.projectID)
           if (previous?.active) return yield* Effect.fail({ code: "busy" as const })
           if (previous) yield* previous.dispose
@@ -378,8 +381,15 @@ export const guidedLayer = (ports: GuidedPorts) =>
                     }
                   : inspected.readiness
               // Installation pins require a resolved choice and known imported requirements.
-              const readiness: FtcEnvironment.Readiness = profile
-                ? selected
+              const initial: FtcEnvironment.Readiness = profile
+                ? {
+                    ...selected,
+                    steps: selected.steps.map((step) =>
+                      request.choice === "automatic" && step.id === "gradleWrapper" && step.recovery === "install"
+                        ? { ...step, state: "manual", cause: "manual_required", recovery: "manual_setup" }
+                        : step,
+                    ),
+                  }
                 : {
                     ...selected,
                     steps: selected.steps.map((step) =>
@@ -393,7 +403,42 @@ export const guidedLayer = (ports: GuidedPorts) =>
                         : step,
                     ),
                   }
-              yield* observe(readiness, context, profile)
+              yield* observe(initial, context, profile)
+              const missing = initial.steps.find(
+                (step) => step.state === "missing" && step.recovery === "install" && step.id !== "gradleWrapper",
+              )
+              const component = missing
+                ? Schema.decodeUnknownOption(FtcEnvironment.ToolComponent)(missing.id)
+                : Option.none()
+              const prepared =
+                request.choice === "automatic" && ports.automatic && profile && Option.isSome(component)
+                  ? yield* prepareComponent(
+                      {
+                        projectID: request.projectID,
+                        profileID: profile.id,
+                        component: component.value,
+                        artifact: profile[component.value],
+                        host: context.inspection.host,
+                      },
+                      context.inspection.project,
+                      ports.automatic,
+                      ports.inspection.probes,
+                    ).pipe(Effect.match({ onFailure: (error) => ({ error }), onSuccess: () => ({ prepared: true }) }))
+                  : undefined
+              if (prepared && "error" in prepared && missing)
+                return failedSetup(missing.id, prepared.error.code, initial, context, profile)
+              const refreshed = prepared
+                ? yield* inspectEnvironmentResult(context.inspection, ports.inspection)
+                : undefined
+              if (refreshed && refreshed.profile?.id !== profile?.id)
+                return failedSetup(
+                  "project",
+                  "build_stale",
+                  { ...refreshed.readiness, candidateToolchain: undefined },
+                  context,
+                )
+              const readiness = refreshed?.readiness ?? initial
+              if (prepared) yield* observe(readiness, context, profile)
               if (!readiness.candidateToolchain) return state.result
               if (context.dirty) return failedSetup("build", "build_stale", readiness, context, profile)
               const buildRequest = {
@@ -581,21 +626,120 @@ function setupSteps(
 
 function failedSetup(
   id: FtcEnvironment.ReadinessStep["id"],
-  cause: "invalid_response" | "probe_failed" | "build_failed" | "build_stale",
+  cause: "invalid_response" | "probe_failed" | "build_failed" | "build_stale" | FtcEnvironment.PreparationError["code"],
   previous?: FtcEnvironment.Readiness,
   context?: FtcEnvironment.SetupContext,
   profile?: FtcEnvironment.Profile,
 ): FtcEnvironment.SetupResult {
   const readiness: FtcEnvironment.Readiness = {
-    state: "failed",
+    state: cause === "license_required" || cause === "permission_denied" ? "missing" : "failed",
     missingAssets: previous?.missingAssets ?? [],
     ...(previous?.candidateToolchain ? { candidateToolchain: previous.candidateToolchain } : {}),
     steps: [
       ...(previous?.steps.filter((step) => step.id !== id) ?? []),
-      { id, state: "failed", cause, recovery: id === "build" ? "verify_build" : "review_project" },
+      {
+        id,
+        state: cause === "license_required" || cause === "permission_denied" ? "manual" : "failed",
+        cause,
+        recovery:
+          id === "build"
+            ? "verify_build"
+            : cause === "permission_denied"
+              ? "grant_permission"
+              : cause === "license_required"
+                ? "manual_setup"
+                : cause === "download_failed" || cause === "checksum_mismatch" || cause === "preparation_failed"
+                  ? "install"
+                  : "review_project",
+      },
     ],
   }
   return { state: "completed", readiness, steps: setupSteps(readiness, context, profile) }
+}
+
+function prepareComponent(
+  request: FtcEnvironment.PreparationRequest,
+  project: FtcEnvironment.InspectionProject,
+  ports: EnvironmentAdapters.Automatic,
+  probes: EnvironmentAdapters.Probes,
+): Effect.Effect<void, FtcEnvironment.PreparationError> {
+  return Effect.scoped(
+    Effect.gen(function* () {
+      const authorization = Schema.decodeUnknownOption(FtcEnvironment.PreparationAuthorization, {
+        onExcessProperty: "error",
+      })(yield* ports.authorization.read(request))
+      if (Option.isNone(authorization)) return yield* Effect.fail({ code: "invalid_response" as const })
+      const approved = authorization.value
+      if (
+        approved.projectID !== request.projectID ||
+        approved.profileID !== request.profileID ||
+        approved.component !== request.component ||
+        (["source", "version", "license", "sha256"] as const).some(
+          (key) => approved.artifact[key] !== request.artifact[key],
+        )
+      )
+        return yield* Effect.fail({ code: "invalid_response" as const })
+      if (!approved.licenseAccepted) return yield* Effect.fail({ code: "license_required" as const })
+      if (!approved.systemPermissionGranted) return yield* Effect.fail({ code: "permission_denied" as const })
+      const cached = yield* ports.cache.lookup(request)
+      const raw =
+        cached !== undefined
+          ? cached
+          : yield* Effect.gen(function* () {
+              const bytes = yield* ports.download.fetch(request)
+              if (new Bun.CryptoHasher("sha256").update(bytes).digest("hex") !== request.artifact.sha256.toLowerCase())
+                return yield* Effect.fail({ code: "checksum_mismatch" as const })
+              return yield* ports.cache.stage(request, bytes)
+            })
+      const decoded = Schema.decodeUnknownOption(FtcEnvironment.PreparedAsset, { onExcessProperty: "error" })(raw)
+      if (Option.isNone(decoded)) return yield* Effect.fail({ code: "invalid_response" as const })
+      const asset = decoded.value
+      yield* Effect.gen(function* () {
+        const bytes = yield* Effect.tryPromise({
+          try: () => Bun.file(asset.archivePath).bytes(),
+          catch: () => ({ code: "preparation_failed" as const }),
+        })
+        if (new Bun.CryptoHasher("sha256").update(bytes).digest("hex") !== request.artifact.sha256.toLowerCase())
+          return yield* Effect.fail({ code: "checksum_mismatch" as const })
+        const exists = yield* Effect.tryPromise({
+          try: () => Bun.file(asset.path).exists(),
+          catch: () => ({ code: "preparation_failed" as const }),
+        })
+        if (!exists) return yield* Effect.fail({ code: "preparation_failed" as const })
+        const probe = Schema.decodeUnknownOption(FtcEnvironment.ProbeResult, { onExcessProperty: "error" })(
+          yield* probes
+            .inspect({
+              component: request.component,
+              host: request.host,
+              project,
+              expectedVersion: request.artifact.version,
+              path: asset.path,
+            })
+            .pipe(Effect.mapError(() => ({ code: "preparation_failed" as const }))),
+        )
+        if (
+          Option.isNone(probe) ||
+          probe.value.state !== "available" ||
+          probe.value.path !== asset.path ||
+          probe.value.version !== request.artifact.version
+        )
+          return yield* Effect.fail({ code: "preparation_failed" as const })
+        return undefined
+      }).pipe(Effect.tapError(() => (cached !== undefined ? ports.cache.discard(request, asset) : Effect.void)))
+      return yield* ports.cache.commit(request, asset)
+    }),
+  ).pipe(
+    Effect.catchCause((cause) =>
+      Cause.hasInterrupts(cause)
+        ? Effect.interrupt
+        : Effect.fail({
+            code: Cause.findErrorOption(cause).pipe(
+              Option.map((error) => error.code),
+              Option.getOrElse(() => "preparation_failed" as const),
+            ),
+          }),
+    ),
+  )
 }
 
 function sameToolchain(left: FtcEnvironment.ToolchainDescriptor, right: FtcEnvironment.ToolchainDescriptor) {

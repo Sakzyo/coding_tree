@@ -1,0 +1,38 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/environment-and-compatibility/m4-04.test.ts:
+512 |         ),
+513 |         Effect.scoped,
+514 |       ),
+515 |     )
+516 |     expect(result.readiness.state).not.toBe("ready")
+517 |     expect(result.readiness.candidateToolchain).toBeUndefined()
+                                                      ^
+error: expect(received).toBeUndefined()
+
+Received: {
+  profileID: "changed-profile",
+  buildJdk: "/private/tmp/ftc-m4-04-cache-ufDtjx/buildJdk/tool",
+  editorJdk: "/private/tmp/ftc-m4-04-cache-ufDtjx/editorJdk",
+  androidSdk: "/private/tmp/ftc-m4-04-cache-ufDtjx/androidSdk",
+  adb: "/private/tmp/ftc-m4-04-cache-ufDtjx/adb",
+  gradleWrapper: "/private/tmp/ftc-m4-04-cache-ufDtjx/project/gradlew",
+  versions: {
+    buildJdk: "17",
+    editorJdk: "21",
+    androidSdk: "fixture-android",
+    adb: "fixture-adb",
+    gradleWrapper: "fixture-gradle",
+    ftcSdk: "other-ftc",
+    androidGradlePlugin: "fixture-agp",
+  },
+}
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-04.test.ts:517:49)
+(fail) a changed resolved profile after publication cannot become ready through the build gate [11.24ms]
+
+ 0 pass
+ 29 filtered out
+ 1 fail
+ 2 expect() calls
+Ran 1 test across 1 file. [61.00ms]
