@@ -1,0 +1,62 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-01.test.ts:
+(pass) folder aliases reopen one project [26.36ms]
+(pass) distinct local roots retain distinct association IDs with host ID global [7.24ms]
+(pass) distinct local roots retain distinct association IDs with host ID shared-remote [7.06ms]
+(pass) concurrent independent connections associate one canonical root exactly once [48.08ms]
+(pass) unavailable folder and regular file fail without associations or project-file edits [9.81ms]
+(pass) denied access is propagated before persistence [12.25ms]
+(pass) interrupting folder resolution leaves no association and releases its scope [8.88ms]
+(pass) inconsistent or nonlocal folder identities fail before persistence [12.05ms]
+(pass) association contract reuses canonical schemas and encodes optional fields without undefined [0.41ms]
+(pass) SQLite write failure is recoverable and does not create a partial association [7.54ms]
+(pass) fresh independent database scopes do not inherit another repository's associations [9.03ms]
+(pass) reopen refreshes the explicit host mapping without changing canonical ownership [6.90ms]
+(pass) tracked upgrade preserves existing project data and supports a new association [16.61ms]
+
+test/ftc/projects-and-chats/m2-02.test.ts:
+(pass) reopen retains distinct chat Sessions [8.62ms]
+(pass) two roots with the same host ID keep separate chats and aliases restore membership [7.98ms]
+(pass) unknown association fails before Session creation and is not inherited by another database [7.72ms]
+(pass) create rejects directory Session mismatch without membership [5.00ms]
+(pass) create rejects host Session mismatch without membership [4.79ms]
+(pass) create rejects workspace Session mismatch without membership [6.49ms]
+(pass) create rejects lookup-id Session mismatch without membership [5.60ms]
+(pass) create rejects missing Session mismatch without membership [4.86ms]
+(pass) reopen rejects missing Session instead of returning a false association [7.37ms]
+(pass) reopen rejects placement Session instead of returning a false association [6.67ms]
+(pass) reopen rejects identity Session instead of returning a false association [5.73ms]
+(pass) concurrent separate connections cannot assign a Session to two chats [11.11ms]
+(pass) SQLite failure after Session creation retains the unassociated Session and retry creates a fresh chat [7.34ms]
+(pass) interruption during lookup releases the port and creates no membership [4.89ms]
+(pass) Session create failure does not become successful membership [5.54ms]
+(pass) Session lookup failure does not become successful membership [6.15ms]
+(pass) host mapping refresh during Session creation rejects stale membership [5.80ms]
+(pass) tracked chat migration preserves prior project association data and reopens membership [14.52ms]
+(pass) chat contracts keep canonical identities, strict ID prefix and optional omission [1.02ms]
+
+test/ftc/projects-and-chats/m2-03.test.ts:
+(pass) same project contends while another runs [0.73ms]
+(pass) concurrent different chats and duplicate project views have one canonical owner [0.41ms]
+(pass) concurrent same-chat claims survive one release and stale or mismatched releases [0.80ms]
+(pass) rejects chat membership without acquiring [0.22ms]
+(pass) rejects session membership without acquiring [0.09ms]
+(pass) rejects project membership without acquiring [0.07ms]
+(pass) rejects invalid membership without acquiring [0.11ms]
+(pass) rejects identity ProjectContext mapping [0.17ms]
+(pass) rejects directory ProjectContext mapping [0.08ms]
+(pass) rejects workspace ProjectContext mapping [0.07ms]
+(pass) interrupted membership lookup allocates no ownership [0.29ms]
+(pass) failure releases only bracketed caller's claim [0.36ms]
+(pass) cancel releases only bracketed caller's claim [0.11ms]
+(pass) independent scopes cannot release each other's claims and disposed gate rejects reuse [0.39ms]
+(pass) public project lookup validates association identity and preserves host identity [0.23ms]
+(pass) gate records validate serializable contracts and exact facade identities [0.33ms]
+(pass) scope disposal during validation rejects later acquisition [0.25ms]
+(pass) Session placement failure from validated membership port acquires nothing [0.14ms]
+
+ 50 pass
+ 0 fail
+ 169 expect() calls
+Ran 50 tests across 3 files. [393.00ms]

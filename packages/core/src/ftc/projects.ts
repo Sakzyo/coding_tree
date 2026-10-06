@@ -92,14 +92,7 @@ export const layer = (folders: FolderIdentity, repository: Repository, sessions:
         projectID: input.projectID,
         recovery: "reopen_project",
       } satisfies FtcProject.ChatError)
-    if (
-      !Schema.is(FtcProject.ProjectContext)(project) ||
-      !path.isAbsolute(project.canonicalRoot) ||
-      !path.isAbsolute(project.location.project.directory) ||
-      project.projectID !== input.projectID ||
-      project.location.directory !== project.canonicalRoot ||
-      project.location.workspaceID !== undefined
-    )
+    if (!validProjectContext(project, input))
       return yield* Effect.fail({
         code: "project_changed",
         projectID: input.projectID,
@@ -155,6 +148,17 @@ export const layer = (folders: FolderIdentity, repository: Repository, sessions:
       return chats
     }),
   })
+}
+
+export function validProjectContext(project: FtcProject.ProjectContext, input: FtcProject.ProjectRequest) {
+  return (
+    Schema.is(FtcProject.ProjectContext)(project) &&
+    path.isAbsolute(project.canonicalRoot) &&
+    path.isAbsolute(project.location.project.directory) &&
+    project.projectID === input.projectID &&
+    project.location.directory === project.canonicalRoot &&
+    project.location.workspaceID === undefined
+  )
 }
 
 function matches(project: FtcProject.ProjectContext, session: Session.Info) {

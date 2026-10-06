@@ -2,7 +2,6 @@ export * as ProjectGate from "./gate"
 
 import { Context, Effect, Layer, Schema, Scope } from "effect"
 import { randomUUID } from "node:crypto"
-import path from "node:path"
 import { FtcProject } from "@opencode-ai/schema/ftc-project"
 import { FtcProjects } from "../projects"
 
@@ -40,14 +39,7 @@ export const make = (projects: Projects): Effect.Effect<Interface, never, Scope.
     const resolve = Effect.fn("ProjectGate.resolve")(function* (input: FtcProject.ProjectRequest) {
       if (closed) return yield* Effect.fail({ code: "gate_closed", recovery: "retry" } satisfies FtcProject.GateError)
       const project = yield* projects.getProject(input)
-      if (
-        !Schema.is(FtcProject.ProjectContext)(project) ||
-        !path.isAbsolute(project.canonicalRoot) ||
-        !path.isAbsolute(project.location.project.directory) ||
-        project.projectID !== input.projectID ||
-        project.location.directory !== project.canonicalRoot ||
-        project.location.workspaceID !== undefined
-      )
+      if (!FtcProjects.validProjectContext(project, input))
         return yield* Effect.fail({
           code: "invalid_project",
           projectID: input.projectID,

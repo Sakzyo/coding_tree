@@ -1,0 +1,4 @@
+afca59caf9c60e3a6ff9d1f858548a7d680642a5969aaea422b647bb1616bdae  packages/core/src/ftc/projects/gate.ts
+9e7a3b75661324922ceecb9e2244ced3d6437103dca7312d0c01293f456e76f1  packages/core/src/ftc/projects.ts
+e1b06d1ac9e2311034756cc326a174d6f53f0e08871a7ecf5a35340b194722f5  packages/schema/src/ftc-project.ts
+a9255e6ae8439ee2827680e455b593dd92f39202ce4622eb6b549190b3eddaab  packages/core/test/ftc/projects-and-chats/m2-03.test.ts
