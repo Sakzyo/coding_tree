@@ -42,7 +42,7 @@ XDG_CONFIG_HOME=/private/tmp/m11-04/config
 XDG_CACHE_HOME=/private/tmp/m11-04/cache
 ```
 
-| Cwd             | Command (after environment prefix)                                                                                                                                                                       | Result / retained temporary log                                       |
+| Cwd             | Command (after environment prefix)                                                                                                                                                                       | Result / durable log                                       |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
 | packages/core   | bun test ./test/ftc/ftc-knowledge/m11-04.test.ts                                                                                                                                                         | RED 0/1/2, then final GREEN 4/0/108; red.log, green-focused-final.log |
 | packages/core   | bun test ./test/ftc/ftc-knowledge                                                                                                                                                                        | Final 89/0/398; green-covering-final.log                              |
@@ -155,3 +155,7 @@ Failed lookup metadata:
 Not run: compilation of the authored examples in a student's actual FTC project; actual SDK/toolchain/editor support on macOS and Windows; deployed build association; supervised configured-hardware INIT/START/STOP and input/encoder/telemetry observations; physical direction or performance measurements; native Chinese/official-term review; course comprehension, exercise submissions and explanation/application assessment. No learning-progress persistence or course track completion exists in this task. Offline query fixtures are local and have no network port; this does not establish the later prepared-offline content pack or whole-platform inference support.
 
 This candidate is frozen for independent review. The coordinator owns review repairs, staging, commit and completion ledger updates, then stops at the user's requested boundary without starting another task.
+
+## Coordinator evidence preservation
+
+Matched all seven final content/source hashes and all 22 hash-bearing source snapshots, including the retained M5 source archive at its recorded path. Verification logs and retrieval metadata are preserved in [m11-04](m11-04/); command-table log basenames resolve there. Full upstream snapshots remain in their recorded task-owned caches; only metadata is added to the repository. No product/content bytes changed during preservation. An additional coordinator authority web lookup also failed its connection; no language-authority or native acceptance is credited.

@@ -1,0 +1,187 @@
+[
+  {
+    "name": "BasicOpMode_Linear.java",
+    "url": "https://raw.githubusercontent.com/FIRST-Tech-Challenge/FtcRobotController/203c2d373765f0c66d121e3ec1cc3a18835f6534/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/BasicOpMode_Linear.java",
+    "resolved": "https://raw.githubusercontent.com/FIRST-Tech-Challenge/FtcRobotController/203c2d373765f0c66d121e3ec1cc3a18835f6534/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/BasicOpMode_Linear.java",
+    "sha256": "cf1f6fadbc4333e670378337ca98246dd81a0ae4450b053ff029c24a63e5a9d2",
+    "bytes": 5707,
+    "retrieved": "2026-10-06T16:19:14.968771+00:00"
+  },
+  {
+    "name": "BasicOpMode_Iterative.java",
+    "url": "https://raw.githubusercontent.com/FIRST-Tech-Challenge/FtcRobotController/203c2d373765f0c66d121e3ec1cc3a18835f6534/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/BasicOpMode_Iterative.java",
+    "resolved": "https://raw.githubusercontent.com/FIRST-Tech-Challenge/FtcRobotController/203c2d373765f0c66d121e3ec1cc3a18835f6534/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/BasicOpMode_Iterative.java",
+    "sha256": "c7318e6f209343cf3c222ce51b5f2e29c9b30e785792452db2320251e25e9cf7",
+    "bytes": 6069,
+    "retrieved": "2026-10-06T16:19:15.004178+00:00"
+  },
+  {
+    "name": "RobotHardware.java",
+    "url": "https://raw.githubusercontent.com/FIRST-Tech-Challenge/FtcRobotController/203c2d373765f0c66d121e3ec1cc3a18835f6534/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/externalhardware/RobotHardware.java",
+    "resolved": "https://raw.githubusercontent.com/FIRST-Tech-Challenge/FtcRobotController/203c2d373765f0c66d121e3ec1cc3a18835f6534/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/externalhardware/RobotHardware.java",
+    "sha256": "587ba00ba3d91444c5539772565f8c18a149ef0e368e08df0955d11a48d47313",
+    "bytes": 7669,
+    "retrieved": "2026-10-06T16:19:14.966728+00:00"
+  },
+  {
+    "name": "build.common.gradle",
+    "url": "https://raw.githubusercontent.com/FIRST-Tech-Challenge/FtcRobotController/203c2d373765f0c66d121e3ec1cc3a18835f6534/build.common.gradle",
+    "resolved": "https://raw.githubusercontent.com/FIRST-Tech-Challenge/FtcRobotController/203c2d373765f0c66d121e3ec1cc3a18835f6534/build.common.gradle",
+    "sha256": "44a3973a955c2267e0cebeadb531d794960f1315893d99f366cdb247c799f565",
+    "bytes": 4004,
+    "retrieved": "2026-10-06T16:19:14.955769+00:00"
+  },
+  {
+    "name": "FTC-LICENSE",
+    "url": "https://raw.githubusercontent.com/FIRST-Tech-Challenge/FtcRobotController/203c2d373765f0c66d121e3ec1cc3a18835f6534/LICENSE",
+    "resolved": "https://raw.githubusercontent.com/FIRST-Tech-Challenge/FtcRobotController/203c2d373765f0c66d121e3ec1cc3a18835f6534/LICENSE",
+    "sha256": "43fdbddb26a1b89f49c94a52181d7c1f99f5d389cffd00371d5618f8f84cfc6d",
+    "bytes": 1600,
+    "retrieved": "2026-10-06T16:19:14.957270+00:00"
+  },
+  {
+    "name": "jls-4.html",
+    "url": "https://docs.oracle.com/javase/specs/jls/se8/html/jls-4.html",
+    "resolved": "https://docs.oracle.com/javase/specs/jls/se8/html/jls-4.html",
+    "sha256": "f99deeffe02e7c2920072a7302529fd290d3f0401a50848e67404b221e80aba1",
+    "bytes": 351514,
+    "retrieved": "2026-10-06T16:19:17.452575+00:00"
+  },
+  {
+    "name": "jls-7.html",
+    "url": "https://docs.oracle.com/javase/specs/jls/se8/html/jls-7.html",
+    "resolved": "https://docs.oracle.com/javase/specs/jls/se8/html/jls-7.html",
+    "sha256": "7f074945527cc0e1d9c9050f6b0afe1ee74b2d34b5e100d3ef7ec5215d2e6caf",
+    "bytes": 85243,
+    "retrieved": "2026-10-06T16:19:17.794033+00:00"
+  },
+  {
+    "name": "jls-8.html",
+    "url": "https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html",
+    "resolved": "https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html",
+    "sha256": "c6e0e2d7f323bc4c0619397ae0ed17f39fb3adc557eaba59dd1607a5545d2b5f",
+    "bytes": 464670,
+    "retrieved": "2026-10-06T16:19:17.964535+00:00"
+  },
+  {
+    "name": "jls-14.html",
+    "url": "https://docs.oracle.com/javase/specs/jls/se8/html/jls-14.html",
+    "resolved": "https://docs.oracle.com/javase/specs/jls/se8/html/jls-14.html",
+    "sha256": "c0cdc5d86be6e3ad209ce985218bc014d845850c53009960094b3e857f15d8c9",
+    "bytes": 334366,
+    "retrieved": "2026-10-06T16:19:17.081492+00:00"
+  },
+  {
+    "name": "jls-15.html",
+    "url": "https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html",
+    "resolved": "https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html",
+    "sha256": "ec0eff2205f42c5b0cfac7c9c773d9952668fc2802b7793d3ef1059f49c5fc72",
+    "bytes": 923982,
+    "retrieved": "2026-10-06T16:19:19.590871+00:00"
+  },
+  {
+    "name": "vscode-ref.json",
+    "url": "https://api.github.com/repos/microsoft/vscode-loc/commits/main",
+    "resolved": "https://api.github.com/repos/microsoft/vscode-loc/commits/main",
+    "sha256": "0a6c13fdc16024d81b94391b27a6e2773cfe632b6c40098e09286d62fdcd4c93",
+    "bytes": 357260,
+    "retrieved": "2026-10-06T16:19:18.796544+00:00"
+  },
+  {
+    "name": "firefox-ref.json",
+    "url": "https://api.github.com/repos/mozilla-l10n/firefox-l10n/commits/main",
+    "resolved": "https://api.github.com/repos/mozilla-l10n/firefox-l10n/commits/main",
+    "sha256": "196a72d33bc914c6524782759f2a0bc806ceff5035c5d05e55ee18087f04356c",
+    "bytes": 120519,
+    "retrieved": "2026-10-06T16:19:19.069817+00:00"
+  },
+  {
+    "name": "vscode-zh.txt",
+    "url": "https://raw.githubusercontent.com/microsoft/vscode-loc/0f157dee0cdcbf58cdf51a221ee94751c7f35e75/i18n/vscode-language-pack-zh-hans/translations/main.i18n.json",
+    "resolved": "https://raw.githubusercontent.com/microsoft/vscode-loc/0f157dee0cdcbf58cdf51a221ee94751c7f35e75/i18n/vscode-language-pack-zh-hans/translations/main.i18n.json",
+    "sha256": "fddc7f462766e4dc2ca13e06ff8c7200a9ee1d224f0584750a9d877a89b0c303",
+    "bytes": 2046035,
+    "retrieved": "2026-10-06T16:20:13.397834+00:00"
+  },
+  {
+    "name": "vscode-license",
+    "url": "https://raw.githubusercontent.com/microsoft/vscode-loc/0f157dee0cdcbf58cdf51a221ee94751c7f35e75/LICENSE",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "name": "firefox-zh.txt",
+    "url": "https://raw.githubusercontent.com/mozilla-l10n/firefox-l10n/9c44ae5ddf2cd6870a1cec1929fbf6d7f431b98b/zh-CN/devtools/client/debugger.properties",
+    "resolved": "https://raw.githubusercontent.com/mozilla-l10n/firefox-l10n/9c44ae5ddf2cd6870a1cec1929fbf6d7f431b98b/zh-CN/devtools/client/debugger.properties",
+    "sha256": "9f91c3df07706d59a1daa9c169281c33997acbdf3fcbcfcd309eb9de861b940b",
+    "bytes": 55445,
+    "retrieved": "2026-10-06T16:20:12.235411+00:00"
+  },
+  {
+    "name": "firefox-license",
+    "url": "https://raw.githubusercontent.com/mozilla-l10n/firefox-l10n/9c44ae5ddf2cd6870a1cec1929fbf6d7f431b98b/LICENSE",
+    "resolved": "https://raw.githubusercontent.com/mozilla-l10n/firefox-l10n/9c44ae5ddf2cd6870a1cec1929fbf6d7f431b98b/LICENSE",
+    "sha256": "1f256ecad192880510e84ad60474eab7589218784b9a50bc7ceee34c2b91f1d5",
+    "bytes": 16725,
+    "retrieved": "2026-10-06T16:20:11.963934+00:00"
+  },
+  {
+    "name": "cnterm-index.html",
+    "url": "https://www.cnterm.cn/",
+    "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1032)>"
+  },
+  {
+    "name": "vscode-license.txt",
+    "url": "https://raw.githubusercontent.com/microsoft/vscode-loc/0f157dee0cdcbf58cdf51a221ee94751c7f35e75/LICENSE.txt",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "name": "RobotCore-11.1.0-sources.jar",
+    "path": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/org.firstinspires.ftc/RobotCore/11.1.0/d90f546b66fee52a1f644a61b9947162cc8803ef/RobotCore-11.1.0-sources.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/firstinspires/ftc/RobotCore/11.1.0/RobotCore-11.1.0-sources.jar",
+    "sha256": "e8a594c7b9ded2bc73cf2f5abeca03b436fb4e7109e73938df64fa21f0d01ea2",
+    "bytes": 1434014,
+    "provenance": "retained M5 source JAR; rehashed and extracted at implementation time"
+  },
+  {
+    "name": "LinearOpMode.java",
+    "path": "/private/tmp/m11-04/sources/LinearOpMode.java",
+    "sha256": "e153a778a5e3dd664e87995a0314ed7777f678bd25af4f349e6bd18495250063",
+    "bytes": 9698,
+    "provenance": "exact extracted member of RobotCore-11.1.0-sources.jar"
+  },
+  {
+    "name": "OpMode.java",
+    "path": "/private/tmp/m11-04/sources/OpMode.java",
+    "sha256": "16eda3e2587d5af78ef2cbf8a477ef6e669871ddb6a017492012120f29c38ee3",
+    "bytes": 9444,
+    "provenance": "exact extracted member of RobotCore-11.1.0-sources.jar"
+  },
+  {
+    "name": "HardwareMap.java",
+    "path": "/private/tmp/m11-04/sources/HardwareMap.java",
+    "sha256": "042359626a2cae7ec858ab6594dd53347da48216bf54c182c158e595c21a818a",
+    "bytes": 37693,
+    "provenance": "exact extracted member of RobotCore-11.1.0-sources.jar"
+  },
+  {
+    "name": "Gamepad.java",
+    "path": "/private/tmp/m11-04/sources/Gamepad.java",
+    "sha256": "37bb24d18c34020eb23346aa2cc8ed7dc0299ad03e32c491e80ee2f675294578",
+    "bytes": 44686,
+    "provenance": "exact extracted member of RobotCore-11.1.0-sources.jar"
+  },
+  {
+    "name": "DcMotor.java",
+    "path": "/private/tmp/m11-04/sources/DcMotor.java",
+    "sha256": "73635efe788badabfe5207335b6ac024b21143fcccb3971245a37f7cdf19a367",
+    "bytes": 11876,
+    "provenance": "exact extracted member of RobotCore-11.1.0-sources.jar"
+  },
+  {
+    "name": "Telemetry.java",
+    "path": "/private/tmp/m11-04/sources/Telemetry.java",
+    "sha256": "e5f18638077821f138ae38b0ae8ec534215e342bff7949878d2081513d8d156d",
+    "bytes": 28173,
+    "provenance": "exact extracted member of RobotCore-11.1.0-sources.jar"
+  }
+]
