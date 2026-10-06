@@ -1,0 +1,558 @@
+7c11931c2 fix(ftc): reject malformed plugin declarations
+ docs/validation/M8-04-implementation.md            |  21 +++-
+ docs/validation/m8-04/fix1-core-typecheck.log      |   1 +
+ docs/validation/m8-04/fix1-covering.log            | 123 +++++++++++++++++++
+ docs/validation/m8-04/fix1-format-write.log        |   1 +
+ docs/validation/m8-04/fix1-format.log              |   2 +
+ docs/validation/m8-04/fix1-green.log               |  17 +++
+ docs/validation/m8-04/fix1-lint.log                |   3 +
+ docs/validation/m8-04/fix1-red.log                 | 135 +++++++++++++++++++++
+ docs/validation/m8-04/fix1-report-format.log       |   1 +
+ packages/core/src/ftc/controllers/panels.ts        |   7 +-
+ .../test/ftc-adapters/controller-endpoints.test.ts |  22 ++++
+ 11 files changed, 329 insertions(+), 4 deletions(-)
+diff --git a/docs/validation/M8-04-implementation.md b/docs/validation/M8-04-implementation.md
+index f6bacc51f..5a9d69818 100644
+--- a/docs/validation/M8-04-implementation.md
++++ b/docs/validation/M8-04-implementation.md
+@@ -1,63 +1,82 @@
+ # M8-04 implementation and evaluation report
+ 
+ Date: 2026-10-06. Delivery status: **DONE_WITH_CONCERNS for the scoped implementation/evaluation slice; the M8-04 task and acceptance gates remain open.** Physical and Windows requirements remain NOT RUN, not passing. No compatibility matrix row is promoted.
+ 
+-Review base: `4a915eacb41f15bd54cb4617df08b4c181222f6a`. Product/test/fixture revision tested: **`29be4123ad812e66d26d225b899a46fa9b5d233d`** (`feat(ftc): evaluate controller endpoints and scoped forwarding`). This report and captured outputs are a subsequent documentation-only commit; no product changes follow the tested revision.
++Review base: `4a915eacb41f15bd54cb4617df08b4c181222f6a`. Product/test/fixture revision tested: **`29be4123ad812e66d26d225b899a46fa9b5d233d`** (`feat(ftc): evaluate controller endpoints and scoped forwarding`). The initial report and captured outputs were committed separately from that product revision. Later scoped fixes and their tested content are recorded below.
+ 
+ ## Scope and decisions
+ 
+ Implemented additive `Adb.ForwardTransport`/`forwardPanels`, injected `Panels.ReadTransport`/`readEndpoints`, and canonical serializable `FtcController.EndpointError`/`ProtocolEvidence`. Existing M8-01 candidate, error, discovery parsing and `Controllers.layer(transport)` are unchanged. No public Protocol/HttpApi, manifest, lockfile, generated client, registration, composition, shared checklist or coordinator ledger edits are part of this delivery.
+ 
+ Used Superpowers TDD and its test guidance for executable behavior; coordinator owns independent review. Rulings: use the existing assigned checkout, no subagents/shared ledger writes, run affected tests rather than an unrelated Core blanket suite, and retain unavailable physical checks as open gates. These follow the dispatch brief's explicit constraints. Resource decoders implement only the minimal source-backed subset; no claimed safe dashboard fallback is fabricated from bidirectional forwards.
+ 
+ See [controller protocol](controller-protocol.md) for exact source versions, routes, resource limitations, identity/log unknowns, M9/M10 handoff, and required real-platform matrix. The prior [source preflight](M8-04-source-preflight.md) was reused; no source rediscovery/download was performed.
+ 
+ ## Reproducible environment and commands
+ 
+ Host: macOS 26.5.2 (25F84), arm64. Bun 1.3.14 (`0d9b296a`); Effect 4.0.0-beta.83; provisioned workspace dependencies unchanged. All commands below prepend:
+ 
+ ```sh
+ export PATH=/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64:$PATH
+ ```
+ 
+ No real controller, Windows host, APK, production ADB forward, Electron dashboard or mutation authorization is supplied. ADB version is prior-audit information, not freshly executed; only its binary SHA-256 was read. Upstream source archive and license provenance are retained in [fixture provenance](../../packages/core/test/ftc-adapters/fixtures/controller-endpoints/provenance.md).
+ 
+ | Cwd               | Exact command                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Exit / observed result                          | Output                                                  |
+ | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------- |
+ | `packages/core`   | `bun test ./test/ftc-evaluation/m8-04.test.ts`                                                                                                                                                                                                                                                                                                                                                                                                                                                 | 0; **3 pass, 5 skip, 0 fail**, 18 assertions    | [evaluation](m8-04/evaluation-29be4123a.log)            |
+ | `packages/core`   | `bun test ./test/ftc-adapters/controller-endpoints.test.ts ./test/ftc/controller-connections/m8-01.test.ts ./test/ftc-evaluation/m9-07.test.ts ./test/ftc-evaluation/m8-04.test.ts`                                                                                                                                                                                                                                                                                                            | 0; **85 pass, 14 skip, 0 fail**, 207 assertions | [affected regressions](m8-04/regressions-29be4123a.log) |
+ | `packages/core`   | `bun typecheck`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | 0; no type errors                               | [Core](m8-04/core-typecheck-29be4123a.log)              |
+ | `packages/schema` | `bun typecheck`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | 0; no type errors                               | [Schema](m8-04/schema-typecheck-29be4123a.log)          |
+ | repo root         | `bun run lint packages/core/src/ftc/controllers/adb.ts packages/core/src/ftc/controllers/panels.ts packages/schema/src/ftc-controller.ts packages/core/test/ftc-adapters/controller-endpoints.test.ts packages/core/test/ftc-adapters/fixtures/controller-endpoints/fixture.ts packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts packages/core/test/ftc-evaluation/m8-04.test.ts`                                                                                      | 0; 0 warnings/errors on final product content   | [lint](m8-04/lint-final.log)                            |
+ | repo root         | `bunx prettier --check packages/core/src/ftc/controllers/adb.ts packages/core/src/ftc/controllers/panels.ts packages/schema/src/ftc-controller.ts packages/core/test/ftc-adapters/controller-endpoints.test.ts packages/core/test/ftc-adapters/fixtures/controller-endpoints/fixture.ts packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts packages/core/test/ftc-evaluation/m8-04.test.ts packages/core/test/ftc-adapters/fixtures/controller-endpoints/provenance.md` | 0; all matched files formatted                  | [format](m8-04/format-final.log)                        |
+ 
+ The first loopback run under the restricted sandbox could not bind owned listeners (`EADDRINUSE` at port 0); [initial output](m8-04/evaluation.log) has 0 pass/3 fail. The initial affected selection likewise has 79 pass/9 skip/2 fail because both existing M9 loopback tests could not bind ([output](m8-04/regressions.log)). Re-running these exact fixture operations with approved host-loopback access passed. No external network/device operation was added. These are recorded environment failures, not discarded test failures.
+ 
+ M9-07's nine skipped checks include optional macOS isolation/tool probes plus unavailable Windows/USB/extension/Electron gates; they were not enabled by this run. M8-04 adds five explicitly named NOT RUN rows. Schema's previously documented event-manifest and App locale baseline failures were not altered or rerun as unrelated suites.
+ 
+ ## Red/green evidence
+ 
+ Tests were first written against missing forward/schema behavior ([initial absent-export failure](m8-04/red-forward.log), 0 pass/9 fail), then compiled stub behavior ([forward red](m8-04/red-forward-behavior.log), 1 pass/8 fail including cancellation timeout). Minimal forwarding behavior produced [9 pass/0 fail](m8-04/green-forward.log). Read-endpoint stub behavior produced [9 pass/35 fail](m8-04/red-endpoints.log); implementation produced [44 pass/0 fail](m8-04/green-endpoints.log). Later adversarial cases exercise existing branches: duplicate local leases, cleanup defects, duplicate plugins, hash/asset failures, receive cancellation, textual zero/empty packets and unknown read profile. The final revision's broader counts supersede intermediate runs. No real source captures or hardware outcomes are invented to turn a missing prerequisite green.
+ 
+ ## Required assertion / gate map
+ 
+ | Requirement                                  | Concrete implementation/evidence                                                                                                                                                                    | Classification / remaining gate                                                                                                                |
+ | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+ | Reproducible M8-04 harness                   | `test/ftc-evaluation/m8-04.test.ts`; three owned-loopback scenarios and five explicit skips                                                                                                         | Real macOS listener runtime, **synthetic protocol**. Required harness passes automated part only.                                              |
+ | Version-aware HTTP/data endpoints            | `panels.ts` validates exact selected profile; GET resource shapes, nullable hashes, plugin IDs/declarations, gzip metadata, reported hash consistency, performance envelope and separate WS receive | Unit and source-derived loopback. No actual APK/full dashboard asset graph or binary version verification.                                     |
+ | Malformed/missing/version/disconnected cases | `controller-endpoints.test.ts` fallback HTML 200, 404, bad hashes, duplicate plugin IDs, unknown frontend/profile, unsafe origins, health 200 + socket error                                        | 54 adapter tests in final selection. Fixture behavior only.                                                                                    |
+ | Identity/capability evidence                 | Schema `ProtocolEvidence`, profile/evidence classification, unknown identity/deployment/freshness, blocked dashboard, unknown logs; loopback identical-software scenario                            | No physical identity or build association, no fabricated controller ID. M8-02/03 remain owners.                                                |
+ | Source-backed resources/provenance           | Retained source audit plus fixture provenance and three verbatim license records                                                                                                                    | Primary-source inspection; no deployed runtime capture. Synthetic bundles/hashes are explicitly marked.                                        |
+ | Scoped forwarding                            | `adb.ts` explicitly selected candidate; two ephemeral/no-rebind leases; Effect scope cleanup, rejected invalid/duplicate ports, second-lease conflict, cancellation, cleanup failure                | Real owned TCP listeners plus injected failures. Production ADB daemon semantics/ownership comparison and disconnected-device cleanup NOT RUN. |
+ | Default-deny read/data boundary              | Injected GET and receive-only ports; no outbound messages; mutation/custom/plugin-reload/proxy frames rejected; unknown plugin routes not fetched                                                   | No production host and no security boundary claimed for raw TCP. M9-07/M9-08 stay open.                                                        |
+ | Missing vs zero/freshness                    | Empty/zero/sentinel values preserved; absent sample omitted; freshness always unknown                                                                                                               | Does not attach robot/project, invent time or declare stale samples fresh. M10 integration needed.                                             |
+ | Independent data from dashboard              | Reads use explicit data origin; dashboard stays blocked irrespective of resource success                                                                                                            | PAN-02 preparation only; no live telemetry acceptance.                                                                                         |
+ | No regressions / dependencies                | M8-01 plus M9-07 affected selection; Core/Schema typechecks; scoped lint/format                                                                                                                     | No composition or generated client change. Tests never run from repo root.                                                                     |
+ | Manual/physical matrix                       | Five explicit evaluation skips; detailed unavailable rows in protocol report                                                                                                                        | Control Hub/phone USB/Wi-Fi, Windows, actual logs/freshness/build association/dashboard mediation remain **NOT RUN**.                          |
+ | Review and completion                        | Focused product commit and this evidence; coordinator reviews range from stated base                                                                                                                | Shared task completion checkboxes deliberately untouched; full M8-04 cannot close on fixture evidence.                                         |
+ 
+ ## Limitations for the next owners
+ 
+ The adapter recognizes resource metadata for Telemetry/Battery/OpModeControl/Configurables/CameraStream but only decodes core/time, textual telemetry and finite battery samples. Other incoming frames fail closed, not silently become telemetry. Unknown/custom plugins and Limelight routes are not followed. Plugin hash equality never identifies a physical robot. Full dashboard resources, upstream JS execution, no-replay of real controls and external fallback are unverified.
+ 
+ `ReadTransport` and `ForwardTransport` are narrow injected boundaries, not production network/ADB implementations. Any future host must prove bounded I/O, cancellation, acquisition compensation, exclusive lease ownership and response mediation before registration. A raw forward accepts traffic in both directions and cannot be used as a read-only capability. Fixed frontend port 8002 makes arbitrary-port dashboard forwarding insufficient. No approval, deployment/start/tuning, sibling module access or automatic replay was introduced.
++
++## Review fix 1 — reject noncanonical plugin declarations
++
++Date: 2026-10-06. Fix base: `3e9a64ca554408608ef6078c2e154123f3f687ad`. Addressed the Important finding in the coordinator's independent review: remote plugin IDs/version strings were only non-empty, allowing successful evidence containing whitespace that the canonical Schema rejects. `panels.ts` now applies the same non-empty and trimmed constraints as canonical `Text` when decoding all three plugin declaration fields. Observed declarations are **rejected, never normalized**. Both manifest and config parsing use that decoder; no canonical Schema or other behavior changed.
++
++Eight real-reader regressions cover whitespace-only and surrounding-whitespace IDs, unknown plugin IDs, plugin versions and frontend versions, including tab/newline-only input and matching malformed manifest/config declarations. Before the fix, six cases returned successful evidence and two reported protocol-unknown instead of malformed-resource; all eight now reject at `/api/plugins` with `resource_invalid`.
++
++Exact tested working-tree content was the fix base plus these Git blobs (the source/test changes committed with this addendum): `packages/core/src/ftc/controllers/panels.ts` = `fdac0236b325118f011f08a6f5c73ceed7aae36c`; `packages/core/test/ftc-adapters/controller-endpoints.test.ts` = `83e0c0f744e1f2d9200cb6237ec5285ad6efaa97`. Commands used the same macOS/Bun environment and PATH prefix documented above.
++
++| Cwd             | Exact command                                                                                                                                   | Exit / result                                                  | Output                                  |
++| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | --------------------------------------- |
++| `packages/core` | `bun test ./test/ftc-adapters/controller-endpoints.test.ts --test-name-pattern 'rejects noncanonical plugin'` before fix                        | 1; 0 pass, 8 fail, 54 filtered out; expected behavior failures | [RED](m8-04/fix1-red.log)               |
++| `packages/core` | Same focused command after fix                                                                                                                  | 0; 8 pass, 0 fail, 54 filtered out, 16 assertions              | [GREEN](m8-04/fix1-green.log)           |
++| `packages/core` | `bun test ./test/ftc-adapters/controller-endpoints.test.ts ./test/ftc-evaluation/m8-04.test.ts ./test/ftc/controller-connections/m8-01.test.ts` | 0; **87 pass, 5 skip, 0 fail**, 203 assertions                 | [covering run](m8-04/fix1-covering.log) |
++| `packages/core` | `bun typecheck`                                                                                                                                 | 0; no type errors; Core is the only changed code package       | [types](m8-04/fix1-core-typecheck.log)  |
++| repo root       | `bun run lint packages/core/src/ftc/controllers/panels.ts packages/core/test/ftc-adapters/controller-endpoints.test.ts`                         | 0; 0 warnings/errors                                           | [lint](m8-04/fix1-lint.log)             |
++| repo root       | `bunx prettier --check packages/core/src/ftc/controllers/panels.ts packages/core/test/ftc-adapters/controller-endpoints.test.ts`                | 0; formatting passes                                           | [format](m8-04/fix1-format.log)         |
++
++The covering run used approved owned-loopback access; no real ADB, device or external endpoint was contacted. The review's Minor pending-acquisition interruption case remains explicitly deferred to bounded host-transport validation; the current tests cover cancellation after acquisition. All real controller/Windows/identity/log/freshness/dashboard gates remain open. Main-owned review documents, shared progress and the coordinator ledger were not edited.
+diff --git a/docs/validation/m8-04/fix1-core-typecheck.log b/docs/validation/m8-04/fix1-core-typecheck.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m8-04/fix1-core-typecheck.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/docs/validation/m8-04/fix1-covering.log b/docs/validation/m8-04/fix1-covering.log
+new file mode 100644
+index 000000000..bfca0b839
+--- /dev/null
++++ b/docs/validation/m8-04/fix1-covering.log
+@@ -0,0 +1,123 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-adapters/controller-endpoints.test.ts:
++(pass) scoped forwards select the explicit target and never rebind or remove unrelated forwards [3.12ms]
++(pass) second-forward conflict cleans up only the first owned lease [0.20ms]
++(pass) unauthorized candidate is never forwarded [0.06ms]
++(pass) offline candidate is never forwarded [0.02ms]
++(pass) unavailable candidate is never forwarded [0.02ms]
++(pass) unknown revisions fail before assuming any controller ports [0.04ms]
++(pass) cancellation and repeated construction release owned forwards without replay [2.99ms]
++(pass) invalid lease ports fail and release rather than expose unusable routes [0.11ms]
++(pass) endpoint errors are serializable canonical contracts [0.78ms]
++(pass) read endpoints record protocol observations without claiming identity, deployment or safe dashboard access [2.71ms]
++(pass) HTML fallback with 200 at /api/plugins fails validation [0.25ms]
++(pass) HTML fallback with 200 at /api/shas fails validation [0.14ms]
++(pass) HTML fallback with 200 at /api/configs/com.bylazar.telemetry fails validation [0.21ms]
++(pass) HTML fallback with 200 at /api/performance fails validation [0.15ms]
++(pass) missing resource / is not a working endpoint [0.06ms]
++(pass) missing resource /index.html is not a working endpoint [0.04ms]
++(pass) missing resource /api/plugins is not a working endpoint [0.04ms]
++(pass) missing resource /api/shas is not a working endpoint [0.09ms]
++(pass) missing resource /api/svelte/com.bylazar.telemetry is not a working endpoint [0.18ms]
++(pass) missing resource /api/configs/com.bylazar.telemetry is not a working endpoint [0.11ms]
++(pass) null plugin hash is missing evidence and never triggers an invented bundle route [0.31ms]
++(pass) unknown frontend version fails rather than promote protocol compatibility [0.13ms]
++(pass) unknown plugins are recorded but their resources are never fetched [0.18ms]
++(pass) healthy HTTP does not hide a disconnected data socket [0.16ms]
++(pass) battery value %s is preserved without inventing freshness [0.15ms]
++(pass) battery value %s is preserved without inventing freshness [0.11ms]
++(pass) battery value %s is preserved without inventing freshness [0.30ms]
++(pass) missing sample is distinct from valid zero and omitted on encoding [0.29ms]
++(pass) unsupported or mutation frame core/pluginReloaded is rejected [0.14ms]
++(pass) unsupported or mutation frame com.bylazar.opmodecontrol/initOpMode is rejected [0.11ms]
++(pass) unsupported or mutation frame com.bylazar.opmodecontrol/startActiveOpMode is rejected [0.10ms]
++(pass) unsupported or mutation frame com.bylazar.opmodecontrol/stopActiveOpMode is rejected [0.09ms]
++(pass) unsupported or mutation frame com.bylazar.configurables/updatedConfigurable is rejected [0.09ms]
++(pass) unsupported or mutation frame com.bylazar.gamepad/gamepad0 is rejected [0.21ms]
++(pass) unsupported or mutation frame com.bylazar.gamepad/gamepad1 is rejected [0.11ms]
++(pass) unsupported or mutation frame custom/read is rejected [0.09ms]
++(pass) unsupported or mutation frame com.bylazar.limelightproxy/status is rejected [0.08ms]
++(pass) malformed frame fails: not-json [0.13ms]
++(pass) malformed frame fails: {"pluginID":"com.bylazar.battery","messageID":"battery","data":NaN} [0.08ms]
++(pass) malformed frame fails: {"pluginID":"com.bylazar.telemetry","messageID":"telemetryPacket","data":0} [0.11ms]
++(pass) unsafe base endpoint http://user:password@localhost:8001 is rejected before I/O [0.08ms]
++(pass) unsafe base endpoint https://example.org/path is rejected before I/O [0.02ms]
++(pass) unsafe base endpoint file:///tmp/example is rejected before I/O [0.02ms]
++(pass) unsafe base endpoint http://localhost:8001/?command=start is rejected before I/O [0.01ms]
++(pass) same local port cannot describe distinct HTTP and socket forwards [0.13ms]
++(pass) cleanup failure cannot become successful forwarding completion [0.12ms]
++(pass) malformed hash at /api/sha256 is not accepted as version evidence [0.07ms]
++(pass) malformed hash at /api/shas is not accepted as version evidence [0.07ms]
++(pass) malformed hash at /api/svelte/com.bylazar.telemetry/sha256 is not accepted as version evidence [0.07ms]
++(pass) HTML fallback cannot masquerade as a JavaScript plugin resource [0.10ms]
++(pass) duplicate plugin identities are not merged silently [0.09ms]
++(pass) cancellation closes the scoped receive resource without reconnecting [0.28ms]
++(pass) textual telemetry preserves empty packets and valid textual zero [0.22ms]
++(pass) unrecognized read profile never probes guessed endpoints [0.04ms]
++(pass) rejects noncanonical plugin id declaration " " without normalization [0.18ms]
++(pass) rejects noncanonical plugin id declaration " com.bylazar.telemetry " without normalization [0.08ms]
++(pass) rejects noncanonical plugin id declaration " unknown.plugin " without normalization [0.07ms]
++(pass) rejects noncanonical plugin version declaration " " without normalization [0.08ms]
++(pass) rejects noncanonical plugin version declaration " 1.0.7 " without normalization [0.06ms]
++(pass) rejects noncanonical plugin version declaration "\t\n" without normalization [0.06ms]
++(pass) rejects noncanonical plugin pluginsCoreVersion declaration " " without normalization [0.06ms]
++(pass) rejects noncanonical plugin pluginsCoreVersion declaration " 1.1.44 " without normalization [0.05ms]
++
++test/ftc-evaluation/m8-04.test.ts:
++(pass) source-derived protocol resolves HTTP, gzip plugin assets and receive-only data through owned TCP forwards [29.67ms]
++(pass) health 200 with socket 503 fails and closes both owned forwards [6.48ms]
++(pass) two synthetic controllers with identical software remain unknown identities on isolated routes [12.84ms]
++(skip) NOT RUN: real Control Hub and phone USB/Wi-Fi HTTP/WebSocket/plugin matrix
++(skip) NOT RUN: Windows ADB forwarding, conflicts, cancellation and resource cleanup
++(skip) NOT RUN: stable physical identity, alias convergence and deployed-build association
++(skip) NOT RUN: real robot logs and telemetry source/freshness across disconnect
++(skip) NOT RUN: Electron dashboard mediation, fixed-port routing, extra plugins and no-replay
++
++test/ftc/controller-connections/m8-01.test.ts:
++(pass) unauthorized device is visible without deployment side effects [0.66ms]
++(pass) multiple targets retain authorization and reported model facts without identity guesses [0.23ms]
++(pass) keeps recovery visible but unavailable [0.07ms]
++(pass) keeps bootloader visible but unavailable [0.04ms]
++(pass) keeps sideload visible but unavailable [0.02ms]
++(pass) keeps future-state visible but unavailable [0.02ms]
++(pass) keeps no permissions (user in plugdev group) visible but unavailable [0.03ms]
++(pass) successful empty discovery differs from missing output [0.15ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: garbage
++SERIAL_A device
++ [0.04ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A
++ [0.03ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device not-metadata
++ [0.19ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device model:one model:two
++ [0.02ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device
++SERIAL_A offline
++ [0.03ms]
++(pass) ADB command failure differs from successful empty discovery [0.04ms]
++(pass) preserves adb_missing_tool from the read transport [0.09ms]
++(pass) preserves adb_transport_error from the read transport [0.02ms]
++(pass) releases the read resource after success [0.16ms]
++(pass) releases the read resource after malformed [0.04ms]
++(pass) releases the read resource after command [0.03ms]
++(pass) releases the read resource after transport [0.02ms]
++(pass) cancellation releases the active read and fresh scopes do not retain discovery state [0.35ms]
++(pass) canonical candidate contract omits optional values and is the exact facade contract [0.37ms]
++
++5 tests skipped:
++(skip) NOT RUN: real Control Hub and phone USB/Wi-Fi HTTP/WebSocket/plugin matrix
++(skip) NOT RUN: Windows ADB forwarding, conflicts, cancellation and resource cleanup
++(skip) NOT RUN: stable physical identity, alias convergence and deployed-build association
++(skip) NOT RUN: real robot logs and telemetry source/freshness across disconnect
++(skip) NOT RUN: Electron dashboard mediation, fixed-port routing, extra plugins and no-replay
++
++ 87 pass
++ 5 skip
++ 0 fail
++ 203 expect() calls
++Ran 92 tests across 3 files. [136.00ms]
+diff --git a/docs/validation/m8-04/fix1-format-write.log b/docs/validation/m8-04/fix1-format-write.log
+new file mode 100644
+index 000000000..6434b3d4d
+--- /dev/null
++++ b/docs/validation/m8-04/fix1-format-write.log
+@@ -0,0 +1 @@
++packages/core/test/ftc-adapters/controller-endpoints.test.ts 45ms
+diff --git a/docs/validation/m8-04/fix1-format.log b/docs/validation/m8-04/fix1-format.log
+new file mode 100644
+index 000000000..4aa0d16e7
+--- /dev/null
++++ b/docs/validation/m8-04/fix1-format.log
+@@ -0,0 +1,2 @@
++Checking formatting...
++All matched files use Prettier code style!
+diff --git a/docs/validation/m8-04/fix1-green.log b/docs/validation/m8-04/fix1-green.log
+new file mode 100644
+index 000000000..7a05d98ac
+--- /dev/null
++++ b/docs/validation/m8-04/fix1-green.log
+@@ -0,0 +1,17 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-adapters/controller-endpoints.test.ts:
++(pass) rejects noncanonical plugin id declaration " " without normalization [4.04ms]
++(pass) rejects noncanonical plugin id declaration " com.bylazar.telemetry " without normalization [0.20ms]
++(pass) rejects noncanonical plugin id declaration " unknown.plugin " without normalization [0.16ms]
++(pass) rejects noncanonical plugin version declaration " " without normalization [0.17ms]
++(pass) rejects noncanonical plugin version declaration " 1.0.7 " without normalization [0.19ms]
++(pass) rejects noncanonical plugin version declaration "\t\n" without normalization [0.18ms]
++(pass) rejects noncanonical plugin pluginsCoreVersion declaration " " without normalization [0.18ms]
++(pass) rejects noncanonical plugin pluginsCoreVersion declaration " 1.1.44 " without normalization [0.12ms]
++
++ 8 pass
++ 54 filtered out
++ 0 fail
++ 16 expect() calls
++Ran 8 tests across 1 file. [52.00ms]
+diff --git a/docs/validation/m8-04/fix1-lint.log b/docs/validation/m8-04/fix1-lint.log
+new file mode 100644
+index 000000000..f7294a2b2
+--- /dev/null
++++ b/docs/validation/m8-04/fix1-lint.log
+@@ -0,0 +1,3 @@
++$ oxlint packages/core/src/ftc/controllers/panels.ts packages/core/test/ftc-adapters/controller-endpoints.test.ts
++Found 0 warnings and 0 errors.
++Finished in 298ms on 2 files with 130 rules using 10 threads.
+diff --git a/docs/validation/m8-04/fix1-red.log b/docs/validation/m8-04/fix1-red.log
+new file mode 100644
+index 000000000..5479a85e6
+--- /dev/null
++++ b/docs/validation/m8-04/fix1-red.log
+@@ -0,0 +1,135 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-adapters/controller-endpoints.test.ts:
++399 |   const source = fixture()
++400 |   source.plugins.data.plugins[0].details[field] = value
++401 |   source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
++402 |   source.resources["/api/configs/com.bylazar.telemetry"].body = JSON.stringify(source.plugins.data.plugins[0].details)
++403 |   const result = await Effect.runPromiseExit(Panels.readEndpoints(input, source.transport))
++404 |   expect(result._tag).toBe("Failure")
++                            ^
++error: expect(received).toBe(expected)
++
++Expected: "Failure"
++Received: "Success"
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:404:23)
++(fail) rejects noncanonical plugin id declaration " " without normalization [9.34ms]
++399 |   const source = fixture()
++400 |   source.plugins.data.plugins[0].details[field] = value
++401 |   source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
++402 |   source.resources["/api/configs/com.bylazar.telemetry"].body = JSON.stringify(source.plugins.data.plugins[0].details)
++403 |   const result = await Effect.runPromiseExit(Panels.readEndpoints(input, source.transport))
++404 |   expect(result._tag).toBe("Failure")
++                            ^
++error: expect(received).toBe(expected)
++
++Expected: "Failure"
++Received: "Success"
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:404:23)
++(fail) rejects noncanonical plugin id declaration " com.bylazar.telemetry " without normalization [0.33ms]
++399 |   const source = fixture()
++400 |   source.plugins.data.plugins[0].details[field] = value
++401 |   source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
++402 |   source.resources["/api/configs/com.bylazar.telemetry"].body = JSON.stringify(source.plugins.data.plugins[0].details)
++403 |   const result = await Effect.runPromiseExit(Panels.readEndpoints(input, source.transport))
++404 |   expect(result._tag).toBe("Failure")
++                            ^
++error: expect(received).toBe(expected)
++
++Expected: "Failure"
++Received: "Success"
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:404:23)
++(fail) rejects noncanonical plugin id declaration " unknown.plugin " without normalization [0.32ms]
++399 |   const source = fixture()
++400 |   source.plugins.data.plugins[0].details[field] = value
++401 |   source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
++402 |   source.resources["/api/configs/com.bylazar.telemetry"].body = JSON.stringify(source.plugins.data.plugins[0].details)
++403 |   const result = await Effect.runPromiseExit(Panels.readEndpoints(input, source.transport))
++404 |   expect(result._tag).toBe("Failure")
++                            ^
++error: expect(received).toBe(expected)
++
++Expected: "Failure"
++Received: "Success"
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:404:23)
++(fail) rejects noncanonical plugin version declaration " " without normalization [0.30ms]
++399 |   const source = fixture()
++400 |   source.plugins.data.plugins[0].details[field] = value
++401 |   source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
++402 |   source.resources["/api/configs/com.bylazar.telemetry"].body = JSON.stringify(source.plugins.data.plugins[0].details)
++403 |   const result = await Effect.runPromiseExit(Panels.readEndpoints(input, source.transport))
++404 |   expect(result._tag).toBe("Failure")
++                            ^
++error: expect(received).toBe(expected)
++
++Expected: "Failure"
++Received: "Success"
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:404:23)
++(fail) rejects noncanonical plugin version declaration " 1.0.7 " without normalization [0.27ms]
++399 |   const source = fixture()
++400 |   source.plugins.data.plugins[0].details[field] = value
++401 |   source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
++402 |   source.resources["/api/configs/com.bylazar.telemetry"].body = JSON.stringify(source.plugins.data.plugins[0].details)
++403 |   const result = await Effect.runPromiseExit(Panels.readEndpoints(input, source.transport))
++404 |   expect(result._tag).toBe("Failure")
++                            ^
++error: expect(received).toBe(expected)
++
++Expected: "Failure"
++Received: "Success"
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:404:23)
++(fail) rejects noncanonical plugin version declaration "\t\n" without normalization [0.27ms]
++400 |   source.plugins.data.plugins[0].details[field] = value
++401 |   source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
++402 |   source.resources["/api/configs/com.bylazar.telemetry"].body = JSON.stringify(source.plugins.data.plugins[0].details)
++403 |   const result = await Effect.runPromiseExit(Panels.readEndpoints(input, source.transport))
++404 |   expect(result._tag).toBe("Failure")
++405 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toEqual({
++                                                                                                         ^
++error: expect(received).toEqual(expected)
++
++  {
++-   "code": "resource_invalid",
++-   "resource": "/api/plugins",
+++   "code": "protocol_unknown",
+++   "resource": "com.bylazar.telemetry",
++  }
++
++- Expected  - 2
+++ Received  + 2
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:405:100)
++(fail) rejects noncanonical plugin pluginsCoreVersion declaration " " without normalization [1.58ms]
++400 |   source.plugins.data.plugins[0].details[field] = value
++401 |   source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
++402 |   source.resources["/api/configs/com.bylazar.telemetry"].body = JSON.stringify(source.plugins.data.plugins[0].details)
++403 |   const result = await Effect.runPromiseExit(Panels.readEndpoints(input, source.transport))
++404 |   expect(result._tag).toBe("Failure")
++405 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toEqual({
++                                                                                                         ^
++error: expect(received).toEqual(expected)
++
++  {
++-   "code": "resource_invalid",
++-   "resource": "/api/plugins",
+++   "code": "protocol_unknown",
+++   "resource": "com.bylazar.telemetry",
++  }
++
++- Expected  - 2
+++ Received  + 2
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:405:100)
++(fail) rejects noncanonical plugin pluginsCoreVersion declaration " 1.1.44 " without normalization [0.24ms]
++
++ 0 pass
++ 54 filtered out
++ 8 fail
++ 10 expect() calls
++Ran 8 tests across 1 file. [68.00ms]
+diff --git a/docs/validation/m8-04/fix1-report-format.log b/docs/validation/m8-04/fix1-report-format.log
+new file mode 100644
+index 000000000..7df9c4cfa
+--- /dev/null
++++ b/docs/validation/m8-04/fix1-report-format.log
+@@ -0,0 +1 @@
++docs/validation/M8-04-implementation.md 24ms
+diff --git a/packages/core/src/ftc/controllers/panels.ts b/packages/core/src/ftc/controllers/panels.ts
+index 9e47f6f61..fdac0236b 100644
+--- a/packages/core/src/ftc/controllers/panels.ts
++++ b/packages/core/src/ftc/controllers/panels.ts
+@@ -152,56 +152,57 @@ function readFrame(body: string) {
+   return Effect.gen(function* () {
+     const sample = yield* json(Frame, body, "websocket").pipe(
+       Effect.mapError((): FtcController.EndpointError => ({ code: "frame_invalid" })),
+     )
+     const key = `${sample.pluginID}/${sample.messageID}`
+     const valid =
+       key === "core/time"
+         ? Option.isSome(
+             Schema.decodeUnknownOption(
+               Schema.Struct({ time: Schema.String.check(Schema.isPattern(/^\d{2}:\d{2}:\d{2}$/)) }),
+             )(sample.data),
+           )
+         : key === "com.bylazar.telemetry/telemetryPacket"
+           ? Option.isSome(Schema.decodeUnknownOption(Schema.Array(Schema.String))(sample.data))
+           : key === "com.bylazar.battery/battery"
+             ? typeof sample.data === "number" && Number.isFinite(sample.data)
+             : undefined
+     if (valid === undefined) return yield* Effect.fail({ code: "frame_unsupported" as const })
+     if (!valid) return yield* Effect.fail({ code: "frame_invalid" as const })
+     return sample
+   })
+ }
+ 
+ const knownPlugins = [
+   "com.bylazar.telemetry",
+   "com.bylazar.battery",
+   "com.bylazar.opmodecontrol",
+   "com.bylazar.configurables",
+   "com.bylazar.camerastream",
+ ]
++const Text = Schema.String.check(Schema.isMinLength(1), Schema.isTrimmed())
+ const Details = Schema.Struct({
+-  id: Schema.NonEmptyString,
+-  version: Schema.NonEmptyString,
+-  pluginsCoreVersion: Schema.NonEmptyString,
++  id: Text,
++  version: Text,
++  pluginsCoreVersion: Text,
+ })
+ const Plugins = Schema.Struct({
+   pluginID: Schema.Literal("core"),
+   messageID: Schema.Literal("pluginsDetails"),
+   data: Schema.Struct({
+     plugins: Schema.Array(Schema.Struct({ details: Details, config: Schema.Json })),
+     skippedPlugins: Schema.Array(Schema.Json),
+   }),
+ })
+ const Performance = Schema.Struct({
+   pluginID: Schema.Literal("core"),
+   messageID: Schema.Literal("performanceReadings"),
+   data: Schema.Array(
+     Schema.Struct({
+       id: Schema.String,
+       startNanos: Schema.Number,
+       endNanos: Schema.Number,
+       durationMillis: Schema.Number,
+     }),
+   ),
+ })
+ const Frame = Schema.Struct({ pluginID: Schema.String, messageID: Schema.String, data: Schema.Json })
+diff --git a/packages/core/test/ftc-adapters/controller-endpoints.test.ts b/packages/core/test/ftc-adapters/controller-endpoints.test.ts
+index 1a18ab4c5..83e0c0f74 100644
+--- a/packages/core/test/ftc-adapters/controller-endpoints.test.ts
++++ b/packages/core/test/ftc-adapters/controller-endpoints.test.ts
+@@ -358,30 +358,52 @@ test("cancellation closes the scoped receive resource without reconnecting", asy
+           ).pipe(Effect.andThen(Deferred.succeed(ready, undefined)), Effect.andThen(Effect.never)),
+       }).pipe(Effect.forkChild)
+       yield* Deferred.await(ready)
+       expect(active.size).toBe(1)
+       yield* Fiber.interrupt(fiber)
+     }),
+   )
+   expect(active.size).toBe(0)
+   expect(opened).toHaveLength(1)
+ })
+ 
+ test("textual telemetry preserves empty packets and valid textual zero", async () => {
+   const source = fixture()
+   source.frames.value = JSON.stringify({
+     pluginID: "com.bylazar.telemetry",
+     messageID: "telemetryPacket",
+     data: ["sensor: 0"],
+   })
+   expect((await Effect.runPromise(Panels.readEndpoints(input, source.transport))).sample?.data).toEqual(["sensor: 0"])
+   source.frames.value = JSON.stringify({ pluginID: "com.bylazar.telemetry", messageID: "telemetryPacket", data: [] })
+   expect((await Effect.runPromise(Panels.readEndpoints(input, source.transport))).sample?.data).toEqual([])
+ })
+ 
+ test("unrecognized read profile never probes guessed endpoints", async () => {
+   const source = fixture()
+   expect(
+     await Effect.runPromise(Panels.readEndpoints({ ...input, revision: "future" }, source.transport).pipe(Effect.flip)),
+   ).toEqual({ code: "protocol_unknown" })
+   expect(source.requests).toEqual([])
+ })
++
++test.each([
++  ["id", " "],
++  ["id", " com.bylazar.telemetry "],
++  ["id", " unknown.plugin "],
++  ["version", " "],
++  ["version", " 1.0.7 "],
++  ["version", "\t\n"],
++  ["pluginsCoreVersion", " "],
++  ["pluginsCoreVersion", " 1.1.44 "],
++] as const)("rejects noncanonical plugin %s declaration %j without normalization", async (field, value) => {
++  const source = fixture()
++  source.plugins.data.plugins[0].details[field] = value
++  source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
++  source.resources["/api/configs/com.bylazar.telemetry"].body = JSON.stringify(source.plugins.data.plugins[0].details)
++  const result = await Effect.runPromiseExit(Panels.readEndpoints(input, source.transport))
++  expect(result._tag).toBe("Failure")
++  expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toEqual({
++    code: "resource_invalid",
++    resource: "/api/plugins",
++  })
++})
+M8-04 fix 1 scoped review
+Base: 3e9a64ca554408608ef6078c2e154123f3f687ad
+Head: 7c11931c2a5af1f711dd2d584d15727259141398
+

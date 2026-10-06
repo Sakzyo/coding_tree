@@ -26,3 +26,11 @@ The pinned Panels setup guide mentions SDK 12 while available Java-evaluation ca
 ## Inference and credential preflight
 
 [M7 read-only preflight](M7-runtime-preflight.md) identifies reusable Session model/LLM routing and the current secret-bearing Credential/Integration paths. M7-02 must establish a protected operation boundary while preserving explicitly selected migration only; M7 must not introduce a second tool/continuation loop. No installed local runtime/model was observed in bounded conventional locations, so real M7-08 evaluation still needs authorized pinned assets and OS evidence. Existing pinned Bun and hardware baseline remain available despite the preflight worker's restricted PATH/sysctl probe.
+
+## Knowledge source version drift
+
+[M11 source preflight](M11-source-preflight.md) records immutable candidates and floating-document gaps. Pedro current installation no longer describes evaluated ftc:2.1.2. Road Runner core-only M5 evidence omits Actions/FTC/Dashboard/quickstart integration; source docs and linked quickstarts declare different tuples. Future M11-03/07/08 must select reviewed version-matched source records and preserve Dashboard/tuning requirements without assuming compatibility. Source/notice provenance must be recorded per content/package; no inferred documentation license or production support promotion.
+
+## M2 canonical-root integration risk
+
+Current `packages/core/src/project.ts` derives Git identity from remote/root commits and returns `Project.ID.global` for non-Git folders. High-level-design.md:241 requires distinct local canonical-root execution ownership mapped explicitly to existing Project/Location/Session identities. M2 must not collapse separate non-Git folders or clones merely because an upstream Project ID is shared. Added this concrete risk to M2-01 brief; canonical ID schema reuse does not replace explicit root/location mapping. Representation must be checked against later chat/session association APIs before implementation is committed.

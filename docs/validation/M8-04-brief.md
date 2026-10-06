@@ -1,6 +1,6 @@
 # M8-04 dispatch brief
 
-Prepared; coordinator must record verified prerequisite and current review base at dispatch.
+Dispatched 2026-10-06 to `/root/m8_04`. M8-01 verified complete. Review base `4a915eacb41f15bd54cb4617df08b4c181222f6a`.
 
 Role: implement evaluation M8-04 in Controller connections, ROB-01/05, PAN-01/02/03 and FTC-05; AC-09/10 and Panels evaluation remain pending until actual evidence.
 Prerequisite: M8-01 complete at 858c8d070afedde5ed9dd0cacb76f05577757556 with independent review approved. Consume canonical FtcController.ControllerCandidate/DiscoveryError and Adb.DiscoveryTransport; preserve Controllers.layer(transport) and discoverControllers scoped read behavior. Missing tool/transport/malformed output are failures, while successful empty discovery is [].

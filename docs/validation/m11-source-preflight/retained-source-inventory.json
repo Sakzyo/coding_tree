@@ -1,0 +1,74 @@
+[
+  {
+    "path": "/private/tmp/m5-03-tools/ftc-tag.json",
+    "sha256": "32aa1b1dfeed40074f8ae8985a02a108ef01452fad68d69540529b51721fecd7",
+    "bytes": 424,
+    "provenance": "retained M5-03 material; publisher/source verification claims remain those in docs/validation/java-import.md"
+  },
+  {
+    "path": "/private/tmp/m5-03-tools/ftc.tar.gz",
+    "sha256": "94238a5ab6b404c10cf7047b862ced91f242061f18849ba80dd854620a5ad4b6",
+    "bytes": 479752,
+    "provenance": "retained M5-03 material; publisher/source verification claims remain those in docs/validation/java-import.md"
+  },
+  {
+    "path": "/private/tmp/m5-03-tools/rr.jar",
+    "sha256": "a23f507bc28982be1340ce642e7494151c3ad540285093460e323a799ace8ba1",
+    "bytes": 224349,
+    "provenance": "retained M5-03 material; publisher/source verification claims remain those in docs/validation/java-import.md"
+  },
+  {
+    "path": "/private/tmp/m5-03-tools/rr.pom",
+    "sha256": "81b67b53845d9de50f9399d2482881b16b68e04c15075647d4e34075aae25efd",
+    "bytes": 1200,
+    "provenance": "retained M5-03 material; publisher/source verification claims remain those in docs/validation/java-import.md"
+  },
+  {
+    "path": "/private/tmp/m5-03-tools/rr-LICENSE",
+    "sha256": "706ca15db28155f55688e702c615802624a8ef702285cfc2cdcbe8598bf43b08",
+    "bytes": 1070,
+    "provenance": "retained M5-03 material; publisher/source verification claims remain those in docs/validation/java-import.md"
+  },
+  {
+    "path": "/private/tmp/m5-03-tools/FtcRobotController-203c2d373765f0c66d121e3ec1cc3a18835f6534/LICENSE",
+    "sha256": "43fdbddb26a1b89f49c94a52181d7c1f99f5d389cffd00371d5618f8f84cfc6d",
+    "bytes": 1600,
+    "provenance": "retained M5-03 material; publisher/source verification claims remain those in docs/validation/java-import.md"
+  },
+  {
+    "path": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/org.firstinspires.ftc/RobotCore/11.1.0/d90f546b66fee52a1f644a61b9947162cc8803ef/RobotCore-11.1.0-sources.jar",
+    "sha256": "e8a594c7b9ded2bc73cf2f5abeca03b436fb4e7109e73938df64fa21f0d01ea2",
+    "bytes": 1434014,
+    "provenance": "retained M5-03 material; publisher/source verification claims remain those in docs/validation/java-import.md"
+  },
+  {
+    "path": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/org.firstinspires.ftc/RobotCore/11.1.0/af5b8db77605992924276563ee167f527462bf39/RobotCore-11.1.0.pom",
+    "sha256": "7ad1f42b43baa570a4602620e537fdaa0f0d68503a3b4ca3f93578746a3cb904",
+    "bytes": 2073,
+    "provenance": "retained M5-03 material; publisher/source verification claims remain those in docs/validation/java-import.md"
+  },
+  {
+    "path": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/com.pedropathing/core/2.1.2/185c3278afe7531bf4c84b19cb02d34f00369cb2/core-2.1.2-sources.jar",
+    "sha256": "3fa956e69de0cde1a47e21095134be5658f3091dbf36190259fa1a112c86fcbb",
+    "bytes": 98143,
+    "provenance": "retained M5-03 material; publisher/source verification claims remain those in docs/validation/java-import.md"
+  },
+  {
+    "path": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/com.pedropathing/core/2.1.2/9b16634d685429f4376b350098a0a33c26667aa1/core-2.1.2.pom",
+    "sha256": "b4a376f83bd29ccfa9cde99dd58f55d0d2cb45d974c617ed759c78da28dbdf31",
+    "bytes": 1647,
+    "provenance": "retained M5-03 material; publisher/source verification claims remain those in docs/validation/java-import.md"
+  },
+  {
+    "path": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/com.pedropathing/ftc/2.1.2/c61b75573e6dc87c88fecb1a79153b03fa7027fc/ftc-2.1.2-sources.jar",
+    "sha256": "b7a0693f3bf958932590c72d21a46bc9600435a9c61a3ad3a7b1b3c64b38ea03",
+    "bytes": 49708,
+    "provenance": "retained M5-03 material; publisher/source verification claims remain those in docs/validation/java-import.md"
+  },
+  {
+    "path": "/private/tmp/m5-03-tools/gradle/caches/modules-2/files-2.1/com.pedropathing/ftc/2.1.2/f3b4381d64d68c6a626baf1e42153bb0cdfda32e/ftc-2.1.2.pom",
+    "sha256": "d7959067d099fe41f702027fcdfd48d9923c3285ed1e604edd9c398d08382dd5",
+    "bytes": 2069,
+    "provenance": "retained M5-03 material; publisher/source verification claims remain those in docs/validation/java-import.md"
+  }
+]

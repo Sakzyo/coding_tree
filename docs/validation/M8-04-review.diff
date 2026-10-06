@@ -1,0 +1,3064 @@
+3e9a64ca5 docs(ftc): record controller endpoint evaluation evidence
+29be4123a feat(ftc): evaluate controller endpoints and scoped forwarding
+ docs/validation/M8-04-implementation.md            |  63 +++
+ docs/validation/controller-protocol.md             |  69 +++
+ docs/validation/m8-04/core-typecheck-29be4123a.log |   1 +
+ docs/validation/m8-04/core-typecheck-final.log     |   1 +
+ docs/validation/m8-04/core-typecheck.log           |   1 +
+ docs/validation/m8-04/evaluation-29be4123a.log     |  17 +
+ docs/validation/m8-04/evaluation-host.log          |  11 +
+ docs/validation/m8-04/evaluation.log               |  52 ++
+ docs/validation/m8-04/format-final.log             |   2 +
+ docs/validation/m8-04/format-write-final.log       |   8 +
+ docs/validation/m8-04/format-write.log             |   7 +
+ docs/validation/m8-04/green-endpoints.log          |  52 ++
+ docs/validation/m8-04/green-forward.log            |  17 +
+ docs/validation/m8-04/lint-final.log               |   3 +
+ docs/validation/m8-04/lint.log                     |  48 ++
+ docs/validation/m8-04/red-endpoints.log            | 590 +++++++++++++++++++++
+ docs/validation/m8-04/red-forward-behavior.log     | 110 ++++
+ docs/validation/m8-04/red-forward.log              | 118 +++++
+ docs/validation/m8-04/regressions-29be4123a.log    | 143 +++++
+ docs/validation/m8-04/regressions-host.log         | 132 +++++
+ docs/validation/m8-04/regressions.log              | 156 ++++++
+ docs/validation/m8-04/report-format-check.log      |   2 +
+ docs/validation/m8-04/report-format.log            |   2 +
+ .../m8-04/schema-typecheck-29be4123a.log           |   1 +
+ docs/validation/m8-04/schema-typecheck-final.log   |   1 +
+ docs/validation/m8-04/schema-typecheck.log         |   1 +
+ packages/core/src/ftc/controllers/adb.ts           |  49 ++
+ packages/core/src/ftc/controllers/panels.ts        | 207 ++++++++
+ .../test/ftc-adapters/controller-endpoints.test.ts | 387 ++++++++++++++
+ .../fixtures/controller-endpoints/FIRST-LICENSE    |  29 +
+ .../controller-endpoints/Frontend-LICENSE.md       |  23 +
+ .../controller-endpoints/Panels-LICENSE.md         |  23 +
+ .../fixtures/controller-endpoints/fixture.ts       |  87 +++
+ .../fixtures/controller-endpoints/loopback.ts      | 174 ++++++
+ .../fixtures/controller-endpoints/provenance.md    |  13 +
+ packages/core/test/ftc-evaluation/m8-04.test.ts    |  98 ++++
+ packages/schema/src/ftc-controller.ts              |  39 ++
+ 37 files changed, 2737 insertions(+)
+diff --git a/docs/validation/M8-04-implementation.md b/docs/validation/M8-04-implementation.md
+new file mode 100644
+index 000000000..f6bacc51f
+--- /dev/null
++++ b/docs/validation/M8-04-implementation.md
+@@ -0,0 +1,63 @@
++# M8-04 implementation and evaluation report
++
++Date: 2026-10-06. Delivery status: **DONE_WITH_CONCERNS for the scoped implementation/evaluation slice; the M8-04 task and acceptance gates remain open.** Physical and Windows requirements remain NOT RUN, not passing. No compatibility matrix row is promoted.
++
++Review base: `4a915eacb41f15bd54cb4617df08b4c181222f6a`. Product/test/fixture revision tested: **`29be4123ad812e66d26d225b899a46fa9b5d233d`** (`feat(ftc): evaluate controller endpoints and scoped forwarding`). This report and captured outputs are a subsequent documentation-only commit; no product changes follow the tested revision.
++
++## Scope and decisions
++
++Implemented additive `Adb.ForwardTransport`/`forwardPanels`, injected `Panels.ReadTransport`/`readEndpoints`, and canonical serializable `FtcController.EndpointError`/`ProtocolEvidence`. Existing M8-01 candidate, error, discovery parsing and `Controllers.layer(transport)` are unchanged. No public Protocol/HttpApi, manifest, lockfile, generated client, registration, composition, shared checklist or coordinator ledger edits are part of this delivery.
++
++Used Superpowers TDD and its test guidance for executable behavior; coordinator owns independent review. Rulings: use the existing assigned checkout, no subagents/shared ledger writes, run affected tests rather than an unrelated Core blanket suite, and retain unavailable physical checks as open gates. These follow the dispatch brief's explicit constraints. Resource decoders implement only the minimal source-backed subset; no claimed safe dashboard fallback is fabricated from bidirectional forwards.
++
++See [controller protocol](controller-protocol.md) for exact source versions, routes, resource limitations, identity/log unknowns, M9/M10 handoff, and required real-platform matrix. The prior [source preflight](M8-04-source-preflight.md) was reused; no source rediscovery/download was performed.
++
++## Reproducible environment and commands
++
++Host: macOS 26.5.2 (25F84), arm64. Bun 1.3.14 (`0d9b296a`); Effect 4.0.0-beta.83; provisioned workspace dependencies unchanged. All commands below prepend:
++
++```sh
++export PATH=/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64:$PATH
++```
++
++No real controller, Windows host, APK, production ADB forward, Electron dashboard or mutation authorization is supplied. ADB version is prior-audit information, not freshly executed; only its binary SHA-256 was read. Upstream source archive and license provenance are retained in [fixture provenance](../../packages/core/test/ftc-adapters/fixtures/controller-endpoints/provenance.md).
++
++| Cwd               | Exact command                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Exit / observed result                          | Output                                                  |
++| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------- |
++| `packages/core`   | `bun test ./test/ftc-evaluation/m8-04.test.ts`                                                                                                                                                                                                                                                                                                                                                                                                                                                 | 0; **3 pass, 5 skip, 0 fail**, 18 assertions    | [evaluation](m8-04/evaluation-29be4123a.log)            |
++| `packages/core`   | `bun test ./test/ftc-adapters/controller-endpoints.test.ts ./test/ftc/controller-connections/m8-01.test.ts ./test/ftc-evaluation/m9-07.test.ts ./test/ftc-evaluation/m8-04.test.ts`                                                                                                                                                                                                                                                                                                            | 0; **85 pass, 14 skip, 0 fail**, 207 assertions | [affected regressions](m8-04/regressions-29be4123a.log) |
++| `packages/core`   | `bun typecheck`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | 0; no type errors                               | [Core](m8-04/core-typecheck-29be4123a.log)              |
++| `packages/schema` | `bun typecheck`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | 0; no type errors                               | [Schema](m8-04/schema-typecheck-29be4123a.log)          |
++| repo root         | `bun run lint packages/core/src/ftc/controllers/adb.ts packages/core/src/ftc/controllers/panels.ts packages/schema/src/ftc-controller.ts packages/core/test/ftc-adapters/controller-endpoints.test.ts packages/core/test/ftc-adapters/fixtures/controller-endpoints/fixture.ts packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts packages/core/test/ftc-evaluation/m8-04.test.ts`                                                                                      | 0; 0 warnings/errors on final product content   | [lint](m8-04/lint-final.log)                            |
++| repo root         | `bunx prettier --check packages/core/src/ftc/controllers/adb.ts packages/core/src/ftc/controllers/panels.ts packages/schema/src/ftc-controller.ts packages/core/test/ftc-adapters/controller-endpoints.test.ts packages/core/test/ftc-adapters/fixtures/controller-endpoints/fixture.ts packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts packages/core/test/ftc-evaluation/m8-04.test.ts packages/core/test/ftc-adapters/fixtures/controller-endpoints/provenance.md` | 0; all matched files formatted                  | [format](m8-04/format-final.log)                        |
++
++The first loopback run under the restricted sandbox could not bind owned listeners (`EADDRINUSE` at port 0); [initial output](m8-04/evaluation.log) has 0 pass/3 fail. The initial affected selection likewise has 79 pass/9 skip/2 fail because both existing M9 loopback tests could not bind ([output](m8-04/regressions.log)). Re-running these exact fixture operations with approved host-loopback access passed. No external network/device operation was added. These are recorded environment failures, not discarded test failures.
++
++M9-07's nine skipped checks include optional macOS isolation/tool probes plus unavailable Windows/USB/extension/Electron gates; they were not enabled by this run. M8-04 adds five explicitly named NOT RUN rows. Schema's previously documented event-manifest and App locale baseline failures were not altered or rerun as unrelated suites.
++
++## Red/green evidence
++
++Tests were first written against missing forward/schema behavior ([initial absent-export failure](m8-04/red-forward.log), 0 pass/9 fail), then compiled stub behavior ([forward red](m8-04/red-forward-behavior.log), 1 pass/8 fail including cancellation timeout). Minimal forwarding behavior produced [9 pass/0 fail](m8-04/green-forward.log). Read-endpoint stub behavior produced [9 pass/35 fail](m8-04/red-endpoints.log); implementation produced [44 pass/0 fail](m8-04/green-endpoints.log). Later adversarial cases exercise existing branches: duplicate local leases, cleanup defects, duplicate plugins, hash/asset failures, receive cancellation, textual zero/empty packets and unknown read profile. The final revision's broader counts supersede intermediate runs. No real source captures or hardware outcomes are invented to turn a missing prerequisite green.
++
++## Required assertion / gate map
++
++| Requirement                                  | Concrete implementation/evidence                                                                                                                                                                    | Classification / remaining gate                                                                                                                |
++| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
++| Reproducible M8-04 harness                   | `test/ftc-evaluation/m8-04.test.ts`; three owned-loopback scenarios and five explicit skips                                                                                                         | Real macOS listener runtime, **synthetic protocol**. Required harness passes automated part only.                                              |
++| Version-aware HTTP/data endpoints            | `panels.ts` validates exact selected profile; GET resource shapes, nullable hashes, plugin IDs/declarations, gzip metadata, reported hash consistency, performance envelope and separate WS receive | Unit and source-derived loopback. No actual APK/full dashboard asset graph or binary version verification.                                     |
++| Malformed/missing/version/disconnected cases | `controller-endpoints.test.ts` fallback HTML 200, 404, bad hashes, duplicate plugin IDs, unknown frontend/profile, unsafe origins, health 200 + socket error                                        | 54 adapter tests in final selection. Fixture behavior only.                                                                                    |
++| Identity/capability evidence                 | Schema `ProtocolEvidence`, profile/evidence classification, unknown identity/deployment/freshness, blocked dashboard, unknown logs; loopback identical-software scenario                            | No physical identity or build association, no fabricated controller ID. M8-02/03 remain owners.                                                |
++| Source-backed resources/provenance           | Retained source audit plus fixture provenance and three verbatim license records                                                                                                                    | Primary-source inspection; no deployed runtime capture. Synthetic bundles/hashes are explicitly marked.                                        |
++| Scoped forwarding                            | `adb.ts` explicitly selected candidate; two ephemeral/no-rebind leases; Effect scope cleanup, rejected invalid/duplicate ports, second-lease conflict, cancellation, cleanup failure                | Real owned TCP listeners plus injected failures. Production ADB daemon semantics/ownership comparison and disconnected-device cleanup NOT RUN. |
++| Default-deny read/data boundary              | Injected GET and receive-only ports; no outbound messages; mutation/custom/plugin-reload/proxy frames rejected; unknown plugin routes not fetched                                                   | No production host and no security boundary claimed for raw TCP. M9-07/M9-08 stay open.                                                        |
++| Missing vs zero/freshness                    | Empty/zero/sentinel values preserved; absent sample omitted; freshness always unknown                                                                                                               | Does not attach robot/project, invent time or declare stale samples fresh. M10 integration needed.                                             |
++| Independent data from dashboard              | Reads use explicit data origin; dashboard stays blocked irrespective of resource success                                                                                                            | PAN-02 preparation only; no live telemetry acceptance.                                                                                         |
++| No regressions / dependencies                | M8-01 plus M9-07 affected selection; Core/Schema typechecks; scoped lint/format                                                                                                                     | No composition or generated client change. Tests never run from repo root.                                                                     |
++| Manual/physical matrix                       | Five explicit evaluation skips; detailed unavailable rows in protocol report                                                                                                                        | Control Hub/phone USB/Wi-Fi, Windows, actual logs/freshness/build association/dashboard mediation remain **NOT RUN**.                          |
++| Review and completion                        | Focused product commit and this evidence; coordinator reviews range from stated base                                                                                                                | Shared task completion checkboxes deliberately untouched; full M8-04 cannot close on fixture evidence.                                         |
++
++## Limitations for the next owners
++
++The adapter recognizes resource metadata for Telemetry/Battery/OpModeControl/Configurables/CameraStream but only decodes core/time, textual telemetry and finite battery samples. Other incoming frames fail closed, not silently become telemetry. Unknown/custom plugins and Limelight routes are not followed. Plugin hash equality never identifies a physical robot. Full dashboard resources, upstream JS execution, no-replay of real controls and external fallback are unverified.
++
++`ReadTransport` and `ForwardTransport` are narrow injected boundaries, not production network/ADB implementations. Any future host must prove bounded I/O, cancellation, acquisition compensation, exclusive lease ownership and response mediation before registration. A raw forward accepts traffic in both directions and cannot be used as a read-only capability. Fixed frontend port 8002 makes arbitrary-port dashboard forwarding insufficient. No approval, deployment/start/tuning, sibling module access or automatic replay was introduced.
+diff --git a/docs/validation/controller-protocol.md b/docs/validation/controller-protocol.md
+new file mode 100644
+index 000000000..2902c4b5b
+--- /dev/null
++++ b/docs/validation/controller-protocol.md
+@@ -0,0 +1,69 @@
++# Controller protocol evaluation — M8-04
++
++Date: 2026-10-06. Decision: **evaluation adapters and available-host fixture checks pass; no supported controller combination is promoted. M8-04, AC-09/10 and Panels acceptance remain open.**
++
++Implementation tested: `29be4123ad812e66d26d225b899a46fa9b5d233d`; review base `4a915eacb41f15bd54cb4617df08b4c181222f6a`. Exact commands, output and assertion mapping: [implementation report](M8-04-implementation.md). Primary-source audit: [source preflight](M8-04-source-preflight.md). Fixtures and preserved license records: [provenance](../../packages/core/test/ftc-adapters/fixtures/controller-endpoints/provenance.md).
++
++## Pinned source and environment
++
++- Panels source: `11d69a98e39c43a7d9edc5932275897c034f7a30`; retained archive SHA-256 `a619a2fe534de7b241b69d6fb2abc9935e129b23219a2ff9acabdaa631bdad56`, rechecked locally during this task. Source directory: `/private/tmp/m8-panels-preflight-11d69a98`.
++- Frontend package: `ftc-panels@1.1.44`; source gitHead `2c82e93df34e558f3a278c265ab4951599141e4f`. This is source evidence, not an APK/deployed version assertion.
++- Source declarations: Panels 1.0.7, Telemetry 1.0.7, OpModeControl 1.0.5, Configurables 1.0.7, Battery 1.0.5, FullPanels 1.0.17, Docs 1.0.8. Pinned setup guide requires SDK 12. No combination with M5's FTC 11.1 baseline is asserted.
++- Available host: macOS 26.5.2 / build 25F84 / arm64; Bun 1.3.14 (`0d9b296a`), workspace Effect 4.0.0-beta.83. Owned Bun HTTP/WebSocket and Node TCP listeners are the only runtime endpoints exercised.
++- ADB file: `/Users/dylanxu/Library/Android/sdk/platform-tools/adb`, SHA-256 `92105d0c0f006a6fbdd8a91e82b791d23e4746491062b62d5ecc34abecf9086b`. The prior audit recorded ADB 1.0.41 / 35.0.1. M8-04 read the file hash but did **not** run ADB, start its daemon, enumerate devices, install, start, tune, or probe any robot.
++
++## Observed protocol and implemented read boundary
++
++The source profile selects robot HTTP port 8001 and WebSocket port 8002 only for that exact pinned revision. Unknown profile revisions fail before I/O; these ports are not universal defaults. Source HTTP is plaintext and the adapter currently rejects HTTPS/WSS profiles rather than imply validated TLS behavior.
++
++`Panels.readEndpoints(input, ReadTransport)` accepts explicit HTTP/data origins and the evidence classification. It validates source-shaped responses through GET and one receive-only socket read. Transport ports have no send, queue, reconnect, arbitrary-method or subprocess capability. Their host implementation must enforce bounded response size/time, GET-only/no redirects, cancellation and scoped socket cleanup; no production host is registered here. The injected fixture host enforces GET/no redirects and receives one frame with a bounded socket wait. Fixture transport conformance is not proof of a secure live host.
++
++The returned canonical `FtcController.ProtocolEvidence` records the selected **profile** revision, observed plugin declarations and hashes, resource observations, optional received sample and `readEndpoints`. `deployment: unverified`, `identity: unknown`, `freshness: unknown`, dashboard blocked and logs unknown remain explicit. The caller-provided fixture/controller classification does not authenticate a controller or prove its source revision. These are observations, not a compatibility or mutation authorization token.
++
++| Resource / feature            | Source fact and evaluation result                                                                                                                                                                                                                                             |
++| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
++| `/`, `/index.html`            | Source serves web assets, including fallback root HTML. Fixture checks status and HTML shape only. Compiled asset graph, dynamic imports, IndexedDB, blob imports and actual dashboard rendering remain NOT RUN.                                                              |
++| `/api/plugins`                | Validated `core/pluginsDetails` envelope, loaded `details,config`, and skipped list shape. Source uses `text/html`; validation therefore checks data, not a JSON MIME assumption. Malformed/HTML fallback fails. Skipped-plugin detail is not yet a persisted evidence field. |
++| `/api/sha256`, `/api/shas`    | Validated hash format/null; plugin hashes are software observations, never hardware identity. Initial `"null"` metadata hash and null plugin hashes do not prove readiness. No bundle-byte cryptographic authenticity is claimed.                                             |
++| `/api/configs/<id>`           | Validated matching ID/version/frontend declaration for recognized plugin IDs. Unknown/custom plugins are recorded as blocked and no resource route is built from their IDs.                                                                                                   |
++| `/api/svelte/<id>`, `/sha256` | Recognized, non-null hash entries require JavaScript/gzip resource metadata and matching reported hashes; null entries record missing bundle evidence. Loopback serves actual gzip bytes and fetch decodes them. Synthetic JS is never executed.                              |
++| `/api/performance`            | Envelope and timing-array shape checked, including valid zero values. No runtime performance claim follows.                                                                                                                                                                   |
++| socket `/health`              | Only advisory; a 200 is followed by a real receive attempt. Loopback health 200 plus handshake 503 fails as disconnected and cleans up.                                                                                                                                       |
++| socket root                   | Pinned frontend uses root and fixed port 8002. Adapter uses an explicit independent data origin, does not depend on displaying the page, and never sends an application frame.                                                                                                |
++| Data subset                   | `core/time`, Telemetry `telemetryPacket` strings and Battery `battery` finite numbers validated. Textual zero, numeric zero, empty array, null/no sample and battery -1 sentinel stay distinct; values are not relabeled fresh or tied to a robot/project.                    |
++| Other data                    | OpMode list/status/timer, Configurables read updates, camera frames and plugin-specific protocols are documented by preflight but not decoded by this minimal receive subset; unknown frames fail closed. M10 owns richer decoding and freshness/association.                 |
++| Robot logs                    | No robot-log route found in inspected Panels handlers. Browser frame history is not robot logs. ADB/logcat remains a separate unevaluated adapter. Returned log availability is unknown.                                                                                      |
++
++Recognized resource metadata IDs are Telemetry, Battery, OpModeControl, Configurables and CameraStream. Their existence does not authorize their controls or validate their binaries. Other plugins, including LimelightProxy, are blocked from automatic resource probing. Missing assets never silently become a successful dashboard capability.
++
++## USB forwarding and routing decision
++
++`Adb.forwardPanels(candidate, revision, ForwardTransport)` consumes the canonical M8-01 candidate and preserves discovery contracts. Only available/authorized candidates enter forwarding. For the selected source profile, it requests two target-explicit, ephemeral-local, no-rebind leases to remote 8001/8002. The injected transport is responsible for atomic acquisition, compensating partial/failed acquisition, bounded completion, and ownership-aware lease closure; a production ADB CLI implementation remains unregistered and unverified.
++
++Effect scope owns both leases. Success/disposal, second-acquisition conflict, invalid/duplicate local ports, cancellation and cleanup failures are exercised. No remove-all operation exists. Cleanup failure makes the scope exit fail rather than report success. Consumers must retain the enclosing scope while using routes; returned evidence can outlive the sockets but does not keep them reachable.
++
++**Raw TCP forwarding is bidirectional.** An OS listener/ADB forward does not enforce a read-only robot boundary. The owned fixture forwards both directions; absence of application writes from the read adapter does not prevent another process from connecting or writing.
++
++The unmodified page chooses `window.location.hostname:8002` regardless of its HTTP port. Arbitrary local forward ports therefore cannot be promoted to working dashboard URLs. Concurrent targets need proven isolation/rewriting/mediation. Dashboard capability remains `blocked_unmediated_routes` even when all fixture reads pass. No composition, registration, Electron navigation or fallback-launch behavior was enabled.
++
++## Identity, mutation, replay and downstream gates
++
++Distinct synthetic devices with identical plugin/version/hash observations remain unknown identities. IP/port, ADB address, plugin hash, OpMode name and configuration UUID are not stable-controller identity proof. M8-02/03 retain identity and connection-generation ownership; this change adds neither lifecycle schema nor guessed controller ID.
++
++The read subset rejects source mutation message families: OpMode init/start/stop, Configurables updates, both gamepads, core/pluginReloaded, unknown/custom frames and Limelight proxy frames. It exposes no outgoing queue or reconnect operation. This is input rejection in an injected reader, **not proof that embedded dashboard writes are mediated**, and not a protected M9 action adapter.
++
++Source frontend outgoing frames may queue until open and reconnect may reload. Limelight proxies forward methods/bodies or raw bidirectional sockets and add ports 5800/5801/5805/5807. Complete routes, custom plugin onNewClient behavior, automatic timer stops, and no-replay across real generations require later evaluation. Keep M9-07/M9-08 and dashboard controls disabled. A disconnect never proves an OpMode stopped.
++
++## Required real evidence still unavailable
++
++| Gate                                                                                | Result / prerequisite                                                                                                                                                                       |
++| ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
++| Actual Control Hub and compatible phone, USB and Wi-Fi, macOS and Windows           | **NOT RUN** — no authorized controller; Windows host unavailable. Need explicit tested hardware/OS/SDK/Panels/frontend/deployed plugin matrix.                                              |
++| Real ADB forwarding ownership, daemon conflicts, disconnect/cancel cleanup          | **NOT RUN** — no device/daemon contact authorized. Owned loopback and injected conflict tests are not ADB conformance.                                                                      |
++| Full HTTP/resource graph, actual APK, WS handshake/events and extra plugins         | **NOT RUN** — need deployed binary/assets and live runtime captures. Source-shaped fixture subset only.                                                                                     |
++| Stable physical identity/alias convergence and build association                    | **NOT RUN** — no trusted stable identity endpoint observed. M8-02 and M5/M9 association gates remain separate.                                                                              |
++| Real telemetry source/project, freshness, retained snapshot and disconnect behavior | **NOT RUN** — clock strings are display time, battery is change-only, telemetry snapshots are uncertain. M10 must attach trusted receipt/connection context without inventing sample times. |
++| Robot logs                                                                          | **NOT RUN** — no verified Panels route; separate log adapter required.                                                                                                                      |
++| Electron embedding/external fallback, action mediation, replay and optional proxies | **NOT RUN** — raw forwarding cannot satisfy the boundary; real host/platform tests and M9 protection remain required.                                                                       |
++
++No source or fixture result closes PAN-01/02/03, ROB-01/05, FTC-05 or AC-09/10. The implementation supplies a repeatable evaluation boundary and evidence for those owners.
+diff --git a/docs/validation/m8-04/core-typecheck-29be4123a.log b/docs/validation/m8-04/core-typecheck-29be4123a.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m8-04/core-typecheck-29be4123a.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/docs/validation/m8-04/core-typecheck-final.log b/docs/validation/m8-04/core-typecheck-final.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m8-04/core-typecheck-final.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/docs/validation/m8-04/core-typecheck.log b/docs/validation/m8-04/core-typecheck.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m8-04/core-typecheck.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/docs/validation/m8-04/evaluation-29be4123a.log b/docs/validation/m8-04/evaluation-29be4123a.log
+new file mode 100644
+index 000000000..23d87a6bb
+--- /dev/null
++++ b/docs/validation/m8-04/evaluation-29be4123a.log
+@@ -0,0 +1,17 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-evaluation/m8-04.test.ts:
++(pass) source-derived protocol resolves HTTP, gzip plugin assets and receive-only data through owned TCP forwards [17.83ms]
++(pass) health 200 with socket 503 fails and closes both owned forwards [7.87ms]
++(pass) two synthetic controllers with identical software remain unknown identities on isolated routes [13.35ms]
++(skip) NOT RUN: real Control Hub and phone USB/Wi-Fi HTTP/WebSocket/plugin matrix
++(skip) NOT RUN: Windows ADB forwarding, conflicts, cancellation and resource cleanup
++(skip) NOT RUN: stable physical identity, alias convergence and deployed-build association
++(skip) NOT RUN: real robot logs and telemetry source/freshness across disconnect
++(skip) NOT RUN: Electron dashboard mediation, fixed-port routing, extra plugins and no-replay
++
++ 3 pass
++ 5 skip
++ 0 fail
++ 18 expect() calls
++Ran 8 tests across 1 file. [92.00ms]
+diff --git a/docs/validation/m8-04/evaluation-host.log b/docs/validation/m8-04/evaluation-host.log
+new file mode 100644
+index 000000000..26199e6d8
+--- /dev/null
++++ b/docs/validation/m8-04/evaluation-host.log
+@@ -0,0 +1,11 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-evaluation/m8-04.test.ts:
++(pass) source-derived protocol resolves HTTP, gzip plugin assets and receive-only data through owned TCP forwards [29.41ms]
++(pass) health 200 with socket 503 fails and closes both owned forwards [7.30ms]
++(pass) two synthetic controllers with identical software remain unknown identities on isolated routes [14.17ms]
++
++ 3 pass
++ 0 fail
++ 18 expect() calls
++Ran 3 tests across 1 file. [106.00ms]
+diff --git a/docs/validation/m8-04/evaluation.log b/docs/validation/m8-04/evaluation.log
+new file mode 100644
+index 000000000..739f4fbd4
+--- /dev/null
++++ b/docs/validation/m8-04/evaluation.log
+@@ -0,0 +1,52 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-evaluation/m8-04.test.ts:
++ 8 | export function loopback(socketUnavailable = false) {
++ 9 |   const source = fixture()
++10 |   const received: string[] = []
++11 |   const sockets = new Set<WebSocket>()
++12 |   const forwards = new Set<number>()
++13 |   const server = Bun.serve({
++                          ^
++error: Failed to start server. Is port 0 in use?
++ syscall: "listen",
++   errno: 0,
++    code: "EADDRINUSE"
++
++      at loopback (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts:13:22)
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-evaluation/m8-04.test.ts:15:17)
++(fail) source-derived protocol resolves HTTP, gzip plugin assets and receive-only data through owned TCP forwards [5.13ms]
++ 8 | export function loopback(socketUnavailable = false) {
++ 9 |   const source = fixture()
++10 |   const received: string[] = []
++11 |   const sockets = new Set<WebSocket>()
++12 |   const forwards = new Set<number>()
++13 |   const server = Bun.serve({
++                          ^
++error: Failed to start server. Is port 0 in use?
++ syscall: "listen",
++   errno: 0,
++    code: "EADDRINUSE"
++
++      at loopback (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts:13:22)
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-evaluation/m8-04.test.ts:34:17)
++(fail) health 200 with socket 503 fails and closes both owned forwards [0.17ms]
++ 8 | export function loopback(socketUnavailable = false) {
++ 9 |   const source = fixture()
++10 |   const received: string[] = []
++11 |   const sockets = new Set<WebSocket>()
++12 |   const forwards = new Set<number>()
++13 |   const server = Bun.serve({
++                          ^
++error: Failed to start server. Is port 0 in use?
++ syscall: "listen",
++   errno: 0,
++    code: "EADDRINUSE"
++
++      at loopback (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts:13:22)
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-evaluation/m8-04.test.ts:48:17)
++(fail) two synthetic controllers with identical software remain unknown identities on isolated routes [0.12ms]
++
++ 0 pass
++ 3 fail
++Ran 3 tests across 1 file. [55.00ms]
+diff --git a/docs/validation/m8-04/format-final.log b/docs/validation/m8-04/format-final.log
+new file mode 100644
+index 000000000..4aa0d16e7
+--- /dev/null
++++ b/docs/validation/m8-04/format-final.log
+@@ -0,0 +1,2 @@
++Checking formatting...
++All matched files use Prettier code style!
+diff --git a/docs/validation/m8-04/format-write-final.log b/docs/validation/m8-04/format-write-final.log
+new file mode 100644
+index 000000000..6c3add29a
+--- /dev/null
++++ b/docs/validation/m8-04/format-write-final.log
+@@ -0,0 +1,8 @@
++packages/core/src/ftc/controllers/adb.ts 33ms (unchanged)
++packages/core/src/ftc/controllers/panels.ts 14ms (unchanged)
++packages/schema/src/ftc-controller.ts 5ms (unchanged)
++packages/core/test/ftc-adapters/controller-endpoints.test.ts 18ms
++packages/core/test/ftc-adapters/fixtures/controller-endpoints/fixture.ts 3ms (unchanged)
++packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts 6ms (unchanged)
++packages/core/test/ftc-evaluation/m8-04.test.ts 3ms (unchanged)
++packages/core/test/ftc-adapters/fixtures/controller-endpoints/provenance.md 14ms (unchanged)
+diff --git a/docs/validation/m8-04/format-write.log b/docs/validation/m8-04/format-write.log
+new file mode 100644
+index 000000000..7c82bbde0
+--- /dev/null
++++ b/docs/validation/m8-04/format-write.log
+@@ -0,0 +1,7 @@
++packages/core/src/ftc/controllers/adb.ts 33ms
++packages/core/src/ftc/controllers/panels.ts 13ms
++packages/schema/src/ftc-controller.ts 5ms
++packages/core/test/ftc-adapters/controller-endpoints.test.ts 17ms
++packages/core/test/ftc-adapters/fixtures/controller-endpoints/fixture.ts 3ms
++packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts 6ms
++packages/core/test/ftc-evaluation/m8-04.test.ts 3ms
+diff --git a/docs/validation/m8-04/green-endpoints.log b/docs/validation/m8-04/green-endpoints.log
+new file mode 100644
+index 000000000..64194df43
+--- /dev/null
++++ b/docs/validation/m8-04/green-endpoints.log
+@@ -0,0 +1,52 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-adapters/controller-endpoints.test.ts:
++(pass) scoped forwards select the explicit target and never rebind or remove unrelated forwards [13.47ms]
++(pass) second-forward conflict cleans up only the first owned lease [0.33ms]
++(pass) unauthorized candidate is never forwarded [0.09ms]
++(pass) offline candidate is never forwarded [0.03ms]
++(pass) unavailable candidate is never forwarded [0.02ms]
++(pass) unknown revisions fail before assuming any controller ports [0.05ms]
++(pass) cancellation and repeated construction release owned forwards without replay [1.64ms]
++(pass) invalid lease ports fail and release rather than expose unusable routes [0.10ms]
++(pass) endpoint errors are serializable canonical contracts [0.89ms]
++(pass) read endpoints record protocol observations without claiming identity, deployment or safe dashboard access [7.06ms]
++(pass) HTML fallback with 200 at /api/plugins fails validation [0.54ms]
++(pass) HTML fallback with 200 at /api/shas fails validation [0.82ms]
++(pass) HTML fallback with 200 at /api/configs/com.bylazar.telemetry fails validation [2.87ms]
++(pass) HTML fallback with 200 at /api/performance fails validation [5.22ms]
++(pass) missing resource / is not a working endpoint [0.37ms]
++(pass) missing resource /index.html is not a working endpoint [1.23ms]
++(pass) missing resource /api/plugins is not a working endpoint [0.06ms]
++(pass) missing resource /api/shas is not a working endpoint [1.13ms]
++(pass) missing resource /api/svelte/com.bylazar.telemetry is not a working endpoint [0.73ms]
++(pass) missing resource /api/configs/com.bylazar.telemetry is not a working endpoint [0.16ms]
++(pass) null plugin hash is missing evidence and never triggers an invented bundle route [1.57ms]
++(pass) unknown frontend version fails rather than promote protocol compatibility [0.26ms]
++(pass) unknown plugins are recorded but their resources are never fetched [0.30ms]
++(pass) healthy HTTP does not hide a disconnected data socket [0.75ms]
++(pass) battery value %s is preserved without inventing freshness [0.45ms]
++(pass) battery value %s is preserved without inventing freshness [0.29ms]
++(pass) battery value %s is preserved without inventing freshness [0.23ms]
++(pass) missing sample is distinct from valid zero and omitted on encoding [1.07ms]
++(pass) unsupported or mutation frame core/pluginReloaded is rejected [1.33ms]
++(pass) unsupported or mutation frame com.bylazar.opmodecontrol/initOpMode is rejected [0.25ms]
++(pass) unsupported or mutation frame com.bylazar.opmodecontrol/startActiveOpMode is rejected [0.15ms]
++(pass) unsupported or mutation frame com.bylazar.opmodecontrol/stopActiveOpMode is rejected [0.10ms]
++(pass) unsupported or mutation frame com.bylazar.configurables/updatedConfigurable is rejected [0.50ms]
++(pass) unsupported or mutation frame com.bylazar.gamepad/gamepad0 is rejected [0.37ms]
++(pass) unsupported or mutation frame com.bylazar.gamepad/gamepad1 is rejected [0.47ms]
++(pass) unsupported or mutation frame custom/read is rejected [0.15ms]
++(pass) unsupported or mutation frame com.bylazar.limelightproxy/status is rejected [0.11ms]
++(pass) malformed frame fails: not-json [0.25ms]
++(pass) malformed frame fails: {"pluginID":"com.bylazar.battery","messageID":"battery","data":NaN} [0.11ms]
++(pass) malformed frame fails: {"pluginID":"com.bylazar.telemetry","messageID":"telemetryPacket","data":0} [0.16ms]
++(pass) unsafe base endpoint http://user:password@localhost:8001 is rejected before I/O [0.07ms]
++(pass) unsafe base endpoint https://example.org/path is rejected before I/O [0.03ms]
++(pass) unsafe base endpoint file:///tmp/example is rejected before I/O [0.04ms]
++(pass) unsafe base endpoint http://localhost:8001/?command=start is rejected before I/O [0.02ms]
++
++ 44 pass
++ 0 fail
++ 73 expect() calls
++Ran 44 tests across 1 file. [241.00ms]
+diff --git a/docs/validation/m8-04/green-forward.log b/docs/validation/m8-04/green-forward.log
+new file mode 100644
+index 000000000..ccc467148
+--- /dev/null
++++ b/docs/validation/m8-04/green-forward.log
+@@ -0,0 +1,17 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-adapters/controller-endpoints.test.ts:
++(pass) scoped forwards select the explicit target and never rebind or remove unrelated forwards [3.93ms]
++(pass) second-forward conflict cleans up only the first owned lease [0.24ms]
++(pass) unauthorized candidate is never forwarded [0.07ms]
++(pass) offline candidate is never forwarded [0.03ms]
++(pass) unavailable candidate is never forwarded [0.02ms]
++(pass) unknown revisions fail before assuming any controller ports [0.04ms]
++(pass) cancellation and repeated construction release owned forwards without replay [1.01ms]
++(pass) invalid lease ports fail and release rather than expose unusable routes [0.11ms]
++(pass) endpoint errors are serializable canonical contracts [0.88ms]
++
++ 9 pass
++ 0 fail
++ 20 expect() calls
++Ran 9 tests across 1 file. [57.00ms]
+diff --git a/docs/validation/m8-04/lint-final.log b/docs/validation/m8-04/lint-final.log
+new file mode 100644
+index 000000000..9a9a9544e
+--- /dev/null
++++ b/docs/validation/m8-04/lint-final.log
+@@ -0,0 +1,3 @@
++$ oxlint packages/core/src/ftc/controllers/adb.ts packages/core/src/ftc/controllers/panels.ts packages/schema/src/ftc-controller.ts packages/core/test/ftc-adapters/controller-endpoints.test.ts packages/core/test/ftc-adapters/fixtures/controller-endpoints/fixture.ts packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts "packages/core/test/ftc-evaluation/m8-04.test.ts"
++Found 0 warnings and 0 errors.
++Finished in 249ms on 7 files with 130 rules using 10 threads.
+diff --git a/docs/validation/m8-04/lint.log b/docs/validation/m8-04/lint.log
+new file mode 100644
+index 000000000..3885c5c89
+--- /dev/null
++++ b/docs/validation/m8-04/lint.log
+@@ -0,0 +1,48 @@
++$ oxlint packages/core/src/ftc/controllers/adb.ts packages/core/src/ftc/controllers/panels.ts packages/schema/src/ftc-controller.ts packages/core/test/ftc-adapters/controller-endpoints.test.ts packages/core/test/ftc-adapters/fixtures/controller-endpoints/fixture.ts packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts "packages/core/test/ftc-evaluation/m8-04.test.ts"
++
++  ! typescript-eslint(consistent-return): Function 'fetch' expected a return value.
++    ,-[packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts:20:38]
++ 19 |         if (socketUnavailable) return new Response("Panels has not started yet", { status: 503 })
++ 20 |         if (server.upgrade(request)) return
++    :                                      ^^^^^^
++ 21 |         return new Response("upgrade failed", { status: 400 })
++    `----
++
++  ! typescript-eslint(no-floating-promises): Promises must be awaited, add void operator to ignore.
++    ,-[packages/core/test/ftc-evaluation/m8-04.test.ts:39:5]
++ 38 |   } finally {
++ 39 |     local.close()
++    :     ^^^^^^^^^^^^^
++ 40 |   }
++    `----
++  help: The promise must end with a call to .catch, or end with a call to .then with a rejection handler, or be explicitly marked as ignored with the `void` operator.
++
++  ! typescript-eslint(no-floating-promises): Promises must be awaited, add void operator to ignore.
++    ,-[packages/core/test/ftc-evaluation/m8-04.test.ts:59:5]
++ 58 |   } finally {
++ 59 |     local.close()
++    :     ^^^^^^^^^^^^^
++ 60 |   }
++    `----
++  help: The promise must end with a call to .catch, or end with a call to .then with a rejection handler, or be explicitly marked as ignored with the `void` operator.
++
++  ! typescript-eslint(no-floating-promises): Promises must be awaited, add void operator to ignore.
++    ,-[packages/core/test/ftc-evaluation/m8-04.test.ts:89:5]
++ 88 |   } finally {
++ 89 |     first.close()
++    :     ^^^^^^^^^^^^^
++ 90 |     second.close()
++    `----
++  help: The promise must end with a call to .catch, or end with a call to .then with a rejection handler, or be explicitly marked as ignored with the `void` operator.
++
++  ! typescript-eslint(no-floating-promises): Promises must be awaited, add void operator to ignore.
++    ,-[packages/core/test/ftc-evaluation/m8-04.test.ts:90:5]
++ 89 |     first.close()
++ 90 |     second.close()
++    :     ^^^^^^^^^^^^^^
++ 91 |   }
++    `----
++  help: The promise must end with a call to .catch, or end with a call to .then with a rejection handler, or be explicitly marked as ignored with the `void` operator.
++
++Found 5 warnings and 0 errors.
++Finished in 580ms on 7 files with 130 rules using 10 threads.
+diff --git a/docs/validation/m8-04/red-endpoints.log b/docs/validation/m8-04/red-endpoints.log
+new file mode 100644
+index 000000000..4fe0347c5
+--- /dev/null
++++ b/docs/validation/m8-04/red-endpoints.log
+@@ -0,0 +1,590 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-adapters/controller-endpoints.test.ts:
++(pass) scoped forwards select the explicit target and never rebind or remove unrelated forwards [4.38ms]
++(pass) second-forward conflict cleans up only the first owned lease [0.21ms]
++(pass) unauthorized candidate is never forwarded [0.07ms]
++(pass) offline candidate is never forwarded [0.03ms]
++(pass) unavailable candidate is never forwarded [0.02ms]
++(pass) unknown revisions fail before assuming any controller ports [0.04ms]
++(pass) cancellation and repeated construction release owned forwards without replay [1.37ms]
++(pass) invalid lease ports fail and release rather than expose unusable routes [0.08ms]
++(pass) endpoint errors are serializable canonical contracts [0.78ms]
++error
++{
++  code: "resource_invalid",
++}
++(fail) read endpoints record protocol observations without claiming identity, deployment or safe dashboard access [1.63ms]
++114 | })
++115 | 
++116 | test.each(["/api/plugins", "/api/shas", "/api/configs/com.bylazar.telemetry", "/api/performance"])("HTML fallback with 200 at %s fails validation", async (path) => {
++117 |   const source = fixture()
++118 |   source.resources[path] = source.resources["/"]
++119 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_invalid", resource: path })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++    "code": "resource_invalid",
++-   "resource": "/api/plugins",
++  }
++
++- Expected  - 1
+++ Received  + 0
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:119:100)
++(fail) HTML fallback with 200 at /api/plugins fails validation [1.48ms]
++114 | })
++115 | 
++116 | test.each(["/api/plugins", "/api/shas", "/api/configs/com.bylazar.telemetry", "/api/performance"])("HTML fallback with 200 at %s fails validation", async (path) => {
++117 |   const source = fixture()
++118 |   source.resources[path] = source.resources["/"]
++119 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_invalid", resource: path })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++    "code": "resource_invalid",
++-   "resource": "/api/shas",
++  }
++
++- Expected  - 1
+++ Received  + 0
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:119:100)
++(fail) HTML fallback with 200 at /api/shas fails validation [0.05ms]
++114 | })
++115 | 
++116 | test.each(["/api/plugins", "/api/shas", "/api/configs/com.bylazar.telemetry", "/api/performance"])("HTML fallback with 200 at %s fails validation", async (path) => {
++117 |   const source = fixture()
++118 |   source.resources[path] = source.resources["/"]
++119 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_invalid", resource: path })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++    "code": "resource_invalid",
++-   "resource": "/api/configs/com.bylazar.telemetry",
++  }
++
++- Expected  - 1
+++ Received  + 0
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:119:100)
++(fail) HTML fallback with 200 at /api/configs/com.bylazar.telemetry fails validation [0.04ms]
++114 | })
++115 | 
++116 | test.each(["/api/plugins", "/api/shas", "/api/configs/com.bylazar.telemetry", "/api/performance"])("HTML fallback with 200 at %s fails validation", async (path) => {
++117 |   const source = fixture()
++118 |   source.resources[path] = source.resources["/"]
++119 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_invalid", resource: path })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++    "code": "resource_invalid",
++-   "resource": "/api/performance",
++  }
++
++- Expected  - 1
+++ Received  + 0
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:119:100)
++(fail) HTML fallback with 200 at /api/performance fails validation [0.03ms]
++120 | })
++121 | 
++122 | test.each(["/", "/index.html", "/api/plugins", "/api/shas", "/api/svelte/com.bylazar.telemetry", "/api/configs/com.bylazar.telemetry"])("missing resource %s is not a working endpoint", async (path) => {
++123 |   const source = fixture()
++124 |   source.resources[path] = { status: 404, contentType: "text/plain", body: "not found" }
++125 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_missing", resource: path })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "resource_missing",
++-   "resource": "/",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 2
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:125:100)
++(fail) missing resource / is not a working endpoint [0.11ms]
++120 | })
++121 | 
++122 | test.each(["/", "/index.html", "/api/plugins", "/api/shas", "/api/svelte/com.bylazar.telemetry", "/api/configs/com.bylazar.telemetry"])("missing resource %s is not a working endpoint", async (path) => {
++123 |   const source = fixture()
++124 |   source.resources[path] = { status: 404, contentType: "text/plain", body: "not found" }
++125 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_missing", resource: path })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "resource_missing",
++-   "resource": "/index.html",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 2
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:125:100)
++(fail) missing resource /index.html is not a working endpoint [0.03ms]
++120 | })
++121 | 
++122 | test.each(["/", "/index.html", "/api/plugins", "/api/shas", "/api/svelte/com.bylazar.telemetry", "/api/configs/com.bylazar.telemetry"])("missing resource %s is not a working endpoint", async (path) => {
++123 |   const source = fixture()
++124 |   source.resources[path] = { status: 404, contentType: "text/plain", body: "not found" }
++125 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_missing", resource: path })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "resource_missing",
++-   "resource": "/api/plugins",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 2
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:125:100)
++(fail) missing resource /api/plugins is not a working endpoint [0.03ms]
++120 | })
++121 | 
++122 | test.each(["/", "/index.html", "/api/plugins", "/api/shas", "/api/svelte/com.bylazar.telemetry", "/api/configs/com.bylazar.telemetry"])("missing resource %s is not a working endpoint", async (path) => {
++123 |   const source = fixture()
++124 |   source.resources[path] = { status: 404, contentType: "text/plain", body: "not found" }
++125 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_missing", resource: path })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "resource_missing",
++-   "resource": "/api/shas",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 2
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:125:100)
++(fail) missing resource /api/shas is not a working endpoint [0.03ms]
++120 | })
++121 | 
++122 | test.each(["/", "/index.html", "/api/plugins", "/api/shas", "/api/svelte/com.bylazar.telemetry", "/api/configs/com.bylazar.telemetry"])("missing resource %s is not a working endpoint", async (path) => {
++123 |   const source = fixture()
++124 |   source.resources[path] = { status: 404, contentType: "text/plain", body: "not found" }
++125 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_missing", resource: path })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "resource_missing",
++-   "resource": "/api/svelte/com.bylazar.telemetry",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 2
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:125:100)
++(fail) missing resource /api/svelte/com.bylazar.telemetry is not a working endpoint [0.05ms]
++120 | })
++121 | 
++122 | test.each(["/", "/index.html", "/api/plugins", "/api/shas", "/api/svelte/com.bylazar.telemetry", "/api/configs/com.bylazar.telemetry"])("missing resource %s is not a working endpoint", async (path) => {
++123 |   const source = fixture()
++124 |   source.resources[path] = { status: 404, contentType: "text/plain", body: "not found" }
++125 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_missing", resource: path })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "resource_missing",
++-   "resource": "/api/configs/com.bylazar.telemetry",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 2
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:125:100)
++(fail) missing resource /api/configs/com.bylazar.telemetry is not a working endpoint [0.03ms]
++error
++{
++  code: "resource_invalid",
++}
++(fail) null plugin hash is missing evidence and never triggers an invented bundle route [0.05ms]
++136 | 
++137 | test("unknown frontend version fails rather than promote protocol compatibility", async () => {
++138 |   const source = fixture()
++139 |   source.plugins.data.plugins[0].details.pluginsCoreVersion = "2.0.0"
++140 |   source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
++141 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "protocol_unknown" })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "protocol_unknown",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:141:100)
++(fail) unknown frontend version fails rather than promote protocol compatibility [0.06ms]
++error
++{
++  code: "resource_invalid",
++}
++(fail) unknown plugins are recorded but their resources are never fetched [0.04ms]
++150 |   expect(source.requests.some((url) => url.includes("/api/configs/") || url.includes("/api/svelte/"))).toBe(false)
++151 | })
++152 | 
++153 | test("healthy HTTP does not hide a disconnected data socket", async () => {
++154 |   const source = fixture()
++155 |   expect(await Effect.runPromise(Panels.readEndpoints(input, { ...source.transport, receive: () => Effect.fail({ code: "socket_disconnected" }) }).pipe(Effect.flip))).toEqual({ code: "socket_disconnected" })
++                                                                                                                                                                             ^
++error: expect(received).toEqual(expected)
++
++  {
++-   "code": "socket_disconnected",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:155:168)
++(fail) healthy HTTP does not hide a disconnected data socket [0.06ms]
++error
++{
++  code: "resource_invalid",
++}
++(fail) battery value %s is preserved without inventing freshness [0.04ms]
++error
++{
++  code: "resource_invalid",
++}
++(fail) battery value %s is preserved without inventing freshness [0.01ms]
++error
++{
++  code: "resource_invalid",
++}
++(fail) battery value %s is preserved without inventing freshness [0.02ms]
++error
++{
++  code: "resource_invalid",
++}
++(fail) missing sample is distinct from valid zero and omitted on encoding [0.03ms]
++176 |   ["com.bylazar.configurables", "updatedConfigurable"], ["com.bylazar.gamepad", "gamepad0"],
++177 |   ["com.bylazar.gamepad", "gamepad1"], ["custom", "read"], ["com.bylazar.limelightproxy", "status"],
++178 | ])("unsupported or mutation frame %s/%s is rejected", async (pluginID, messageID) => {
++179 |   const source = fixture()
++180 |   source.frames.value = JSON.stringify({ pluginID, messageID, data: 0 })
++181 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_unsupported" })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "frame_unsupported",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:181:100)
++(fail) unsupported or mutation frame core/pluginReloaded is rejected [0.06ms]
++176 |   ["com.bylazar.configurables", "updatedConfigurable"], ["com.bylazar.gamepad", "gamepad0"],
++177 |   ["com.bylazar.gamepad", "gamepad1"], ["custom", "read"], ["com.bylazar.limelightproxy", "status"],
++178 | ])("unsupported or mutation frame %s/%s is rejected", async (pluginID, messageID) => {
++179 |   const source = fixture()
++180 |   source.frames.value = JSON.stringify({ pluginID, messageID, data: 0 })
++181 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_unsupported" })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "frame_unsupported",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:181:100)
++(fail) unsupported or mutation frame com.bylazar.opmodecontrol/initOpMode is rejected [0.04ms]
++176 |   ["com.bylazar.configurables", "updatedConfigurable"], ["com.bylazar.gamepad", "gamepad0"],
++177 |   ["com.bylazar.gamepad", "gamepad1"], ["custom", "read"], ["com.bylazar.limelightproxy", "status"],
++178 | ])("unsupported or mutation frame %s/%s is rejected", async (pluginID, messageID) => {
++179 |   const source = fixture()
++180 |   source.frames.value = JSON.stringify({ pluginID, messageID, data: 0 })
++181 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_unsupported" })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "frame_unsupported",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:181:100)
++(fail) unsupported or mutation frame com.bylazar.opmodecontrol/startActiveOpMode is rejected [0.03ms]
++176 |   ["com.bylazar.configurables", "updatedConfigurable"], ["com.bylazar.gamepad", "gamepad0"],
++177 |   ["com.bylazar.gamepad", "gamepad1"], ["custom", "read"], ["com.bylazar.limelightproxy", "status"],
++178 | ])("unsupported or mutation frame %s/%s is rejected", async (pluginID, messageID) => {
++179 |   const source = fixture()
++180 |   source.frames.value = JSON.stringify({ pluginID, messageID, data: 0 })
++181 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_unsupported" })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "frame_unsupported",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:181:100)
++(fail) unsupported or mutation frame com.bylazar.opmodecontrol/stopActiveOpMode is rejected [0.03ms]
++176 |   ["com.bylazar.configurables", "updatedConfigurable"], ["com.bylazar.gamepad", "gamepad0"],
++177 |   ["com.bylazar.gamepad", "gamepad1"], ["custom", "read"], ["com.bylazar.limelightproxy", "status"],
++178 | ])("unsupported or mutation frame %s/%s is rejected", async (pluginID, messageID) => {
++179 |   const source = fixture()
++180 |   source.frames.value = JSON.stringify({ pluginID, messageID, data: 0 })
++181 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_unsupported" })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "frame_unsupported",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:181:100)
++(fail) unsupported or mutation frame com.bylazar.configurables/updatedConfigurable is rejected [0.03ms]
++176 |   ["com.bylazar.configurables", "updatedConfigurable"], ["com.bylazar.gamepad", "gamepad0"],
++177 |   ["com.bylazar.gamepad", "gamepad1"], ["custom", "read"], ["com.bylazar.limelightproxy", "status"],
++178 | ])("unsupported or mutation frame %s/%s is rejected", async (pluginID, messageID) => {
++179 |   const source = fixture()
++180 |   source.frames.value = JSON.stringify({ pluginID, messageID, data: 0 })
++181 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_unsupported" })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "frame_unsupported",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:181:100)
++(fail) unsupported or mutation frame com.bylazar.gamepad/gamepad0 is rejected [0.03ms]
++176 |   ["com.bylazar.configurables", "updatedConfigurable"], ["com.bylazar.gamepad", "gamepad0"],
++177 |   ["com.bylazar.gamepad", "gamepad1"], ["custom", "read"], ["com.bylazar.limelightproxy", "status"],
++178 | ])("unsupported or mutation frame %s/%s is rejected", async (pluginID, messageID) => {
++179 |   const source = fixture()
++180 |   source.frames.value = JSON.stringify({ pluginID, messageID, data: 0 })
++181 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_unsupported" })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "frame_unsupported",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:181:100)
++(fail) unsupported or mutation frame com.bylazar.gamepad/gamepad1 is rejected [0.04ms]
++176 |   ["com.bylazar.configurables", "updatedConfigurable"], ["com.bylazar.gamepad", "gamepad0"],
++177 |   ["com.bylazar.gamepad", "gamepad1"], ["custom", "read"], ["com.bylazar.limelightproxy", "status"],
++178 | ])("unsupported or mutation frame %s/%s is rejected", async (pluginID, messageID) => {
++179 |   const source = fixture()
++180 |   source.frames.value = JSON.stringify({ pluginID, messageID, data: 0 })
++181 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_unsupported" })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "frame_unsupported",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:181:100)
++(fail) unsupported or mutation frame custom/read is rejected [0.04ms]
++176 |   ["com.bylazar.configurables", "updatedConfigurable"], ["com.bylazar.gamepad", "gamepad0"],
++177 |   ["com.bylazar.gamepad", "gamepad1"], ["custom", "read"], ["com.bylazar.limelightproxy", "status"],
++178 | ])("unsupported or mutation frame %s/%s is rejected", async (pluginID, messageID) => {
++179 |   const source = fixture()
++180 |   source.frames.value = JSON.stringify({ pluginID, messageID, data: 0 })
++181 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_unsupported" })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "frame_unsupported",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:181:100)
++(fail) unsupported or mutation frame com.bylazar.limelightproxy/status is rejected [0.03ms]
++182 | })
++183 | 
++184 | test.each(["not-json", '{"pluginID":"com.bylazar.battery","messageID":"battery","data":NaN}', '{"pluginID":"com.bylazar.telemetry","messageID":"telemetryPacket","data":0}'])("malformed frame fails: %s", async (frame) => {
++185 |   const source = fixture()
++186 |   source.frames.value = frame
++187 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_invalid" })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "frame_invalid",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:187:100)
++(fail) malformed frame fails: not-json [0.05ms]
++182 | })
++183 | 
++184 | test.each(["not-json", '{"pluginID":"com.bylazar.battery","messageID":"battery","data":NaN}', '{"pluginID":"com.bylazar.telemetry","messageID":"telemetryPacket","data":0}'])("malformed frame fails: %s", async (frame) => {
++185 |   const source = fixture()
++186 |   source.frames.value = frame
++187 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_invalid" })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "frame_invalid",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:187:100)
++(fail) malformed frame fails: {"pluginID":"com.bylazar.battery","messageID":"battery","data":NaN} [0.03ms]
++182 | })
++183 | 
++184 | test.each(["not-json", '{"pluginID":"com.bylazar.battery","messageID":"battery","data":NaN}', '{"pluginID":"com.bylazar.telemetry","messageID":"telemetryPacket","data":0}'])("malformed frame fails: %s", async (frame) => {
++185 |   const source = fixture()
++186 |   source.frames.value = frame
++187 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_invalid" })
++                                                                                                         ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "frame_invalid",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:187:100)
++(fail) malformed frame fails: {"pluginID":"com.bylazar.telemetry","messageID":"telemetryPacket","data":0} [0.03ms]
++187 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_invalid" })
++188 | })
++189 | 
++190 | test.each(["http://user:password@localhost:8001", "https://example.org/path", "file:///tmp/example", "http://localhost:8001/?command=start"])("unsafe base endpoint %s is rejected before I/O", async (httpOrigin) => {
++191 |   const source = fixture()
++192 |   expect(await Effect.runPromise(Panels.readEndpoints({ ...input, httpOrigin }, source.transport).pipe(Effect.flip))).toMatchObject({ code: "endpoint_invalid" })
++                                                                                                                            ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "endpoint_invalid",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:192:119)
++(fail) unsafe base endpoint http://user:password@localhost:8001 is rejected before I/O [0.05ms]
++187 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_invalid" })
++188 | })
++189 | 
++190 | test.each(["http://user:password@localhost:8001", "https://example.org/path", "file:///tmp/example", "http://localhost:8001/?command=start"])("unsafe base endpoint %s is rejected before I/O", async (httpOrigin) => {
++191 |   const source = fixture()
++192 |   expect(await Effect.runPromise(Panels.readEndpoints({ ...input, httpOrigin }, source.transport).pipe(Effect.flip))).toMatchObject({ code: "endpoint_invalid" })
++                                                                                                                            ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "endpoint_invalid",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:192:119)
++(fail) unsafe base endpoint https://example.org/path is rejected before I/O [0.03ms]
++187 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_invalid" })
++188 | })
++189 | 
++190 | test.each(["http://user:password@localhost:8001", "https://example.org/path", "file:///tmp/example", "http://localhost:8001/?command=start"])("unsafe base endpoint %s is rejected before I/O", async (httpOrigin) => {
++191 |   const source = fixture()
++192 |   expect(await Effect.runPromise(Panels.readEndpoints({ ...input, httpOrigin }, source.transport).pipe(Effect.flip))).toMatchObject({ code: "endpoint_invalid" })
++                                                                                                                            ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "endpoint_invalid",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:192:119)
++(fail) unsafe base endpoint file:///tmp/example is rejected before I/O [0.02ms]
++187 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_invalid" })
++188 | })
++189 | 
++190 | test.each(["http://user:password@localhost:8001", "https://example.org/path", "file:///tmp/example", "http://localhost:8001/?command=start"])("unsafe base endpoint %s is rejected before I/O", async (httpOrigin) => {
++191 |   const source = fixture()
++192 |   expect(await Effect.runPromise(Panels.readEndpoints({ ...input, httpOrigin }, source.transport).pipe(Effect.flip))).toMatchObject({ code: "endpoint_invalid" })
++                                                                                                                            ^
++error: expect(received).toMatchObject(expected)
++
++  {
++-   "code": "endpoint_invalid",
+++   "code": "resource_invalid",
++  }
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:192:119)
++(fail) unsafe base endpoint http://localhost:8001/?command=start is rejected before I/O [0.03ms]
++
++ 9 pass
++ 35 fail
++ 48 expect() calls
++Ran 44 tests across 1 file. [160.00ms]
+diff --git a/docs/validation/m8-04/red-forward-behavior.log b/docs/validation/m8-04/red-forward-behavior.log
+new file mode 100644
+index 000000000..d698511fd
+--- /dev/null
++++ b/docs/validation/m8-04/red-forward-behavior.log
+@@ -0,0 +1,110 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-adapters/controller-endpoints.test.ts:
++error
++{
++  code: "forward_invalid",
++}
++(fail) scoped forwards select the explicit target and never rebind or remove unrelated forwards [5.18ms]
++47 | })
++48 | 
++49 | test("second-forward conflict cleans up only the first owned lease", async () => {
++50 |   const fixture = forwards(true)
++51 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels(candidate, revision, fixture.transport)).pipe(Effect.flip))
++52 |   expect(result).toEqual({ code: "forward_conflict" })
++                      ^
++error: expect(received).toEqual(expected)
++
++  {
++-   "code": "forward_conflict",
+++   "code": "forward_invalid",
++  }
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:52:18)
++(fail) second-forward conflict cleans up only the first owned lease [4.20ms]
++54 | })
++55 | 
++56 | test.each(["unauthorized", "offline", "unavailable"] as const)("%s candidate is never forwarded", async (state) => {
++57 |   const fixture = forwards()
++58 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels({ ...candidate, state }, revision, fixture.transport)).pipe(Effect.flip))
++59 |   expect(result.code).toBe("candidate_unavailable")
++                           ^
++error: expect(received).toBe(expected)
++
++Expected: "candidate_unavailable"
++Received: "forward_invalid"
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:59:23)
++(fail) unauthorized candidate is never forwarded [0.61ms]
++54 | })
++55 | 
++56 | test.each(["unauthorized", "offline", "unavailable"] as const)("%s candidate is never forwarded", async (state) => {
++57 |   const fixture = forwards()
++58 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels({ ...candidate, state }, revision, fixture.transport)).pipe(Effect.flip))
++59 |   expect(result.code).toBe("candidate_unavailable")
++                           ^
++error: expect(received).toBe(expected)
++
++Expected: "candidate_unavailable"
++Received: "forward_invalid"
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:59:23)
++(fail) offline candidate is never forwarded [0.06ms]
++54 | })
++55 | 
++56 | test.each(["unauthorized", "offline", "unavailable"] as const)("%s candidate is never forwarded", async (state) => {
++57 |   const fixture = forwards()
++58 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels({ ...candidate, state }, revision, fixture.transport)).pipe(Effect.flip))
++59 |   expect(result.code).toBe("candidate_unavailable")
++                           ^
++error: expect(received).toBe(expected)
++
++Expected: "candidate_unavailable"
++Received: "forward_invalid"
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:59:23)
++(fail) unavailable candidate is never forwarded [0.04ms]
++61 | })
++62 | 
++63 | test("unknown revisions fail before assuming any controller ports", async () => {
++64 |   const fixture = forwards()
++65 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels(candidate, "future", fixture.transport)).pipe(Effect.flip))
++66 |   expect(result.code).toBe("protocol_unknown")
++                           ^
++error: expect(received).toBe(expected)
++
++Expected: "protocol_unknown"
++Received: "forward_invalid"
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:66:23)
++(fail) unknown revisions fail before assuming any controller ports [0.07ms]
++(fail) cancellation and repeated construction release owned forwards without replay [5000.00ms]
++  ^ this test timed out after 5000ms.
++87 |   const closed: number[] = []
++88 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels(candidate, revision, {
++89 |     open: () => Effect.succeed({ localPort: 0, close: Effect.sync(() => { closed.push(0) }) }),
++90 |   })).pipe(Effect.flip))
++91 |   expect(result.code).toBe("forward_invalid")
++92 |   expect(closed).toEqual([0])
++                      ^
++error: expect(received).toEqual(expected)
++
++- [
++-   0,
++- ]
+++ []
++
++- Expected  - 3
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:92:18)
++(fail) invalid lease ports fail and release rather than expose unusable routes [2.48ms]
++(pass) endpoint errors are serializable canonical contracts [1.13ms]
++
++ 1 pass
++ 8 fail
++ 8 expect() calls
++Ran 9 tests across 1 file. [5.08s]
+diff --git a/docs/validation/m8-04/red-forward.log b/docs/validation/m8-04/red-forward.log
+new file mode 100644
+index 000000000..213bdfe77
+--- /dev/null
++++ b/docs/validation/m8-04/red-forward.log
+@@ -0,0 +1,118 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-adapters/controller-endpoints.test.ts:
++32 | }
++33 | 
++34 | test("scoped forwards select the explicit target and never rebind or remove unrelated forwards", async () => {
++35 |   const fixture = forwards()
++36 |   const result = await Effect.runPromise(Effect.scoped(Effect.gen(function* () {
++37 |     const routes = yield* Adb.forwardPanels(candidate, revision, fixture.transport)
++                                   ^
++TypeError: Adb.forwardPanels is not a function. (In 'Adb.forwardPanels(candidate, revision, fixture.transport)', 'Adb.forwardPanels' is undefined)
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:37:31)
++      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
++      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
++      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
++      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
++      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
++      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:36:31)
++(fail) scoped forwards select the explicit target and never rebind or remove unrelated forwards [3.62ms]
++46 |   expect([...fixture.active]).toEqual([49999])
++47 | })
++48 | 
++49 | test("second-forward conflict cleans up only the first owned lease", async () => {
++50 |   const fixture = forwards(true)
++51 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels(candidate, revision, fixture.transport)).pipe(Effect.flip))
++                                                                ^
++TypeError: Adb.forwardPanels is not a function. (In 'Adb.forwardPanels(candidate, revision, fixture.transport)', 'Adb.forwardPanels' is undefined)
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:51:60)
++(fail) second-forward conflict cleans up only the first owned lease [0.06ms]
++53 |   expect([...fixture.active]).toEqual([49999])
++54 | })
++55 | 
++56 | test.each(["unauthorized", "offline", "unavailable"] as const)("%s candidate is never forwarded", async (state) => {
++57 |   const fixture = forwards()
++58 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels({ ...candidate, state }, revision, fixture.transport)).pipe(Effect.flip))
++                                                                ^
++TypeError: Adb.forwardPanels is not a function. (In 'Adb.forwardPanels({ ...candidate, state }, revision, fixture.transport)', 'Adb.forwardPanels' is undefined)
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:58:60)
++(fail) unauthorized candidate is never forwarded [0.06ms]
++53 |   expect([...fixture.active]).toEqual([49999])
++54 | })
++55 | 
++56 | test.each(["unauthorized", "offline", "unavailable"] as const)("%s candidate is never forwarded", async (state) => {
++57 |   const fixture = forwards()
++58 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels({ ...candidate, state }, revision, fixture.transport)).pipe(Effect.flip))
++                                                                ^
++TypeError: Adb.forwardPanels is not a function. (In 'Adb.forwardPanels({ ...candidate, state }, revision, fixture.transport)', 'Adb.forwardPanels' is undefined)
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:58:60)
++(fail) offline candidate is never forwarded [0.02ms]
++53 |   expect([...fixture.active]).toEqual([49999])
++54 | })
++55 | 
++56 | test.each(["unauthorized", "offline", "unavailable"] as const)("%s candidate is never forwarded", async (state) => {
++57 |   const fixture = forwards()
++58 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels({ ...candidate, state }, revision, fixture.transport)).pipe(Effect.flip))
++                                                                ^
++TypeError: Adb.forwardPanels is not a function. (In 'Adb.forwardPanels({ ...candidate, state }, revision, fixture.transport)', 'Adb.forwardPanels' is undefined)
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:58:60)
++(fail) unavailable candidate is never forwarded [0.03ms]
++60 |   expect(fixture.requests).toEqual([])
++61 | })
++62 | 
++63 | test("unknown revisions fail before assuming any controller ports", async () => {
++64 |   const fixture = forwards()
++65 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels(candidate, "future", fixture.transport)).pipe(Effect.flip))
++                                                                ^
++TypeError: Adb.forwardPanels is not a function. (In 'Adb.forwardPanels(candidate, "future", fixture.transport)', 'Adb.forwardPanels' is undefined)
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:65:60)
++(fail) unknown revisions fail before assuming any controller ports [0.04ms]
++69 | 
++70 | test("cancellation and repeated construction release owned forwards without replay", async () => {
++71 |   const fixture = forwards()
++72 |   const ready = Deferred.makeUnsafe<void>()
++73 |   await Effect.runPromise(Effect.gen(function* () {
++74 |     const fiber = yield* Effect.scoped(Adb.forwardPanels(candidate, revision, fixture.transport).pipe(
++                                                ^
++TypeError: Adb.forwardPanels is not a function. (In 'Adb.forwardPanels(candidate, revision, fixture.transport)', 'Adb.forwardPanels' is undefined)
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:74:44)
++      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
++      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
++      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
++      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
++      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
++      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:73:16)
++(fail) cancellation and repeated construction release owned forwards without replay [0.15ms]
++83 |   expect(fixture.requests).toHaveLength(4)
++84 | })
++85 | 
++86 | test("invalid lease ports fail and release rather than expose unusable routes", async () => {
++87 |   const closed: number[] = []
++88 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels(candidate, revision, {
++                                                                ^
++TypeError: Adb.forwardPanels is not a function. (In 'Adb.forwardPanels(candidate, revision, {
++    open: () => Effect.succeed({ localPort: 0, close: Effect.sync(() => {
++      closed.push(0);
++    }) })
++  })', 'Adb.forwardPanels' is undefined)
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:88:60)
++(fail) invalid lease ports fail and release rather than expose unusable routes [0.06ms]
++204 |  *
++205 |  * @category decoding
++206 |  * @since 4.0.0
++207 |  */
++208 | export function decodeUnknownEffect(schema, options) {
++209 |   const parser = run(schema.ast);
++                           ^
++TypeError: undefined is not an object (evaluating 'schema.ast')
++      at decodeUnknownEffect (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/SchemaParser.js:209:22)
++      at decodeUnknownEffect (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Schema.js:626:31)
++      at decodeUnknownSync (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Schema.js:885:18)
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:96:17)
++(fail) endpoint errors are serializable canonical contracts [0.07ms]
++
++ 0 pass
++ 9 fail
++Ran 9 tests across 1 file. [170.00ms]
+diff --git a/docs/validation/m8-04/regressions-29be4123a.log b/docs/validation/m8-04/regressions-29be4123a.log
+new file mode 100644
+index 000000000..727bd8151
+--- /dev/null
++++ b/docs/validation/m8-04/regressions-29be4123a.log
+@@ -0,0 +1,143 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-adapters/controller-endpoints.test.ts:
++(pass) scoped forwards select the explicit target and never rebind or remove unrelated forwards [2.93ms]
++(pass) second-forward conflict cleans up only the first owned lease [0.20ms]
++(pass) unauthorized candidate is never forwarded [0.06ms]
++(pass) offline candidate is never forwarded [0.02ms]
++(pass) unavailable candidate is never forwarded [0.02ms]
++(pass) unknown revisions fail before assuming any controller ports [0.04ms]
++(pass) cancellation and repeated construction release owned forwards without replay [0.59ms]
++(pass) invalid lease ports fail and release rather than expose unusable routes [0.08ms]
++(pass) endpoint errors are serializable canonical contracts [0.78ms]
++(pass) read endpoints record protocol observations without claiming identity, deployment or safe dashboard access [2.31ms]
++(pass) HTML fallback with 200 at /api/plugins fails validation [0.21ms]
++(pass) HTML fallback with 200 at /api/shas fails validation [0.13ms]
++(pass) HTML fallback with 200 at /api/configs/com.bylazar.telemetry fails validation [0.20ms]
++(pass) HTML fallback with 200 at /api/performance fails validation [0.15ms]
++(pass) missing resource / is not a working endpoint [0.06ms]
++(pass) missing resource /index.html is not a working endpoint [0.04ms]
++(pass) missing resource /api/plugins is not a working endpoint [0.04ms]
++(pass) missing resource /api/shas is not a working endpoint [0.08ms]
++(pass) missing resource /api/svelte/com.bylazar.telemetry is not a working endpoint [0.16ms]
++(pass) missing resource /api/configs/com.bylazar.telemetry is not a working endpoint [0.11ms]
++(pass) null plugin hash is missing evidence and never triggers an invented bundle route [0.22ms]
++(pass) unknown frontend version fails rather than promote protocol compatibility [0.12ms]
++(pass) unknown plugins are recorded but their resources are never fetched [0.16ms]
++(pass) healthy HTTP does not hide a disconnected data socket [0.15ms]
++(pass) battery value %s is preserved without inventing freshness [0.16ms]
++(pass) battery value %s is preserved without inventing freshness [0.11ms]
++(pass) battery value %s is preserved without inventing freshness [0.12ms]
++(pass) missing sample is distinct from valid zero and omitted on encoding [0.27ms]
++(pass) unsupported or mutation frame core/pluginReloaded is rejected [0.13ms]
++(pass) unsupported or mutation frame com.bylazar.opmodecontrol/initOpMode is rejected [0.10ms]
++(pass) unsupported or mutation frame com.bylazar.opmodecontrol/startActiveOpMode is rejected [0.10ms]
++(pass) unsupported or mutation frame com.bylazar.opmodecontrol/stopActiveOpMode is rejected [0.08ms]
++(pass) unsupported or mutation frame com.bylazar.configurables/updatedConfigurable is rejected [0.08ms]
++(pass) unsupported or mutation frame com.bylazar.gamepad/gamepad0 is rejected [0.09ms]
++(pass) unsupported or mutation frame com.bylazar.gamepad/gamepad1 is rejected [0.09ms]
++(pass) unsupported or mutation frame custom/read is rejected [0.09ms]
++(pass) unsupported or mutation frame com.bylazar.limelightproxy/status is rejected [0.07ms]
++(pass) malformed frame fails: not-json [0.12ms]
++(pass) malformed frame fails: {"pluginID":"com.bylazar.battery","messageID":"battery","data":NaN} [0.08ms]
++(pass) malformed frame fails: {"pluginID":"com.bylazar.telemetry","messageID":"telemetryPacket","data":0} [0.11ms]
++(pass) unsafe base endpoint http://user:password@localhost:8001 is rejected before I/O [0.05ms]
++(pass) unsafe base endpoint https://example.org/path is rejected before I/O [0.02ms]
++(pass) unsafe base endpoint file:///tmp/example is rejected before I/O [0.02ms]
++(pass) unsafe base endpoint http://localhost:8001/?command=start is rejected before I/O [0.02ms]
++(pass) same local port cannot describe distinct HTTP and socket forwards [0.11ms]
++(pass) cleanup failure cannot become successful forwarding completion [0.11ms]
++(pass) malformed hash at /api/sha256 is not accepted as version evidence [0.07ms]
++(pass) malformed hash at /api/shas is not accepted as version evidence [0.06ms]
++(pass) malformed hash at /api/svelte/com.bylazar.telemetry/sha256 is not accepted as version evidence [0.07ms]
++(pass) HTML fallback cannot masquerade as a JavaScript plugin resource [0.09ms]
++(pass) duplicate plugin identities are not merged silently [0.09ms]
++(pass) cancellation closes the scoped receive resource without reconnecting [0.26ms]
++(pass) textual telemetry preserves empty packets and valid textual zero [0.20ms]
++(pass) unrecognized read profile never probes guessed endpoints [0.03ms]
++
++test/ftc/controller-connections/m8-01.test.ts:
++(pass) unauthorized device is visible without deployment side effects [0.63ms]
++(pass) multiple targets retain authorization and reported model facts without identity guesses [0.20ms]
++(pass) keeps recovery visible but unavailable [0.07ms]
++(pass) keeps bootloader visible but unavailable [0.03ms]
++(pass) keeps sideload visible but unavailable [0.02ms]
++(pass) keeps future-state visible but unavailable [0.02ms]
++(pass) keeps no permissions (user in plugdev group) visible but unavailable [0.02ms]
++(pass) successful empty discovery differs from missing output [0.13ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: garbage
++SERIAL_A device
++ [0.04ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A
++ [0.03ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device not-metadata
++ [0.03ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device model:one model:two
++ [0.02ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device
++SERIAL_A offline
++ [0.03ms]
++(pass) ADB command failure differs from successful empty discovery [0.04ms]
++(pass) preserves adb_missing_tool from the read transport [0.08ms]
++(pass) preserves adb_transport_error from the read transport [0.02ms]
++(pass) releases the read resource after success [0.21ms]
++(pass) releases the read resource after malformed [0.05ms]
++(pass) releases the read resource after command [0.04ms]
++(pass) releases the read resource after transport [0.03ms]
++(pass) cancellation releases the active read and fresh scopes do not retain discovery state [0.35ms]
++(pass) canonical candidate contract omits optional values and is the exact facade contract [0.39ms]
++
++test/ftc-evaluation/m9-07.test.ts:
++(pass) owned process tree is gone after exit, including TERM-resistant inherited-pipe descendants [118.49ms]
++(pass) owned process tree is gone after timeout, including TERM-resistant inherited-pipe descendants [268.28ms]
++(pass) owned process tree is gone after abort, including TERM-resistant inherited-pipe descendants [267.13ms]
++{"mode":"http","restricted":false,"launcher":"absolute-bun","exit":0,"stdout":"probe_ready\n","stderr":"","received":["POST /broker"]}
++(pass) unrestricted absolute binary reaches owned HTTP broker despite filtered PATH [35.84ms]
++{"mode":"websocket","restricted":false,"launcher":"absolute-bun","exit":0,"stdout":"probe_ready\n","stderr":"","received":["probe"]}
++(pass) unrestricted process can send a dashboard-style WebSocket write [15.74ms]
++(skip) macOS candidate permits local development subprocess execution
++(skip) macOS candidate denies HTTP access to owned controller/broker fixture
++(skip) macOS candidate denies dashboard-style WebSocket writes
++(skip) real absolute ADB binary executes with filtered PATH (version only)
++(skip) real offline Gradle task reaches owned broker fixture without isolation
++(skip) NOT RUN: Windows process, USB, controller/broker and embedded dashboard isolation
++(skip) NOT RUN: macOS physical USB API and real controller HTTP/WebSocket denial
++(skip) NOT RUN: production extension/MCP descendants and broker capability isolation
++(skip) NOT RUN: real Electron embedded controls, preload/IPC, navigation and permissions
++(pass) M9-07 keeps unverified embedded dashboard and controls disabled [0.14ms]
++
++test/ftc-evaluation/m8-04.test.ts:
++(pass) source-derived protocol resolves HTTP, gzip plugin assets and receive-only data through owned TCP forwards [14.61ms]
++(pass) health 200 with socket 503 fails and closes both owned forwards [7.60ms]
++(pass) two synthetic controllers with identical software remain unknown identities on isolated routes [14.40ms]
++(skip) NOT RUN: real Control Hub and phone USB/Wi-Fi HTTP/WebSocket/plugin matrix
++(skip) NOT RUN: Windows ADB forwarding, conflicts, cancellation and resource cleanup
++(skip) NOT RUN: stable physical identity, alias convergence and deployed-build association
++(skip) NOT RUN: real robot logs and telemetry source/freshness across disconnect
++(skip) NOT RUN: Electron dashboard mediation, fixed-port routing, extra plugins and no-replay
++
++14 tests skipped:
++(skip) macOS candidate permits local development subprocess execution
++(skip) macOS candidate denies HTTP access to owned controller/broker fixture
++(skip) macOS candidate denies dashboard-style WebSocket writes
++(skip) real absolute ADB binary executes with filtered PATH (version only)
++(skip) real offline Gradle task reaches owned broker fixture without isolation
++(skip) NOT RUN: Windows process, USB, controller/broker and embedded dashboard isolation
++(skip) NOT RUN: macOS physical USB API and real controller HTTP/WebSocket denial
++(skip) NOT RUN: production extension/MCP descendants and broker capability isolation
++(skip) NOT RUN: real Electron embedded controls, preload/IPC, navigation and permissions
++(skip) NOT RUN: real Control Hub and phone USB/Wi-Fi HTTP/WebSocket/plugin matrix
++(skip) NOT RUN: Windows ADB forwarding, conflicts, cancellation and resource cleanup
++(skip) NOT RUN: stable physical identity, alias convergence and deployed-build association
++(skip) NOT RUN: real robot logs and telemetry source/freshness across disconnect
++(skip) NOT RUN: Electron dashboard mediation, fixed-port routing, extra plugins and no-replay
++
++ 85 pass
++ 14 skip
++ 0 fail
++ 207 expect() calls
++Ran 99 tests across 4 files. [823.00ms]
+diff --git a/docs/validation/m8-04/regressions-host.log b/docs/validation/m8-04/regressions-host.log
+new file mode 100644
+index 000000000..cc1d5769f
+--- /dev/null
++++ b/docs/validation/m8-04/regressions-host.log
+@@ -0,0 +1,132 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-adapters/controller-endpoints.test.ts:
++(pass) scoped forwards select the explicit target and never rebind or remove unrelated forwards [2.75ms]
++(pass) second-forward conflict cleans up only the first owned lease [0.21ms]
++(pass) unauthorized candidate is never forwarded [0.06ms]
++(pass) offline candidate is never forwarded [0.02ms]
++(pass) unavailable candidate is never forwarded [0.02ms]
++(pass) unknown revisions fail before assuming any controller ports [0.04ms]
++(pass) cancellation and repeated construction release owned forwards without replay [0.59ms]
++(pass) invalid lease ports fail and release rather than expose unusable routes [0.07ms]
++(pass) endpoint errors are serializable canonical contracts [0.72ms]
++(pass) read endpoints record protocol observations without claiming identity, deployment or safe dashboard access [2.35ms]
++(pass) HTML fallback with 200 at /api/plugins fails validation [0.21ms]
++(pass) HTML fallback with 200 at /api/shas fails validation [0.13ms]
++(pass) HTML fallback with 200 at /api/configs/com.bylazar.telemetry fails validation [0.27ms]
++(pass) HTML fallback with 200 at /api/performance fails validation [0.18ms]
++(pass) missing resource / is not a working endpoint [0.09ms]
++(pass) missing resource /index.html is not a working endpoint [0.04ms]
++(pass) missing resource /api/plugins is not a working endpoint [0.04ms]
++(pass) missing resource /api/shas is not a working endpoint [0.09ms]
++(pass) missing resource /api/svelte/com.bylazar.telemetry is not a working endpoint [0.18ms]
++(pass) missing resource /api/configs/com.bylazar.telemetry is not a working endpoint [0.11ms]
++(pass) null plugin hash is missing evidence and never triggers an invented bundle route [0.22ms]
++(pass) unknown frontend version fails rather than promote protocol compatibility [0.12ms]
++(pass) unknown plugins are recorded but their resources are never fetched [0.16ms]
++(pass) healthy HTTP does not hide a disconnected data socket [0.16ms]
++(pass) battery value %s is preserved without inventing freshness [0.15ms]
++(pass) battery value %s is preserved without inventing freshness [0.12ms]
++(pass) battery value %s is preserved without inventing freshness [0.13ms]
++(pass) missing sample is distinct from valid zero and omitted on encoding [0.28ms]
++(pass) unsupported or mutation frame core/pluginReloaded is rejected [0.13ms]
++(pass) unsupported or mutation frame com.bylazar.opmodecontrol/initOpMode is rejected [0.09ms]
++(pass) unsupported or mutation frame com.bylazar.opmodecontrol/startActiveOpMode is rejected [0.10ms]
++(pass) unsupported or mutation frame com.bylazar.opmodecontrol/stopActiveOpMode is rejected [0.12ms]
++(pass) unsupported or mutation frame com.bylazar.configurables/updatedConfigurable is rejected [0.08ms]
++(pass) unsupported or mutation frame com.bylazar.gamepad/gamepad0 is rejected [0.10ms]
++(pass) unsupported or mutation frame com.bylazar.gamepad/gamepad1 is rejected [0.10ms]
++(pass) unsupported or mutation frame custom/read is rejected [0.08ms]
++(pass) unsupported or mutation frame com.bylazar.limelightproxy/status is rejected [0.07ms]
++(pass) malformed frame fails: not-json [0.11ms]
++(pass) malformed frame fails: {"pluginID":"com.bylazar.battery","messageID":"battery","data":NaN} [0.08ms]
++(pass) malformed frame fails: {"pluginID":"com.bylazar.telemetry","messageID":"telemetryPacket","data":0} [0.12ms]
++(pass) unsafe base endpoint http://user:password@localhost:8001 is rejected before I/O [0.05ms]
++(pass) unsafe base endpoint https://example.org/path is rejected before I/O [0.02ms]
++(pass) unsafe base endpoint file:///tmp/example is rejected before I/O [0.02ms]
++(pass) unsafe base endpoint http://localhost:8001/?command=start is rejected before I/O [0.02ms]
++(pass) same local port cannot describe distinct HTTP and socket forwards [0.13ms]
++(pass) cleanup failure cannot become successful forwarding completion [0.10ms]
++(pass) malformed hash at /api/sha256 is not accepted as version evidence [0.06ms]
++(pass) malformed hash at /api/shas is not accepted as version evidence [0.06ms]
++(pass) malformed hash at /api/svelte/com.bylazar.telemetry/sha256 is not accepted as version evidence [0.07ms]
++(pass) HTML fallback cannot masquerade as a JavaScript plugin resource [0.09ms]
++(pass) duplicate plugin identities are not merged silently [0.09ms]
++(pass) cancellation closes the scoped receive resource without reconnecting [0.27ms]
++(pass) textual telemetry preserves empty packets and valid textual zero [1.20ms]
++
++test/ftc/controller-connections/m8-01.test.ts:
++(pass) unauthorized device is visible without deployment side effects [0.64ms]
++(pass) multiple targets retain authorization and reported model facts without identity guesses [0.20ms]
++(pass) keeps recovery visible but unavailable [0.07ms]
++(pass) keeps bootloader visible but unavailable [0.02ms]
++(pass) keeps sideload visible but unavailable [0.02ms]
++(pass) keeps future-state visible but unavailable [0.02ms]
++(pass) keeps no permissions (user in plugdev group) visible but unavailable [0.03ms]
++(pass) successful empty discovery differs from missing output [0.13ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: garbage
++SERIAL_A device
++ [0.04ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A
++ [0.03ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device not-metadata
++ [0.03ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device model:one model:two
++ [0.02ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device
++SERIAL_A offline
++ [0.03ms]
++(pass) ADB command failure differs from successful empty discovery [0.04ms]
++(pass) preserves adb_missing_tool from the read transport [0.09ms]
++(pass) preserves adb_transport_error from the read transport [0.02ms]
++(pass) releases the read resource after success [0.20ms]
++(pass) releases the read resource after malformed [0.05ms]
++(pass) releases the read resource after command [0.04ms]
++(pass) releases the read resource after transport [0.03ms]
++(pass) cancellation releases the active read and fresh scopes do not retain discovery state [0.37ms]
++(pass) canonical candidate contract omits optional values and is the exact facade contract [0.39ms]
++
++test/ftc-evaluation/m9-07.test.ts:
++(pass) owned process tree is gone after exit, including TERM-resistant inherited-pipe descendants [117.92ms]
++(pass) owned process tree is gone after timeout, including TERM-resistant inherited-pipe descendants [269.73ms]
++(pass) owned process tree is gone after abort, including TERM-resistant inherited-pipe descendants [266.78ms]
++{"mode":"http","restricted":false,"launcher":"absolute-bun","exit":0,"stdout":"probe_ready\n","stderr":"","received":["POST /broker"]}
++(pass) unrestricted absolute binary reaches owned HTTP broker despite filtered PATH [39.58ms]
++{"mode":"websocket","restricted":false,"launcher":"absolute-bun","exit":0,"stdout":"probe_ready\n","stderr":"","received":["probe"]}
++(pass) unrestricted process can send a dashboard-style WebSocket write [16.30ms]
++(skip) macOS candidate permits local development subprocess execution
++(skip) macOS candidate denies HTTP access to owned controller/broker fixture
++(skip) macOS candidate denies dashboard-style WebSocket writes
++(skip) real absolute ADB binary executes with filtered PATH (version only)
++(skip) real offline Gradle task reaches owned broker fixture without isolation
++(skip) NOT RUN: Windows process, USB, controller/broker and embedded dashboard isolation
++(skip) NOT RUN: macOS physical USB API and real controller HTTP/WebSocket denial
++(skip) NOT RUN: production extension/MCP descendants and broker capability isolation
++(skip) NOT RUN: real Electron embedded controls, preload/IPC, navigation and permissions
++(pass) M9-07 keeps unverified embedded dashboard and controls disabled [0.14ms]
++
++test/ftc-evaluation/m8-04.test.ts:
++(pass) source-derived protocol resolves HTTP, gzip plugin assets and receive-only data through owned TCP forwards [14.45ms]
++(pass) health 200 with socket 503 fails and closes both owned forwards [7.67ms]
++(pass) two synthetic controllers with identical software remain unknown identities on isolated routes [13.59ms]
++
++9 tests skipped:
++(skip) macOS candidate permits local development subprocess execution
++(skip) macOS candidate denies HTTP access to owned controller/broker fixture
++(skip) macOS candidate denies dashboard-style WebSocket writes
++(skip) real absolute ADB binary executes with filtered PATH (version only)
++(skip) real offline Gradle task reaches owned broker fixture without isolation
++(skip) NOT RUN: Windows process, USB, controller/broker and embedded dashboard isolation
++(skip) NOT RUN: macOS physical USB API and real controller HTTP/WebSocket denial
++(skip) NOT RUN: production extension/MCP descendants and broker capability isolation
++(skip) NOT RUN: real Electron embedded controls, preload/IPC, navigation and permissions
++
++ 84 pass
++ 9 skip
++ 0 fail
++ 205 expect() calls
++Ran 93 tests across 4 files. [829.00ms]
+diff --git a/docs/validation/m8-04/regressions.log b/docs/validation/m8-04/regressions.log
+new file mode 100644
+index 000000000..bb377a337
+--- /dev/null
++++ b/docs/validation/m8-04/regressions.log
+@@ -0,0 +1,156 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc-adapters/controller-endpoints.test.ts:
++(pass) scoped forwards select the explicit target and never rebind or remove unrelated forwards [3.88ms]
++(pass) second-forward conflict cleans up only the first owned lease [5.86ms]
++(pass) unauthorized candidate is never forwarded [0.23ms]
++(pass) offline candidate is never forwarded [0.05ms]
++(pass) unavailable candidate is never forwarded [0.06ms]
++(pass) unknown revisions fail before assuming any controller ports [0.14ms]
++(pass) cancellation and repeated construction release owned forwards without replay [1.64ms]
++(pass) invalid lease ports fail and release rather than expose unusable routes [0.13ms]
++(pass) endpoint errors are serializable canonical contracts [2.70ms]
++(pass) read endpoints record protocol observations without claiming identity, deployment or safe dashboard access [6.61ms]
++(pass) HTML fallback with 200 at /api/plugins fails validation [0.94ms]
++(pass) HTML fallback with 200 at /api/shas fails validation [1.28ms]
++(pass) HTML fallback with 200 at /api/configs/com.bylazar.telemetry fails validation [0.70ms]
++(pass) HTML fallback with 200 at /api/performance fails validation [0.48ms]
++(pass) missing resource / is not a working endpoint [0.23ms]
++(pass) missing resource /index.html is not a working endpoint [0.09ms]
++(pass) missing resource /api/plugins is not a working endpoint [0.08ms]
++(pass) missing resource /api/shas is not a working endpoint [0.19ms]
++(pass) missing resource /api/svelte/com.bylazar.telemetry is not a working endpoint [0.53ms]
++(pass) missing resource /api/configs/com.bylazar.telemetry is not a working endpoint [0.43ms]
++(pass) null plugin hash is missing evidence and never triggers an invented bundle route [5.70ms]
++(pass) unknown frontend version fails rather than promote protocol compatibility [0.24ms]
++(pass) unknown plugins are recorded but their resources are never fetched [0.23ms]
++(pass) healthy HTTP does not hide a disconnected data socket [0.18ms]
++(pass) battery value %s is preserved without inventing freshness [0.17ms]
++(pass) battery value %s is preserved without inventing freshness [0.11ms]
++(pass) battery value %s is preserved without inventing freshness [0.12ms]
++(pass) missing sample is distinct from valid zero and omitted on encoding [27.24ms]
++(pass) unsupported or mutation frame core/pluginReloaded is rejected [11.75ms]
++(pass) unsupported or mutation frame com.bylazar.opmodecontrol/initOpMode is rejected [0.21ms]
++(pass) unsupported or mutation frame com.bylazar.opmodecontrol/startActiveOpMode is rejected [0.13ms]
++(pass) unsupported or mutation frame com.bylazar.opmodecontrol/stopActiveOpMode is rejected [0.09ms]
++(pass) unsupported or mutation frame com.bylazar.configurables/updatedConfigurable is rejected [0.09ms]
++(pass) unsupported or mutation frame com.bylazar.gamepad/gamepad0 is rejected [2.89ms]
++(pass) unsupported or mutation frame com.bylazar.gamepad/gamepad1 is rejected [0.46ms]
++(pass) unsupported or mutation frame custom/read is rejected [0.29ms]
++(pass) unsupported or mutation frame com.bylazar.limelightproxy/status is rejected [0.23ms]
++(pass) malformed frame fails: not-json [1.00ms]
++(pass) malformed frame fails: {"pluginID":"com.bylazar.battery","messageID":"battery","data":NaN} [0.12ms]
++(pass) malformed frame fails: {"pluginID":"com.bylazar.telemetry","messageID":"telemetryPacket","data":0} [0.17ms]
++(pass) unsafe base endpoint http://user:password@localhost:8001 is rejected before I/O [0.09ms]
++(pass) unsafe base endpoint https://example.org/path is rejected before I/O [0.02ms]
++(pass) unsafe base endpoint file:///tmp/example is rejected before I/O [0.02ms]
++(pass) unsafe base endpoint http://localhost:8001/?command=start is rejected before I/O [0.02ms]
++(pass) same local port cannot describe distinct HTTP and socket forwards [0.18ms]
++(pass) cleanup failure cannot become successful forwarding completion [0.15ms]
++(pass) malformed hash at /api/sha256 is not accepted as version evidence [0.07ms]
++(pass) malformed hash at /api/shas is not accepted as version evidence [0.07ms]
++(pass) malformed hash at /api/svelte/com.bylazar.telemetry/sha256 is not accepted as version evidence [0.08ms]
++(pass) HTML fallback cannot masquerade as a JavaScript plugin resource [0.11ms]
++(pass) duplicate plugin identities are not merged silently [0.10ms]
++(pass) cancellation closes the scoped receive resource without reconnecting [0.32ms]
++(pass) textual telemetry preserves empty packets and valid textual zero [17.52ms]
++
++test/ftc/controller-connections/m8-01.test.ts:
++(pass) unauthorized device is visible without deployment side effects [1.45ms]
++(pass) multiple targets retain authorization and reported model facts without identity guesses [0.88ms]
++(pass) keeps recovery visible but unavailable [0.17ms]
++(pass) keeps bootloader visible but unavailable [0.04ms]
++(pass) keeps sideload visible but unavailable [0.04ms]
++(pass) keeps future-state visible but unavailable [0.02ms]
++(pass) keeps no permissions (user in plugdev group) visible but unavailable [0.03ms]
++(pass) successful empty discovery differs from missing output [0.20ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: garbage
++SERIAL_A device
++ [0.05ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A
++ [0.03ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device not-metadata
++ [0.03ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device model:one model:two
++ [0.03ms]
++(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
++SERIAL_A device
++SERIAL_A offline
++ [0.03ms]
++(pass) ADB command failure differs from successful empty discovery [0.04ms]
++(pass) preserves adb_missing_tool from the read transport [0.12ms]
++(pass) preserves adb_transport_error from the read transport [0.02ms]
++(pass) releases the read resource after success [0.27ms]
++(pass) releases the read resource after malformed [0.05ms]
++(pass) releases the read resource after command [0.04ms]
++(pass) releases the read resource after transport [0.04ms]
++(pass) cancellation releases the active read and fresh scopes do not retain discovery state [0.43ms]
++(pass) canonical candidate contract omits optional values and is the exact facade contract [0.84ms]
++
++test/ftc-evaluation/m9-07.test.ts:
++(pass) owned process tree is gone after exit, including TERM-resistant inherited-pipe descendants [134.79ms]
++(pass) owned process tree is gone after timeout, including TERM-resistant inherited-pipe descendants [270.86ms]
++(pass) owned process tree is gone after abort, including TERM-resistant inherited-pipe descendants [275.10ms]
++123 | async function probe(mode: "http" | "websocket", restricted: boolean, gradle?: string) {
++124 |   const received: string[] = []
++125 |   const directory = await mkdtemp(path.join(tmpdir(), "m9-07-"))
++126 |   const cleanup = { safe: true }
++127 |   try {
++128 |     const server = Bun.serve({
++                             ^
++error: Failed to start server. Is port 0 in use?
++ syscall: "listen",
++   errno: 0,
++    code: "EADDRINUSE"
++
++      at probe (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/action-boundary-probe.test.ts:128:24)
++(fail) unrestricted absolute binary reaches owned HTTP broker despite filtered PATH [3.32ms]
++123 | async function probe(mode: "http" | "websocket", restricted: boolean, gradle?: string) {
++124 |   const received: string[] = []
++125 |   const directory = await mkdtemp(path.join(tmpdir(), "m9-07-"))
++126 |   const cleanup = { safe: true }
++127 |   try {
++128 |     const server = Bun.serve({
++                             ^
++error: Failed to start server. Is port 0 in use?
++ syscall: "listen",
++   errno: 0,
++    code: "EADDRINUSE"
++
++      at probe (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/action-boundary-probe.test.ts:128:24)
++(fail) unrestricted process can send a dashboard-style WebSocket write [1.95ms]
++(skip) macOS candidate permits local development subprocess execution
++(skip) macOS candidate denies HTTP access to owned controller/broker fixture
++(skip) macOS candidate denies dashboard-style WebSocket writes
++(skip) real absolute ADB binary executes with filtered PATH (version only)
++(skip) real offline Gradle task reaches owned broker fixture without isolation
++(skip) NOT RUN: Windows process, USB, controller/broker and embedded dashboard isolation
++(skip) NOT RUN: macOS physical USB API and real controller HTTP/WebSocket denial
++(skip) NOT RUN: production extension/MCP descendants and broker capability isolation
++(skip) NOT RUN: real Electron embedded controls, preload/IPC, navigation and permissions
++(pass) M9-07 keeps unverified embedded dashboard and controls disabled [0.14ms]
++
++9 tests skipped:
++(skip) macOS candidate permits local development subprocess execution
++(skip) macOS candidate denies HTTP access to owned controller/broker fixture
++(skip) macOS candidate denies dashboard-style WebSocket writes
++(skip) real absolute ADB binary executes with filtered PATH (version only)
++(skip) real offline Gradle task reaches owned broker fixture without isolation
++(skip) NOT RUN: Windows process, USB, controller/broker and embedded dashboard isolation
++(skip) NOT RUN: macOS physical USB API and real controller HTTP/WebSocket denial
++(skip) NOT RUN: production extension/MCP descendants and broker capability isolation
++(skip) NOT RUN: real Electron embedded controls, preload/IPC, navigation and permissions
++
++
++2 tests failed:
++(fail) unrestricted absolute binary reaches owned HTTP broker despite filtered PATH [3.32ms]
++(fail) unrestricted process can send a dashboard-style WebSocket write [1.95ms]
++
++ 79 pass
++ 9 skip
++ 2 fail
++ 183 expect() calls
++Ran 90 tests across 3 files. [914.00ms]
+diff --git a/docs/validation/m8-04/report-format-check.log b/docs/validation/m8-04/report-format-check.log
+new file mode 100644
+index 000000000..4aa0d16e7
+--- /dev/null
++++ b/docs/validation/m8-04/report-format-check.log
+@@ -0,0 +1,2 @@
++Checking formatting...
++All matched files use Prettier code style!
+diff --git a/docs/validation/m8-04/report-format.log b/docs/validation/m8-04/report-format.log
+new file mode 100644
+index 000000000..8b5ffbea8
+--- /dev/null
++++ b/docs/validation/m8-04/report-format.log
+@@ -0,0 +1,2 @@
++docs/validation/controller-protocol.md 23ms
++docs/validation/M8-04-implementation.md 8ms
+diff --git a/docs/validation/m8-04/schema-typecheck-29be4123a.log b/docs/validation/m8-04/schema-typecheck-29be4123a.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m8-04/schema-typecheck-29be4123a.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/docs/validation/m8-04/schema-typecheck-final.log b/docs/validation/m8-04/schema-typecheck-final.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m8-04/schema-typecheck-final.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/docs/validation/m8-04/schema-typecheck.log b/docs/validation/m8-04/schema-typecheck.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m8-04/schema-typecheck.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/packages/core/src/ftc/controllers/adb.ts b/packages/core/src/ftc/controllers/adb.ts
+index 14012efff..a6ce0ea7b 100644
+--- a/packages/core/src/ftc/controllers/adb.ts
++++ b/packages/core/src/ftc/controllers/adb.ts
+@@ -55,30 +55,79 @@ function parseCandidate(line: string): FtcController.ControllerCandidate | undef
+   const model = facts.find((fact) => fact.startsWith("model:"))?.slice(6)
+   const kind = model === "REV_Control_Hub" ? "control-hub" : undefined
+   const available = state === "device"
+   const unauthorized = state === "unauthorized"
+   const offline = state === "offline"
+   return {
+     transportAddress: address,
+     adbState: noPermissions ? "no permissions" : state,
+     ...(model ? { model } : {}),
+     ...(kind ? { kind } : {}),
+     authorization: available ? "authorized" : unauthorized ? "unauthorized" : "unknown",
+     state: available ? "available" : unauthorized ? "unauthorized" : offline ? "offline" : "unavailable",
+     errorCodes: available
+       ? []
+       : unauthorized
+         ? ["adb_unauthorized"]
+         : offline
+           ? ["adb_offline"]
+           : ["adb_unsupported_state"],
+     // Guidance describes setup/recovery, never observed phone compatibility or attached hardware.
+     guidanceCodes: [
+       ...(kind
+         ? ["control_hub_connection" as const]
+         : ["identify_control_hub_or_phone" as const, "phone_compatibility_unverified" as const]),
+       ...(unauthorized ? ["usb_authorization_required" as const] : []),
+       ...(!available && !unauthorized ? ["connection_recovery" as const] : []),
+       "expansion_hub_configuration_unobserved",
+     ],
+   }
+ }
++
++export interface ForwardTransport {
++  // Host implementation must atomically allocate without rebinding, compensate failed
++  // acquisitions, and close only this lease. Raw forwarding is bidirectional.
++  readonly open: (request: {
++    readonly serial: string
++    readonly localPort: 0
++    readonly remotePort: number
++    readonly noRebind: true
++  }) => Effect.Effect<
++    {
++      readonly localPort: number
++      readonly close: Effect.Effect<void, FtcController.EndpointError>
++    },
++    FtcController.EndpointError
++  >
++}
++
++export function forwardPanels(
++  candidate: FtcController.ControllerCandidate,
++  revision: string,
++  transport: ForwardTransport,
++): Effect.Effect<
++  { readonly httpOrigin: string; readonly dataOrigin: string },
++  FtcController.EndpointError,
++  Scope.Scope
++> {
++  return Effect.gen(function* () {
++    if (candidate.state !== "available" || candidate.authorization !== "authorized")
++      return yield* Effect.fail({ code: "candidate_unavailable" as const })
++    if (revision !== "11d69a98e39c43a7d9edc5932275897c034f7a30")
++      return yield* Effect.fail({ code: "protocol_unknown" as const })
++    const ports = yield* Effect.forEach([8001, 8002], (remotePort) =>
++      Effect.acquireRelease(
++        transport.open({ serial: candidate.transportAddress, localPort: 0, remotePort, noRebind: true }),
++        // Cleanup failure must remain visible in the scope exit, never a false success.
++        (lease) => lease.close.pipe(Effect.orDie),
++      ).pipe(
++        Effect.flatMap((lease) =>
++          Number.isInteger(lease.localPort) && lease.localPort > 0 && lease.localPort <= 65535
++            ? Effect.succeed(lease.localPort)
++            : Effect.fail({ code: "forward_invalid" as const }),
++        ),
++      ),
++    )
++    if (ports[0] === ports[1]) return yield* Effect.fail({ code: "forward_invalid" as const })
++    return { httpOrigin: `http://127.0.0.1:${ports[0]}`, dataOrigin: `ws://127.0.0.1:${ports[1]}` }
++  })
++}
+diff --git a/packages/core/src/ftc/controllers/panels.ts b/packages/core/src/ftc/controllers/panels.ts
+new file mode 100644
+index 000000000..9e47f6f61
+--- /dev/null
++++ b/packages/core/src/ftc/controllers/panels.ts
+@@ -0,0 +1,207 @@
++export * as Panels from "./panels"
++
++import { Effect, Option, Schema, Scope } from "effect"
++import { FtcController } from "@opencode-ai/schema/ftc-controller"
++
++export interface HttpResponse {
++  readonly status: number
++  readonly contentType: string
++  // The transport supplies decoded text, preserving original response metadata.
++  readonly body: string
++  readonly contentEncoding?: string
++}
++
++export interface ReadTransport {
++  // Host must enforce GET, no redirects and bounded reads. This is not a raw fetch capability.
++  readonly get: (url: string) => Effect.Effect<HttpResponse, FtcController.EndpointError, Scope.Scope>
++  // Receive one frame or null at a bounded deadline; never send, queue or reconnect.
++  // The host must close its owned socket on scope exit, including cancellation.
++  readonly receive: (url: string) => Effect.Effect<string | null, FtcController.EndpointError, Scope.Scope>
++}
++
++export function readEndpoints(
++  input: {
++    readonly revision: string
++    readonly httpOrigin: string
++    readonly dataOrigin: string
++    readonly evidenceKind: "source-derived-fixture" | "controller-observation"
++  },
++  transport: ReadTransport,
++): Effect.Effect<FtcController.ProtocolEvidence, FtcController.EndpointError> {
++  return Effect.scoped(
++    Effect.gen(function* () {
++      if (input.revision !== "11d69a98e39c43a7d9edc5932275897c034f7a30")
++        return yield* Effect.fail({ code: "protocol_unknown" as const })
++      if (!validOrigin(input.httpOrigin, "http:") || !validOrigin(input.dataOrigin, "ws:"))
++        return yield* Effect.fail({ code: "endpoint_invalid" as const })
++      const resources: { path: string; state: "observed" | "missing" }[] = []
++      const read = (path: string, origin = input.httpOrigin) =>
++        transport.get(`${origin}${path}`).pipe(
++          Effect.flatMap((response) => {
++            if (response.status !== 200) return Effect.fail({ code: "resource_missing" as const, resource: path })
++            resources.push({ path, state: "observed" })
++            return Effect.succeed(response)
++          }),
++        )
++      for (const path of ["/", "/index.html"]) {
++        const page = yield* read(path)
++        if (!page.contentType.startsWith("text/html") || !/<(?:!doctype html|html)/i.test(page.body))
++          return yield* Effect.fail({ code: "resource_invalid" as const, resource: path })
++      }
++      const manifest = yield* read("/api/plugins")
++      const plugins = yield* json(Plugins, manifest.body, "/api/plugins")
++      const digest = yield* read("/api/sha256")
++      if (digest.body !== "null" && !/^[a-f0-9]{64}$/.test(digest.body))
++        return yield* Effect.fail({ code: "resource_invalid" as const, resource: "/api/sha256" })
++      const hashes = yield* read("/api/shas")
++      const shas = yield* json(
++        Schema.Record(Schema.String, Schema.NullOr(Schema.String.check(Schema.isPattern(/^[a-f0-9]{64}$/)))),
++        hashes.body,
++        "/api/shas",
++      )
++      const performance = yield* read("/api/performance")
++      yield* json(Performance, performance.body, "/api/performance")
++      const records: FtcController.ProtocolEvidence["plugins"][number][] = []
++      const blockedPlugins: string[] = []
++      if (new Set(plugins.data.plugins.map((plugin) => plugin.details.id)).size !== plugins.data.plugins.length)
++        return yield* Effect.fail({ code: "resource_invalid" as const, resource: "/api/plugins" })
++      for (const plugin of plugins.data.plugins) {
++        const id = plugin.details.id
++        if (!knownPlugins.includes(id)) {
++          blockedPlugins.push(id)
++          continue
++        }
++        if (plugin.details.pluginsCoreVersion !== "1.1.44")
++          return yield* Effect.fail({ code: "protocol_unknown" as const, resource: id })
++        const configPath = `/api/configs/${id}`
++        const config = yield* read(configPath)
++        const details = yield* json(Details, config.body, configPath)
++        if (details.id !== id || details.version !== plugin.details.version || details.pluginsCoreVersion !== "1.1.44")
++          return yield* Effect.fail({ code: "resource_invalid" as const, resource: configPath })
++        const hash = shas[id]
++        if (hash === undefined) return yield* Effect.fail({ code: "resource_invalid" as const, resource: "/api/shas" })
++        const path = `/api/svelte/${id}`
++        if (hash === null) resources.push({ path, state: "missing" })
++        if (hash !== null) {
++          const bundle = yield* read(path)
++          if (
++            !bundle.contentType.startsWith("application/javascript") ||
++            bundle.contentEncoding !== "gzip" ||
++            !bundle.body.trim() ||
++            /^\s*</.test(bundle.body)
++          )
++            return yield* Effect.fail({ code: "resource_invalid" as const, resource: path })
++          const checksum = yield* read(`${path}/sha256`)
++          if (checksum.body !== hash)
++            return yield* Effect.fail({ code: "resource_invalid" as const, resource: `${path}/sha256` })
++        }
++        records.push({
++          id,
++          version: plugin.details.version,
++          frontendVersion: plugin.details.pluginsCoreVersion,
++          svelteHash: hash,
++        })
++      }
++      // Health is advisory only: the pinned server returns OK before socket readiness.
++      yield* read("/health", input.dataOrigin.replace(/^ws:/, "http:"))
++      const frame = yield* transport.receive(`${input.dataOrigin}/`)
++      const sample = frame === null ? undefined : yield* readFrame(frame)
++      return {
++        profileRevision: input.revision,
++        evidenceKind: input.evidenceKind,
++        deployment: "unverified" as const,
++        identity: "unknown" as const,
++        readEndpoints: {
++          httpOrigin: input.httpOrigin,
++          dataOrigin: input.dataOrigin,
++          dashboard: "blocked_unmediated_routes" as const,
++          logs: "unknown" as const,
++        },
++        resources,
++        plugins: records,
++        blockedPlugins,
++        ...(sample === undefined ? {} : { sample }),
++        freshness: "unknown" as const,
++      }
++    }),
++  )
++}
++
++function validOrigin(value: string, protocol: string) {
++  if (!URL.canParse(value)) return false
++  const url = new URL(value)
++  return (
++    url.protocol === protocol &&
++    !url.username &&
++    !url.password &&
++    !url.search &&
++    !url.hash &&
++    url.pathname === "/" &&
++    url.origin === value
++  )
++}
++
++function json<S extends Schema.Top & { readonly DecodingServices: never }>(schema: S, body: string, resource: string) {
++  return Schema.decodeUnknownEffect(Schema.UnknownFromJsonString)(body).pipe(
++    Effect.flatMap(Schema.decodeUnknownEffect(schema)),
++    Effect.mapError((): FtcController.EndpointError => ({ code: "resource_invalid", resource })),
++  )
++}
++
++function readFrame(body: string) {
++  return Effect.gen(function* () {
++    const sample = yield* json(Frame, body, "websocket").pipe(
++      Effect.mapError((): FtcController.EndpointError => ({ code: "frame_invalid" })),
++    )
++    const key = `${sample.pluginID}/${sample.messageID}`
++    const valid =
++      key === "core/time"
++        ? Option.isSome(
++            Schema.decodeUnknownOption(
++              Schema.Struct({ time: Schema.String.check(Schema.isPattern(/^\d{2}:\d{2}:\d{2}$/)) }),
++            )(sample.data),
++          )
++        : key === "com.bylazar.telemetry/telemetryPacket"
++          ? Option.isSome(Schema.decodeUnknownOption(Schema.Array(Schema.String))(sample.data))
++          : key === "com.bylazar.battery/battery"
++            ? typeof sample.data === "number" && Number.isFinite(sample.data)
++            : undefined
++    if (valid === undefined) return yield* Effect.fail({ code: "frame_unsupported" as const })
++    if (!valid) return yield* Effect.fail({ code: "frame_invalid" as const })
++    return sample
++  })
++}
++
++const knownPlugins = [
++  "com.bylazar.telemetry",
++  "com.bylazar.battery",
++  "com.bylazar.opmodecontrol",
++  "com.bylazar.configurables",
++  "com.bylazar.camerastream",
++]
++const Details = Schema.Struct({
++  id: Schema.NonEmptyString,
++  version: Schema.NonEmptyString,
++  pluginsCoreVersion: Schema.NonEmptyString,
++})
++const Plugins = Schema.Struct({
++  pluginID: Schema.Literal("core"),
++  messageID: Schema.Literal("pluginsDetails"),
++  data: Schema.Struct({
++    plugins: Schema.Array(Schema.Struct({ details: Details, config: Schema.Json })),
++    skippedPlugins: Schema.Array(Schema.Json),
++  }),
++})
++const Performance = Schema.Struct({
++  pluginID: Schema.Literal("core"),
++  messageID: Schema.Literal("performanceReadings"),
++  data: Schema.Array(
++    Schema.Struct({
++      id: Schema.String,
++      startNanos: Schema.Number,
++      endNanos: Schema.Number,
++      durationMillis: Schema.Number,
++    }),
++  ),
++})
++const Frame = Schema.Struct({ pluginID: Schema.String, messageID: Schema.String, data: Schema.Json })
+diff --git a/packages/core/test/ftc-adapters/controller-endpoints.test.ts b/packages/core/test/ftc-adapters/controller-endpoints.test.ts
+new file mode 100644
+index 000000000..1a18ab4c5
+--- /dev/null
++++ b/packages/core/test/ftc-adapters/controller-endpoints.test.ts
+@@ -0,0 +1,387 @@
++import { expect, test } from "bun:test"
++import { Deferred, Effect, Fiber, Schema } from "effect"
++import { FtcController } from "@opencode-ai/schema/ftc-controller"
++import { Adb } from "../../src/ftc/controllers/adb"
++
++const revision = "11d69a98e39c43a7d9edc5932275897c034f7a30"
++const candidate: FtcController.ControllerCandidate = {
++  transportAddress: "SYNTHETIC_USB_A",
++  adbState: "device",
++  authorization: "authorized",
++  state: "available",
++  errorCodes: [],
++  guidanceCodes: [],
++}
++
++function forwards(failSecond = false) {
++  const active = new Set<number>([49999])
++  const requests: unknown[] = []
++  const transport: Adb.ForwardTransport = {
++    open: (request) =>
++      Effect.suspend(() => {
++        requests.push(request)
++        if (failSecond && requests.length === 2) return Effect.fail({ code: "forward_conflict" as const })
++        const localPort = 40000 + requests.length
++        active.add(localPort)
++        return Effect.succeed({
++          localPort,
++          close: Effect.sync(() => {
++            active.delete(localPort)
++          }),
++        })
++      }),
++  }
++  return { active, requests, transport }
++}
++
++test("scoped forwards select the explicit target and never rebind or remove unrelated forwards", async () => {
++  const fixture = forwards()
++  const result = await Effect.runPromise(
++    Effect.scoped(
++      Effect.gen(function* () {
++        const routes = yield* Adb.forwardPanels(candidate, revision, fixture.transport)
++        expect(fixture.active.size).toBe(3)
++        return routes
++      }),
++    ),
++  )
++  expect(result).toEqual({ httpOrigin: "http://127.0.0.1:40001", dataOrigin: "ws://127.0.0.1:40002" })
++  expect(fixture.requests).toEqual([
++    { serial: "SYNTHETIC_USB_A", localPort: 0, remotePort: 8001, noRebind: true },
++    { serial: "SYNTHETIC_USB_A", localPort: 0, remotePort: 8002, noRebind: true },
++  ])
++  expect([...fixture.active]).toEqual([49999])
++})
++
++test("second-forward conflict cleans up only the first owned lease", async () => {
++  const fixture = forwards(true)
++  const result = await Effect.runPromise(
++    Effect.scoped(Adb.forwardPanels(candidate, revision, fixture.transport)).pipe(Effect.flip),
++  )
++  expect(result).toEqual({ code: "forward_conflict" })
++  expect([...fixture.active]).toEqual([49999])
++})
++
++test.each(["unauthorized", "offline", "unavailable"] as const)("%s candidate is never forwarded", async (state) => {
++  const fixture = forwards()
++  const result = await Effect.runPromise(
++    Effect.scoped(Adb.forwardPanels({ ...candidate, state }, revision, fixture.transport)).pipe(Effect.flip),
++  )
++  expect(result.code).toBe("candidate_unavailable")
++  expect(fixture.requests).toEqual([])
++})
++
++test("unknown revisions fail before assuming any controller ports", async () => {
++  const fixture = forwards()
++  const result = await Effect.runPromise(
++    Effect.scoped(Adb.forwardPanels(candidate, "future", fixture.transport)).pipe(Effect.flip),
++  )
++  expect(result.code).toBe("protocol_unknown")
++  expect(fixture.requests).toEqual([])
++})
++
++test("cancellation and repeated construction release owned forwards without replay", async () => {
++  const fixture = forwards()
++  const ready = Deferred.makeUnsafe<void>()
++  await Effect.runPromise(
++    Effect.gen(function* () {
++      const fiber = yield* Effect.scoped(
++        Adb.forwardPanels(candidate, revision, fixture.transport).pipe(
++          Effect.andThen(Deferred.succeed(ready, undefined)),
++          Effect.andThen(Effect.never),
++        ),
++      ).pipe(Effect.forkChild)
++      yield* Deferred.await(ready)
++      yield* Fiber.interrupt(fiber)
++    }),
++  )
++  expect([...fixture.active]).toEqual([49999])
++  await Effect.runPromise(Effect.scoped(Adb.forwardPanels(candidate, revision, fixture.transport)))
++  expect([...fixture.active]).toEqual([49999])
++  expect(fixture.requests).toHaveLength(4)
++})
++
++test("invalid lease ports fail and release rather than expose unusable routes", async () => {
++  const closed: number[] = []
++  const result = await Effect.runPromise(
++    Effect.scoped(
++      Adb.forwardPanels(candidate, revision, {
++        open: () =>
++          Effect.succeed({
++            localPort: 0,
++            close: Effect.sync(() => {
++              closed.push(0)
++            }),
++          }),
++      }),
++    ).pipe(Effect.flip),
++  )
++  expect(result.code).toBe("forward_invalid")
++  expect(closed).toEqual([0])
++})
++
++test("endpoint errors are serializable canonical contracts", () => {
++  expect(Schema.decodeUnknownSync(FtcController.EndpointError)({ code: "forward_conflict" })).toEqual({
++    code: "forward_conflict",
++  })
++})
++
++import { Panels } from "../../src/ftc/controllers/panels"
++import { fixture, input } from "./fixtures/controller-endpoints/fixture"
++
++test("read endpoints record protocol observations without claiming identity, deployment or safe dashboard access", async () => {
++  const source = fixture()
++  const result = await Effect.runPromise(Panels.readEndpoints(input, source.transport))
++  expect(result.readEndpoints).toEqual({
++    httpOrigin: input.httpOrigin,
++    dataOrigin: input.dataOrigin,
++    dashboard: "blocked_unmediated_routes",
++    logs: "unknown",
++  })
++  expect(result.identity).toBe("unknown")
++  expect(result.deployment).toBe("unverified")
++  expect(result.freshness).toBe("unknown")
++  expect(result.evidenceKind).toBe("source-derived-fixture")
++  expect(result.plugins[0]).toMatchObject({ id: "com.bylazar.telemetry", version: "1.0.7", frontendVersion: "1.1.44" })
++  expect(result.resources).toHaveLength(10)
++  expect(source.requests).toContain("http://127.0.0.1:40002/health")
++  expect(Schema.decodeUnknownSync(FtcController.ProtocolEvidence)(JSON.parse(JSON.stringify(result)))).toEqual(result)
++})
++
++test.each(["/api/plugins", "/api/shas", "/api/configs/com.bylazar.telemetry", "/api/performance"])(
++  "HTML fallback with 200 at %s fails validation",
++  async (path) => {
++    const source = fixture()
++    source.resources[path] = source.resources["/"]
++    expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({
++      code: "resource_invalid",
++      resource: path,
++    })
++  },
++)
++
++test.each([
++  "/",
++  "/index.html",
++  "/api/plugins",
++  "/api/shas",
++  "/api/svelte/com.bylazar.telemetry",
++  "/api/configs/com.bylazar.telemetry",
++])("missing resource %s is not a working endpoint", async (path) => {
++  const source = fixture()
++  source.resources[path] = { status: 404, contentType: "text/plain", body: "not found" }
++  expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({
++    code: "resource_missing",
++    resource: path,
++  })
++})
++
++test("null plugin hash is missing evidence and never triggers an invented bundle route", async () => {
++  const source = fixture()
++  source.resources["/api/shas"].body = JSON.stringify({ "com.bylazar.telemetry": null })
++  const result = await Effect.runPromise(Panels.readEndpoints(input, source.transport))
++  expect(result.plugins[0]?.svelteHash).toBeNull()
++  expect(result.resources).toContainEqual({ path: "/api/svelte/com.bylazar.telemetry", state: "missing" })
++  expect(source.requests.some((url) => url.includes("/api/svelte/"))).toBe(false)
++})
++
++test("unknown frontend version fails rather than promote protocol compatibility", async () => {
++  const source = fixture()
++  source.plugins.data.plugins[0].details.pluginsCoreVersion = "2.0.0"
++  source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
++  expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({
++    code: "protocol_unknown",
++  })
++})
++
++test("unknown plugins are recorded but their resources are never fetched", async () => {
++  const source = fixture()
++  source.plugins.data.plugins[0].details.id = "unknown/../../control"
++  source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
++  const result = await Effect.runPromise(Panels.readEndpoints(input, source.transport))
++  expect(result.blockedPlugins).toEqual(["unknown/../../control"])
++  expect(source.requests.some((url) => url.includes("/api/configs/") || url.includes("/api/svelte/"))).toBe(false)
++})
++
++test("healthy HTTP does not hide a disconnected data socket", async () => {
++  const source = fixture()
++  expect(
++    await Effect.runPromise(
++      Panels.readEndpoints(input, {
++        ...source.transport,
++        receive: () => Effect.fail({ code: "socket_disconnected" }),
++      }).pipe(Effect.flip),
++    ),
++  ).toEqual({ code: "socket_disconnected" })
++})
++
++test.each([0, -1, 12.5])("battery value %s is preserved without inventing freshness", async (value) => {
++  const source = fixture()
++  source.frames.value = JSON.stringify({ pluginID: "com.bylazar.battery", messageID: "battery", data: value })
++  const result = await Effect.runPromise(Panels.readEndpoints(input, source.transport))
++  expect(result.sample?.data).toBe(value)
++  expect(result.freshness).toBe("unknown")
++})
++
++test("missing sample is distinct from valid zero and omitted on encoding", async () => {
++  const source = fixture()
++  source.frames.value = null
++  const result = await Effect.runPromise(Panels.readEndpoints(input, source.transport))
++  expect("sample" in Schema.encodeSync(FtcController.ProtocolEvidence)(result)).toBe(false)
++})
++
++test.each([
++  ["core", "pluginReloaded"],
++  ["com.bylazar.opmodecontrol", "initOpMode"],
++  ["com.bylazar.opmodecontrol", "startActiveOpMode"],
++  ["com.bylazar.opmodecontrol", "stopActiveOpMode"],
++  ["com.bylazar.configurables", "updatedConfigurable"],
++  ["com.bylazar.gamepad", "gamepad0"],
++  ["com.bylazar.gamepad", "gamepad1"],
++  ["custom", "read"],
++  ["com.bylazar.limelightproxy", "status"],
++])("unsupported or mutation frame %s/%s is rejected", async (pluginID, messageID) => {
++  const source = fixture()
++  source.frames.value = JSON.stringify({ pluginID, messageID, data: 0 })
++  expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({
++    code: "frame_unsupported",
++  })
++})
++
++test.each([
++  "not-json",
++  '{"pluginID":"com.bylazar.battery","messageID":"battery","data":NaN}',
++  '{"pluginID":"com.bylazar.telemetry","messageID":"telemetryPacket","data":0}',
++])("malformed frame fails: %s", async (frame) => {
++  const source = fixture()
++  source.frames.value = frame
++  expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({
++    code: "frame_invalid",
++  })
++})
++
++test.each([
++  "http://user:password@localhost:8001",
++  "https://example.org/path",
++  "file:///tmp/example",
++  "http://localhost:8001/?command=start",
++])("unsafe base endpoint %s is rejected before I/O", async (httpOrigin) => {
++  const source = fixture()
++  expect(
++    await Effect.runPromise(Panels.readEndpoints({ ...input, httpOrigin }, source.transport).pipe(Effect.flip)),
++  ).toMatchObject({ code: "endpoint_invalid" })
++  expect(source.requests).toEqual([])
++})
++
++test("same local port cannot describe distinct HTTP and socket forwards", async () => {
++  const closed: string[] = []
++  const result = await Effect.runPromise(
++    Effect.scoped(
++      Adb.forwardPanels(candidate, revision, {
++        open: (request) =>
++          Effect.succeed({
++            localPort: 40000,
++            close: Effect.sync(() => {
++              closed.push(String(request.remotePort))
++            }),
++          }),
++      }),
++    ).pipe(Effect.flip),
++  )
++  expect(result.code).toBe("forward_invalid")
++  expect(closed.sort()).toEqual(["8001", "8002"])
++})
++
++test("cleanup failure cannot become successful forwarding completion", async () => {
++  const exit = await Effect.runPromiseExit(
++    Effect.scoped(
++      Adb.forwardPanels(candidate, revision, {
++        open: (request) =>
++          Effect.succeed({ localPort: request.remotePort, close: Effect.fail({ code: "forward_failed" }) }),
++      }),
++    ),
++  )
++  expect(exit._tag).toBe("Failure")
++})
++
++test.each(["/api/sha256", "/api/shas", "/api/svelte/com.bylazar.telemetry/sha256"])(
++  "malformed hash at %s is not accepted as version evidence",
++  async (path) => {
++    const source = fixture()
++    source.resources[path].body = "invalid-hash"
++    expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({
++      code: "resource_invalid",
++      resource: path,
++    })
++  },
++)
++
++test("HTML fallback cannot masquerade as a JavaScript plugin resource", async () => {
++  const source = fixture()
++  source.resources["/api/svelte/com.bylazar.telemetry"] = source.resources["/"]
++  expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({
++    code: "resource_invalid",
++  })
++})
++
++test("duplicate plugin identities are not merged silently", async () => {
++  const source = fixture()
++  source.plugins.data.plugins.push(source.plugins.data.plugins[0])
++  source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
++  expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({
++    code: "resource_invalid",
++    resource: "/api/plugins",
++  })
++})
++
++test("cancellation closes the scoped receive resource without reconnecting", async () => {
++  const source = fixture()
++  const active = new Set<object>()
++  const ready = Deferred.makeUnsafe<void>()
++  const opened: object[] = []
++  await Effect.runPromise(
++    Effect.gen(function* () {
++      const fiber = yield* Panels.readEndpoints(input, {
++        ...source.transport,
++        receive: () =>
++          Effect.acquireRelease(
++            Effect.sync(() => {
++              const token = {}
++              active.add(token)
++              opened.push(token)
++              return token
++            }),
++            (token) =>
++              Effect.sync(() => {
++                active.delete(token)
++              }),
++          ).pipe(Effect.andThen(Deferred.succeed(ready, undefined)), Effect.andThen(Effect.never)),
++      }).pipe(Effect.forkChild)
++      yield* Deferred.await(ready)
++      expect(active.size).toBe(1)
++      yield* Fiber.interrupt(fiber)
++    }),
++  )
++  expect(active.size).toBe(0)
++  expect(opened).toHaveLength(1)
++})
++
++test("textual telemetry preserves empty packets and valid textual zero", async () => {
++  const source = fixture()
++  source.frames.value = JSON.stringify({
++    pluginID: "com.bylazar.telemetry",
++    messageID: "telemetryPacket",
++    data: ["sensor: 0"],
++  })
++  expect((await Effect.runPromise(Panels.readEndpoints(input, source.transport))).sample?.data).toEqual(["sensor: 0"])
++  source.frames.value = JSON.stringify({ pluginID: "com.bylazar.telemetry", messageID: "telemetryPacket", data: [] })
++  expect((await Effect.runPromise(Panels.readEndpoints(input, source.transport))).sample?.data).toEqual([])
++})
++
++test("unrecognized read profile never probes guessed endpoints", async () => {
++  const source = fixture()
++  expect(
++    await Effect.runPromise(Panels.readEndpoints({ ...input, revision: "future" }, source.transport).pipe(Effect.flip)),
++  ).toEqual({ code: "protocol_unknown" })
++  expect(source.requests).toEqual([])
++})
+diff --git a/packages/core/test/ftc-adapters/fixtures/controller-endpoints/FIRST-LICENSE b/packages/core/test/ftc-adapters/fixtures/controller-endpoints/FIRST-LICENSE
+new file mode 100644
+index 000000000..88b776b68
+--- /dev/null
++++ b/packages/core/test/ftc-adapters/fixtures/controller-endpoints/FIRST-LICENSE
+@@ -0,0 +1,29 @@
++Copyright (c) 2014-2022 FIRST.  All rights reserved.
++
++Redistribution and use in source and binary forms, with or without modification,
++are permitted (subject to the limitations in the disclaimer below) provided that
++the following conditions are met:
++
++Redistributions of source code must retain the above copyright notice, this list
++of conditions and the following disclaimer.
++
++Redistributions in binary form must reproduce the above copyright notice, this
++list of conditions and the following disclaimer in the documentation and/or
++other materials provided with the distribution.
++
++Neither the name of FIRST nor the names of its contributors
++may be used to endorse or promote products derived from this software without
++specific prior written permission.
++
++NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
++LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
++IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
++DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
++ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
++(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
++LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
++ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
++SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++
+diff --git a/packages/core/test/ftc-adapters/fixtures/controller-endpoints/Frontend-LICENSE.md b/packages/core/test/ftc-adapters/fixtures/controller-endpoints/Frontend-LICENSE.md
+new file mode 100644
+index 000000000..711657183
+--- /dev/null
++++ b/packages/core/test/ftc-adapters/fixtures/controller-endpoints/Frontend-LICENSE.md
+@@ -0,0 +1,23 @@
++FTControl License v1.0
++Copyright (c) 2025 bylazar.com
++
++Permission is hereby granted to any person obtaining a copy of this software and associated documentation files (the “Software”), to fork, modify, and extend the Software, including to add support for other libraries or implement new features, subject to the following conditions:
++
++1. Attribution
++Any use of the Software, in part or in full, must include visible credit to the original ftcontrol project. This includes:
++- Forked repositories
++- Projects that incorporate parts of the codebase
++- Documentation or publications that reference the Software
++
++Credit must include:
++- The original repository link
++- A statement such as “Based on FTControl bylazar.com”
++
++2. Commercial Use
++Commercial use of the Software is not permitted, including incorporation into proprietary or paid products. The Software may only be used for non-commercial purposes.
++
++3. Distribution
++Redistribution of modified versions must retain this license, including attribution and permission clauses.
++
++4. Warranty Disclaimer
++THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY.
+\ No newline at end of file
+diff --git a/packages/core/test/ftc-adapters/fixtures/controller-endpoints/Panels-LICENSE.md b/packages/core/test/ftc-adapters/fixtures/controller-endpoints/Panels-LICENSE.md
+new file mode 100644
+index 000000000..711657183
+--- /dev/null
++++ b/packages/core/test/ftc-adapters/fixtures/controller-endpoints/Panels-LICENSE.md
+@@ -0,0 +1,23 @@
++FTControl License v1.0
++Copyright (c) 2025 bylazar.com
++
++Permission is hereby granted to any person obtaining a copy of this software and associated documentation files (the “Software”), to fork, modify, and extend the Software, including to add support for other libraries or implement new features, subject to the following conditions:
++
++1. Attribution
++Any use of the Software, in part or in full, must include visible credit to the original ftcontrol project. This includes:
++- Forked repositories
++- Projects that incorporate parts of the codebase
++- Documentation or publications that reference the Software
++
++Credit must include:
++- The original repository link
++- A statement such as “Based on FTControl bylazar.com”
++
++2. Commercial Use
++Commercial use of the Software is not permitted, including incorporation into proprietary or paid products. The Software may only be used for non-commercial purposes.
++
++3. Distribution
++Redistribution of modified versions must retain this license, including attribution and permission clauses.
++
++4. Warranty Disclaimer
++THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY.
+\ No newline at end of file
+diff --git a/packages/core/test/ftc-adapters/fixtures/controller-endpoints/fixture.ts b/packages/core/test/ftc-adapters/fixtures/controller-endpoints/fixture.ts
+new file mode 100644
+index 000000000..4193d35ec
+--- /dev/null
++++ b/packages/core/test/ftc-adapters/fixtures/controller-endpoints/fixture.ts
+@@ -0,0 +1,87 @@
++// Source-derived, non-live protocol shapes. Asset bytes, hashes and device values
++// are synthetic; see provenance.md. No upstream executable bundle is included.
++import { Effect } from "effect"
++import { Panels } from "../../../../src/ftc/controllers/panels"
++
++export const input = {
++  revision: "11d69a98e39c43a7d9edc5932275897c034f7a30",
++  httpOrigin: "http://127.0.0.1:40001",
++  dataOrigin: "ws://127.0.0.1:40002",
++  evidenceKind: "source-derived-fixture" as const,
++}
++
++export function fixture() {
++  const hash = "a".repeat(64)
++  const details = {
++    id: "com.bylazar.telemetry",
++    name: "Telemetry",
++    letterName: "T",
++    description: "synthetic fixture",
++    websiteURL: "",
++    mavenURL: "",
++    packageString: "",
++    version: "1.0.7",
++    pluginsCoreVersion: "1.1.44",
++    author: "",
++    components: [],
++    manager: "",
++    templates: [],
++    includedPluginsIDs: [],
++    changelog: [],
++  }
++  const plugins = {
++    pluginID: "core",
++    messageID: "pluginsDetails",
++    data: { plugins: [{ details, config: { telemetryUpdateInterval: 75 } }], skippedPlugins: [] },
++  }
++  const resources: Record<string, { -readonly [K in keyof Panels.HttpResponse]: Panels.HttpResponse[K] }> = {
++    "/": { status: 200, contentType: "text/html", body: "<!doctype html><title>synthetic Panels fixture</title>" },
++    "/index.html": {
++      status: 200,
++      contentType: "text/html",
++      body: "<!doctype html><title>synthetic Panels fixture</title>",
++    },
++    "/api/plugins": { status: 200, contentType: "text/html", body: JSON.stringify(plugins) },
++    "/api/sha256": { status: 200, contentType: "text/plain", body: hash },
++    "/api/shas": {
++      status: 200,
++      contentType: "application/json",
++      body: JSON.stringify({ "com.bylazar.telemetry": hash }),
++    },
++    "/api/performance": {
++      status: 200,
++      contentType: "application/json",
++      body: JSON.stringify({
++        pluginID: "core",
++        messageID: "performanceReadings",
++        data: [{ id: "fixture", startNanos: 0, endNanos: 0, durationMillis: 0 }],
++      }),
++    },
++    "/api/svelte/com.bylazar.telemetry": {
++      status: 200,
++      contentType: "application/javascript",
++      contentEncoding: "gzip",
++      body: "export const fixture = true;",
++    },
++    "/api/svelte/com.bylazar.telemetry/sha256": { status: 200, contentType: "text/plain", body: hash },
++    "/api/configs/com.bylazar.telemetry": {
++      status: 200,
++      contentType: "application/json",
++      body: JSON.stringify(details),
++    },
++    "/health": { status: 200, contentType: "text/plain", body: "OK" },
++  }
++  const requests: string[] = []
++  const frames = {
++    value: JSON.stringify({ pluginID: "core", messageID: "time", data: { time: "12:00:00" } }) as string | null,
++  }
++  const transport: Panels.ReadTransport = {
++    get: (url) =>
++      Effect.sync(() => {
++        requests.push(url)
++        return resources[new URL(url).pathname] ?? { status: 404, contentType: "text/plain", body: "missing" }
++      }),
++    receive: () => Effect.succeed(frames.value),
++  }
++  return { resources, requests, frames, transport, plugins }
++}
+diff --git a/packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts b/packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts
+new file mode 100644
+index 000000000..2f94418dc
+--- /dev/null
++++ b/packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts
+@@ -0,0 +1,174 @@
++import { createConnection, createServer, Socket } from "node:net"
++import { Effect } from "effect"
++import { Adb } from "../../../../src/ftc/controllers/adb"
++import { Panels } from "../../../../src/ftc/controllers/panels"
++import { fixture } from "./fixture"
++
++// Owned localhost servers only. This is not an ADB daemon or Android simulation.
++export function loopback(socketUnavailable = false, serial = "SYNTHETIC_USB_A") {
++  const source = fixture()
++  const received: string[] = []
++  const sockets = new Set<WebSocket>()
++  const forwards = new Set<number>()
++  const server = Bun.serve({
++    hostname: "127.0.0.1",
++    port: 0,
++    fetch(request, server) {
++      const path = new URL(request.url).pathname
++      if (request.headers.get("upgrade") === "websocket") {
++        if (socketUnavailable) return new Response("Panels has not started yet", { status: 503 })
++        if (server.upgrade(request)) return undefined
++        return new Response("upgrade failed", { status: 400 })
++      }
++      if (request.method !== "GET") return new Response("method blocked", { status: 405 })
++      const resource = source.resources[path]
++      if (!resource) return new Response("missing", { status: 404 })
++      return new Response(resource.contentEncoding === "gzip" ? Bun.gzipSync(resource.body) : resource.body, {
++        status: resource.status,
++        headers: {
++          "Content-Type": resource.contentType,
++          ...(resource.contentEncoding ? { "Content-Encoding": resource.contentEncoding } : {}),
++        },
++      })
++    },
++    websocket: {
++      open(socket) {
++        if (source.frames.value !== null) socket.send(source.frames.value)
++      },
++      message(_socket, message) {
++        received.push(String(message))
++      },
++    },
++  })
++  const forward: Adb.ForwardTransport = {
++    open: (request) =>
++      Effect.tryPromise({
++        try: () =>
++          new Promise<{ localPort: number; close: Effect.Effect<void> }>((resolve, reject) => {
++            if (
++              request.serial !== serial ||
++              request.localPort !== 0 ||
++              !request.noRebind ||
++              ![8001, 8002].includes(request.remotePort)
++            ) {
++              reject(new Error("unexpected forward request"))
++              return
++            }
++            const connections = new Set<Socket>()
++            const listener = createServer((client) => {
++              const upstream = createConnection({ host: "127.0.0.1", port: server.port! })
++              connections.add(client)
++              connections.add(upstream)
++              client.on("error", () => upstream.destroy())
++              upstream.on("error", () => client.destroy())
++              client.on("close", () => {
++                connections.delete(client)
++                upstream.destroy()
++              })
++              upstream.on("close", () => {
++                connections.delete(upstream)
++                client.destroy()
++              })
++              client.pipe(upstream).pipe(client)
++            })
++            listener.once("error", reject)
++            listener.listen(0, "127.0.0.1", () => {
++              const address = listener.address()
++              if (!address || typeof address === "string") {
++                listener.close()
++                reject(new Error("invalid listener"))
++                return
++              }
++              const localPort = address.port
++              forwards.add(localPort)
++              resolve({
++                localPort,
++                close: Effect.promise(
++                  () =>
++                    new Promise<void>((done) => {
++                      connections.forEach((socket) => socket.destroy())
++                      listener.close(() => {
++                        forwards.delete(localPort)
++                        done()
++                      })
++                    }),
++                ),
++              })
++            })
++          }),
++        catch: () => ({ code: "forward_failed" as const }),
++      }),
++  }
++  const reads: Panels.ReadTransport = {
++    get: (url) =>
++      Effect.tryPromise({
++        try: async (signal) => {
++          const response = await fetch(url, { method: "GET", redirect: "error", signal })
++          return {
++            status: response.status,
++            body: await response.text(),
++            contentType: response.headers.get("content-type") ?? "",
++            contentEncoding: response.headers.get("content-encoding") ?? undefined,
++          }
++        },
++        catch: () => ({ code: "resource_missing" as const }),
++      }),
++    receive: (url) =>
++      Effect.acquireRelease(
++        Effect.sync(() => {
++          const socket = new WebSocket(url)
++          sockets.add(socket)
++          return socket
++        }),
++        (socket) =>
++          Effect.sync(() => {
++            socket.close()
++            sockets.delete(socket)
++          }),
++      ).pipe(
++        Effect.flatMap((socket) =>
++          Effect.tryPromise({
++            try: (signal) =>
++              new Promise<string | null>((resolve, reject) => {
++                const timer = setTimeout(() => resolve(null), 250)
++                const clear = () => clearTimeout(timer)
++                signal.addEventListener(
++                  "abort",
++                  () => {
++                    clear()
++                    reject(new Error("cancelled"))
++                  },
++                  { once: true },
++                )
++                socket.addEventListener(
++                  "message",
++                  (event) => {
++                    clear()
++                    resolve(String(event.data))
++                  },
++                  { once: true },
++                )
++                socket.addEventListener(
++                  "error",
++                  () => {
++                    clear()
++                    reject(new Error("disconnected"))
++                  },
++                  { once: true },
++                )
++                socket.addEventListener(
++                  "close",
++                  () => {
++                    clear()
++                    reject(new Error("disconnected"))
++                  },
++                  { once: true },
++                )
++              }),
++            catch: () => ({ code: "socket_disconnected" as const }),
++          }),
++        ),
++      ),
++  }
++  return { source, received, sockets, forwards, forward, reads, close: () => server.stop(true) }
++}
+diff --git a/packages/core/test/ftc-adapters/fixtures/controller-endpoints/provenance.md b/packages/core/test/ftc-adapters/fixtures/controller-endpoints/provenance.md
+new file mode 100644
+index 000000000..63ba3b64e
+--- /dev/null
++++ b/packages/core/test/ftc-adapters/fixtures/controller-endpoints/provenance.md
+@@ -0,0 +1,13 @@
++# M8-04 source-derived fixtures — non-live
++
++Created 2026-10-06. These are independently constructed protocol examples, **not captures from a robot, Android process, built APK or upstream dashboard**. `fixture.ts` uses invented asset bytes, hashes, clocks, device addresses and measurements. `loopback.ts` serves them on owned macOS loopback listeners and forwards bytes through owned Node TCP listeners. No ADB process, daemon or attached device is involved. No JavaScript bundle is evaluated.
++
++Source inspection consumed the already retained files at `/private/tmp/m8-panels-preflight-11d69a98`; no new download occurred. Primary source provenance and detailed line references are in [M8-04 source preflight](../../../../../../docs/validation/M8-04-source-preflight.md).
++
++- Panels source commit: `11d69a98e39c43a7d9edc5932275897c034f7a30`, archive SHA-256 `a619a2fe534de7b241b69d6fb2abc9935e129b23219a2ff9acabdaa631bdad56`.
++- Frontend dependency: `ftc-panels@1.1.44`, gitHead `2c82e93df34e558f3a278c265ab4951599141e4f`; archive integrity was checked during source preflight.
++- Shapes: `library/Panels/src/main/java/com/bylazar/panels/json/{Plugins,Socket}.kt`; `server/StaticServer.kt`; `library/Telemetry/.../TelemetryPlugin.kt` and `web/config.ts`; Battery plugin source. The plugin-details fixture includes every PluginDetails field, with synthetic content. The config resource represents the built plugin `config.ts` metadata, while the plugins envelope's config is the runtime plugin configuration.
++- HTTP bodies include the actual `/api/plugins` envelope with its observed `text/html` MIME, nullable `/api/shas`, text hashes, config metadata, performance timing records, gzip JavaScript resource metadata and health response. Hash strings are synthetic and do not establish asset integrity or hardware identity.
++- The frontend's fixed WebSocket port comes from `ftc-panels/src/lib/core/socket/global.ts` at the frontend commit above. Arbitrary local forward ports do not make that dashboard work.
++
++Preserved verbatim license records: `Panels-LICENSE.md` (root FTControl License v1.0), `FIRST-LICENSE` (Panels library FIRST terms), and `Frontend-LICENSE.md` (frontend FTControl License). These are source attribution/retention records, not a redistribution approval. No upstream executable frontend or APK is copied into this fixture.
+diff --git a/packages/core/test/ftc-evaluation/m8-04.test.ts b/packages/core/test/ftc-evaluation/m8-04.test.ts
+new file mode 100644
+index 000000000..f45318f96
+--- /dev/null
++++ b/packages/core/test/ftc-evaluation/m8-04.test.ts
+@@ -0,0 +1,98 @@
++import { expect, test } from "bun:test"
++import { Effect } from "effect"
++import { FtcController } from "@opencode-ai/schema/ftc-controller"
++import { Adb } from "../../src/ftc/controllers/adb"
++import { Panels } from "../../src/ftc/controllers/panels"
++import { input } from "../ftc-adapters/fixtures/controller-endpoints/fixture"
++import { loopback } from "../ftc-adapters/fixtures/controller-endpoints/loopback"
++
++const candidate: FtcController.ControllerCandidate = {
++  transportAddress: "SYNTHETIC_USB_A",
++  adbState: "device",
++  authorization: "authorized",
++  state: "available",
++  errorCodes: [],
++  guidanceCodes: [],
++}
++
++test("source-derived protocol resolves HTTP, gzip plugin assets and receive-only data through owned TCP forwards", async () => {
++  const local = loopback()
++  try {
++    const result = await Effect.runPromise(
++      Effect.scoped(
++        Effect.gen(function* () {
++          const routes = yield* Adb.forwardPanels(candidate, input.revision, local.forward)
++          expect(local.forwards.size).toBe(2)
++          return yield* Panels.readEndpoints({ ...input, ...routes }, local.reads)
++        }),
++      ),
++    )
++    expect(result.resources.filter((resource) => resource.state === "observed")).toHaveLength(10)
++    expect(result.sample).toEqual({ pluginID: "core", messageID: "time", data: { time: "12:00:00" } })
++    expect(result.readEndpoints.dashboard).toBe("blocked_unmediated_routes")
++    expect(new URL(result.readEndpoints.httpOrigin).port).not.toBe(new URL(result.readEndpoints.dataOrigin).port)
++    expect(result.evidenceKind).toBe("source-derived-fixture")
++    expect(local.received).toEqual([])
++    expect(local.sockets.size).toBe(0)
++    expect(local.forwards.size).toBe(0)
++  } finally {
++    await local.close()
++  }
++})
++
++test("health 200 with socket 503 fails and closes both owned forwards", async () => {
++  const local = loopback(true)
++  try {
++    const result = await Effect.runPromise(
++      Effect.scoped(
++        Effect.gen(function* () {
++          const routes = yield* Adb.forwardPanels(candidate, input.revision, local.forward)
++          return yield* Panels.readEndpoints({ ...input, ...routes }, local.reads)
++        }),
++      ).pipe(Effect.flip),
++    )
++    expect(result.code).toBe("socket_disconnected")
++    expect(local.sockets.size).toBe(0)
++    expect(local.forwards.size).toBe(0)
++    expect(local.received).toEqual([])
++  } finally {
++    await local.close()
++  }
++})
++
++test("two synthetic controllers with identical software remain unknown identities on isolated routes", async () => {
++  const first = loopback()
++  const second = loopback(false, "SYNTHETIC_USB_B")
++  try {
++    const result = await Effect.runPromise(
++      Effect.scoped(
++        Effect.gen(function* () {
++          const a = yield* Adb.forwardPanels(candidate, input.revision, first.forward)
++          const b = yield* Adb.forwardPanels(
++            { ...candidate, transportAddress: "SYNTHETIC_USB_B" },
++            input.revision,
++            second.forward,
++          )
++          expect(a.httpOrigin).not.toBe(b.httpOrigin)
++          expect(a.dataOrigin).not.toBe(b.dataOrigin)
++          return yield* Effect.all([
++            Panels.readEndpoints({ ...input, ...a }, first.reads),
++            Panels.readEndpoints({ ...input, ...b }, second.reads),
++          ])
++        }),
++      ),
++    )
++    expect(result[0].plugins).toEqual(result[1].plugins)
++    expect(result.map((entry) => entry.identity)).toEqual(["unknown", "unknown"])
++    expect(first.forwards.size + second.forwards.size).toBe(0)
++  } finally {
++    await first.close()
++    await second.close()
++  }
++})
++
++test.skip("NOT RUN: real Control Hub and phone USB/Wi-Fi HTTP/WebSocket/plugin matrix", () => {})
++test.skip("NOT RUN: Windows ADB forwarding, conflicts, cancellation and resource cleanup", () => {})
++test.skip("NOT RUN: stable physical identity, alias convergence and deployed-build association", () => {})
++test.skip("NOT RUN: real robot logs and telemetry source/freshness across disconnect", () => {})
++test.skip("NOT RUN: Electron dashboard mediation, fixed-port routing, extra plugins and no-replay", () => {})
+diff --git a/packages/schema/src/ftc-controller.ts b/packages/schema/src/ftc-controller.ts
+index 55d3c1e8b..225951fce 100644
+--- a/packages/schema/src/ftc-controller.ts
++++ b/packages/schema/src/ftc-controller.ts
+@@ -6,30 +6,69 @@ import { optional } from "./schema"
+ const Text = Schema.String.check(Schema.isMinLength(1), Schema.isTrimmed())
+ 
+ export interface ControllerCandidate extends Schema.Schema.Type<typeof ControllerCandidate> {}
+ export const ControllerCandidate = Schema.Struct({
+   // A transport address and reported model do not establish physical controller identity.
+   transportAddress: Text,
+   adbState: Text,
+   model: optional(Text),
+   kind: optional(Schema.Literals(["control-hub", "phone"])),
+   authorization: Schema.Literals(["authorized", "unauthorized", "unknown"]),
+   state: Schema.Literals(["available", "unauthorized", "offline", "unavailable"]),
+   errorCodes: Schema.Array(Schema.Literals(["adb_unauthorized", "adb_offline", "adb_unsupported_state"])),
+   guidanceCodes: Schema.Array(
+     Schema.Literals([
+       "control_hub_connection",
+       "identify_control_hub_or_phone",
+       "phone_compatibility_unverified",
+       "usb_authorization_required",
+       "connection_recovery",
+       "expansion_hub_configuration_unobserved",
+     ]),
+   ),
+ }).annotate({ identifier: "FtcController.ControllerCandidate" })
+ 
+ export interface DiscoveryError extends Schema.Schema.Type<typeof DiscoveryError> {}
+ export const DiscoveryError = Schema.Struct({
+   code: Schema.Literals(["adb_missing_tool", "adb_transport_error", "adb_command_failed", "adb_invalid_response"]),
+   detail: optional(Schema.String),
+   exitCode: optional(Schema.Int),
+ }).annotate({ identifier: "FtcController.DiscoveryError" })
++
++export interface EndpointError extends Schema.Schema.Type<typeof EndpointError> {}
++export const EndpointError = Schema.Struct({
++  code: Schema.Literals([
++    "candidate_unavailable",
++    "protocol_unknown",
++    "forward_conflict",
++    "forward_failed",
++    "forward_invalid",
++    "endpoint_invalid",
++    "resource_missing",
++    "resource_invalid",
++    "socket_disconnected",
++    "frame_invalid",
++    "frame_unsupported",
++  ]),
++  resource: optional(Schema.String),
++}).annotate({ identifier: "FtcController.EndpointError" })
++
++export interface ProtocolEvidence extends Schema.Schema.Type<typeof ProtocolEvidence> {}
++export const ProtocolEvidence = Schema.Struct({
++  profileRevision: Text,
++  evidenceKind: Schema.Literals(["source-derived-fixture", "controller-observation"]),
++  deployment: Schema.Literal("unverified"),
++  identity: Schema.Literal("unknown"),
++  readEndpoints: Schema.Struct({
++    httpOrigin: Text,
++    dataOrigin: Text,
++    dashboard: Schema.Literal("blocked_unmediated_routes"),
++    logs: Schema.Literal("unknown"),
++  }),
++  resources: Schema.Array(Schema.Struct({ path: Text, state: Schema.Literals(["observed", "missing"]) })),
++  plugins: Schema.Array(
++    Schema.Struct({ id: Text, version: Text, frontendVersion: Text, svelteHash: Schema.NullOr(Text) }),
++  ),
++  blockedPlugins: Schema.Array(Text),
++  sample: optional(Schema.Struct({ pluginID: Text, messageID: Text, data: Schema.Json })),
++  freshness: Schema.Literal("unknown"),
++}).annotate({ identifier: "FtcController.ProtocolEvidence" })
+M8-04 review package
+Base: 4a915eacb41f15bd54cb4617df08b4c181222f6a
+Head: 3e9a64ca554408608ef6078c2e154123f3f687ad
+Product tested: 29be4123ad812e66d26d225b899a46fa9b5d233d
+

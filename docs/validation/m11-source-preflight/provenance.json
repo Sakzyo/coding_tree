@@ -1,0 +1,311 @@
+[
+  {
+    "file": "rr-installation.html",
+    "url": "https://rr.brott.dev/docs/v1-0/installation/",
+    "finalURL": "https://rr.brott.dev/docs/v1-0/installation/",
+    "retrievedUTC": "2026-10-06T11:11:59.561450+00:00",
+    "sha256": "75fdd9baef9924bac538452d3a4a31447ea0273fe69abf3c12f7989e25cf72ab",
+    "bytes": 14969
+  },
+  {
+    "file": "rr-tuning.html",
+    "url": "https://rr.brott.dev/docs/v1-0/tuning/",
+    "finalURL": "https://rr.brott.dev/docs/v1-0/tuning/",
+    "retrievedUTC": "2026-10-06T11:12:00.999274+00:00",
+    "sha256": "bd6ddc8a0c66ef7646ae27b254756f716c6d988dc30b2a7a2b2d89f8fda22f3e",
+    "bytes": 39894
+  },
+  {
+    "file": "rr-actions.html",
+    "url": "https://rr.brott.dev/docs/v1-0/actions/",
+    "finalURL": "https://rr.brott.dev/docs/v1-0/actions/",
+    "retrievedUTC": "2026-10-06T11:12:02.523445+00:00",
+    "sha256": "4e5105f0199b822d74fc803b4cc4c0c43c8df4d420cc7b677d98a8604aa2cc6c",
+    "bytes": 33943
+  },
+  {
+    "file": "rr-tag.json",
+    "url": "https://api.github.com/repos/acmerobotics/road-runner/git/ref/tags/v1.0.1",
+    "finalURL": "https://api.github.com/repos/acmerobotics/road-runner/git/ref/tags/v1.0.1",
+    "retrievedUTC": "2026-10-06T11:12:04.407695+00:00",
+    "sha256": "8c4132347cb908d3dffd3282db2297c2f4abc304b848ec304c8b0607d9ae5300",
+    "bytes": 357
+  },
+  {
+    "file": "rr-quickstart.json",
+    "url": "https://api.github.com/repos/acmerobotics/road-runner-quickstart",
+    "finalURL": "https://api.github.com/repos/acmerobotics/road-runner-quickstart",
+    "retrievedUTC": "2026-10-06T11:12:05.557518+00:00",
+    "sha256": "921fa3b59d73905a87e9944e23797066c1f382987bcda9494571ccf6f184f6b2",
+    "bytes": 7141
+  },
+  {
+    "file": "pedro-tag.json",
+    "url": "https://api.github.com/repos/Pedro-Pathing/PedroPathing/git/ref/tags/v2.1.2",
+    "finalURL": "https://api.github.com/repos/Pedro-Pathing/PedroPathing/git/ref/tags/v2.1.2",
+    "retrievedUTC": "2026-10-06T11:12:06.603719+00:00",
+    "sha256": "400dc42f2719c8df064c40e64b69a34256b358759c046ad8e3c13539635668d1",
+    "bytes": 353
+  },
+  {
+    "file": "pedro-installation.html",
+    "url": "https://pedropathing.com/docs/pathing/installation",
+    "finalURL": "https://pedropathing.com/docs/pathing/installation",
+    "retrievedUTC": "2026-10-06T11:12:10.445650+00:00",
+    "sha256": "6180b2ea7cd5d7d9df92618087841f0d6fe67c628ea36f8758537dda5060acbe",
+    "bytes": 106374
+  },
+  {
+    "file": "pedro-intro.html",
+    "url": "https://pedropathing.com/docs/pathing",
+    "finalURL": "https://pedropathing.com/docs/pathing",
+    "retrievedUTC": "2026-10-06T11:12:11.889111+00:00",
+    "sha256": "29f05046ede0e3d6c6d5068f9daad5dbd72a02e3e22c41362de490f29d8f81d8",
+    "bytes": 82764
+  },
+  {
+    "file": "pedro-core.pom",
+    "url": "https://repo.maven.apache.org/maven2/com/pedropathing/core/2.1.2/core-2.1.2.pom",
+    "finalURL": "https://repo.maven.apache.org/maven2/com/pedropathing/core/2.1.2/core-2.1.2.pom",
+    "retrievedUTC": "2026-10-06T11:12:13.631741+00:00",
+    "sha256": "b4a376f83bd29ccfa9cde99dd58f55d0d2cb45d974c617ed759c78da28dbdf31",
+    "bytes": 1647
+  },
+  {
+    "file": "pedro-ftc.pom",
+    "url": "https://repo.maven.apache.org/maven2/com/pedropathing/ftc/2.1.2/ftc-2.1.2.pom",
+    "finalURL": "https://repo.maven.apache.org/maven2/com/pedropathing/ftc/2.1.2/ftc-2.1.2.pom",
+    "retrievedUTC": "2026-10-06T11:12:14.643097+00:00",
+    "sha256": "d7959067d099fe41f702027fcdfd48d9923c3285ed1e604edd9c398d08382dd5",
+    "bytes": 2069
+  },
+  {
+    "file": "ftc-docs-license",
+    "url": "https://raw.githubusercontent.com/FIRST-Tech-Challenge/ftcdocs/main/LICENSE",
+    "finalURL": "https://raw.githubusercontent.com/FIRST-Tech-Challenge/ftcdocs/main/LICENSE",
+    "retrievedUTC": "2026-10-06T11:12:16.463108+00:00",
+    "sha256": "455c942074b8541785b423beccf849fe58bd0447f63d103729f840b24960fdfb",
+    "bytes": 1528
+  },
+  {
+    "file": "pedro-license",
+    "url": "https://raw.githubusercontent.com/Pedro-Pathing/PedroPathing/96df977d30329eef57c226cf1e6854026f4dfe4f/LICENSE",
+    "finalURL": "https://raw.githubusercontent.com/Pedro-Pathing/PedroPathing/96df977d30329eef57c226cf1e6854026f4dfe4f/LICENSE",
+    "retrievedUTC": "2026-10-06T11:13:10.462133+00:00",
+    "sha256": "8383a48ff9dc68125e71e1f03aff90d35464c06850a9c74cc2b2428adb83258e",
+    "bytes": 1500
+  },
+  {
+    "file": "rr-license",
+    "url": "https://raw.githubusercontent.com/acmerobotics/road-runner/03367b9701fd37f98705d65af56e4d4cd27417a6/LICENSE",
+    "finalURL": "https://raw.githubusercontent.com/acmerobotics/road-runner/03367b9701fd37f98705d65af56e4d4cd27417a6/LICENSE",
+    "retrievedUTC": "2026-10-06T11:13:11.510805+00:00",
+    "sha256": "706ca15db28155f55688e702c615802624a8ef702285cfc2cdcbe8598bf43b08",
+    "bytes": 1070
+  },
+  {
+    "file": "rr-tree.json",
+    "url": "https://api.github.com/repos/acmerobotics/road-runner/git/trees/03367b9701fd37f98705d65af56e4d4cd27417a6?recursive=1",
+    "finalURL": "https://api.github.com/repos/acmerobotics/road-runner/git/trees/03367b9701fd37f98705d65af56e4d4cd27417a6?recursive=1",
+    "retrievedUTC": "2026-10-06T11:13:13.310335+00:00",
+    "sha256": "fa178806e28d70f7e84180067e1edd19c441a403c3b6832b94641dff5e54ada8",
+    "bytes": 165702
+  },
+  {
+    "file": "rr-quickstart-ref.json",
+    "url": "https://api.github.com/repos/acmerobotics/road-runner-quickstart/git/ref/heads/master",
+    "finalURL": "https://api.github.com/repos/acmerobotics/road-runner-quickstart/git/ref/heads/master",
+    "retrievedUTC": "2026-10-06T11:13:14.312172+00:00",
+    "sha256": "3e0007ab84eac47de3a763262ceb4a1dc6788e010273689931abf06408dfe2ff",
+    "bytes": 381
+  },
+  {
+    "file": "rr-quickstart-docpin.gradle",
+    "url": "https://raw.githubusercontent.com/acmerobotics/road-runner-quickstart/5f35f4c22c1ae7c0be5b35da0961c8f3a181ad31/TeamCode/build.gradle",
+    "finalURL": "https://raw.githubusercontent.com/acmerobotics/road-runner-quickstart/5f35f4c22c1ae7c0be5b35da0961c8f3a181ad31/TeamCode/build.gradle",
+    "retrievedUTC": "2026-10-06T11:13:15.323882+00:00",
+    "sha256": "e41459d33c35bcf4dcf3f1559395a4fd16e035a28b773e4a212c0e7f2112f918",
+    "bytes": 1135
+  },
+  {
+    "file": "rr-quickstart-docpin-deps.gradle",
+    "url": "https://raw.githubusercontent.com/acmerobotics/road-runner-quickstart/5f35f4c22c1ae7c0be5b35da0961c8f3a181ad31/build.dependencies.gradle",
+    "finalURL": "https://raw.githubusercontent.com/acmerobotics/road-runner-quickstart/5f35f4c22c1ae7c0be5b35da0961c8f3a181ad31/build.dependencies.gradle",
+    "retrievedUTC": "2026-10-06T11:13:16.361902+00:00",
+    "sha256": "708ea6deac7a8966ce910eba74003de434ed660216d0b5001fa2aae8705c081c",
+    "bytes": 623
+  },
+  {
+    "file": "rr-quickstart-docpin-license",
+    "url": "https://raw.githubusercontent.com/acmerobotics/road-runner-quickstart/5f35f4c22c1ae7c0be5b35da0961c8f3a181ad31/LICENSE",
+    "finalURL": "https://raw.githubusercontent.com/acmerobotics/road-runner-quickstart/5f35f4c22c1ae7c0be5b35da0961c8f3a181ad31/LICENSE",
+    "retrievedUTC": "2026-10-06T11:13:17.360873+00:00",
+    "sha256": "43fdbddb26a1b89f49c94a52181d7c1f99f5d389cffd00371d5618f8f84cfc6d",
+    "bytes": 1600
+  },
+  {
+    "file": "pedro-docs.json",
+    "url": "https://api.github.com/repos/Pedro-Pathing/Docs",
+    "finalURL": "https://api.github.com/repos/Pedro-Pathing/Docs",
+    "retrievedUTC": "2026-10-06T11:13:18.406498+00:00",
+    "sha256": "2845916f490e0e6e77c735d84bf1f773de1ab14a9dae013a5d32580bb13c0977",
+    "bytes": 6133
+  },
+  {
+    "file": "ftc-docs-ref.json",
+    "url": "https://api.github.com/repos/FIRST-Tech-Challenge/ftcdocs/git/ref/heads/main",
+    "finalURL": "https://api.github.com/repos/FIRST-Tech-Challenge/ftcdocs/git/ref/heads/main",
+    "retrievedUTC": "2026-10-06T11:13:19.429410+00:00",
+    "sha256": "20122f71d3e0bda7bbbfd6c57fd56138495db598d2371f9695269f22d59f070d",
+    "bytes": 354
+  },
+  {
+    "file": "robotcore.pom",
+    "url": "https://repo.maven.apache.org/maven2/org/firstinspires/ftc/RobotCore/11.1.0/RobotCore-11.1.0.pom",
+    "error": "<urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)>"
+  },
+  {
+    "file": "rr-actions.pom",
+    "url": "https://maven.brott.dev/com/acmerobotics/roadrunner/actions/1.0.1/actions-1.0.1.pom",
+    "finalURL": "https://acmerobotics.z13.web.core.windows.net/com/acmerobotics/roadrunner/actions/1.0.1/actions-1.0.1.pom",
+    "retrievedUTC": "2026-10-06T11:13:28.355782+00:00",
+    "sha256": "4d070210e052dbdb4d94ff21b2745d02c704b5fdd93049ecd9c231891f65794c",
+    "bytes": 1354
+  },
+  {
+    "file": "rr-ftc.pom",
+    "url": "https://maven.brott.dev/com/acmerobotics/roadrunner/ftc/0.1.25/ftc-0.1.25.pom",
+    "finalURL": "https://acmerobotics.z13.web.core.windows.net/com/acmerobotics/roadrunner/ftc/0.1.25/ftc-0.1.25.pom",
+    "retrievedUTC": "2026-10-06T11:13:30.906656+00:00",
+    "sha256": "1b4aeb9dd96b4f544e0b37512e3c8308d03b61ebf2831e9212c9b8577e276444",
+    "bytes": 1963
+  },
+  {
+    "file": "dashboard.pom",
+    "url": "https://maven.brott.dev/com/acmerobotics/dashboard/dashboard/0.5.1/dashboard-0.5.1.pom",
+    "finalURL": "https://acmerobotics.z13.web.core.windows.net/com/acmerobotics/dashboard/dashboard/0.5.1/dashboard-0.5.1.pom",
+    "retrievedUTC": "2026-10-06T11:13:33.390908+00:00",
+    "sha256": "a66b78c496a2eb035d756b8a84687af4dc51c6b65bb8684a49c829c8db3baf2b",
+    "bytes": 2286
+  },
+  {
+    "file": "rr-installation-v1.0.1.md",
+    "url": "https://raw.githubusercontent.com/acmerobotics/road-runner/03367b9701fd37f98705d65af56e4d4cd27417a6/road-runner-docs/site/content/raw-docs/v1-0/installation.md",
+    "finalURL": "https://raw.githubusercontent.com/acmerobotics/road-runner/03367b9701fd37f98705d65af56e4d4cd27417a6/road-runner-docs/site/content/raw-docs/v1-0/installation.md",
+    "retrievedUTC": "2026-10-06T11:14:03.843288+00:00",
+    "sha256": "3ba79a20ee8823e1b6c7017b4498c89f79715d56ef157a9a642a353cc825e183",
+    "bytes": 2581
+  },
+  {
+    "file": "rr-tuning-v1.0.1.md",
+    "url": "https://raw.githubusercontent.com/acmerobotics/road-runner/03367b9701fd37f98705d65af56e4d4cd27417a6/road-runner-docs/site/content/raw-docs/v1-0/tuning/index.md",
+    "finalURL": "https://raw.githubusercontent.com/acmerobotics/road-runner/03367b9701fd37f98705d65af56e4d4cd27417a6/road-runner-docs/site/content/raw-docs/v1-0/tuning/index.md",
+    "retrievedUTC": "2026-10-06T11:14:05.090787+00:00",
+    "sha256": "18b6df4aef04b7b49e3b7e3a1bbb050809ff3c852d2fff1f7110026211098fff",
+    "bytes": 17773
+  },
+  {
+    "file": "rr-actions-v1.0.1.kt",
+    "url": "https://raw.githubusercontent.com/acmerobotics/road-runner/03367b9701fd37f98705d65af56e4d4cd27417a6/road-runner/actions/src/main/kotlin/com/acmerobotics/roadrunner/Actions.kt",
+    "finalURL": "https://raw.githubusercontent.com/acmerobotics/road-runner/03367b9701fd37f98705d65af56e4d4cd27417a6/road-runner/actions/src/main/kotlin/com/acmerobotics/roadrunner/Actions.kt",
+    "retrievedUTC": "2026-10-06T11:14:06.323939+00:00",
+    "sha256": "ad341b7146ce4bb6d74a44c7d1f731e23d805f7d90b1d0f96aad0b0f7f7e5fc8",
+    "bytes": 25821
+  },
+  {
+    "file": "rr-quickstart-observed.gradle",
+    "url": "https://raw.githubusercontent.com/acmerobotics/road-runner-quickstart/6e63a7792e9bb6958798bf46fc03d84765b50c51/TeamCode/build.gradle",
+    "finalURL": "https://raw.githubusercontent.com/acmerobotics/road-runner-quickstart/6e63a7792e9bb6958798bf46fc03d84765b50c51/TeamCode/build.gradle",
+    "retrievedUTC": "2026-10-06T11:14:07.358346+00:00",
+    "sha256": "c75c45e7979d1715752a4a14c3c2522083ae4e1e958b542cf0389d9f133d4bf4",
+    "bytes": 1134
+  },
+  {
+    "file": "rr-quickstart-observed-deps.gradle",
+    "url": "https://raw.githubusercontent.com/acmerobotics/road-runner-quickstart/6e63a7792e9bb6958798bf46fc03d84765b50c51/build.dependencies.gradle",
+    "finalURL": "https://raw.githubusercontent.com/acmerobotics/road-runner-quickstart/6e63a7792e9bb6958798bf46fc03d84765b50c51/build.dependencies.gradle",
+    "retrievedUTC": "2026-10-06T11:14:08.380943+00:00",
+    "sha256": "34ad13c4dae21647c6f9cd1213788bc6a7af78fd836045e3585aef70e5a9ca5d",
+    "bytes": 623
+  },
+  {
+    "file": "rr-quickstart-observed-license",
+    "url": "https://raw.githubusercontent.com/acmerobotics/road-runner-quickstart/6e63a7792e9bb6958798bf46fc03d84765b50c51/LICENSE",
+    "finalURL": "https://raw.githubusercontent.com/acmerobotics/road-runner-quickstart/6e63a7792e9bb6958798bf46fc03d84765b50c51/LICENSE",
+    "retrievedUTC": "2026-10-06T11:14:09.590937+00:00",
+    "sha256": "43fdbddb26a1b89f49c94a52181d7c1f99f5d389cffd00371d5618f8f84cfc6d",
+    "bytes": 1600
+  },
+  {
+    "file": "pedro-docs-ref.json",
+    "url": "https://api.github.com/repos/Pedro-Pathing/Docs/git/ref/heads/master",
+    "finalURL": "https://api.github.com/repos/Pedro-Pathing/Docs/git/ref/heads/master",
+    "retrievedUTC": "2026-10-06T11:14:11.477498+00:00",
+    "sha256": "8e7e9383f9521c4aca449ea4c605f773ac7dd0d5086eef1960ae97de66b6310b",
+    "bytes": 341
+  },
+  {
+    "file": "ftc-docs-license-pinned",
+    "url": "https://raw.githubusercontent.com/FIRST-Tech-Challenge/ftcdocs/3e5827127b62df615c48e96529653c4ee95fed65/LICENSE",
+    "finalURL": "https://raw.githubusercontent.com/FIRST-Tech-Challenge/ftcdocs/3e5827127b62df615c48e96529653c4ee95fed65/LICENSE",
+    "retrievedUTC": "2026-10-06T11:14:12.526027+00:00",
+    "sha256": "455c942074b8541785b423beccf849fe58bd0447f63d103729f840b24960fdfb",
+    "bytes": 1528
+  },
+  {
+    "file": "pedro-ftc-v2.1.2.gradle.kts",
+    "url": "https://raw.githubusercontent.com/Pedro-Pathing/PedroPathing/96df977d30329eef57c226cf1e6854026f4dfe4f/ftc/build.gradle.kts",
+    "finalURL": "https://raw.githubusercontent.com/Pedro-Pathing/PedroPathing/96df977d30329eef57c226cf1e6854026f4dfe4f/ftc/build.gradle.kts",
+    "retrievedUTC": "2026-10-06T11:14:48.513686+00:00",
+    "sha256": "8c16b5cee0030b899bc58dde96ce4ba01b5f0fa373a71f0dd3f5540453a9ab5b",
+    "bytes": 2101
+  },
+  {
+    "file": "pedro-v2.1.2-libs.toml",
+    "url": "https://raw.githubusercontent.com/Pedro-Pathing/PedroPathing/96df977d30329eef57c226cf1e6854026f4dfe4f/gradle/libs.versions.toml",
+    "finalURL": "https://raw.githubusercontent.com/Pedro-Pathing/PedroPathing/96df977d30329eef57c226cf1e6854026f4dfe4f/gradle/libs.versions.toml",
+    "retrievedUTC": "2026-10-06T11:14:49.592238+00:00",
+    "sha256": "beb4f878fb5e42dce0faec5e2da35781a7f25cce4ea37e7e7f37dc571b70ed7c",
+    "bytes": 712
+  },
+  {
+    "file": "pedro-docs-root.json",
+    "url": "https://api.github.com/repos/Pedro-Pathing/Docs/contents?ref=ddba17614675e6a0b4e6602e696e7d81293b117c",
+    "finalURL": "https://api.github.com/repos/Pedro-Pathing/Docs/contents?ref=ddba17614675e6a0b4e6602e696e7d81293b117c",
+    "retrievedUTC": "2026-10-06T11:14:50.974920+00:00",
+    "sha256": "8a8973cb1d0925cd0d9855623bb0511f3b093f3758f6bc6a6c8cfb13cbf30d69",
+    "bytes": 15899
+  },
+  {
+    "file": "rr-ftc-tag.json",
+    "url": "https://api.github.com/repos/acmerobotics/road-runner-ftc/git/ref/tags/v0.1.25",
+    "finalURL": "https://api.github.com/repos/acmerobotics/road-runner-ftc/git/ref/tags/v0.1.25",
+    "retrievedUTC": "2026-10-06T11:14:52.066744+00:00",
+    "sha256": "1947a4a1e6356b13804be061676d2090677377d8f878dbc35c734d59eb77b1e0",
+    "bytes": 361
+  },
+  {
+    "file": "dashboard-tag.json",
+    "url": "https://api.github.com/repos/acmerobotics/ftc-dashboard/git/ref/tags/v0.5.1",
+    "finalURL": "https://api.github.com/repos/acmerobotics/ftc-dashboard/git/ref/tags/v0.5.1",
+    "retrievedUTC": "2026-10-06T11:14:53.230145+00:00",
+    "sha256": "7dd7109209d320cfbf338712737929c0de40e0049d81d6bd65d3ff2e13da1fca",
+    "bytes": 361
+  },
+  {
+    "file": "rr-ftc-license",
+    "url": "https://raw.githubusercontent.com/acmerobotics/road-runner-ftc/3d3bb8e1d9ad4b3e00a122515558767a67fe7451/LICENSE",
+    "finalURL": "https://raw.githubusercontent.com/acmerobotics/road-runner-ftc/3d3bb8e1d9ad4b3e00a122515558767a67fe7451/LICENSE",
+    "retrievedUTC": "2026-10-06T11:15:42.924808+00:00",
+    "sha256": "43fdbddb26a1b89f49c94a52181d7c1f99f5d389cffd00371d5618f8f84cfc6d",
+    "bytes": 1600
+  },
+  {
+    "file": "dashboard-license",
+    "url": "https://raw.githubusercontent.com/acmerobotics/ftc-dashboard/ea94a7d06c4bf648a4d0d2e22b74cdcdffc36a73/LICENSE",
+    "finalURL": "https://raw.githubusercontent.com/acmerobotics/ftc-dashboard/ea94a7d06c4bf648a4d0d2e22b74cdcdffc36a73/LICENSE",
+    "retrievedUTC": "2026-10-06T11:15:44.022572+00:00",
+    "sha256": "c57d36f2c2fb0b7d078a177b2aa237a25b85b2557d22e24387c2b78211b85284",
+    "bytes": 2961
+  }
+]
