@@ -1,0 +1,26 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-03.test.ts:
+(pass) same project contends while another runs [9.68ms]
+(pass) concurrent different chats and duplicate project views have one canonical owner [3.19ms]
+(pass) concurrent same-chat claims survive one release and stale or mismatched releases [6.58ms]
+(pass) rejects chat membership without acquiring [0.97ms]
+(pass) rejects session membership without acquiring [1.32ms]
+(pass) rejects project membership without acquiring [0.48ms]
+(pass) rejects invalid membership without acquiring [2.94ms]
+(pass) rejects identity ProjectContext mapping [0.40ms]
+(pass) rejects directory ProjectContext mapping [2.49ms]
+(pass) rejects workspace ProjectContext mapping [0.29ms]
+(pass) interrupted membership lookup allocates no ownership [0.72ms]
+(pass) failure releases only bracketed caller's claim [0.58ms]
+(pass) cancel releases only bracketed caller's claim [0.21ms]
+(pass) independent scopes cannot release each other's claims and disposed gate rejects reuse [0.56ms]
+(pass) public project lookup validates association identity and preserves host identity [43.51ms]
+(pass) gate records validate serializable contracts and exact facade identities [2.03ms]
+(pass) scope disposal during validation rejects later acquisition [1.48ms]
+(pass) Session placement failure from validated membership port acquires nothing [1.55ms]
+
+ 18 pass
+ 0 fail
+ 56 expect() calls
+Ran 18 tests across 1 file. [171.00ms]

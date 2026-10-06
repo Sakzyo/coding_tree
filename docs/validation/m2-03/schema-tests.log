@@ -1,0 +1,30 @@
+Condensed evidence; large Schema AST comparison omitted.
+Original full log: /private/tmp/ftc-m2-03-schema-tests.log
+
+bun test v1.3.14 (0d9b296a)
+test/contract-hygiene.test.ts:
+(pass) contract hygiene > optional properties preserve transformations and omit undefined while encoding [3.19ms]
+(pass) contract hygiene > todo status and priority preserve arbitrary strings [0.04ms]
+(pass) contract hygiene > current ID constructors expose create [0.25ms]
+(pass) contract hygiene > reusable public identifiers are stable and unique [0.04ms]
+(pass) contract hygiene > current source avoids Any and mutable contract wrappers [0.87ms]
+test/compatibility.test.ts:
+(pass) schema compatibility > moved class schemas remain constructible [0.09ms]
+test/event-manifest.test.ts:
+10 | describe("public event manifest", () => {
+11 |   test("owns the complete public event surface", () => {
+12 |     expect(EventManifest.ServerDefinitions.length).toBe(55)
+Expected: 55
+Received: 58
+(fail) public event manifest > owns the complete public event surface [0.14ms]
+40 |     expect(Integration.Event.Definitions).toEqual([Integration.Event.Updated, Integration.Event.ConnectionUpdated])
+41 |     expect(Permission.Event.Definitions).toEqual([Permission.Event.Asked, Permission.Event.Replied])
+42 |     expect(Reference.Event.Definitions).toEqual([Reference.Event.Updated])
+43 |     expect(EventManifest.Latest.has("ide.installed")).toBe(false)
+44 |     expect(IdeEvent.Definitions).toEqual([IdeEvent.Installed])
+45 |     expect(EventManifest.Definitions.slice(40, 43)).toEqual([
+(fail) public event manifest > uses canonical definitions for current public events [1213.37ms]
+ 6 pass
+ 2 fail
+ 28 expect() calls
+Ran 8 tests across 3 files. [1289.00ms]

@@ -61,3 +61,30 @@ export const ChatError = Schema.Struct({
   detail: optional(Schema.String),
   recovery: Schema.Literals(["reopen_project", "retry"]),
 }).annotate({ identifier: "FtcProject.ChatError" })
+
+// Process-local claim identity. Never persist or use as an approval credential.
+export const GateToken = Schema.String.check(Schema.isStartsWith("gate_"))
+  .pipe(Schema.brand("FtcProject.GateToken"))
+  .annotate({ identifier: "FtcProject.GateToken" })
+export type GateToken = typeof GateToken.Type
+
+export interface GateLease extends Schema.Schema.Type<typeof GateLease> {}
+export const GateLease = Schema.Struct({
+  projectKey: AbsolutePath.check(Schema.isPattern(/^(?:\/|[a-zA-Z]:[\\/]|\\\\)/)),
+  chatID: ChatID,
+  sessionID: Session.ID,
+  token: GateToken,
+}).annotate({ identifier: "FtcProject.GateLease" })
+
+export const GateResult = Schema.Union([
+  Schema.Struct({ kind: Schema.Literal("acquired"), lease: GateLease }),
+  Schema.Struct({ kind: Schema.Literal("busy"), active: ChatRef }),
+]).annotate({ identifier: "FtcProject.GateResult" })
+export type GateResult = typeof GateResult.Type
+
+export interface GateError extends Schema.Schema.Type<typeof GateError> {}
+export const GateError = Schema.Struct({
+  code: Schema.Literals(["invalid_chat", "chat_not_found", "invalid_project", "gate_closed"]),
+  projectID: optional(Project.ID),
+  recovery: Schema.Literals(["reopen_project", "retry"]),
+}).annotate({ identifier: "FtcProject.GateError" })

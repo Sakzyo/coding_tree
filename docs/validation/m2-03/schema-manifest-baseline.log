@@ -1,0 +1,22 @@
+Condensed evidence; large Schema AST comparison omitted.
+Original full log: /private/tmp/ftc-m2-03-schema-manifest-baseline.log
+
+bun test v1.3.14 (0d9b296a)
+test/event-manifest.test.ts:
+10 | describe("public event manifest", () => {
+11 |   test("owns the complete public event surface", () => {
+12 |     expect(EventManifest.ServerDefinitions.length).toBe(55)
+Expected: 55
+Received: 58
+(fail) public event manifest > owns the complete public event surface [0.22ms]
+40 |     expect(Integration.Event.Definitions).toEqual([Integration.Event.Updated, Integration.Event.ConnectionUpdated])
+41 |     expect(Permission.Event.Definitions).toEqual([Permission.Event.Asked, Permission.Event.Replied])
+42 |     expect(Reference.Event.Definitions).toEqual([Reference.Event.Updated])
+43 |     expect(EventManifest.Latest.has("ide.installed")).toBe(false)
+44 |     expect(IdeEvent.Definitions).toEqual([IdeEvent.Installed])
+45 |     expect(EventManifest.Definitions.slice(40, 43)).toEqual([
+(fail) public event manifest > uses canonical definitions for current public events [1216.07ms]
+ 0 pass
+ 2 fail
+ 16 expect() calls
+Ran 2 tests across 1 file. [1277.00ms]

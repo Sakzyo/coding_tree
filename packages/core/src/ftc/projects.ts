@@ -1,6 +1,6 @@
 export * as FtcProjects from "./projects"
 
-import { Context, Effect, Layer } from "effect"
+import { Context, Effect, Layer, Schema } from "effect"
 import path from "node:path"
 import { FtcProject } from "@opencode-ai/schema/ftc-project"
 import { Location } from "@opencode-ai/schema/location"
@@ -47,6 +47,9 @@ export interface SessionAccess {
 }
 
 export interface Interface {
+  readonly getProject: (
+    input: FtcProject.ProjectRequest,
+  ) => Effect.Effect<FtcProject.ProjectContext, FtcProject.ChatError>
   readonly createProject: (
     input: FtcProject.FolderRequest,
   ) => Effect.Effect<FtcProject.ProjectContext, FtcProject.AssociationError>
@@ -89,6 +92,19 @@ export const layer = (folders: FolderIdentity, repository: Repository, sessions:
         projectID: input.projectID,
         recovery: "reopen_project",
       } satisfies FtcProject.ChatError)
+    if (
+      !Schema.is(FtcProject.ProjectContext)(project) ||
+      !path.isAbsolute(project.canonicalRoot) ||
+      !path.isAbsolute(project.location.project.directory) ||
+      project.projectID !== input.projectID ||
+      project.location.directory !== project.canonicalRoot ||
+      project.location.workspaceID !== undefined
+    )
+      return yield* Effect.fail({
+        code: "project_changed",
+        projectID: input.projectID,
+        recovery: "reopen_project",
+      } satisfies FtcProject.ChatError)
     return project
   })
   const lookup = Effect.fn("FtcProjects.lookup")(function* (project: FtcProject.ProjectContext, sessionID: Session.ID) {
@@ -110,6 +126,7 @@ export const layer = (folders: FolderIdentity, repository: Repository, sessions:
     return session
   })
   return Layer.succeed(Service, {
+    getProject,
     createProject: associate,
     openProject: associate,
     createChat: Effect.fn("FtcProjects.createChat")(function* (input) {

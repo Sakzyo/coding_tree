@@ -1,0 +1,6 @@
+$ tsgo --noEmit
+test/ftc/ftc-knowledge/m11-01.test.ts(422,104): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '{ manifest: { kind: string; records: { id: string; version: string; language: "en" | "zh"; topic: string; sdkRange: string; source: string; license: string; localPath: string; digest: string; provenance: string; codeTokens: string[]; }[]; }; files: { ...; }[]; }' is not assignable to parameter of type '{ readonly manifest: { readonly kind: "production" | "synthetic"; readonly records: readonly { readonly id: string; readonly version: string; readonly language: "en" | "zh"; readonly topic: string; readonly sdkRange: string; ... 7 more ...; readonly codeTokens: readonly string[]; }[]; }; readonly files: readonly { ....'.
+      The types of 'manifest.kind' are incompatible between these types.
+        Type 'string' is not assignable to type '"production" | "synthetic"'.

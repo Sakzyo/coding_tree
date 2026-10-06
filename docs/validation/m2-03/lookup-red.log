@@ -1,0 +1,23 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-03.test.ts:
+223 |   }, { createSession: () => Effect.die("unused"), getSession: () => Effect.die("unused") })
+224 |   const result = await Effect.runPromise(Effect.gen(function* () {
+225 |     const projects = yield* FtcProjects.Service
+226 |     return yield* projects.getProject(data.projects[0]).pipe(Effect.result)
+227 |   }).pipe(Effect.provide(invalid)))
+228 |   expect(Result.isFailure(result) && result.failure.code).toBe("project_changed")
+                                                                ^
+error: expect(received).toBe(expected)
+
+Expected: "project_changed"
+Received: false
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/projects-and-chats/m2-03.test.ts:228:59)
+(fail) public project lookup validates association identity and preserves host identity [4.53ms]
+
+ 0 pass
+ 15 filtered out
+ 1 fail
+ 3 expect() calls
+Ran 1 test across 1 file. [66.00ms]
