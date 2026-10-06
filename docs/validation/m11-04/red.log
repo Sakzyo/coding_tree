@@ -1,0 +1,30 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-knowledge/m11-04.test.ts:
+35 |     )
+36 |     const lessons = result.kind === "found" ? (result.records[0].document?.lessons ?? []) : []
+37 |     const missingRequiredTopics = ["java-fundamentals", "opmode-lifecycle", "hardware-gamepads-telemetry", "code-organization"].filter(
+38 |       (topic) => !lessons.some((lesson) => lesson.topic === topic),
+39 |     )
+40 |     expect(missingRequiredTopics).toEqual([])
+                                       ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   "java-fundamentals",
++   "opmode-lifecycle",
++   "hardware-gamepads-telemetry",
++   "code-organization",
++ ]
+
+- Expected  - 1
++ Received  + 6
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-04.test.ts:40:35)
+(fail) foundation lessons require explanation and project application [4.54ms]
+
+ 0 pass
+ 1 fail
+ 2 expect() calls
+Ran 1 test across 1 file. [78.00ms]

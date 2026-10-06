@@ -1,0 +1,347 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-knowledge/m11-04.test.ts:
+(pass) foundation lessons require explanation and project application [154.63ms]
+(pass) foundation criteria and identifiers are validated from actual bytes [464.77ms]
+(pass) foundation queries preserve source metadata and explicit local/version/language selection [97.75ms]
+
+test/ftc/ftc-knowledge/m11-02.test.ts:
+(pass) incompatible or absent local reference never appears as current [13.38ms]
+(pass) explicit library versions and back-to-back SDK queries have independent applicability [5.61ms]
+(pass) search sees only compatible available language candidates and retains validated content [1.23ms]
+(pass) unavailable compatible metadata is explicit and cannot satisfy a body search [1.02ms]
+(pass) missing references retain the exact explicit request: {"id":"absent","want":"not_found"} [0.41ms]
+(pass) missing references retain the exact explicit request: {"id":"sdk-fixture-v2","want":"incompatible"} [0.34ms]
+(pass) missing references retain the exact explicit request: {"topic":"absent-topic","want":"not_found"} [0.33ms]
+(pass) invalid queries fail before repository observation: {"sdkVersion":"1.x"} [0.34ms]
+(pass) invalid queries fail before repository observation: {"sdkVersion":"v1.2.0"} [0.04ms]
+(pass) invalid queries fail before repository observation: {"sdkVersion":""} [0.04ms]
+(pass) invalid queries fail before repository observation: {"language":"fr"} [0.07ms]
+(pass) invalid queries fail before repository observation: {"library":"fixture-library"} [0.03ms]
+(pass) invalid queries fail before repository observation: {"libraryVersion":"1.0.0"} [0.03ms]
+(pass) invalid queries fail before repository observation: {"library":"fixture-library","libraryVersion":"^1.0.0"} [1.30ms]
+(pass) invalid queries fail before repository observation: {"projectID":"implicit-selection"} [0.19ms]
+(pass) invalid search text never reaches the repository [0.27ms]
+(pass) repository bytes are revalidated instead of trusting claimed validity [20.89ms]
+(pass) availability observation cannot mutate the already validated document snapshot [16.64ms]
+(pass) failures release repository resources and remain distinct from missing data [1.08ms]
+(pass) interruption releases a pending repository observation and independent instances remain usable [0.80ms]
+(pass) canonical query/result contracts preserve facade identity and omit undefined optionals [0.36ms]
+(pass) construction observes nothing and successful observation releases all acquired resources [0.74ms]
+(pass) malformed availability responses fail explicitly [0.54ms]
+(pass) malformed search responses fail explicitly [0.45ms]
+(pass) an incomplete translation pack is invalid and cannot silently supply another language [0.29ms]
+(pass) search interruption closes scoped resources without retaining a partial result [0.59ms]
+(pass) knowledge Context Source preserves missing data and treats failed observation as unavailable [1.11ms]
+
+test/ftc/ftc-knowledge/m11-01.test.ts:
+(pass) translation pair preserves stable IDs and code tokens [8.40ms]
+(pass) rejects missing or whitespace source [0.48ms]
+(pass) rejects missing or whitespace license [0.34ms]
+(pass) requires each declared file and rejects duplicate file paths [0.36ms]
+(pass) rejects duplicate id/version/language but permits separate paired versions [0.64ms]
+(pass) requires the translation with the same stable id and version [0.31ms]
+(pass) digest is checked against actual injected bytes [0.26ms]
+(pass) rejects malformed digest  [0.12ms]
+(pass) rejects malformed digest "" [0.10ms]
+(pass) rejects malformed digest "bogus" [0.08ms]
+(pass) rejects invalid or empty SDK applicability  [0.12ms]
+(pass) rejects invalid or empty SDK applicability "" [0.08ms]
+(pass) rejects invalid or empty SDK applicability "not-a-range" [0.20ms]
+(pass) rejects invalid or empty SDK applicability ">=2.0.0 <1.0.0" [0.16ms]
+(pass) library applicability requires both library and satisfiable library range [0.89ms]
+(pass) translation pairs preserve applicability and declared code tokens [0.27ms]
+(pass) actual content identifier drift fails even with a freshly matching digest [0.56ms]
+(pass) actual document identity is checked instead of trusting manifest declarations "id":"synthetic-lesson" [0.15ms]
+(pass) actual document identity is checked instead of trusting manifest declarations "version":"1.0.0" [0.13ms]
+(pass) actual document identity is checked instead of trusting manifest declarations "language":"zh" [0.12ms]
+(pass) rejects malformed record {"record":null} [0.09ms]
+(pass) rejects malformed record {"record":[]} [0.05ms]
+(pass) rejects malformed record {"record":"record"} [0.05ms]
+(pass) rejects malformed pack 
+(pass) rejects malformed pack null
+(pass) rejects malformed pack {} [0.05ms]
+(pass) rejects malformed pack {"manifest":{"kind":"unsupported","records":[]},"files":[]} [0.02ms]
+(pass) rejects invalid content version "latest" [0.15ms]
+(pass) rejects invalid content version "1" [0.10ms]
+(pass) rejects invalid content version "not-a-version" [0.11ms]
+(pass) actual code is checked when both manifests declare the same incorrect tokens [0.12ms]
+(pass) protected code literals retain order, indentation and nested backticks [0.18ms]
+(pass) longer ~ closing fences cannot hide rehashed identifier drift [0.17ms]
+(pass) longer ` closing fences cannot hide rehashed identifier drift [0.10ms]
+(pass) same-character longer ~ closing fences preserve valid protected literals [0.11ms]
+(pass) same-character longer ` closing fences preserve valid protected literals [0.11ms]
+(pass) invalid, mixed or unterminated fences cannot disappear from protected content "~~~java\nhardwareMap.get()\n~~" [0.10ms]
+(pass) invalid, mixed or unterminated fences cannot disappear from protected content "```java\nhardwareMap.get()\n``" [0.09ms]
+(pass) invalid, mixed or unterminated fences cannot disappear from protected content "~~~java\nhardwareMap.get()\n```" [0.09ms]
+(pass) invalid, mixed or unterminated fences cannot disappear from protected content "```java\nhardwareMap.get()\n~~~" [0.08ms]
+(pass) invalid, mixed or unterminated fences cannot disappear from protected content "~~~java\nhardwareMap.get()" [0.09ms]
+(pass) invalid, mixed or unterminated fences cannot disappear from protected content "```java\nhardwareMap.get()" [0.09ms]
+(pass) invalid, mixed or unterminated fences cannot disappear from protected content "~~~java\nhardwareMap.get()\n~~~~ trailing-info" [0.09ms]
+(pass) invalid, mixed or unterminated fences cannot disappear from protected content "```java`invalid\nhardwareMap.get()\n```" [0.09ms]
+(pass) malformed source URL is rejected [0.69ms]
+(pass) rejects malformed content bytes "not JSON" [0.68ms]
+(pass) rejects malformed content bytes "{}" [0.39ms]
+(pass) rejects malformed content bytes "{\"valid\":true}" [0.33ms]
+(pass) rejects malformed content bytes "[]" [0.24ms]
+(pass) rejects invalid UTF-8 and non-byte values [0.40ms]
+(pass) rejects nonlocal content path "../escape.json" [0.33ms]
+(pass) rejects nonlocal content path "/absolute.json" [0.20ms]
+(pass) rejects nonlocal content path "https://fixtures.invalid/file" [0.20ms]
+(pass) rejects nonlocal content path "en\\file.json" [0.16ms]
+(pass) synthetic provenance cannot populate a production pack [0.46ms]
+447 |   error({ ...input, manifest: { ...input.manifest, kind: "production" } }, "synthetic_content")
+448 | })
+449 | 
+450 | test("empty production manifest makes no course or support claim", async () => {
+451 |   const manifest = await Bun.file(new URL("../../../resources/ftc/content/manifest.json", import.meta.url)).json()
+452 |   expect(manifest).toEqual({ kind: "production", records: [] })
+                         ^
+error: expect(received).toEqual(expected)
+
+  {
+    "kind": "production",
+-   "records": [],
++   "records": [
++     {
++       "codeTokens": [
++         "double",
++         "boolean",
++         "int",
++         "DcMotor",
++         "=",
++         "==",
++         "if",
++         "static",
++         "while",
++         
++ "public final class InputMath {
++     public static double requestedPower(double axis, boolean enabled) {
++         if (!enabled) return 0.0;
++         return -axis;
++     }
++ }"
++ ,
++         "LinearOpMode",
++         "runOpMode()",
++         "waitForStart()",
++         "isStopRequested()",
++         "while (opModeIsActive())",
++         "OpMode",
++         "init()",
++         "init_loop()",
++         "start()",
++         "loop()",
++         "stop()",
++         "@TeleOp",
++         "@Override",
++         
++ "package org.firstinspires.ftc.teamcode;
++ 
++ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
++ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
++ 
++ @TeleOp(name = "FoundationLifecycle", group = "Learning")
++ public class FoundationLifecycle extends LinearOpMode {
++     @Override
++     public void runOpMode() {
++         telemetry.addData("phase", "initialized");
++         telemetry.update();
++         waitForStart();
++         if (isStopRequested()) return;
++         int observations = 0;
++         while (opModeIsActive()) {
++             observations++;
++             telemetry.addData("observations", observations);
++             telemetry.update();
++         }
++     }
++ }"
++ ,
++         "hardwareMap.get(DcMotor.class, "REPLACE_WITH_DS_MOTOR_NAME")",
++         "gamepad1.left_stick_y",
++         "gamepad1.a",
++         "getCurrentPosition()",
++         "telemetry.addData(...)",
++         "telemetry.update()",
++         
++ "package org.firstinspires.ftc.teamcode;
++ 
++ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
++ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
++ import com.qualcomm.robotcore.hardware.DcMotor;
++ 
++ @TeleOp(name = "FoundationObservation", group = "Learning")
++ public class FoundationObservation extends LinearOpMode {
++     @Override
++     public void runOpMode() {
++         DcMotor observedMotor = hardwareMap.get(
++             DcMotor.class, "REPLACE_WITH_DS_MOTOR_NAME");
++         telemetry.addData("phase", "mapped");
++         telemetry.update();
++         waitForStart();
++         if (isStopRequested()) return;
++         while (opModeIsActive()) {
++             telemetry.addData("stickY", gamepad1.left_stick_y);
++             telemetry.addData("buttonA", gamepad1.a);
++             telemetry.addData("encoder", observedMotor.getCurrentPosition());
++             telemetry.update();
++         }
++     }
++ }"
++ ,
++         "TeamCode/src/main/java/org/firstinspires/ftc/teamcode",
++         "FoundationInput.java",
++         "FoundationInput.requestedPower(gamepad1.left_stick_y, gamepad1.a)",
++         
++ "package org.firstinspires.ftc.teamcode;
++ 
++ public final class FoundationInput {
++     public static double requestedPower(double axis, boolean enabled) {
++         if (!enabled) return 0.0;
++         return -axis;
++     }
++ }"
++ ,
++       ],
++       "digest": "a1079eadf87ff171bbfdc9af8e10188f8f0e4731c747f18ca06d4723da22bf19",
++       "id": "foundations",
++       "language": "en",
++       "license": "MIT (original lesson text and examples); upstream reference notices recorded in M11-04-implementation.md",
++       "localPath": "en/foundations.json",
++       "provenance": "source",
++       "sdkRange": "11.1.0",
++       "source": "https://github.com/FIRST-Tech-Challenge/FtcRobotController/tree/203c2d373765f0c66d121e3ec1cc3a18835f6534",
++       "topic": "foundations",
++       "version": "1.0.0",
++     },
++     {
++       "codeTokens": [
++         "double",
++         "boolean",
++         "int",
++         "DcMotor",
++         "=",
++         "==",
++         "if",
++         "static",
++         "while",
++         
++ "public final class InputMath {
++     public static double requestedPower(double axis, boolean enabled) {
++         if (!enabled) return 0.0;
++         return -axis;
++     }
++ }"
++ ,
++         "LinearOpMode",
++         "runOpMode()",
++         "waitForStart()",
++         "isStopRequested()",
++         "while (opModeIsActive())",
++         "OpMode",
++         "init()",
++         "init_loop()",
++         "start()",
++         "loop()",
++         "stop()",
++         "@TeleOp",
++         "@Override",
++         
++ "package org.firstinspires.ftc.teamcode;
++ 
++ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
++ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
++ 
++ @TeleOp(name = "FoundationLifecycle", group = "Learning")
++ public class FoundationLifecycle extends LinearOpMode {
++     @Override
++     public void runOpMode() {
++         telemetry.addData("phase", "initialized");
++         telemetry.update();
++         waitForStart();
++         if (isStopRequested()) return;
++         int observations = 0;
++         while (opModeIsActive()) {
++             observations++;
++             telemetry.addData("observations", observations);
++             telemetry.update();
++         }
++     }
++ }"
++ ,
++         "hardwareMap.get(DcMotor.class, "REPLACE_WITH_DS_MOTOR_NAME")",
++         "gamepad1.left_stick_y",
++         "gamepad1.a",
++         "getCurrentPosition()",
++         "telemetry.addData(...)",
++         "telemetry.update()",
++         
++ "package org.firstinspires.ftc.teamcode;
++ 
++ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
++ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
++ import com.qualcomm.robotcore.hardware.DcMotor;
++ 
++ @TeleOp(name = "FoundationObservation", group = "Learning")
++ public class FoundationObservation extends LinearOpMode {
++     @Override
++     public void runOpMode() {
++         DcMotor observedMotor = hardwareMap.get(
++             DcMotor.class, "REPLACE_WITH_DS_MOTOR_NAME");
++         telemetry.addData("phase", "mapped");
++         telemetry.update();
++         waitForStart();
++         if (isStopRequested()) return;
++         while (opModeIsActive()) {
++             telemetry.addData("stickY", gamepad1.left_stick_y);
++             telemetry.addData("buttonA", gamepad1.a);
++             telemetry.addData("encoder", observedMotor.getCurrentPosition());
++             telemetry.update();
++         }
++     }
++ }"
++ ,
++         "TeamCode/src/main/java/org/firstinspires/ftc/teamcode",
++         "FoundationInput.java",
++         "FoundationInput.requestedPower(gamepad1.left_stick_y, gamepad1.a)",
++         
++ "package org.firstinspires.ftc.teamcode;
++ 
++ public final class FoundationInput {
++     public static double requestedPower(double axis, boolean enabled) {
++         if (!enabled) return 0.0;
++         return -axis;
++     }
++ }"
++ ,
++       ],
++       "digest": "1ae9d28a4a62ff444515c4fa807cfb4c8fae6043445139252d90afa066ab074c",
++       "id": "foundations",
++       "language": "zh",
++       "license": "MIT (original lesson text and examples); upstream reference notices recorded in M11-04-implementation.md",
++       "localPath": "zh/foundations.json",
++       "provenance": "source",
++       "sdkRange": "11.1.0",
++       "source": "https://github.com/FIRST-Tech-Challenge/FtcRobotController/tree/203c2d373765f0c66d121e3ec1cc3a18835f6534",
++       "topic": "foundations",
++       "version": "1.0.0",
++     },
++   ],
+  }
+
+- Expected  - 1
++ Received  + 226
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:452:20)
+(fail) empty production manifest makes no course or support claim [2.20ms]
+(pass) independent inputs remain unchanged and cannot leak prior validation state [0.72ms]
+(pass) canonical contracts serialize and optional fields omit undefined [0.75ms]
+
+1 tests failed:
+(fail) empty production manifest makes no course or support claim [2.20ms]
+
+ 87 pass
+ 1 fail
+ 387 expect() calls
+Ran 88 tests across 3 files. [948.00ms]

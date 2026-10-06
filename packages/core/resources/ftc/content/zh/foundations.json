@@ -1,0 +1,76 @@
+{
+  "id": "foundations",
+  "version": "1.0.0",
+  "language": "zh",
+  "body": "Java 与 FTC 基础课程。适用范围仅为 FTC SDK 11.1.0 和 Java 8 源代码语法；这不代表生产环境支持认证。课程为原创解释与示例，采用本仓库的 MIT 许可。上游参考资料保留各自的许可与声明；此处未复制文档或上游示例程序。替换占位符时必须使用实际 Driver Station 配置。构建成功不能证明机器人行为正确。\n\n参考资料： [FTC SDK 11.1 示例源代码](https://github.com/FIRST-Tech-Challenge/FtcRobotController/tree/203c2d373765f0c66d121e3ec1cc3a18835f6534/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples), [RobotCore 11.1.0 源代码](https://repo.maven.apache.org/maven2/org/firstinspires/ftc/RobotCore/11.1.0/RobotCore-11.1.0-sources.jar), [Java SE 8 类型](https://docs.oracle.com/javase/specs/jls/se8/html/jls-4.html), [包](https://docs.oracle.com/javase/specs/jls/se8/html/jls-7.html), [类与方法](https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html), [语句](https://docs.oracle.com/javase/specs/jls/se8/html/jls-14.html), [表达式](https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html).",
+  "lessons": [
+    {
+      "id": "foundation-java-fundamentals",
+      "version": "1.0.0",
+      "topic": "java-fundamentals",
+      "title": "Java 的值、判断与方法",
+      "body": "变量具有声明时指定的类型。数值输入可用 `double`，判断可用 `boolean`，计数可用 `int`；这些都是基本类型的值。`DcMotor` 变量保存的则是硬件对象的引用。声明引入变量，赋值改变变量的值。`=` 用于赋值，`==` 用于比较基本类型的值。读取局部变量前必须先为其赋值。花括号将语句组合成块，分号结束声明语句和表达式语句。\n\n类组织相关行为。方法接收有类型的参数，也可以返回值；局部变量属于本次方法调用。下面的 `if` 分支在输入未启用时返回零；否则，一元负号将输入轴的符号反转。这里的数值只是数学值，不是电机性能的实测数据。`static` 允许无需创建对象便调用这个计算方法。布尔条件也能控制 `while` 循环，每次迭代前都会检查条件。反复读取输入与只保存最初的一次读数不同。\n\n这个独立计算不会向硬件发送命令。将其用于机器人代码前，先解释输入为负、零、正，以及启用和未启用时的结果。这些示例使用 Java 8 语法；构建 Android 项目所用的 JDK 是另一个设置。\n\n```java\npublic final class InputMath {\n    public static double requestedPower(double axis, boolean enabled) {\n        if (!enabled) return 0.0;\n        return -axis;\n    }\n}\n```",
+      "exercises": [
+        {
+          "id": "exercise-java-fundamentals",
+          "prompt": "预测辅助方法的结果，然后在自己的项目中应用同样的有类型输入计算，不向执行器发送命令。",
+          "requiresExplanation": true,
+          "requiresProjectApplication": true,
+          "explanationCriteria": "解释参数和返回值的类型、赋值与比较的区别、分支结果，以及为什么改变符号不能证明实际运动方向。",
+          "projectApplicationCriteria": "在现有 TeamCode 项目中添加或调整一个具名计算方法；给出实际文件和调用位置、输入与预测结果的表格，并解释在哪里读取最新输入。将编译结果与今后机器人上的观察分别记录。"
+        }
+      ]
+    },
+    {
+      "id": "foundation-opmode-lifecycle",
+      "version": "1.0.0",
+      "topic": "opmode-lifecycle",
+      "title": "从 INIT 到 STOP",
+      "body": "OpMode 是在 Driver Station 中选择的 SDK 程序入口。使用 `LinearOpMode` 时，实现 `runOpMode()`，并在 `waitForStart()` 前完成准备。等待 START 不代表可以假定程序已经启动：等待结束后检查 `isStopRequested()`。将重复工作放在 `while (opModeIsActive())` 中，使 STOP 请求能结束循环。在 SDK 11.1.0 中，这个活动状态检查包含启动和停止状态，并通过 SDK 的让出执行机制运行。避免永不检查停止状态的无限等待。\n\n另一种方式是迭代式 `OpMode`：INIT 后调用一次 `init()`，START 前反复调用 `init_loop()`，START 时调用一次 `start()`，运行期间反复调用 `loop()`，STOP 时调用一次 `stop()`。不要在迭代式回调中写自己的无限循环；及时返回，让 SDK 调度下一次回调。同一个 OpMode 应选择一种生命周期方式。\n\n这个完整示例只统计软件观察次数并发送遥测数据，不向执行器发送命令，次数也不是时间测量。`@TeleOp` 将类注册到菜单名称下；`@Override` 标明实现的 SDK 方法。注册和构建成功不能证明部署成功或机器人行为正确。在实际项目中，观察初始化、启动和停止过程需要明确安排且有人监督的运行。\n\n```java\npackage org.firstinspires.ftc.teamcode;\n\nimport com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;\nimport com.qualcomm.robotcore.eventloop.opmode.TeleOp;\n\n@TeleOp(name = \"FoundationLifecycle\", group = \"Learning\")\npublic class FoundationLifecycle extends LinearOpMode {\n    @Override\n    public void runOpMode() {\n        telemetry.addData(\"phase\", \"initialized\");\n        telemetry.update();\n        waitForStart();\n        if (isStopRequested()) return;\n        int observations = 0;\n        while (opModeIsActive()) {\n            observations++;\n            telemetry.addData(\"observations\", observations);\n            telemetry.update();\n        }\n    }\n}\n```",
+      "exercises": [
+        {
+          "id": "exercise-opmode-lifecycle",
+          "prompt": "标注生命周期边界，并将只进行观察的 OpMode 应用于现有项目。",
+          "requiresExplanation": true,
+          "requiresProjectApplication": true,
+          "explanationCriteria": "解释哪些语句在 START 前运行、等待后为什么要检查停止状态，以及线性循环与迭代式回调的区别。",
+          "projectApplicationCriteria": "提供实际项目文件并标明准备、等待以及会检查停止状态的重复执行部分。写出 INIT、START、STOP 的预期观察；只有在明确获准且有人监督的运行中记录实际情况后，才能将预测改为实测。仅构建成功不能完成这项观察。"
+        }
+      ]
+    },
+    {
+      "id": "foundation-hardware-gamepads-telemetry",
+      "version": "1.0.0",
+      "topic": "hardware-gamepads-telemetry",
+      "title": "映射硬件并观察输入",
+      "body": "硬件映射根据已配置的名称和预期的 Java 设备类型取得对象。在初始化阶段，`hardwareMap.get(DcMotor.class, \"REPLACE_WITH_DS_MOTOR_NAME\")` 查找具有该配置名称的电机。必须将占位符替换为实际 Driver Station 配置中的名称；它不是建议使用的实体设备名称。同时核对设备类型和名称。名称不存在或类型不符可能导致查找失败；重命名 Java 变量不会改变 Driver Station 配置。映射可能初始化设备，因此应在初始化阶段进行，不要在运行循环中反复查找。\n\n`gamepad1.left_stick_y` 是左摇杆纵轴的当前字段值；`gamepad1.a` 是布尔类型的按钮字段。需要最新值时，在每次活动循环中读取输入。示例显示未经符号变换的轴值；符号约定不能证明电机的实际方向。`getCurrentPosition()` 返回编码器计数，不是以物理单位表示的距离。没有自己的配置和证据时，不要假定编码器零点、传动比、轮径或行程距离。\n\n`telemetry.addData(...)` 添加带标签的值，`telemetry.update()` 请求发送。在运行线性 OpMode 时应明确调用更新；迭代式 SDK 会在循环回调后发送更新。更新可能受发送频率限制，屏幕无法证明每次迭代都已送达。显示的零是一个值；数据缺失或过期是不同的观察。这个示例从不设置电机功率。它需要真实且配置正确的电机才能初始化，不能作为无需硬件即可执行的演示。\n\n```java\npackage org.firstinspires.ftc.teamcode;\n\nimport com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;\nimport com.qualcomm.robotcore.eventloop.opmode.TeleOp;\nimport com.qualcomm.robotcore.hardware.DcMotor;\n\n@TeleOp(name = \"FoundationObservation\", group = \"Learning\")\npublic class FoundationObservation extends LinearOpMode {\n    @Override\n    public void runOpMode() {\n        DcMotor observedMotor = hardwareMap.get(\n            DcMotor.class, \"REPLACE_WITH_DS_MOTOR_NAME\");\n        telemetry.addData(\"phase\", \"mapped\");\n        telemetry.update();\n        waitForStart();\n        if (isStopRequested()) return;\n        while (opModeIsActive()) {\n            telemetry.addData(\"stickY\", gamepad1.left_stick_y);\n            telemetry.addData(\"buttonA\", gamepad1.a);\n            telemetry.addData(\"encoder\", observedMotor.getCurrentPosition());\n            telemetry.update();\n        }\n    }\n}\n```",
+      "exercises": [
+        {
+          "id": "exercise-hardware-gamepads-telemetry",
+          "prompt": "替换映射占位符，并为自己的项目制定输入与遥测观察计划。",
+          "requiresExplanation": true,
+          "requiresProjectApplication": true,
+          "explanationCriteria": "解释类型与名称查找、何时重新读取手柄字段、编码器计数与物理距离的区别，以及为什么不能保证每次迭代的遥测都送达。",
+          "projectApplicationCriteria": "只使用实际配置的电机名称和类型，指出配置证据以及 Java 调用位置。给出摇杆、按钮和编码器的预期观察，不编造读数。如果无法进行有人监督的硬件测试，将实际观察标为未运行；在真实名称已知前保留明确的占位符。"
+        }
+      ]
+    },
+    {
+      "id": "foundation-code-organization",
+      "version": "1.0.0",
+      "topic": "code-organization",
+      "title": "让代码易于解释",
+      "body": "将项目代码放在 `TeamCode/src/main/java/org/firstinspires/ftc/teamcode` 下，并使用相匹配的包声明。公开的顶层类应放在以该类名命名的文件中。导入使 SDK 类型名称可用；导入不会创建对象或配置设备。使用有意义的名称，并区分计算出的请求值与实测结果。\n\n由 OpMode 负责生命周期顺序和当前输入的读取。当独立的小类能为可复用计算赋予明确含义时，可以使用它。下面的独立文件是 `FoundationInput.java`；同一个包中的 OpMode 可以在活动循环中调用 `FoundationInput.requestedPower(gamepad1.left_stick_y, gamepad1.a)`，并显示返回值。这个辅助类不依赖 SDK 或硬件，也从不发送功率命令。不要仅为缩短 OpMode 就把硬件查找移入辅助类，也不必为每条语句创建额外的类。\n\n用注释说明不明显的假设，例如如何解释轴值的符号。审阅代码时按输入、计算、观察的顺序追踪，再指出生命周期边界。应用示例时保留团队已有代码和包结构；这些路径体现了已固定版本的标准示例布局，不代表可以替换现有项目。\n\n```java\npackage org.firstinspires.ftc.teamcode;\n\npublic final class FoundationInput {\n    public static double requestedPower(double axis, boolean enabled) {\n        if (!enabled) return 0.0;\n        return -axis;\n    }\n}\n```",
+      "exercises": [
+        {
+          "id": "exercise-code-organization",
+          "prompt": "将辅助类连接到只进行观察的 OpMode，并解释每个文件的职责。",
+          "requiresExplanation": true,
+          "requiresProjectApplication": true,
+          "explanationCriteria": "解释包、文件、类之间的对应关系、参数和返回值，以及为什么辅助类计算请求值，而 OpMode 负责生命周期和读取输入。",
+          "projectApplicationCriteria": "展示项目中实际的辅助类文件和活动循环调用位置，保留现有团队文件，并追踪一个预测输入如何得到显示的请求值。附上简短代码讲解；编译证据与有人监督的机器人观察必须分别标注。"
+        }
+      ]
+    }
+  ]
+}

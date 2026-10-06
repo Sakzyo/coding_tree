@@ -1,0 +1,76 @@
+{
+  "id": "foundations",
+  "version": "1.0.0",
+  "language": "en",
+  "body": "Java and FTC foundation lessons. Applicability is limited to FTC SDK 11.1.0 and Java 8 source syntax; this is not production support certification. Original explanations and examples use this repository's MIT license. Upstream references retain their own notices and terms; upstream documentation and sample programs are not reproduced here. Replace placeholders only with actual Driver Station configuration. A successful build does not prove robot behavior.\n\nReferences: [FTC SDK 11.1 sample source](https://github.com/FIRST-Tech-Challenge/FtcRobotController/tree/203c2d373765f0c66d121e3ec1cc3a18835f6534/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples), [RobotCore 11.1.0 sources](https://repo.maven.apache.org/maven2/org/firstinspires/ftc/RobotCore/11.1.0/RobotCore-11.1.0-sources.jar), [Java SE 8 types](https://docs.oracle.com/javase/specs/jls/se8/html/jls-4.html), [packages](https://docs.oracle.com/javase/specs/jls/se8/html/jls-7.html), [classes and methods](https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html), [statements](https://docs.oracle.com/javase/specs/jls/se8/html/jls-14.html), [expressions](https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html).",
+  "lessons": [
+    {
+      "id": "foundation-java-fundamentals",
+      "version": "1.0.0",
+      "topic": "java-fundamentals",
+      "title": "Java values, decisions and methods",
+      "body": "A variable has a declared type. Use `double` for a numeric input, `boolean` for a decision, and `int` for a count; these are primitive values. A `DcMotor` variable instead holds a reference to a hardware object. A declaration introduces a variable; assignment changes its value. `=` assigns, while `==` compares primitive values. A local variable must receive a value before you read it. Braces group statements and semicolons finish declarations and expression statements.\n\nA class groups behavior. A method receives typed parameters and may return a value; its local variables belong to that invocation. The `if` branch below selects a zero request when input is disabled. Otherwise unary minus reverses the supplied axis sign. The numbers here are mathematical values, not measured motor performance. `static` lets this calculation run without constructing an object. A boolean condition also controls a `while` loop; the condition is checked before each iteration. Repeatedly reading the input differs from storing one initial reading.\n\nThis standalone calculation does not send a hardware command. Explain its result for negative, zero and positive inputs with both enabled states before using it in robot code. Java 8 syntax is the target of these examples; the JDK used to build the Android project is a separate setting.\n\n```java\npublic final class InputMath {\n    public static double requestedPower(double axis, boolean enabled) {\n        if (!enabled) return 0.0;\n        return -axis;\n    }\n}\n```",
+      "exercises": [
+        {
+          "id": "exercise-java-fundamentals",
+          "prompt": "Predict the helper results, then apply the same typed input calculation in your own project without commanding an actuator.",
+          "requiresExplanation": true,
+          "requiresProjectApplication": true,
+          "explanationCriteria": "Explain parameter and return types, assignment versus comparison, the branch result and why changing the sign does not prove a physical direction.",
+          "projectApplicationCriteria": "Add or adapt a named calculation in your existing TeamCode project; provide the actual file and call site, a table of predicted inputs/results and an explanation of where fresh input is read. Record compilation separately from any later robot observation."
+        }
+      ]
+    },
+    {
+      "id": "foundation-opmode-lifecycle",
+      "version": "1.0.0",
+      "topic": "opmode-lifecycle",
+      "title": "From INIT to STOP",
+      "body": "An OpMode is the SDK entry point selected in Driver Station. For `LinearOpMode`, implement `runOpMode()` and perform setup before `waitForStart()`. Waiting for START is not permission to assume START occurred: check `isStopRequested()` after the wait. Keep repeated work inside `while (opModeIsActive())` so the loop can end when STOP is requested. In SDK 11.1.0 this active check includes the started/stop state and yields through the SDK idle mechanism. Avoid unbounded waits that never check stopping.\n\nThe iterative `OpMode` alternative has `init()` once after INIT, repeated `init_loop()` before START, `start()` once at START, repeated `loop()` while running, and `stop()` once at STOP. Do not put your own infinite loop inside an iterative callback; return so the SDK can schedule the next callback. Choose one lifecycle style for a given OpMode.\n\nThe complete example only counts software observations and sends telemetry. It makes no actuator command, and the count is not a time measurement. `@TeleOp` registers the class with a menu name; `@Override` marks the implemented SDK method. Registration and a successful build do not demonstrate deployment or robot behavior. On a real project, initialization/start/stop observations require a deliberate supervised run.\n\n```java\npackage org.firstinspires.ftc.teamcode;\n\nimport com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;\nimport com.qualcomm.robotcore.eventloop.opmode.TeleOp;\n\n@TeleOp(name = \"FoundationLifecycle\", group = \"Learning\")\npublic class FoundationLifecycle extends LinearOpMode {\n    @Override\n    public void runOpMode() {\n        telemetry.addData(\"phase\", \"initialized\");\n        telemetry.update();\n        waitForStart();\n        if (isStopRequested()) return;\n        int observations = 0;\n        while (opModeIsActive()) {\n            observations++;\n            telemetry.addData(\"observations\", observations);\n            telemetry.update();\n        }\n    }\n}\n```",
+      "exercises": [
+        {
+          "id": "exercise-opmode-lifecycle",
+          "prompt": "Annotate lifecycle boundaries and adapt the observational OpMode to an existing project.",
+          "requiresExplanation": true,
+          "requiresProjectApplication": true,
+          "explanationCriteria": "Explain which statements run before START, why the post-wait stop check exists, and how a linear loop differs from iterative callbacks.",
+          "projectApplicationCriteria": "Provide the actual project file with setup, wait and stop-aware repetition identified. Write expected INIT/START/STOP observations; label them predicted until a deliberately authorized supervised run records what actually happened. A build alone does not complete that observation."
+        }
+      ]
+    },
+    {
+      "id": "foundation-hardware-gamepads-telemetry",
+      "version": "1.0.0",
+      "topic": "hardware-gamepads-telemetry",
+      "title": "Map hardware and observe inputs",
+      "body": "Hardware mapping connects a configured name and expected Java device type to an object. In initialization, `hardwareMap.get(DcMotor.class, \"REPLACE_WITH_DS_MOTOR_NAME\")` asks for a motor with that configured name. Replace the placeholder with your actual Driver Station configuration name; it is not a suggested physical device name. Confirm both the configured type and the name. A missing name or incompatible type can cause lookup to fail; renaming a Java variable does not change Driver Station configuration. Mapping may initialize a device, so keep it in the initialization phase rather than repeatedly looking it up during the active loop.\n\n`gamepad1.left_stick_y` is the current left stick vertical axis field; `gamepad1.a` is a boolean button field. Read input in each active iteration when you need the current value. The sample sends the unmodified axis for observation; a sign convention is not a verified motor direction. `getCurrentPosition()` reports encoder counts, not a distance in physical units. Do not assume an encoder zero, gear ratio, wheel size or travel distance without your own configuration and evidence.\n\n`telemetry.addData(...)` adds a labelled value; `telemetry.update()` requests transmission. Call update explicitly in a linear OpMode; the iterative SDK sends updates after its loop callbacks. Updates may be rate limited, so the screen does not prove every iteration arrived. A shown zero is a value; missing or stale data is a different observation. This example never sets motor power. It requires a real correctly configured motor to initialize and is not a hardware-free executable demo.\n\n```java\npackage org.firstinspires.ftc.teamcode;\n\nimport com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;\nimport com.qualcomm.robotcore.eventloop.opmode.TeleOp;\nimport com.qualcomm.robotcore.hardware.DcMotor;\n\n@TeleOp(name = \"FoundationObservation\", group = \"Learning\")\npublic class FoundationObservation extends LinearOpMode {\n    @Override\n    public void runOpMode() {\n        DcMotor observedMotor = hardwareMap.get(\n            DcMotor.class, \"REPLACE_WITH_DS_MOTOR_NAME\");\n        telemetry.addData(\"phase\", \"mapped\");\n        telemetry.update();\n        waitForStart();\n        if (isStopRequested()) return;\n        while (opModeIsActive()) {\n            telemetry.addData(\"stickY\", gamepad1.left_stick_y);\n            telemetry.addData(\"buttonA\", gamepad1.a);\n            telemetry.addData(\"encoder\", observedMotor.getCurrentPosition());\n            telemetry.update();\n        }\n    }\n}\n```",
+      "exercises": [
+        {
+          "id": "exercise-hardware-gamepads-telemetry",
+          "prompt": "Adapt the mapping placeholder and plan an input/telemetry observation for your project.",
+          "requiresExplanation": true,
+          "requiresProjectApplication": true,
+          "explanationCriteria": "Explain the type/name lookup, when gamepad fields are reread, encoder counts versus physical distance, and why telemetry delivery is not guaranteed each iteration.",
+          "projectApplicationCriteria": "Use only your actual configured motor name and type; identify their configuration evidence and the Java call site. Provide expected stick/button/encoder observations without inventing readings. If supervised hardware testing is unavailable, mark actual observations not run and keep the placeholder visible until the real name is known."
+        }
+      ]
+    },
+    {
+      "id": "foundation-code-organization",
+      "version": "1.0.0",
+      "topic": "code-organization",
+      "title": "Make code explainable",
+      "body": "Place project code under `TeamCode/src/main/java/org/firstinspires/ftc/teamcode` with the matching package declaration. A public top-level class belongs in a file with that class name. Imports make SDK type names available; they do not create objects or configure devices. Keep names descriptive and distinguish a calculated request from a measured result.\n\nKeep the OpMode responsible for lifecycle order and reading current input. A small separate class is useful when it gives a reusable calculation a clear meaning. The standalone file below is `FoundationInput.java`; an OpMode in the same package can call `FoundationInput.requestedPower(gamepad1.left_stick_y, gamepad1.a)` in an active loop and display the returned value. The helper has no SDK or hardware dependency and never sends power. Do not move hardware lookup into it merely to shorten the OpMode. Do not introduce extra classes for every statement.\n\nUse a comment to explain a non-obvious assumption, such as how an axis sign is interpreted. Review code by following input, calculation and observation in that order, then identify lifecycle boundaries. Preserve team code and existing package organization when adapting the example; these paths show the standard pinned sample layout and are not permission to replace an existing project.\n\n```java\npackage org.firstinspires.ftc.teamcode;\n\npublic final class FoundationInput {\n    public static double requestedPower(double axis, boolean enabled) {\n        if (!enabled) return 0.0;\n        return -axis;\n    }\n}\n```",
+      "exercises": [
+        {
+          "id": "exercise-code-organization",
+          "prompt": "Connect the helper to an observational OpMode and explain the responsibility of each file.",
+          "requiresExplanation": true,
+          "requiresProjectApplication": true,
+          "explanationCriteria": "Explain package/file/class correspondence, parameters and the return value, and why the helper computes a request while the OpMode owns lifecycle and input reads.",
+          "projectApplicationCriteria": "Show the actual helper file and active-loop call site in your project, preserve existing team files, and trace one predicted input to the displayed request. Include a brief code walkthrough; compile evidence and supervised robot observations must be labelled separately."
+        }
+      ]
+    }
+  ]
+}

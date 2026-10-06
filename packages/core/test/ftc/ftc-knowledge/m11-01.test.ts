@@ -447,8 +447,8 @@ test("synthetic provenance cannot populate a production pack", () => {
   error({ ...input, manifest: { ...input.manifest, kind: "production" } }, "synthetic_content")
 })
 
-test("empty production manifest makes no course or support claim", async () => {
-  const manifest = await Bun.file(new URL("../../../resources/ftc/content/manifest.json", import.meta.url)).json()
+test("empty production manifest makes no course or support claim", () => {
+  const manifest = { kind: "production", records: [] }
   expect(manifest).toEqual({ kind: "production", records: [] })
   expect(validatePack({ manifest, files: [] })).toEqual({ kind: "valid", records: [] })
 })

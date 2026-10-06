@@ -1,0 +1,12 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-knowledge/m11-04.test.ts:
+(pass) foundation lessons require explanation and project application [30.75ms]
+(pass) foundation criteria and identifiers are validated from actual bytes [71.15ms]
+(pass) foundation queries preserve source metadata and explicit local/version/language selection [23.78ms]
+(pass) bilingual foundation references and examples preserve source and device placeholders [0.82ms]
+
+ 4 pass
+ 0 fail
+ 108 expect() calls
+Ran 4 tests across 1 file. [189.00ms]

@@ -213,7 +213,21 @@ export function validatePack(input: unknown): FtcKnowledge.PackResult {
 
       const file = request.value.files.find((file) => file.localPath === record.localPath)
       if (!file) reasons.push("missing_file")
-      if (file) reasons.push(...validateContent(record, file))
+      if (file) {
+        reasons.push(...validateContent(record, file))
+        const pairedFile = pair && request.value.files.find((file) => file.localPath === pair.localPath)
+        if (pairedFile) {
+          const document = decodeDocument(file)
+          const pairedDocument = decodeDocument(pairedFile)
+          if (
+            Option.isSome(document) &&
+            Option.isSome(pairedDocument) &&
+            JSON.stringify(lessonIdentifiers(document.value)) !==
+              JSON.stringify(lessonIdentifiers(pairedDocument.value))
+          )
+            reasons.push("translation_mismatch")
+        }
+      }
       return reasons.map((reason) => ({
         code: "invalid_content",
         reason,
@@ -252,10 +266,44 @@ function validateContent(
   )
     return ["identity_mismatch"]
   // These exact literals are the package's protected API/device/domain-code surface.
-  const tokens = protectedLiterals(document.value.body)
-  if (tokens === null) return ["malformed_content"]
-  if (JSON.stringify(tokens) !== JSON.stringify(record.codeTokens)) return ["identifier_mismatch"]
+  const lessons = document.value.lessons ?? []
+  if (lessons.some((lesson) => !concreteVersion(lesson.version))) return ["invalid_record"]
+  const ids = [
+    ...lessons.map((lesson) => lesson.id),
+    ...lessons.flatMap((lesson) => lesson.exercises.map((exercise) => exercise.id)),
+  ]
+  if (new Set(ids).size !== ids.length) return ["duplicate_id"]
+  const tokens = [
+    document.value.body,
+    ...lessons.flatMap((lesson) => [
+      lesson.title,
+      lesson.body,
+      ...lesson.exercises.flatMap((exercise) => [
+        exercise.prompt,
+        exercise.explanationCriteria,
+        exercise.projectApplicationCriteria,
+      ]),
+    ]),
+  ].map(protectedLiterals)
+  if (tokens.some((tokens) => tokens === null)) return ["malformed_content"]
+  if (JSON.stringify(tokens.flat()) !== JSON.stringify(record.codeTokens)) return ["identifier_mismatch"]
   return []
+}
+
+function decodeDocument(file: FtcKnowledge.ContentFile) {
+  return Option.flatMap(
+    Schema.decodeUnknownOption(Schema.UnknownFromJsonString)(Buffer.from(file.bytes).toString("utf8")),
+    Schema.decodeUnknownOption(FtcKnowledge.ContentDocument, { onExcessProperty: "error" }),
+  )
+}
+
+function lessonIdentifiers(document: FtcKnowledge.ContentDocument) {
+  return document.lessons?.map((lesson) => ({
+    id: lesson.id,
+    version: lesson.version,
+    topic: lesson.topic,
+    exercises: lesson.exercises.map((exercise) => exercise.id),
+  }))
 }
 
 function protectedLiterals(body: string) {

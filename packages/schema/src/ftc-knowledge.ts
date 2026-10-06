@@ -24,9 +24,29 @@ export const ContentRecord = Schema.Struct({
   localPath: LocalPath,
   digest: Text.check(Schema.isPattern(/^[a-fA-F0-9]{64}$/)),
   provenance: Schema.Literals(["synthetic", "source"]),
-  // Ordered exact contents of Markdown code spans/fences, including API/device/domain identifiers.
+  // Ordered exact Markdown code spans/fences across document and nested lesson/exercise text.
   codeTokens: Schema.Array(Schema.String.check(Schema.isMinLength(1))),
 }).annotate({ identifier: "FtcKnowledge.ContentRecord" })
+
+export interface Exercise extends Schema.Schema.Type<typeof Exercise> {}
+export const Exercise = Schema.Struct({
+  id: Text,
+  prompt: Text,
+  requiresExplanation: Schema.Literal(true),
+  requiresProjectApplication: Schema.Literal(true),
+  explanationCriteria: Text,
+  projectApplicationCriteria: Text,
+}).annotate({ identifier: "FtcKnowledge.Exercise" })
+
+export interface Lesson extends Schema.Schema.Type<typeof Lesson> {}
+export const Lesson = Schema.Struct({
+  id: Text,
+  version: Text,
+  topic: Text,
+  title: Text,
+  body: Text,
+  exercises: Schema.Array(Exercise).check(Schema.isMinLength(1)),
+}).annotate({ identifier: "FtcKnowledge.Lesson" })
 
 export interface ContentDocument extends Schema.Schema.Type<typeof ContentDocument> {}
 export const ContentDocument = Schema.Struct({
@@ -34,6 +54,7 @@ export const ContentDocument = Schema.Struct({
   version: Text,
   language: Language,
   body: Text,
+  lessons: optional(Schema.Array(Lesson).check(Schema.isMinLength(1))),
 }).annotate({ identifier: "FtcKnowledge.ContentDocument" })
 
 export interface ContentFile extends Schema.Schema.Type<typeof ContentFile> {}
