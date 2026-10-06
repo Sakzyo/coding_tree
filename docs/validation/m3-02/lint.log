@@ -1,0 +1,640 @@
+
+  ! typescript-eslint(no-unnecessary-type-arguments): This is the default value for this type parameter, so it can be omitted.
+    ,-[packages/core/src/session/run-coordinator.ts:19:29]
+ 18 |   readonly done: Deferred.Deferred<void, E>
+ 19 |   owner?: Fiber.Fiber<void, never>
+    :                             ^^^^^
+ 20 |   pendingWake: boolean
+    `----
+
+  ! typescript-eslint(consistent-return): Function expected a return value.
+    ,-[packages/core/src/session/execution/local.ts:28:46]
+ 27 |           .pipe(Effect.mapError((error) => new FtcAgentGate.Blocked({ reason: { kind: "rejected", error } })))
+ 28 |         if (membership.kind === "unmanaged") return
+    :                                              ^^^^^^
+ 29 |         yield* Effect.acquireRelease(
+    `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+    ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:58:93]
+ 57 |           const index = sessions.findIndex((session) => session.id === input.sessionID)
+ 58 |           return index === 3 ? { kind: "unmanaged" } : { kind: "managed", chat: chats[index]! }
+    :                                                                                ^^^^^^|^^^^^^^
+    :                                                                                      `-- This expression already has the type '{ projectID: string & Brand<"Project.ID">; chatID: string & Brand<"FtcProject.ChatID">; sessionID: string & Brand<"SessionID">; }'
+ 59 |         }),
+    `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+    ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:94:55]
+ 93 |                 const index = sessions.findIndex((session) => session.id === input.sessionID)
+ 94 |                 yield* Deferred.succeed(started[index]!, undefined)
+    :                                         ^^^^^^^|^^^^^^^
+    :                                                `-- This expression already has the type 'Deferred<void, never>'
+ 95 |                 yield* options.run ? options.run(input.sessionID, count) : Deferred.await(finish[index]!)
+    `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+    ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:95:104]
+ 94 |                 yield* Deferred.succeed(started[index]!, undefined)
+ 95 |                 yield* options.run ? options.run(input.sessionID, count) : Deferred.await(finish[index]!)
+    :                                                                                           ^^^^^^|^^^^^^^
+    :                                                                                                 `-- This expression already has the type 'Deferred<void, never>'
+ 96 |               }),
+    `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:130:60]
+ 129 |       const f = yield* fixture()
+ 130 |       const first = yield* f.execution.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+     :                                               ^^^^^^|^^^^^^^
+     :                                                     `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 131 |       yield* Deferred.await(f.started[0]!)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:131:41]
+ 130 |       const first = yield* f.execution.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+ 131 |       yield* Deferred.await(f.started[0]!)
+     :                             ^^^^^^|^^^^^^
+     :                                   `-- This expression already has the type 'Deferred<void, never>'
+ 132 |       // The prompt admission integration below exercises the same error-free advisory boundary.
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:133:44]
+ 132 |       // The prompt admission integration below exercises the same error-free advisory boundary.
+ 133 |       yield* f.execution.wake(f.sessions[1]!.id)
+     :                               ^^^^^^|^^^^^^^
+     :                                     `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 134 |       yield* Effect.yieldNow
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:135:62]
+ 134 |       yield* Effect.yieldNow
+ 135 |       const blocked = yield* f.execution.resume(f.sessions[1]!.id).pipe(Effect.exit, Effect.forkChild)
+     :                                                 ^^^^^^|^^^^^^^
+     :                                                       `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 136 |       yield* Effect.yieldNow
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:137:60]
+ 136 |       yield* Effect.yieldNow
+ 137 |       const other = yield* f.execution.resume(f.sessions[2]!.id).pipe(Effect.forkChild)
+     :                                               ^^^^^^|^^^^^^^
+     :                                                     `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 138 |       yield* Deferred.await(f.started[2]!)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:138:41]
+ 137 |       const other = yield* f.execution.resume(f.sessions[2]!.id).pipe(Effect.forkChild)
+ 138 |       yield* Deferred.await(f.started[2]!)
+     :                             ^^^^^^|^^^^^^
+     :                                   `-- This expression already has the type 'Deferred<void, never>'
+ 139 |       const blockedDrainStarts = f.starts.filter((item) => item.sessionID === f.sessions[1]!.id).length
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:139:92]
+ 138 |       yield* Deferred.await(f.started[2]!)
+ 139 |       const blockedDrainStarts = f.starts.filter((item) => item.sessionID === f.sessions[1]!.id).length
+     :                                                                              ^^^^^^^|^^^^^^^
+     :                                                                                     `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 140 |       const otherProjectDrainStarts = f.starts.filter((item) => item.sessionID === f.sessions[2]!.id).length
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:140:97]
+ 139 |       const blockedDrainStarts = f.starts.filter((item) => item.sessionID === f.sessions[1]!.id).length
+ 140 |       const otherProjectDrainStarts = f.starts.filter((item) => item.sessionID === f.sessions[2]!.id).length
+     :                                                                                   ^^^^^^^|^^^^^^^
+     :                                                                                          `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 141 |       const releaseBeforeCleanup = f.released.length !== 0
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:150:42]
+ 149 |       })
+ 150 |       yield* Deferred.succeed(f.finish[0]!, undefined)
+     :                               ^^^^^|^^^^^^
+     :                                    `-- This expression already has the type 'Deferred<void, never>'
+ 151 |       yield* Deferred.succeed(f.finish[2]!, undefined)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:151:42]
+ 150 |       yield* Deferred.succeed(f.finish[0]!, undefined)
+ 151 |       yield* Deferred.succeed(f.finish[2]!, undefined)
+     :                               ^^^^^|^^^^^^
+     :                                    `-- This expression already has the type 'Deferred<void, never>'
+ 152 |       yield* Effect.all([Fiber.join(first), Fiber.join(other)])
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:155:46]
+ 154 |       expect(f.owners.size).toBe(0)
+ 155 |       expect(f.routed).toEqual([f.sessions[0]!.location, f.sessions[2]!.location])
+     :                                 ^^^^^^|^^^^^^^
+     :                                       `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 156 |       expect(f.resolved[0]).toEqual({ sessionID: f.sessions[0]!.id, location: f.sessions[0]!.location })
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:155:71]
+ 154 |       expect(f.owners.size).toBe(0)
+ 155 |       expect(f.routed).toEqual([f.sessions[0]!.location, f.sessions[2]!.location])
+     :                                                         ^^^^^^^|^^^^^^^
+     :                                                                `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 156 |       expect(f.resolved[0]).toEqual({ sessionID: f.sessions[0]!.id, location: f.sessions[0]!.location })
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:156:63]
+ 155 |       expect(f.routed).toEqual([f.sessions[0]!.location, f.sessions[2]!.location])
+ 156 |       expect(f.resolved[0]).toEqual({ sessionID: f.sessions[0]!.id, location: f.sessions[0]!.location })
+     :                                                 ^^^^^^^|^^^^^^^
+     :                                                        `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 157 |     }),
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:156:92]
+ 155 |       expect(f.routed).toEqual([f.sessions[0]!.location, f.sessions[2]!.location])
+ 156 |       expect(f.resolved[0]).toEqual({ sessionID: f.sessions[0]!.id, location: f.sessions[0]!.location })
+     :                                                                              ^^^^^^^|^^^^^^^
+     :                                                                                     `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 157 |     }),
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:169:60]
+ 168 |       })
+ 169 |       const first = yield* f.execution.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+     :                                               ^^^^^^|^^^^^^^
+     :                                                     `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 170 |       yield* Deferred.await(f.started[0]!)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:170:41]
+ 169 |       const first = yield* f.execution.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+ 170 |       yield* Deferred.await(f.started[0]!)
+     :                             ^^^^^^|^^^^^^
+     :                                   `-- This expression already has the type 'Deferred<void, never>'
+ 171 |       const joined = yield* f.execution.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:171:61]
+ 170 |       yield* Deferred.await(f.started[0]!)
+ 171 |       const joined = yield* f.execution.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+     :                                                ^^^^^^|^^^^^^^
+     :                                                      `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 172 |       const cancelled = yield* f.execution.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:172:64]
+ 171 |       const joined = yield* f.execution.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+ 172 |       const cancelled = yield* f.execution.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+     :                                                   ^^^^^^|^^^^^^^
+     :                                                         `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 173 |       yield* Effect.yieldNow
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:175:44]
+ 174 |       yield* Fiber.interrupt(cancelled)
+ 175 |       yield* f.execution.wake(f.sessions[0]!.id)
+     :                               ^^^^^^|^^^^^^^
+     :                                     `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 176 |       yield* f.execution.wake(f.sessions[0]!.id)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:176:44]
+ 175 |       yield* f.execution.wake(f.sessions[0]!.id)
+ 176 |       yield* f.execution.wake(f.sessions[0]!.id)
+     :                               ^^^^^^|^^^^^^^
+     :                                     `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 177 |       expect(f.acquired).toHaveLength(1)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:207:44]
+ 206 |       })
+ 207 |       yield* f.execution.wake(f.sessions[0]!.id)
+     :                               ^^^^^^|^^^^^^^
+     :                                     `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 208 |       yield* Deferred.await(f.started[0]!)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:208:41]
+ 207 |       yield* f.execution.wake(f.sessions[0]!.id)
+ 208 |       yield* Deferred.await(f.started[0]!)
+     :                             ^^^^^^|^^^^^^
+     :                                   `-- This expression already has the type 'Deferred<void, never>'
+ 209 |       expect(f.released).toHaveLength(0)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:213:62]
+ 212 |       expect(f.released).toHaveLength(0)
+ 213 |       const stop = yield* f.execution.interrupt(f.sessions[0]!.id).pipe(Effect.forkChild)
+     :                                                 ^^^^^^|^^^^^^^
+     :                                                       `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 214 |       yield* Deferred.await(cleanup)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:215:44]
+ 214 |       yield* Deferred.await(cleanup)
+ 215 |       yield* f.execution.wake(f.sessions[0]!.id)
+     :                               ^^^^^^|^^^^^^^
+     :                                     `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 216 |       expect(f.released).toHaveLength(0)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:217:53]
+ 216 |       expect(f.released).toHaveLength(0)
+ 217 |       expect(yield* f.execution.resume(f.sessions[1]!.id).pipe(Effect.flip)).toBeInstanceOf(FtcAgentGate.Blocked)
+     :                                        ^^^^^^|^^^^^^^
+     :                                              `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 218 |       yield* Deferred.succeed(cleaned, undefined)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:223:61]
+ 222 |       expect(f.released).toHaveLength(0)
+ 223 |       const joined = yield* f.execution.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+     :                                                ^^^^^^|^^^^^^^
+     :                                                      `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 224 |       yield* Deferred.succeed(finish, undefined)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:243:60]
+ 242 |       })
+ 243 |       const first = yield* f.execution.resume(f.sessions[0]!.id).pipe(Effect.exit, Effect.forkChild)
+     :                                               ^^^^^^|^^^^^^^
+     :                                                     `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 244 |       yield* Deferred.await(f.started[0]!)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:244:41]
+ 243 |       const first = yield* f.execution.resume(f.sessions[0]!.id).pipe(Effect.exit, Effect.forkChild)
+ 244 |       yield* Deferred.await(f.started[0]!)
+     :                             ^^^^^^|^^^^^^
+     :                                   `-- This expression already has the type 'Deferred<void, never>'
+ 245 |       yield* f.execution.wake(f.sessions[0]!.id)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:245:44]
+ 244 |       yield* Deferred.await(f.started[0]!)
+ 245 |       yield* f.execution.wake(f.sessions[0]!.id)
+     :                               ^^^^^^|^^^^^^^
+     :                                     `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 246 |       yield* Deferred.succeed(fail, undefined)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:251:61]
+ 250 |       expect(f.released).toHaveLength(0)
+ 251 |       const joined = yield* f.execution.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+     :                                                ^^^^^^|^^^^^^^
+     :                                                      `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 252 |       yield* Deferred.succeed(finish, undefined)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:263:53]
+ 262 |       const f = yield* fixture({ gate: { resolve: () => Effect.fail(error) } })
+ 263 |       expect(yield* f.execution.resume(f.sessions[0]!.id).pipe(Effect.flip)).toMatchObject({
+     :                                        ^^^^^^|^^^^^^^
+     :                                              `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 264 |         reason: { kind: "rejected", error },
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:266:44]
+ 265 |       })
+ 266 |       yield* f.execution.wake(f.sessions[0]!.id)
+     :                               ^^^^^^|^^^^^^^
+     :                                     `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 267 |       yield* Effect.yieldNow
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:279:62]
+ 278 |       const f = yield* fixture()
+ 279 |       const resumed = yield* f.execution.resume(f.sessions[3]!.id).pipe(Effect.forkChild)
+     :                                                 ^^^^^^|^^^^^^^
+     :                                                       `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 280 |       yield* Deferred.await(f.started[3]!)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:280:41]
+ 279 |       const resumed = yield* f.execution.resume(f.sessions[3]!.id).pipe(Effect.forkChild)
+ 280 |       yield* Deferred.await(f.started[3]!)
+     :                             ^^^^^^|^^^^^^
+     :                                   `-- This expression already has the type 'Deferred<void, never>'
+ 281 |       yield* Deferred.succeed(f.finish[3]!, undefined)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:281:42]
+ 280 |       yield* Deferred.await(f.started[3]!)
+ 281 |       yield* Deferred.succeed(f.finish[3]!, undefined)
+     :                               ^^^^^|^^^^^^
+     :                                    `-- This expression already has the type 'Deferred<void, never>'
+ 282 |       yield* Fiber.join(resumed)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:284:59]
+ 283 |       expect(f.acquired).toHaveLength(0)
+ 284 |       expect(f.starts).toEqual([{ sessionID: f.sessions[3]!.id, force: true }])
+     :                                             ^^^^^^^|^^^^^^^
+     :                                                    `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 285 |       expect(f.routed).toEqual([f.sessions[3]!.location])
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:285:46]
+ 284 |       expect(f.starts).toEqual([{ sessionID: f.sessions[3]!.id, force: true }])
+ 285 |       expect(f.routed).toEqual([f.sessions[3]!.location])
+     :                                 ^^^^^^|^^^^^^^
+     :                                       `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 286 |     }),
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:294:63]
+ 293 |       const failed = yield* fixture({ gate: { acquire: () => Effect.fail(error) } })
+ 294 |       expect(yield* failed.execution.resume(failed.sessions[0]!.id).pipe(Effect.flip)).toMatchObject({
+     :                                             ^^^^^^^^^|^^^^^^^^^
+     :                                                      `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 295 |         reason: { kind: "rejected", error },
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:309:44]
+ 308 |       })
+ 309 |       yield* f.execution.wake(f.sessions[0]!.id)
+     :                               ^^^^^^|^^^^^^^
+     :                                     `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 310 |       yield* Deferred.await(acquiring)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:311:49]
+ 310 |       yield* Deferred.await(acquiring)
+ 311 |       yield* f.execution.interrupt(f.sessions[0]!.id)
+     :                                    ^^^^^^|^^^^^^^
+     :                                          `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 312 |       yield* Deferred.await(cancelled)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:341:44]
+ 340 |       })
+ 341 |       yield* f.execution.wake(f.sessions[0]!.id)
+     :                               ^^^^^^|^^^^^^^
+     :                                     `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 342 |       yield* Deferred.await(f.started[0]!)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:342:41]
+ 341 |       yield* f.execution.wake(f.sessions[0]!.id)
+ 342 |       yield* Deferred.await(f.started[0]!)
+     :                             ^^^^^^|^^^^^^
+     :                                   `-- This expression already has the type 'Deferred<void, never>'
+ 343 |       return f
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:386:50]
+ 385 |         const database = yield* Database.Service
+ 386 |         yield* session.create({ id: f.sessions[0]!.id, location: f.sessions[0]!.location })
+     :                                    ^^^^^^^|^^^^^^^
+     :                                           `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 387 |         yield* session.create({ id: f.sessions[1]!.id, location: f.sessions[1]!.location })
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:386:79]
+ 385 |         const database = yield* Database.Service
+ 386 |         yield* session.create({ id: f.sessions[0]!.id, location: f.sessions[0]!.location })
+     :                                                                 ^^^^^^^|^^^^^^^
+     :                                                                        `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 387 |         yield* session.create({ id: f.sessions[1]!.id, location: f.sessions[1]!.location })
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:387:50]
+ 386 |         yield* session.create({ id: f.sessions[0]!.id, location: f.sessions[0]!.location })
+ 387 |         yield* session.create({ id: f.sessions[1]!.id, location: f.sessions[1]!.location })
+     :                                    ^^^^^^^|^^^^^^^
+     :                                           `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 388 |         const first = yield* session.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:387:79]
+ 386 |         yield* session.create({ id: f.sessions[0]!.id, location: f.sessions[0]!.location })
+ 387 |         yield* session.create({ id: f.sessions[1]!.id, location: f.sessions[1]!.location })
+     :                                                                 ^^^^^^^|^^^^^^^
+     :                                                                        `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 388 |         const first = yield* session.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:388:58]
+ 387 |         yield* session.create({ id: f.sessions[1]!.id, location: f.sessions[1]!.location })
+ 388 |         const first = yield* session.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+     :                                             ^^^^^^|^^^^^^^
+     :                                                   `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 389 |         yield* Deferred.await(f.started[0]!)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:389:43]
+ 388 |         const first = yield* session.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+ 389 |         yield* Deferred.await(f.started[0]!)
+     :                               ^^^^^^|^^^^^^
+     :                                     `-- This expression already has the type 'Deferred<void, never>'
+ 390 |         const receipt = yield* session.prompt({
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:391:35]
+ 390 |         const receipt = yield* session.prompt({
+ 391 |           sessionID: f.sessions[1]!.id,
+     :                     ^^^^^^^|^^^^^^^
+     :                            `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 392 |           id,
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:397:74]
+ 396 |         yield* Effect.yieldNow
+ 397 |         expect(f.starts.filter((item) => item.sessionID === f.sessions[1]!.id)).toHaveLength(0)
+     :                                                            ^^^^^^^|^^^^^^^
+     :                                                                   `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 398 |         expect(yield* SessionInput.find(database.db, id)).toMatchObject({ id, sessionID: f.sessions[1]!.id })
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:398:103]
+ 397 |         expect(f.starts.filter((item) => item.sessionID === f.sessions[1]!.id)).toHaveLength(0)
+ 398 |         expect(yield* SessionInput.find(database.db, id)).toMatchObject({ id, sessionID: f.sessions[1]!.id })
+     :                                                                                         ^^^^^^^|^^^^^^^
+     :                                                                                                `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 399 |         expect(f.released).toHaveLength(0)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:400:44]
+ 399 |         expect(f.released).toHaveLength(0)
+ 400 |         yield* Deferred.succeed(f.finish[0]!, undefined)
+     :                                 ^^^^^|^^^^^^
+     :                                      `-- This expression already has the type 'Deferred<void, never>'
+ 401 |         yield* Fiber.join(first)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:405:44]
+ 404 |         expect(f.starts).toHaveLength(1)
+ 405 |         yield* Deferred.succeed(f.finish[1]!, undefined)
+     :                                 ^^^^^|^^^^^^
+     :                                      `-- This expression already has the type 'Deferred<void, never>'
+ 406 |         yield* session.resume(f.sessions[1]!.id)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:406:44]
+ 405 |         yield* Deferred.succeed(f.finish[1]!, undefined)
+ 406 |         yield* session.resume(f.sessions[1]!.id)
+     :                               ^^^^^^|^^^^^^^
+     :                                     `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 407 |         expect(f.starts).toHaveLength(2)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:450:58]
+ 449 |       })
+ 450 |       const first = yield* execution.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+     :                                             ^^^^^^|^^^^^^^
+     :                                                   `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 451 |       yield* Deferred.await(releasing)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:452:73]
+ 451 |       yield* Deferred.await(releasing)
+ 452 |       expect(Array.from(yield* execution.active)).toEqual([f.sessions[0]!.id])
+     :                                                            ^^^^^^|^^^^^^^
+     :                                                                  `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 453 |       yield* execution.wake(f.sessions[0]!.id)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:453:42]
+ 452 |       expect(Array.from(yield* execution.active)).toEqual([f.sessions[0]!.id])
+ 453 |       yield* execution.wake(f.sessions[0]!.id)
+     :                             ^^^^^^|^^^^^^^
+     :                                   `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 454 |       expect(f.acquired).toHaveLength(1)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:459:27]
+ 458 |       expect(f.acquired).toHaveLength(2)
+ 459 |       expect(f.acquired[0]!.token).not.toBe(f.acquired[1]!.token)
+     :              ^^^^^^|^^^^^^^
+     :                    `-- This expression already has the type 'GateLease'
+ 460 |       yield* releaseClaim(f.acquired[0]!)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:459:58]
+ 458 |       expect(f.acquired).toHaveLength(2)
+ 459 |       expect(f.acquired[0]!.token).not.toBe(f.acquired[1]!.token)
+     :                                             ^^^^^^|^^^^^^^
+     :                                                   `-- This expression already has the type 'GateLease'
+ 460 |       yield* releaseClaim(f.acquired[0]!)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:460:40]
+ 459 |       expect(f.acquired[0]!.token).not.toBe(f.acquired[1]!.token)
+ 460 |       yield* releaseClaim(f.acquired[0]!)
+     :                           ^^^^^^|^^^^^^^
+     :                                 `-- This expression already has the type 'GateLease'
+ 461 |       expect(f.owners.get(f.acquired[1]!.projectKey)).toEqual(f.acquired[1])
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:461:40]
+ 460 |       yield* releaseClaim(f.acquired[0]!)
+ 461 |       expect(f.owners.get(f.acquired[1]!.projectKey)).toEqual(f.acquired[1])
+     :                           ^^^^^^|^^^^^^^
+     :                                 `-- This expression already has the type 'GateLease'
+ 462 |       expect(yield* execution.resume(f.sessions[1]!.id).pipe(Effect.flip)).toBeInstanceOf(FtcAgentGate.Blocked)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:462:51]
+ 461 |       expect(f.owners.get(f.acquired[1]!.projectKey)).toEqual(f.acquired[1])
+ 462 |       expect(yield* execution.resume(f.sessions[1]!.id).pipe(Effect.flip)).toBeInstanceOf(FtcAgentGate.Blocked)
+     :                                      ^^^^^^|^^^^^^^
+     :                                            `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 463 |       const joined = yield* execution.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:463:59]
+ 462 |       expect(yield* execution.resume(f.sessions[1]!.id).pipe(Effect.flip)).toBeInstanceOf(FtcAgentGate.Blocked)
+ 463 |       const joined = yield* execution.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+     :                                              ^^^^^^|^^^^^^^
+     :                                                    `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 464 |       yield* Deferred.succeed(finish, undefined)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:480:62]
+ 479 |       })
+ 480 |       expect(Exit.isFailure(yield* local.resume(f.sessions[0]!.id).pipe(Effect.exit))).toBe(true)
+     :                                                 ^^^^^^|^^^^^^^
+     :                                                       `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 481 |       expect(f.released).toEqual(f.acquired)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:499:60]
+ 498 |       })
+ 499 |       const first = yield* f.execution.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+     :                                               ^^^^^^|^^^^^^^
+     :                                                     `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 500 |       yield* Deferred.await(releasing)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/agent-and-context/m3-02.test.ts:501:61]
+ 500 |       yield* Deferred.await(releasing)
+ 501 |       const joined = yield* f.execution.resume(f.sessions[0]!.id).pipe(Effect.forkChild)
+     :                                                ^^^^^^|^^^^^^^
+     :                                                      `-- This expression already has the type '{ id: string & Brand<"SessionID">; projectID: string & Brand<"Project.ID">; cost: number; tokens: { input: number; output: number; reasoning: number; cache: { read: number; write: number; }; }; time: { ...; }; title: string; location: { ...; }; }'
+ 502 |       yield* Effect.yieldNow
+     `----
+
+Found 71 warnings and 0 errors.
+Finished in 1.9s on 6 files with 130 rules using 10 threads.

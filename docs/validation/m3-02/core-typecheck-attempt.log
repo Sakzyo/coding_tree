@@ -1,0 +1,2 @@
+$ tsgo --noEmit
+test/ftc/agent-and-context/m3-02.test.ts(360,44): error TS2741: Property 'commit' is missing in type '{ resolve: (directory: string & Brand<"AbsolutePath">) => Effect<{ id: string & Brand<"Project.ID">; directory: string & Brand<"AbsolutePath">; }, never, never>; directories: () => Effect<...>; }' but required in type 'Interface'.

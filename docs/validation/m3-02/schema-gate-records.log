@@ -1,0 +1,10 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-03.test.ts:
+(pass) gate records validate serializable contracts and exact facade identities [7.20ms]
+
+ 1 pass
+ 17 filtered out
+ 0 fail
+ 8 expect() calls
+Ran 1 test across 1 file. [158.00ms]

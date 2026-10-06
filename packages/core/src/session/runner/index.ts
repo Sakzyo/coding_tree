@@ -1,5 +1,6 @@
 export * as SessionRunner from "./index"
 
+import type { FtcAgentGate } from "../../ftc/agent/gate"
 import type { LLMError } from "@opencode-ai/llm"
 import { Context, Effect } from "effect"
 import { SessionSchema } from "../schema"
@@ -9,6 +10,7 @@ import type { SystemContext } from "../../system-context/index"
 import type { ToolOutputStore } from "../../tool-output-store"
 
 export type RunError =
+  | FtcAgentGate.Blocked
   | LLMError
   | SessionRunnerModel.Error
   | MessageDecodeError

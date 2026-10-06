@@ -1,0 +1,27 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-02.test.ts:
+(pass) resume wake and prompt cannot overlap different chats in one project [37.43ms]
+(pass) same Session joins and coalesced wakes retain one lease across drains [3.31ms]
+(pass) tool and approval waits retain ownership through interruption cleanup and successor [13.31ms]
+[15:57:57.042] ERROR (#32): Failed to drain Session Error: controlled runner failure
+    at causePrettyError (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:228:28) {
+  sessionID: "ses_eee106852ffek4SdjOdbY8C7ya",
+}
+(pass) failed drain transfers ownership to its pending successor [27.68ms]
+(pass) managed membership rejection never falls back to legacy execution [2.52ms]
+(pass) unmanaged Sessions retain legacy execution with no gate claim [2.01ms]
+(pass) acquisition failure or cancellation cleans ownership without starting a runner [3.17ms]
+(pass) scope disposal awaits runner cleanup before exact lease release [2.15ms]
+(pass) real Session prompt admits before local wake and a busy chat never reaches its Location runner [215.31ms]
+(pass) wake during terminal release acquires a fresh claim and stale release cannot unlock it [6.86ms]
+[15:57:57.283] ERROR (#183): Failed to drain Session Error: Location construction failed
+    at causePrettyError (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:228:28) {
+  sessionID: "ses_eee10675cffeEenSUzOlljNJzs",
+}
+(pass) Location construction failure releases its acquired claim and missing Session never resolves membership [0.60ms]
+
+ 11 pass
+ 0 fail
+ 62 expect() calls
+Ran 11 tests across 1 file. [942.00ms]

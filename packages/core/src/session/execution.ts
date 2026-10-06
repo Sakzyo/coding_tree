@@ -9,9 +9,9 @@ import { SessionSchema } from "./schema"
 export interface Interface {
   /** Snapshots active execution owned by this process. */
   readonly active: Effect.Effect<ReadonlySet<SessionSchema.ID>>
-  /** Starts execution while idle or joins the active execution. */
+  /** Starts execution while idle or joins it. Managed project contention fails with FtcAgentGate.Blocked. */
   readonly resume: (sessionID: SessionSchema.ID) => Effect.Effect<void, SessionRunner.RunError>
-  /** Registers newly recorded work. Repeated wakeups may coalesce. */
+  /** Registers newly recorded work. Coalesced or gate-blocked advisory wakes remain error-free; no automatic retry. */
   readonly wake: (sessionID: SessionSchema.ID) => Effect.Effect<void>
   /** Interrupt active work owned by this process. Idle interruption is a no-op. */
   readonly interrupt: (sessionID: SessionSchema.ID) => Effect.Effect<void>

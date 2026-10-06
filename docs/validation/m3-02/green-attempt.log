@@ -1,0 +1,21 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-02.test.ts:
+(pass) resume wake and prompt cannot overlap different chats in one project [11.14ms]
+(pass) same Session joins and coalesced wakes retain one lease across drains [0.99ms]
+(pass) tool and approval waits retain ownership through interruption cleanup and successor [1.12ms]
+[15:55:50.299] ERROR (#32): Failed to drain Session Error: controlled runner failure
+    at causePrettyError (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:228:28) {
+  sessionID: "ses_eee125765ff8wCBOIvwprtQe0h",
+}
+(pass) failed drain transfers ownership to its pending successor [3.16ms]
+(pass) managed membership rejection never falls back to legacy execution [0.39ms]
+(pass) unmanaged Sessions retain legacy execution with no gate claim [0.29ms]
+(pass) acquisition failure or cancellation cleans ownership without starting a runner [0.51ms]
+(pass) scope disposal awaits runner cleanup before exact lease release [0.33ms]
+(pass) real Session prompt admits before local wake and a busy chat never reaches its Location runner [34.22ms]
+
+ 9 pass
+ 0 fail
+ 48 expect() calls
+Ran 9 tests across 1 file. [292.00ms]
