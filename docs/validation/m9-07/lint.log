@@ -1,0 +1,3 @@
+$ oxlint packages/desktop/src/main/panels-policy.ts "packages/core/test/ftc-evaluation/m9-07.test.ts" packages/core/test/ftc-adapters/action-boundary-probe.test.ts packages/core/test/ftc-adapters/fixtures/action-boundary/process.ts
+Found 0 warnings and 0 errors.
+Finished in 688ms on 4 files with 130 rules using 10 threads.

@@ -1,0 +1,47 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-evaluation/m9-07.test.ts:
+28 | }
+29 | 
+30 | // The endpoints and payloads are fixtures; children, sockets and OS restrictions are real.
+31 | async function probe(mode: "http" | "websocket", restricted: boolean, gradle?: string) {
+32 |   const received: string[] = []
+33 |   const server = Bun.serve({
+                          ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at probe (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/action-boundary-probe.test.ts:33:22)
+(fail) unrestricted absolute binary reaches owned HTTP broker despite filtered PATH [7.00ms]
+28 | }
+29 | 
+30 | // The endpoints and payloads are fixtures; children, sockets and OS restrictions are real.
+31 | async function probe(mode: "http" | "websocket", restricted: boolean, gradle?: string) {
+32 |   const received: string[] = []
+33 |   const server = Bun.serve({
+                          ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at probe (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/action-boundary-probe.test.ts:33:22)
+(fail) unrestricted process can send a dashboard-style WebSocket write [0.22ms]
+(skip) macOS candidate permits local development subprocess execution
+(skip) macOS candidate denies HTTP access to owned controller/broker fixture
+(skip) macOS candidate denies dashboard-style WebSocket writes
+(skip) real absolute ADB binary executes with filtered PATH (version only)
+(skip) real offline Gradle task reaches owned broker fixture without isolation
+(skip) NOT RUN: Windows process, USB, controller/broker and embedded dashboard isolation
+(skip) NOT RUN: macOS physical USB API and real controller HTTP/WebSocket denial
+(skip) NOT RUN: production extension/MCP descendants and broker capability isolation
+(skip) NOT RUN: real Electron embedded controls, preload/IPC, navigation and permissions
+(pass) M9-07 keeps unverified embedded dashboard and controls disabled [0.05ms]
+
+ 1 pass
+ 9 skip
+ 2 fail
+ 4 expect() calls
+Ran 12 tests across 1 file. [29.00ms]
