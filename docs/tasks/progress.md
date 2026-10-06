@@ -1,9 +1,9 @@
 # FTC development progress
 
-Date: 2026-10-06
+Date: 2026-10-07
 Planning baseline: `d7aca195c`
 
-**Implementation progress: 0 / 12 modules complete; 7 / 94 tasks complete.**
+**Implementation progress: 0 / 12 modules complete; 13 / 94 tasks complete.**
 
 These checkboxes track future development, not completion of this planning document. The existing OpenCode foundation is reused, but its presence does not prove that the FTC tasks are done. Both inputs describe unimplemented or unevaluated product work, so every implementation box starts unchecked.
 
@@ -13,15 +13,15 @@ These checkboxes track future development, not completion of this planning docum
 
 - [ ] **M1 — [Desktop workspace](desktop-workspace.md)** — 0 / 14 tasks.
 - [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 3 / 6 tasks.
-- [ ] **M3 — [Agent and context](agent-and-context.md)** — 0 / 7 tasks.
-- [ ] **M4 — [Environment and compatibility](environment-and-compatibility.md)** — 2 / 7 tasks.
+- [ ] **M3 — [Agent and context](agent-and-context.md)** — 2 / 7 tasks.
+- [ ] **M4 — [Environment and compatibility](environment-and-compatibility.md)** — 4 / 7 tasks.
 - [ ] **M5 — [Java development](java-development.md)** — 0 / 8 tasks.
 - [ ] **M6 — [FTC configuration and libraries](ftc-configuration-and-libraries.md)** — 0 / 6 tasks.
 - [ ] **M7 — [AI access and local inference](ai-access-and-local-inference.md)** — 0 / 8 tasks.
 - [ ] **M8 — [Controller connections](controller-connections.md)** — 1 / 6 tasks.
 - [ ] **M9 — [Robot approvals and operations](robot-approvals-and-operations.md)** — 0 / 9 tasks.
 - [ ] **M10 — [Diagnostics and dashboard](diagnostics-and-dashboard.md)** — 0 / 6 tasks.
-- [ ] **M11 — [FTC knowledge](ftc-knowledge.md)** — 1 / 10 tasks.
+- [ ] **M11 — [FTC knowledge](ftc-knowledge.md)** — 3 / 10 tasks.
 - [ ] **M12 — [Learning and personal progress](learning-and-progress.md)** — 0 / 7 tasks.
 
 Check a module only after its task checklist, substeps, module completion gate and assigned acceptance evidence pass. Update its count here after each task. Task completion is a count of checked entries in the module's **Task checklist**, not a count of all substep boxes. Counts are maintained here manually; do not mark a module complete just because its isolated suite passed.
@@ -40,13 +40,13 @@ The test code snippets are core assertions inside the named test, not standalone
 
 Modules can be constructed independently. This sequence schedules integration milestones; the linked per-task prerequisite lists are the authoritative dependency graph.
 
-| Stage | Ready work and exit milestone |
-| --- | --- |
-| Early feasibility | Start [M9-07](robot-approvals-and-operations.md#m9-07) immediately; after [M4-01](environment-and-compatibility.md#m4-01) run [M5-03](java-development.md#m5-03); after [M8-01](controller-connections.md#m8-01) run [M8-04](controller-connections.md#m8-04). Resolve action isolation, real Java import and robot protocols before dependent production adapters. |
-| Workspace and AI foundation | M2 project/chat storage and gate; M3 Session regressions/code policy; M7 provider/runtime work; M1 standalone workspace/settings. Compose [M2-06](projects-and-chats.md#m2-06) and [M7-07](ai-access-and-local-inference.md#m7-07). |
-| FTC development workflow | M4 setup, M5 document/build services, M6 configuration/library proposals, M11 reference contracts/content. Expose setup/readiness APIs and compose build verification in [M4-06](environment-and-compatibility.md#m4-06) before [M1-11](desktop-workspace.md#m1-11) binds the workspace; compose [M6-06](ftc-configuration-and-libraries.md#m6-06) and the editor. |
-| Robot integration | M8 connections, M9 approvals/mutation enforcement, M10 diagnostics, M1 robot/Panel views. Prove [M9-08](robot-approvals-and-operations.md#m9-08) before enabling production command/build/robot authority. |
-| Learning and release integration | M11 both course tracks, M12 progress/evidence, M1 real API wiring/localization. Finish [M1-12](desktop-workspace.md#m1-12) and [M1-14](desktop-workspace.md#m1-14) only after all dependent evaluations. |
+| Stage                            | Ready work and exit milestone                                                                                                                                                                                                                                                                                                                                       |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Early feasibility                | Start [M9-07](robot-approvals-and-operations.md#m9-07) immediately; after [M4-01](environment-and-compatibility.md#m4-01) run [M5-03](java-development.md#m5-03); after [M8-01](controller-connections.md#m8-01) run [M8-04](controller-connections.md#m8-04). Resolve action isolation, real Java import and robot protocols before dependent production adapters. |
+| Workspace and AI foundation      | M2 project/chat storage and gate; M3 Session regressions/code policy; M7 provider/runtime work; M1 standalone workspace/settings. Compose [M2-06](projects-and-chats.md#m2-06) and [M7-07](ai-access-and-local-inference.md#m7-07).                                                                                                                                 |
+| FTC development workflow         | M4 setup, M5 document/build services, M6 configuration/library proposals, M11 reference contracts/content. Expose setup/readiness APIs and compose build verification in [M4-06](environment-and-compatibility.md#m4-06) before [M1-11](desktop-workspace.md#m1-11) binds the workspace; compose [M6-06](ftc-configuration-and-libraries.md#m6-06) and the editor.  |
+| Robot integration                | M8 connections, M9 approvals/mutation enforcement, M10 diagnostics, M1 robot/Panel views. Prove [M9-08](robot-approvals-and-operations.md#m9-08) before enabling production command/build/robot authority.                                                                                                                                                          |
+| Learning and release integration | M11 both course tracks, M12 progress/evidence, M1 real API wiring/localization. Finish [M1-12](desktop-workspace.md#m1-12) and [M1-14](desktop-workspace.md#m1-14) only after all dependent evaluations.                                                                                                                                                            |
 
 Tasks initially ready with supplied fixtures: [M1-01](desktop-workspace.md#m1-01), [M2-01](projects-and-chats.md#m2-01), [M3-01](agent-and-context.md#m3-01), [M4-01](environment-and-compatibility.md#m4-01), [M5-01](java-development.md#m5-01), [M6-01](ftc-configuration-and-libraries.md#m6-01), [M7-01](ai-access-and-local-inference.md#m7-01), [M7-02](ai-access-and-local-inference.md#m7-02), [M8-01](controller-connections.md#m8-01), [M9-01](robot-approvals-and-operations.md#m9-01), [M9-07](robot-approvals-and-operations.md#m9-07), [M11-01](ftc-knowledge.md#m11-01), [M12-01](learning-and-progress.md#m12-01).
 
@@ -95,76 +95,76 @@ Code-plan and robot-approval records describe decisions but are **not bearer aut
 
 All paths below are proposed test selections created by the tasks, unless already present. Provision repository dependencies before running them; module tests must not download product assets.
 
-| Check | Working directory | Command / passing result |
-| --- | --- | --- |
-| Core isolated module | `packages/core` | `bun test ./test/ftc/<module-slug>` — real module passes with only supplied ports/temporary resources. Each plan provides its exact slug. |
-| UI isolated module | `packages/app` | `bun test --conditions=browser --preload ./happydom.ts ./test-browser/ftc/desktop-workspace` — DOM tests pass without Electron/backend. |
-| UI production composition | `packages/app` | `bun test --conditions=browser --preload ./happydom.ts ./test-browser/ftc-integration` — M1-11 uses a test-owned composed backend; excluded from the isolated module directory. |
-| Production composition | `packages/core` | `bun test ./test/ftc-integration` — actual module wiring passes with controlled external ports. |
-| Environment API handlers | `packages/server` | `bun test ./test/ftc-environment.test.ts` — M4-06 exposes project-bound setup/readiness results, events and cancellation before M1-11 integration. |
-| External adapters | `packages/core` | `bun test ./test/ftc-adapters` — satisfy documented technology prerequisites; these are not isolated-module evidence. |
-| Platform/content evaluations | `packages/core` | `bun test ./test/ftc-evaluation/<task-id>.test.ts` — task-specific automated subset; attach separate manual/physical records. |
-| Electron host policies | `packages/desktop` | `bun test ./src/main/ftc` — policy/IPC adapter checks; also validate actual Electron/safeStorage behavior in the host. |
-| Module boundaries | `packages/core` | `bun test ./test/ftc-boundaries.test.ts` — no forbidden imports, private-store access or bootstrap dependencies. |
-| Existing Session regression | `packages/core` | `bun test ./test/session-prompt.test.ts ./test/session-runner.test.ts ./test/session-run-coordinator.test.ts` — invariants remain passing. |
-| Types | Every changed package | `bun typecheck` — no errors. |
-| Public clients | `packages/client` | `bun run generate`, then `bun typecheck` — generated code derives from reviewed Protocol/HttpApi. |
-| Packaged app | `packages/desktop`, target OS | `bun run build`, then `bun run package:mac` or `bun run package:win` — successful artifacts plus actual platform smoke checks. |
+| Check                        | Working directory             | Command / passing result                                                                                                                                                        |
+| ---------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Core isolated module         | `packages/core`               | `bun test ./test/ftc/<module-slug>` — real module passes with only supplied ports/temporary resources. Each plan provides its exact slug.                                       |
+| UI isolated module           | `packages/app`                | `bun test --conditions=browser --preload ./happydom.ts ./test-browser/ftc/desktop-workspace` — DOM tests pass without Electron/backend.                                         |
+| UI production composition    | `packages/app`                | `bun test --conditions=browser --preload ./happydom.ts ./test-browser/ftc-integration` — M1-11 uses a test-owned composed backend; excluded from the isolated module directory. |
+| Production composition       | `packages/core`               | `bun test ./test/ftc-integration` — actual module wiring passes with controlled external ports.                                                                                 |
+| Environment API handlers     | `packages/server`             | `bun test ./test/ftc-environment.test.ts` — M4-06 exposes project-bound setup/readiness results, events and cancellation before M1-11 integration.                              |
+| External adapters            | `packages/core`               | `bun test ./test/ftc-adapters` — satisfy documented technology prerequisites; these are not isolated-module evidence.                                                           |
+| Platform/content evaluations | `packages/core`               | `bun test ./test/ftc-evaluation/<task-id>.test.ts` — task-specific automated subset; attach separate manual/physical records.                                                   |
+| Electron host policies       | `packages/desktop`            | `bun test ./src/main/ftc` — policy/IPC adapter checks; also validate actual Electron/safeStorage behavior in the host.                                                          |
+| Module boundaries            | `packages/core`               | `bun test ./test/ftc-boundaries.test.ts` — no forbidden imports, private-store access or bootstrap dependencies.                                                                |
+| Existing Session regression  | `packages/core`               | `bun test ./test/session-prompt.test.ts ./test/session-runner.test.ts ./test/session-run-coordinator.test.ts` — invariants remain passing.                                      |
+| Types                        | Every changed package         | `bun typecheck` — no errors.                                                                                                                                                    |
+| Public clients               | `packages/client`             | `bun run generate`, then `bun typecheck` — generated code derives from reviewed Protocol/HttpApi.                                                                               |
+| Packaged app                 | `packages/desktop`, target OS | `bun run build`, then `bun run package:mac` or `bun run package:win` — successful artifacts plus actual platform smoke checks.                                                  |
 
 Do not install toolchains/models/robot dependencies during isolated suites. Use real temporary files/databases/parsers; controlled port implementations supply external results only. Keep the actual logic under test. Contract suites check real and controlled adapters for identity, revisions, errors, cancellation and cleanup. Real-platform evaluation prerequisites must be documented and missing resources must produce explicit not-run records, not silently skipped success.
 
 ## Requirement traceability
 
-| Requirement | Owning executable tasks |
-| --- | --- |
-| PRJ-01 | [M2-01](projects-and-chats.md#m2-01), [M4-02](environment-and-compatibility.md#m4-02), [M6-03](ftc-configuration-and-libraries.md#m6-03), [M6-04](ftc-configuration-and-libraries.md#m6-04), [M1-01](desktop-workspace.md#m1-01) |
-| PRJ-02 | [M2-02](projects-and-chats.md#m2-02), [M1-01](desktop-workspace.md#m1-01) |
-| PRJ-03 | [M2-02](projects-and-chats.md#m2-02), [M2-06](projects-and-chats.md#m2-06), [M1-01](desktop-workspace.md#m1-01) |
-| PRJ-04 | [M2-03](projects-and-chats.md#m2-03), [M2-04](projects-and-chats.md#m2-04), [M2-05](projects-and-chats.md#m2-05), [M2-06](projects-and-chats.md#m2-06), [M3-02](agent-and-context.md#m3-02), [M1-01](desktop-workspace.md#m1-01) |
-| PRJ-05 | [M1-02](desktop-workspace.md#m1-02), [M5-01](java-development.md#m5-01) |
-| EDT-01 | [M5-03](java-development.md#m5-03), [M5-04](java-development.md#m5-04), [M5-07](java-development.md#m5-07), [M5-08](java-development.md#m5-08), [M1-07](desktop-workspace.md#m1-07) |
-| EDT-02 | [M5-04](java-development.md#m5-04), [M5-05](java-development.md#m5-05), [M3-04](agent-and-context.md#m3-04), [M1-07](desktop-workspace.md#m1-07) |
-| ENV-01 | [M4-02](environment-and-compatibility.md#m4-02), [M4-03](environment-and-compatibility.md#m4-03), [M1-03](desktop-workspace.md#m1-03) |
-| ENV-02 | [M4-04](environment-and-compatibility.md#m4-04), [M4-07](environment-and-compatibility.md#m4-07) |
-| ENV-03 | [M4-03](environment-and-compatibility.md#m4-03), [M4-06](environment-and-compatibility.md#m4-06) |
-| ENV-04 | [M4-01](environment-and-compatibility.md#m4-01), [M4-06](environment-and-compatibility.md#m4-06), [M5-05](java-development.md#m5-05) |
-| ENV-05 | [M4-02](environment-and-compatibility.md#m4-02), [M6-03](ftc-configuration-and-libraries.md#m6-03), [M6-04](ftc-configuration-and-libraries.md#m6-04), [M3-03](agent-and-context.md#m3-03) |
-| ENV-06 | [M4-05](environment-and-compatibility.md#m4-05), [M4-07](environment-and-compatibility.md#m4-07), [M5-08](java-development.md#m5-08), [M7-04](ai-access-and-local-inference.md#m7-04), [M11-09](ftc-knowledge.md#m11-09), [M12-07](learning-and-progress.md#m12-07) |
-| AI-01 | [M7-02](ai-access-and-local-inference.md#m7-02), [M7-03](ai-access-and-local-inference.md#m7-03), [M1-03](desktop-workspace.md#m1-03), [M1-04](desktop-workspace.md#m1-04) |
-| AI-02 | [M7-04](ai-access-and-local-inference.md#m7-04), [M7-07](ai-access-and-local-inference.md#m7-07), [M1-03](desktop-workspace.md#m1-03), [M1-04](desktop-workspace.md#m1-04) |
-| AI-03 | [M7-01](ai-access-and-local-inference.md#m7-01), [M7-05](ai-access-and-local-inference.md#m7-05), [M7-06](ai-access-and-local-inference.md#m7-06), [M7-08](ai-access-and-local-inference.md#m7-08), [M1-04](desktop-workspace.md#m1-04) |
-| AI-04 | [M3-03](agent-and-context.md#m3-03), [M3-07](agent-and-context.md#m3-07), [M9-01](robot-approvals-and-operations.md#m9-01), [M1-05](desktop-workspace.md#m1-05) |
-| AI-05 | [M3-04](agent-and-context.md#m3-04), [M6-05](ftc-configuration-and-libraries.md#m6-05), [M10-03](diagnostics-and-dashboard.md#m10-03), [M11-02](ftc-knowledge.md#m11-02) |
-| AI-06 | [M7-03](ai-access-and-local-inference.md#m7-03), [M7-04](ai-access-and-local-inference.md#m7-04), [M11-02](ftc-knowledge.md#m11-02), [M1-03](desktop-workspace.md#m1-03), [M1-04](desktop-workspace.md#m1-04) |
-| AI-07 | [M3-05](agent-and-context.md#m3-05), [M7-03](ai-access-and-local-inference.md#m7-03), [M7-08](ai-access-and-local-inference.md#m7-08), [M9-05](robot-approvals-and-operations.md#m9-05) |
-| FTC-01 | [M11-04](ftc-knowledge.md#m11-04), [M11-07](ftc-knowledge.md#m11-07), [M12-02](learning-and-progress.md#m12-02), [M12-05](learning-and-progress.md#m12-05), [M11-05](ftc-knowledge.md#m11-05), [M11-06](ftc-knowledge.md#m11-06), [M11-08](ftc-knowledge.md#m11-08) |
-| FTC-02 | [M11-03](ftc-knowledge.md#m11-03), [M6-04](ftc-configuration-and-libraries.md#m6-04), [M1-06](desktop-workspace.md#m1-06) |
-| FTC-03 | [M6-04](ftc-configuration-and-libraries.md#m6-04), [M11-07](ftc-knowledge.md#m11-07), [M5-08](java-development.md#m5-08), [M11-08](ftc-knowledge.md#m11-08) |
-| FTC-04 | [M6-03](ftc-configuration-and-libraries.md#m6-03), [M6-04](ftc-configuration-and-libraries.md#m6-04), [M1-06](desktop-workspace.md#m1-06) |
-| FTC-05 | [M6-04](ftc-configuration-and-libraries.md#m6-04), [M11-03](ftc-knowledge.md#m11-03), [M8-04](controller-connections.md#m8-04), [M11-08](ftc-knowledge.md#m11-08) |
-| FTC-06 | [M11-01](ftc-knowledge.md#m11-01), [M11-02](ftc-knowledge.md#m11-02), [M11-09](ftc-knowledge.md#m11-09), [M11-10](ftc-knowledge.md#m11-10) |
-| HW-01 | [M1-06](desktop-workspace.md#m1-06), [M6-02](ftc-configuration-and-libraries.md#m6-02) |
-| HW-02 | [M6-01](ftc-configuration-and-libraries.md#m6-01), [M6-02](ftc-configuration-and-libraries.md#m6-02), [M6-06](ftc-configuration-and-libraries.md#m6-06), [M1-06](desktop-workspace.md#m1-06) |
-| HW-03 | [M6-05](ftc-configuration-and-libraries.md#m6-05), [M6-06](ftc-configuration-and-libraries.md#m6-06), [M5-02](java-development.md#m5-02), [M3-03](agent-and-context.md#m3-03) |
-| HW-04 | [M6-05](ftc-configuration-and-libraries.md#m6-05), [M6-06](ftc-configuration-and-libraries.md#m6-06), [M11-04](ftc-knowledge.md#m11-04), [M1-06](desktop-workspace.md#m1-06), [M11-06](ftc-knowledge.md#m11-06) |
-| PAN-01 | [M10-04](diagnostics-and-dashboard.md#m10-04), [M1-09](desktop-workspace.md#m1-09), [M1-14](desktop-workspace.md#m1-14) |
-| PAN-02 | [M10-01](diagnostics-and-dashboard.md#m10-01), [M10-05](diagnostics-and-dashboard.md#m10-05), [M10-06](diagnostics-and-dashboard.md#m10-06) |
-| PAN-03 | [M10-02](diagnostics-and-dashboard.md#m10-02), [M10-06](diagnostics-and-dashboard.md#m10-06) |
-| PAN-04 | [M10-03](diagnostics-and-dashboard.md#m10-03), [M3-04](agent-and-context.md#m3-04), [M3-05](agent-and-context.md#m3-05) |
-| ROB-01 | [M8-01](controller-connections.md#m8-01), [M8-03](controller-connections.md#m8-03), [M8-06](controller-connections.md#m8-06) |
-| ROB-02 | [M5-05](java-development.md#m5-05), [M5-06](java-development.md#m5-06), [M9-06](robot-approvals-and-operations.md#m9-06), [M9-09](robot-approvals-and-operations.md#m9-09) |
-| ROB-03 | [M9-02](robot-approvals-and-operations.md#m9-02), [M1-08](desktop-workspace.md#m1-08), [M9-09](robot-approvals-and-operations.md#m9-09) |
-| ROB-04 | [M9-01](robot-approvals-and-operations.md#m9-01), [M9-02](robot-approvals-and-operations.md#m9-02), [M9-09](robot-approvals-and-operations.md#m9-09), [M1-05](desktop-workspace.md#m1-05) |
-| ROB-05 | [M8-02](controller-connections.md#m8-02), [M9-03](robot-approvals-and-operations.md#m9-03), [M9-04](robot-approvals-and-operations.md#m9-04) |
-| ROB-06 | [M8-05](controller-connections.md#m8-05), [M9-05](robot-approvals-and-operations.md#m9-05), [M10-02](diagnostics-and-dashboard.md#m10-02), [M9-09](robot-approvals-and-operations.md#m9-09) |
-| ROB-07 | [M9-07](robot-approvals-and-operations.md#m9-07), [M9-08](robot-approvals-and-operations.md#m9-08), [M3-05](agent-and-context.md#m3-05), [M1-09](desktop-workspace.md#m1-09) |
-| LRN-01 | [M12-01](learning-and-progress.md#m12-01), [M12-02](learning-and-progress.md#m12-02), [M12-03](learning-and-progress.md#m12-03), [M1-10](desktop-workspace.md#m1-10) |
-| LRN-02 | [M11-04](ftc-knowledge.md#m11-04), [M11-07](ftc-knowledge.md#m11-07), [M12-05](learning-and-progress.md#m12-05), [M11-05](ftc-knowledge.md#m11-05), [M11-06](ftc-knowledge.md#m11-06), [M11-08](ftc-knowledge.md#m11-08) |
-| LRN-03 | [M3-05](agent-and-context.md#m3-05), [M11-04](ftc-knowledge.md#m11-04), [M12-04](learning-and-progress.md#m12-04), [M12-05](learning-and-progress.md#m12-05), [M11-05](ftc-knowledge.md#m11-05) |
-| LRN-04 | [M11-07](ftc-knowledge.md#m11-07), [M12-03](learning-and-progress.md#m12-03), [M11-08](ftc-knowledge.md#m11-08) |
-| LRN-05 | [M12-01](learning-and-progress.md#m12-01), [M12-04](learning-and-progress.md#m12-04), [M12-05](learning-and-progress.md#m12-05), [M12-07](learning-and-progress.md#m12-07), [M11-09](ftc-knowledge.md#m11-09) |
-| LNG-01 | [M1-13](desktop-workspace.md#m1-13), [M11-10](ftc-knowledge.md#m11-10), [M3-07](agent-and-context.md#m3-07) |
-| LNG-02 | [M11-01](ftc-knowledge.md#m11-01), [M1-13](desktop-workspace.md#m1-13) |
+| Requirement | Owning executable tasks                                                                                                                                                                                                                                             |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| PRJ-01      | [M2-01](projects-and-chats.md#m2-01), [M4-02](environment-and-compatibility.md#m4-02), [M6-03](ftc-configuration-and-libraries.md#m6-03), [M6-04](ftc-configuration-and-libraries.md#m6-04), [M1-01](desktop-workspace.md#m1-01)                                    |
+| PRJ-02      | [M2-02](projects-and-chats.md#m2-02), [M1-01](desktop-workspace.md#m1-01)                                                                                                                                                                                           |
+| PRJ-03      | [M2-02](projects-and-chats.md#m2-02), [M2-06](projects-and-chats.md#m2-06), [M1-01](desktop-workspace.md#m1-01)                                                                                                                                                     |
+| PRJ-04      | [M2-03](projects-and-chats.md#m2-03), [M2-04](projects-and-chats.md#m2-04), [M2-05](projects-and-chats.md#m2-05), [M2-06](projects-and-chats.md#m2-06), [M3-02](agent-and-context.md#m3-02), [M1-01](desktop-workspace.md#m1-01)                                    |
+| PRJ-05      | [M1-02](desktop-workspace.md#m1-02), [M5-01](java-development.md#m5-01)                                                                                                                                                                                             |
+| EDT-01      | [M5-03](java-development.md#m5-03), [M5-04](java-development.md#m5-04), [M5-07](java-development.md#m5-07), [M5-08](java-development.md#m5-08), [M1-07](desktop-workspace.md#m1-07)                                                                                 |
+| EDT-02      | [M5-04](java-development.md#m5-04), [M5-05](java-development.md#m5-05), [M3-04](agent-and-context.md#m3-04), [M1-07](desktop-workspace.md#m1-07)                                                                                                                    |
+| ENV-01      | [M4-02](environment-and-compatibility.md#m4-02), [M4-03](environment-and-compatibility.md#m4-03), [M1-03](desktop-workspace.md#m1-03)                                                                                                                               |
+| ENV-02      | [M4-04](environment-and-compatibility.md#m4-04), [M4-07](environment-and-compatibility.md#m4-07)                                                                                                                                                                    |
+| ENV-03      | [M4-03](environment-and-compatibility.md#m4-03), [M4-06](environment-and-compatibility.md#m4-06)                                                                                                                                                                    |
+| ENV-04      | [M4-01](environment-and-compatibility.md#m4-01), [M4-06](environment-and-compatibility.md#m4-06), [M5-05](java-development.md#m5-05)                                                                                                                                |
+| ENV-05      | [M4-02](environment-and-compatibility.md#m4-02), [M6-03](ftc-configuration-and-libraries.md#m6-03), [M6-04](ftc-configuration-and-libraries.md#m6-04), [M3-03](agent-and-context.md#m3-03)                                                                          |
+| ENV-06      | [M4-05](environment-and-compatibility.md#m4-05), [M4-07](environment-and-compatibility.md#m4-07), [M5-08](java-development.md#m5-08), [M7-04](ai-access-and-local-inference.md#m7-04), [M11-09](ftc-knowledge.md#m11-09), [M12-07](learning-and-progress.md#m12-07) |
+| AI-01       | [M7-02](ai-access-and-local-inference.md#m7-02), [M7-03](ai-access-and-local-inference.md#m7-03), [M1-03](desktop-workspace.md#m1-03), [M1-04](desktop-workspace.md#m1-04)                                                                                          |
+| AI-02       | [M7-04](ai-access-and-local-inference.md#m7-04), [M7-07](ai-access-and-local-inference.md#m7-07), [M1-03](desktop-workspace.md#m1-03), [M1-04](desktop-workspace.md#m1-04)                                                                                          |
+| AI-03       | [M7-01](ai-access-and-local-inference.md#m7-01), [M7-05](ai-access-and-local-inference.md#m7-05), [M7-06](ai-access-and-local-inference.md#m7-06), [M7-08](ai-access-and-local-inference.md#m7-08), [M1-04](desktop-workspace.md#m1-04)                             |
+| AI-04       | [M3-03](agent-and-context.md#m3-03), [M3-07](agent-and-context.md#m3-07), [M9-01](robot-approvals-and-operations.md#m9-01), [M1-05](desktop-workspace.md#m1-05)                                                                                                     |
+| AI-05       | [M3-04](agent-and-context.md#m3-04), [M6-05](ftc-configuration-and-libraries.md#m6-05), [M10-03](diagnostics-and-dashboard.md#m10-03), [M11-02](ftc-knowledge.md#m11-02)                                                                                            |
+| AI-06       | [M7-03](ai-access-and-local-inference.md#m7-03), [M7-04](ai-access-and-local-inference.md#m7-04), [M11-02](ftc-knowledge.md#m11-02), [M1-03](desktop-workspace.md#m1-03), [M1-04](desktop-workspace.md#m1-04)                                                       |
+| AI-07       | [M3-05](agent-and-context.md#m3-05), [M7-03](ai-access-and-local-inference.md#m7-03), [M7-08](ai-access-and-local-inference.md#m7-08), [M9-05](robot-approvals-and-operations.md#m9-05)                                                                             |
+| FTC-01      | [M11-04](ftc-knowledge.md#m11-04), [M11-07](ftc-knowledge.md#m11-07), [M12-02](learning-and-progress.md#m12-02), [M12-05](learning-and-progress.md#m12-05), [M11-05](ftc-knowledge.md#m11-05), [M11-06](ftc-knowledge.md#m11-06), [M11-08](ftc-knowledge.md#m11-08) |
+| FTC-02      | [M11-03](ftc-knowledge.md#m11-03), [M6-04](ftc-configuration-and-libraries.md#m6-04), [M1-06](desktop-workspace.md#m1-06)                                                                                                                                           |
+| FTC-03      | [M6-04](ftc-configuration-and-libraries.md#m6-04), [M11-07](ftc-knowledge.md#m11-07), [M5-08](java-development.md#m5-08), [M11-08](ftc-knowledge.md#m11-08)                                                                                                         |
+| FTC-04      | [M6-03](ftc-configuration-and-libraries.md#m6-03), [M6-04](ftc-configuration-and-libraries.md#m6-04), [M1-06](desktop-workspace.md#m1-06)                                                                                                                           |
+| FTC-05      | [M6-04](ftc-configuration-and-libraries.md#m6-04), [M11-03](ftc-knowledge.md#m11-03), [M8-04](controller-connections.md#m8-04), [M11-08](ftc-knowledge.md#m11-08)                                                                                                   |
+| FTC-06      | [M11-01](ftc-knowledge.md#m11-01), [M11-02](ftc-knowledge.md#m11-02), [M11-09](ftc-knowledge.md#m11-09), [M11-10](ftc-knowledge.md#m11-10)                                                                                                                          |
+| HW-01       | [M1-06](desktop-workspace.md#m1-06), [M6-02](ftc-configuration-and-libraries.md#m6-02)                                                                                                                                                                              |
+| HW-02       | [M6-01](ftc-configuration-and-libraries.md#m6-01), [M6-02](ftc-configuration-and-libraries.md#m6-02), [M6-06](ftc-configuration-and-libraries.md#m6-06), [M1-06](desktop-workspace.md#m1-06)                                                                        |
+| HW-03       | [M6-05](ftc-configuration-and-libraries.md#m6-05), [M6-06](ftc-configuration-and-libraries.md#m6-06), [M5-02](java-development.md#m5-02), [M3-03](agent-and-context.md#m3-03)                                                                                       |
+| HW-04       | [M6-05](ftc-configuration-and-libraries.md#m6-05), [M6-06](ftc-configuration-and-libraries.md#m6-06), [M11-04](ftc-knowledge.md#m11-04), [M1-06](desktop-workspace.md#m1-06), [M11-06](ftc-knowledge.md#m11-06)                                                     |
+| PAN-01      | [M10-04](diagnostics-and-dashboard.md#m10-04), [M1-09](desktop-workspace.md#m1-09), [M1-14](desktop-workspace.md#m1-14)                                                                                                                                             |
+| PAN-02      | [M10-01](diagnostics-and-dashboard.md#m10-01), [M10-05](diagnostics-and-dashboard.md#m10-05), [M10-06](diagnostics-and-dashboard.md#m10-06)                                                                                                                         |
+| PAN-03      | [M10-02](diagnostics-and-dashboard.md#m10-02), [M10-06](diagnostics-and-dashboard.md#m10-06)                                                                                                                                                                        |
+| PAN-04      | [M10-03](diagnostics-and-dashboard.md#m10-03), [M3-04](agent-and-context.md#m3-04), [M3-05](agent-and-context.md#m3-05)                                                                                                                                             |
+| ROB-01      | [M8-01](controller-connections.md#m8-01), [M8-03](controller-connections.md#m8-03), [M8-06](controller-connections.md#m8-06)                                                                                                                                        |
+| ROB-02      | [M5-05](java-development.md#m5-05), [M5-06](java-development.md#m5-06), [M9-06](robot-approvals-and-operations.md#m9-06), [M9-09](robot-approvals-and-operations.md#m9-09)                                                                                          |
+| ROB-03      | [M9-02](robot-approvals-and-operations.md#m9-02), [M1-08](desktop-workspace.md#m1-08), [M9-09](robot-approvals-and-operations.md#m9-09)                                                                                                                             |
+| ROB-04      | [M9-01](robot-approvals-and-operations.md#m9-01), [M9-02](robot-approvals-and-operations.md#m9-02), [M9-09](robot-approvals-and-operations.md#m9-09), [M1-05](desktop-workspace.md#m1-05)                                                                           |
+| ROB-05      | [M8-02](controller-connections.md#m8-02), [M9-03](robot-approvals-and-operations.md#m9-03), [M9-04](robot-approvals-and-operations.md#m9-04)                                                                                                                        |
+| ROB-06      | [M8-05](controller-connections.md#m8-05), [M9-05](robot-approvals-and-operations.md#m9-05), [M10-02](diagnostics-and-dashboard.md#m10-02), [M9-09](robot-approvals-and-operations.md#m9-09)                                                                         |
+| ROB-07      | [M9-07](robot-approvals-and-operations.md#m9-07), [M9-08](robot-approvals-and-operations.md#m9-08), [M3-05](agent-and-context.md#m3-05), [M1-09](desktop-workspace.md#m1-09)                                                                                        |
+| LRN-01      | [M12-01](learning-and-progress.md#m12-01), [M12-02](learning-and-progress.md#m12-02), [M12-03](learning-and-progress.md#m12-03), [M1-10](desktop-workspace.md#m1-10)                                                                                                |
+| LRN-02      | [M11-04](ftc-knowledge.md#m11-04), [M11-07](ftc-knowledge.md#m11-07), [M12-05](learning-and-progress.md#m12-05), [M11-05](ftc-knowledge.md#m11-05), [M11-06](ftc-knowledge.md#m11-06), [M11-08](ftc-knowledge.md#m11-08)                                            |
+| LRN-03      | [M3-05](agent-and-context.md#m3-05), [M11-04](ftc-knowledge.md#m11-04), [M12-04](learning-and-progress.md#m12-04), [M12-05](learning-and-progress.md#m12-05), [M11-05](ftc-knowledge.md#m11-05)                                                                     |
+| LRN-04      | [M11-07](ftc-knowledge.md#m11-07), [M12-03](learning-and-progress.md#m12-03), [M11-08](ftc-knowledge.md#m11-08)                                                                                                                                                     |
+| LRN-05      | [M12-01](learning-and-progress.md#m12-01), [M12-04](learning-and-progress.md#m12-04), [M12-05](learning-and-progress.md#m12-05), [M12-07](learning-and-progress.md#m12-07), [M11-09](ftc-knowledge.md#m11-09)                                                       |
+| LNG-01      | [M1-13](desktop-workspace.md#m1-13), [M11-10](ftc-knowledge.md#m11-10), [M3-07](agent-and-context.md#m3-07)                                                                                                                                                         |
+| LNG-02      | [M11-01](ftc-knowledge.md#m11-01), [M1-13](desktop-workspace.md#m1-13)                                                                                                                                                                                              |
 
 ## Acceptance checklist
 
@@ -210,11 +210,11 @@ Execution authorized by `docs/prompt.md`. Implementation baseline `d7aca195c0a47
 
 Preflight: [dependency/ownership scan](../validation/execution-preflight.md), [exact task index](../validation/task-index.json). 94 unique IDs; no missing prerequisites or dependency cycles. Rulings and all shared-file/task consistency rows are recorded in preflight.
 
-| Task | Owner | Status | Dependencies / allowed paths | Evidence / next action |
-| --- | --- | --- | --- | --- |
-| M9-07 | `/root/m9_07` | BLOCKED | None; four task files plus owned probe evidence; no production enablement | [Brief](../validation/M9-07-brief.md); evaluate available OS boundary, record unavailable Windows/physical gates |
-| M4-01 | `/root/m4_01` | DONE | No prerequisite; canonical profile schemas and resolver | Approved at `f7d2a93eabae724f29875a29840b000cee8749fb`; [report](../validation/M4-01-implementation.md), [review](../validation/M4-01-review.md) |
-| M5-03 | `/root/m5_03` | BLOCKED | Available-host evaluation independently approved at `8dfc591ed`; Windows/import/production provenance/isolation gates open | [Report](../validation/M5-03-implementation.md), [review](../validation/M5-03-review.md); no support promotion |
+| Task  | Owner         | Status  | Dependencies / allowed paths                                                                                               | Evidence / next action                                                                                                                           |
+| ----- | ------------- | ------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| M9-07 | `/root/m9_07` | BLOCKED | None; four task files plus owned probe evidence; no production enablement                                                  | [Brief](../validation/M9-07-brief.md); evaluate available OS boundary, record unavailable Windows/physical gates                                 |
+| M4-01 | `/root/m4_01` | DONE    | No prerequisite; canonical profile schemas and resolver                                                                    | Approved at `f7d2a93eabae724f29875a29840b000cee8749fb`; [report](../validation/M4-01-implementation.md), [review](../validation/M4-01-review.md) |
+| M5-03 | `/root/m5_03` | BLOCKED | Available-host evaluation independently approved at `8dfc591ed`; Windows/import/production provenance/isolation gates open | [Report](../validation/M5-03-implementation.md), [review](../validation/M5-03-review.md); no support promotion                                   |
 
 | M8-01 | `/root/m8_01` | DONE | Approved `858c8d070`; fixture-based discovery and scoped read cleanup | [Report](../validation/M8-01-implementation.md), [review](../validation/M8-01-review.md); later real-device/platform gates remain open |
 
@@ -389,11 +389,11 @@ The user explicitly resumed implementation and requested simultaneous subagents.
 - Ruling: Continue in the existing feature checkout, as in the saved execution preflight; use concurrent writers only on explicitly disjoint task paths — the user's parallel-work request supersedes the earlier one-writer scheduling rule — accidental overlap would require scoped rework, so shared files, Git index/commits and ledger updates remain coordinator-owned.
 - Ruling: Preserve `docs/tasks/progress.md` as the sole completion ledger and the existing durable validation artifacts — the scratch ledger remains a pointer and the previous plan scan is reused — duplicate accounting could redispatch completed work.
 
-| Concurrent task | Prerequisites verified | Exclusive write ownership | Shared paths reserved to coordinator |
-| --- | --- | --- | --- |
-| M2-03 | M2-01 / M2-02 reviewed | projects/gate.ts, ftc-project.ts, m2-03 tests and evidence | projects facade/repository additions only after explicit assignment; no migrations |
-| M4-02 | M4-01 reviewed | environment.ts, environment/adapters.ts, ftc-environment.ts, m4-02 tests and evidence | no production catalog/host/client changes |
-| M11-01 | None | ftc-knowledge.ts, knowledge.ts, content/manifest.json, m11-01 tests and evidence | Schema root barrel |
+| Concurrent task | Prerequisites verified | Exclusive write ownership                                                             | Shared paths reserved to coordinator                                               |
+| --------------- | ---------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| M2-03           | M2-01 / M2-02 reviewed | projects/gate.ts, ftc-project.ts, m2-03 tests and evidence                            | projects facade/repository additions only after explicit assignment; no migrations |
+| M4-02           | M4-01 reviewed         | environment.ts, environment/adapters.ts, ftc-environment.ts, m4-02 tests and evidence | no production catalog/host/client changes                                          |
+| M11-01          | None                   | ftc-knowledge.ts, knowledge.ts, content/manifest.json, m11-01 tests and evidence      | Schema root barrel                                                                 |
 
 These tasks share no owned source files or consumed implementation dependencies. The prior task/interface scan remains valid; canonical Schema producer ownership is retained. Workers do not commit, stage, edit checklists or spawn helpers. The coordinator commits each stable task independently and dispatches a separate reviewer; a passing worker report is not completion. Typecheck failures caused by another unfinished lane are recorded and rechecked after that lane stabilizes.
 
@@ -430,3 +430,57 @@ Pending owned changes remain intact and uncommitted:
 - **M4-03 implementation candidate, unreviewed:** environment.ts, ftc-environment.ts, m4-03 tests, six new en/zh guided messages and the specifically scoped parity test. Worker final logs record **44 focused pass / 152 assertions**, **149 covering M4 pass / 394 assertions**, **6 parity pass / 1003 assertions**, Core/Schema/App typechecks and scoped checks. Coordinator matched all files in `docs/validation/m4-03/SHA256SUMS`. The worker was interrupted before writing `M4-03-implementation.md`; reconcile and write its report from saved logs/source/translation provenance before a scoped commit and independent review. No task/substep checkbox is credited.
 
 Preserve all working-tree candidates, owned evidence and caches. On explicit resumption, finish the two pending candidates/reviews before advancing their consumers; M11-02 and M2-04 briefs are prepared but not dispatched. Reuse the parallel ownership rule, and serialize overlapping schemas, facade/runtime, translation, host, migration and Git-index writes. Mandatory physical/Windows/production gates remain open.
+
+## Resumed parallel execution — 2026-10-06
+
+The user explicitly requested continuation. Reconciled product checkpoint `9b71593fb`, preserved every owned candidate and matched all fifteen M3 and six M4 recorded source hashes. Saved the previously staged completion/handoff documentation at `50fed20f2`; completed counts remain **7/94 tasks, 0/12 modules**.
+
+- M3-01 stable candidate committed `97b5f4ee6`, with the settled Core typecheck already passing. Fresh `/root/m3_01_review` receives the complete one-task range from `50fed20f2`; task remains unchecked pending separate spec/quality verdicts.
+- Original `/root/m4_03` resumed to reconcile its saved candidate and finish the missing report, preserving unchanged passing evidence. Product paths remain its exclusive assignment; no ledger/index edits or duplicate helpers.
+- Fresh `/root/m11_02` implements version/language-specific queries alongside those tasks, base `97b5f4ee6`, consuming reviewed M11-01. Assigned only knowledge.ts, ftc-knowledge.ts, m11-02 tests/evidence, and its own Context Source adapter if needed by the exact task. No content publication or support-catalog promotion.
+
+This continuation revokes the interrupted stop boundary. Completion still requires verified source/evidence reconciliation plus independent review. Shared Git operations, root exports and ledger remain coordinator-owned.
+
+- M3-01 independent review requires one Important test repair: a preceding resume:false admission meant every observed wake already had a row. Fix round 1/5 returned to original `/root/m3_01` to exercise a fresh default waking prompt before exact retry; no runtime change is indicated.
+- M4-03 report reconciliation is complete without product changes or repeated successful suites. Missing final format check passed. Stable candidate committed `575d0901e`; fresh `/root/m4_03_review` receives its complete one-task diff from `97b5f4ee6`. Counts remain **7/94 tasks, 0/12 modules**.
+- Ruling: M11-02 revalidates byte-bearing package snapshots, then observes current local availability separately; localOnly=false may return explicitly unavailable metadata without a document, while text search uses only locally available compatible candidates — this keeps the query flag meaningful without adding remote fetch — a future online-content adapter must preserve the metadata/use distinction. SDK-general records remain applicable with a selected library; library-specific records require matching identity/version. Context Source production stays knowledge-owned.
+
+- M3-01 **DONE**: candidate `97b5f4ee6`, repair `13838cc97`; same-reviewer scoped review approves specification and quality with I1 addressed and no new/open findings. Fresh default admission/order/retry boundary passes **1 test / 16 assertions**, affected Session selection **128 pass / 358 assertions**, settled Core types, lint/format pass; all fifteen recorded hashes matched. Checked task entry plus five substeps. Counts **8/94 tasks, 0/12 modules**, M3 **1/7**.
+- M4-03 independent review found one Important profile-guidance defect: missing tools bypass requested-profile compatibility and can produce absent or wrong-platform installation metadata. Fix round 1/5 assigned to original `/root/m4_03`, base `13838cc97`, with unknown/host-incompatible missing-tool regressions and covering checks required.
+
+- M4-03 **DONE**: candidate `575d0901e`, repair `c91019968`; independent scoped review approves spec/quality, I1 addressed and no open/new findings. Focused **50 pass / 206 assertions**, covering M4 **155 pass / 448 assertions**, parity **6 pass / 1003 assertions**, required types/lint/format pass; all six source hashes matched. Checked task entry plus five substeps. Counts **9/94 tasks, 0/12 modules**, M4 **3/7**.
+- M11-02 stable candidate committed `7a5d89367`; fresh `/root/m11_02_review` receives complete one-task diff from `c91019968`. Root matched four hashes; focused **27/59**, covering **85/290**, contracts/types/lint/format pass. Task remains unchecked until review.
+- Ruling: M3-02 uses an explicit injected managed/unmanaged membership port and one scoped lease for the existing coordinator ownership chain; blocked explicit resume is typed, advisory wake remains error-free and performs no blocked runner work — no fallback after managed resolution failure — missing M2-06 binding would leave the named existing-host compatibility node ungated, so production integration is not credited by this isolated task. M2 admission reservation transfer remains its owner/host adapter responsibility, never a release merely when wake returns. Controlled actual-local timing comparison complements, and does not replace, retained renderer evidence.
+- Fresh `/root/m3_02` is implementing the assigned Session/coordinator paths; no M2 private-store/Schema/host access is assigned. Independent automatic-preparation lane M4-04 may start from reviewed M4-03 with disjoint writes.
+
+## Parallel execution — 2026-10-07
+
+- M11-02 **DONE** at `7a5d89367`: independent review approves specification/quality, no Critical/Important findings. Focused **27 pass / 59 assertions**, M11 covering **85 pass / 290 assertions**, contracts/types/lint/format pass; four source hashes matched. Checked task entry plus five substeps. Counts **10/94 tasks, 0/12 modules**, M11 **2/10**.
+- M11-02 Minor (deferred): the constant network counter in m11-02.test.ts:59/91 adds no behavioral evidence. The report already limits the capability-free fixture result and makes no system-wide network-interception claim. Carry this finding to final whole-branch review; no unrelated mocking/global replacement is introduced.
+- Fresh `/root/m4_04` is implementing automatic prerequisite preparation against `7a5d89367`, reusing the reviewed setup lifetime and disjoint environment/schema paths. Trusted host authorization is bound to exact project/profile/component/artifact, never accepted from public JSON. Public request shape retains projectID/choice/profileID; service chooses one eligible missing prerequisite.
+- Ruling: M4-04 adds bounded owner-controlled corrupt-cache invalidation after verified rejection, with visible current failure and fresh staging only on deliberate retry — recoverable component setup must not loop forever on the same bad entry — the production adapter must enforce cache-root identity/quarantine and may not delete project/system files. Existing valid published entries remain intact.
+- M3-02 reports a frozen actual-local/coordinator gating candidate with **13 focused pass / 71 assertions**, affected regressions, Core/Server types and scoped checks. No Schema/M2/host wiring changes. Coordinator reconciliation and independent review remain required; no completion credited yet.
+
+- M3-02 stable candidate committed `fcf89eb8d`; `/root/m3_02_review` independently found an Important scope-disposal leak when a pending wake tries to transfer a lease into a closed FiberSet. Fix round 1/5 returned to original `/root/m3_02`; task stays unchecked. Expected-failure log noise is a recorded Minor; the remaining Fiber generic lint warning is confirmed pre-existing.
+- Fresh `/root/m11_04` authors source-bounded foundation content against `fcf89eb8d`, using assigned content/manifest/tests and minimal optional lesson/exercise schemas plus paired validation. Existing documents remain compatible; no progress engine or host wiring is assigned. Its topic/exercise/citation/identifier checks and source/localization evidence are under final verification.
+
+## User-requested stopping boundary — 2026-10-07
+
+The user asked to finish the session when the currently running agents finish their work and explicitly requested an updated `progress.md` before ending. **Do not dispatch another implementation task.** Finish the existing M3-02 repair/re-review and M11-04 candidate/review; reconcile the already-finished M4-04 candidate through its required independent review. Record verified completions or actual unresolved gates here, save the local checkpoint, then stop. No new task ID is authorized after this boundary.
+
+- Ruling: M11-04 may replace only the obsolete shipped-empty-manifest assertion in M11-01 with its original explicit empty-production fixture — newly assigned source-backed content legitimately fills the registry — the new task must independently validate the real authored pack, so no content validation is waived. All other prerequisite tests stay intact.
+
+- M3-02 **DONE**: candidate `fcf89eb8d`, repair `1aa520e9e`; same-reviewer scoped review approves spec/quality, disposal leak and expected-log noise resolved, no new/open findings. Final focused **17 pass / 100 assertions**, covering **150 pass / 471 assertions**, Core/Server types and scoped checks pass; six repair hashes matched. The unchanged baseline Fiber lint warning remains recorded. Checked task entry plus five substeps. Counts after this completion **11/94 tasks, 0/12 modules**, M3 **2/7**.
+- M4-04 **DONE**: candidate `7ec20aae5`, repair `06036d945`; same-reviewer scoped review approves spec/quality, wrapper policy preserved after refresh and no open/new findings. Final focused **38 pass / 196 assertions**, covering M4 **193 pass / 644 assertions**, types/scoped checks pass; four repair hashes matched. Checked task entry plus five substeps. Counts **12/94 tasks, 0/12 modules**, M4 **4/7**.
+- M11-04 stable candidate committed `c425aad48`, provenance preservation `77f3ce1b8`; root matched all seven tested content/source hashes and all twenty-two recorded source snapshots. Durable logs/provenance are in docs/validation/m11-04. Fresh `/root/m11_04_review` receives the complete two-commit range from `06036d945`; foundation task remains unchecked until its required review passes. No new implementation task was dispatched after the stopping boundary.
+
+- M11-04 **DONE**: product `c425aad48`, provenance `77f3ce1b8`; independent review approves assigned content spec/quality with no Critical/Important findings. Four bilingual lessons/exercises are source-backed and paired; focused **4 pass / 108 assertions**, M11 covering **89 pass / 398 assertions**, contracts/types/lint/format pass. Seven tested hashes and twenty-two source snapshots matched. Checked task entry plus five substeps. Counts **13/94 tasks, 0/12 modules**, M11 **3/10**. Official Chinese authority/native review, actual project compilation/platform/robot/course acceptance remain unverified and are not credited.
+- M11-04 Minor (deferred): m11-01.test.ts:452 compares its explicit empty fixture with itself; the following real validator assertion remains meaningful. Preserve this finding alongside M11-02 constant network-counter Minor for final whole-branch triage.
+
+## Final user-requested stopping point — 2026-10-07
+
+**Stopped after finishing the existing agents, required repairs and independent reviews.** No new implementation task was dispatched after the user stopping boundary. This run completed M3-01, M4-03, M11-02, M3-02, M4-04 and M11-04 on top of the previous seven tasks. Verified ledger count: **13/94 tasks, 0/12 modules**. Module counts: M2 **3/6**, M3 **2/7**, M4 **4/7**, M8 **1/6**, M11 **3/10**; other modules **0**.
+
+Final combined snapshot verification: Core selected module/Session regressions **482 pass / 1682 assertions**, localization parity **6 pass / 1003 assertions**, and Core/Schema/Server/App typechecks all exit 0. [Core regression log](../validation/stop-2026-10-07/core-tests.log), [localization log](../validation/stop-2026-10-07/i18n-parity.log), and package-type logs in `docs/validation/stop-2026-10-07/` preserve evidence. This is available software verification, not production/platform/robot acceptance. Existing unrelated Schema manifest and App native-locale baseline failures were not rerun or silently waived.
+
+No implementation/review worker remains active. No user app/server was restarted, and no real robot operation or actual automatic installation was performed. Source downloads were read-only research; runtime benchmark and tests used controlled task-owned resources. All current product changes are committed; final documentation/validation checkpoint is saved separately. Retain owned evidence/caches and deferred Minor findings; remain stopped until an explicit continuation. M2-04 and M4-05 plus other prerequisite-ready tasks remain for later scheduling, with all host/physical/Windows/M5/M9 release gates preserved.

@@ -53,8 +53,8 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 - [x] [M4-01 — Validate compatibility profiles](#m4-01)
 - [x] [M4-02 — Inspect tools and imported project requirements](#m4-02)
-- [ ] [M4-03 — Guide setup through readiness checks](#m4-03)
-- [ ] [M4-04 — Download and prepare one missing prerequisite](#m4-04)
+- [x] [M4-03 — Guide setup through readiness checks](#m4-03)
+- [x] [M4-04 — Download and prepare one missing prerequisite](#m4-04)
 - [ ] [M4-05 — Report prepared offline availability](#m4-05)
 - [ ] [M4-06 — Expose setup API and compose build verification](#m4-06)
 - [ ] [M4-07 — Evaluate clean-host setup and publish supported profiles](#m4-07)
@@ -74,7 +74,9 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 - [x] **1. Write the focused test:** In `packages/core/test/ftc/environment-and-compatibility/m4-01.test.ts`, add `profile pins independent editor and build runtimes`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(selected.editorJdk.version).toBe('21'); expect(selected.buildJdk.version).toBe('17'); expect(unsupported.kind).toBe('unsupported')
+expect(selected.editorJdk.version).toBe("21")
+expect(selected.buildJdk.version).toBe("17")
+expect(unsupported.kind).toBe("unsupported")
 ```
 
 - [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/environment-and-compatibility/m4-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
@@ -97,7 +99,9 @@ Verified 2026-10-06 at `f7d2a93eabae724f29875a29840b000cee8749fb`: [implementati
 - [x] **1. Write the focused test:** In `packages/core/test/ftc/environment-and-compatibility/m4-02.test.ts`, add `inspection preserves incompatible imported files`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(afterFiles).toEqual(beforeFiles); expect(result.state).toBe('incompatible'); expect(probes).toContain('adb')
+expect(afterFiles).toEqual(beforeFiles)
+expect(result.state).toBe("incompatible")
+expect(probes).toContain("adb")
 ```
 
 - [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/environment-and-compatibility/m4-02.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
@@ -117,16 +121,19 @@ Verified 2026-10-06: candidate `a94369c4c`, reviewed repair `f075a4348`; [implem
 
 **Interfaces:** Produces `prepareEnvironment({ choice: 'guided', profileID }): SetupRun` and `readiness({ projectID }): Readiness`; SetupRun exposes step events and cancellation.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/environment-and-compatibility/m4-03.test.ts`, add `guided setup stays incomplete until build evidence`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/environment-and-compatibility/m4-03.test.ts`, add `guided setup stays incomplete until build evidence`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(beforeBuild.state).not.toBe('ready'); expect(afterVerifiedBuild.state).toBe('ready')
+expect(beforeBuild.state).not.toBe("ready")
+expect(afterVerifiedBuild.state).toBe("ready")
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/environment-and-compatibility/m4-03.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Return actionable localized-message keys with platform/version-specific installation steps. Re-probe on deliberate recheck; consume injected build verification and never execute installers in guided mode.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/environment-and-compatibility/m4-03.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): guide setup through readiness checks`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/environment-and-compatibility/m4-03.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Return actionable localized-message keys with platform/version-specific installation steps. Re-probe on deliberate recheck; consume injected build verification and never execute installers in guided mode.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/environment-and-compatibility/m4-03.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): guide setup through readiness checks`.
+
+Verified 2026-10-06: candidate `575d0901e`, reviewed repair `c91019968`; [implementation evidence](../validation/M4-03-implementation.md), [independent review](../validation/M4-03-review.md). Actual M5/platform/UI evidence remains later work.
 
 <a id="m4-04"></a>
 
@@ -138,16 +145,20 @@ expect(beforeBuild.state).not.toBe('ready'); expect(afterVerifiedBuild.state).to
 
 **Interfaces:** Extends `prepareEnvironment` with `choice: 'automatic'`; consumes download/cache/probe ports, produces recoverable per-component setup results.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/environment-and-compatibility/m4-04.test.ts`, add `retry preserves completed components`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/environment-and-compatibility/m4-04.test.ts`, add `retry preserves completed components`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(reinstalledValidTools).toEqual([]); expect(corrupt.state).toBe('failed'); expect(cancelledReadyAssets).toEqual([])
+expect(reinstalledValidTools).toEqual([])
+expect(corrupt.state).toBe("failed")
+expect(cancelledReadyAssets).toEqual([])
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/environment-and-compatibility/m4-04.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Implement checksum-verified downloads, explicit license/system-permission steps, staging and deliberate retry for one component at a time. Preserve completed work and avoid silent system-wide Java changes; automatic steps use the same readiness criteria as guided setup.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/environment-and-compatibility/m4-04.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): download and prepare one missing prerequisite`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/environment-and-compatibility/m4-04.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Implement checksum-verified downloads, explicit license/system-permission steps, staging and deliberate retry for one component at a time. Preserve completed work and avoid silent system-wide Java changes; automatic steps use the same readiness criteria as guided setup.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/environment-and-compatibility/m4-04.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): download and prepare one missing prerequisite`.
+
+Verified 2026-10-07, reviewed repair `06036d945`; [implementation evidence](../validation/M4-04-implementation.md), [independent review](../validation/M4-04-review.md). Real OS/cache/platform/M5 integration remains later work.
 
 <a id="m4-05"></a>
 
@@ -162,7 +173,8 @@ expect(reinstalledValidTools).toEqual([]); expect(corrupt.state).toBe('failed');
 - [ ] **1. Write the focused test:** In `packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts`, add `missing cache entry does not disable available local features`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(result.missingAssets).toContain('gradle-dependency-fixture'); expect(availableFeatures).toContain('editing')
+expect(result.missingAssets).toContain("gradle-dependency-fixture")
+expect(availableFeatures).toContain("editing")
 ```
 
 - [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/environment-and-compatibility/m4-05.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
@@ -183,13 +195,20 @@ expect(result.missingAssets).toContain('gradle-dependency-fixture'); expect(avai
 - [ ] **1. Write the focused test:** In `packages/core/test/ftc-integration/m4-06.test.ts`, add `failed build prevents setup completion`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(setup.state).toBe('failed'); expect(setup.buildEvidence.exitCode).not.toBe(0); expect(robotTransportCalls).toEqual([])
+expect(setup.state).toBe("failed")
+expect(setup.buildEvidence.exitCode).not.toBe(0)
+expect(robotTransportCalls).toEqual([])
 ```
 
 In `packages/server/test/ftc-environment.test.ts`, add `setup API preserves project-bound readiness and run lifecycle`. Exercise the actual handlers with real M4/M5 services and controlled external ports: cover inspect, both setup choices, readiness, missing offline assets, step events and cancellation. Reject a project/run mismatch without cancelling another run; disposal releases subscriptions. Core assertions:
 
 ```ts
-expect(apiReadiness).toEqual(serviceReadiness); expect(eventProjectIDs.length).toBeGreaterThan(0); expect(eventProjectIDs.every(id => id === projectID)).toBe(true); expect(cancelledRunID).toBe(requestedRunID); expect(mismatchedRunCancelled).toBe(false); expect(activeSubscriptionsAfterDispose).toBe(0)
+expect(apiReadiness).toEqual(serviceReadiness)
+expect(eventProjectIDs.length).toBeGreaterThan(0)
+expect(eventProjectIDs.every((id) => id === projectID)).toBe(true)
+expect(cancelledRunID).toBe(requestedRunID)
+expect(mismatchedRunCancelled).toBe(false)
+expect(activeSubscriptionsAfterDispose).toBe(0)
 ```
 
 - [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc-integration/m4-06.test.ts`; from `packages/server`, run `bun test ./test/ftc-environment.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.

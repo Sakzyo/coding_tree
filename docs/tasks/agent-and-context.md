@@ -53,8 +53,8 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 ## Task checklist
 
-- [ ] [M3-01 — Pin Session admission and continuation invariants](#m3-01)
-- [ ] [M3-02 — Apply an injected gate at every Session execution entry](#m3-02)
+- [x] [M3-01 — Pin Session admission and continuation invariants](#m3-01)
+- [x] [M3-02 — Apply an injected gate at every Session execution entry](#m3-02)
 - [ ] [M3-03 — Implement plan-first and direct code-change policy](#m3-03)
 - [ ] [M3-04 — Assemble versioned FTC context from public sources](#m3-04)
 - [ ] [M3-05 — Expose structured FTC tools with honest evidence](#m3-05)
@@ -73,16 +73,20 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 **Interfaces:** Consumes existing SessionV2 prompt/execution public contracts and real temporary repositories. Produces focused regression coverage; change runtime only if a test exposes a violated required invariant.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/agent-and-context/m3-01.test.ts`, add `admission precedes wake and exact retry reconciles`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/agent-and-context/m3-01.test.ts`, add `admission precedes wake and exact retry reconciles`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(inputRowsForMessage).toHaveLength(1); expect(order).toEqual(['admit', 'wake']); expect(streamCalls).toBe(providerTurns)
+expect(inputRowsForMessage).toHaveLength(1)
+expect(order).toEqual(["admit", "wake"])
+expect(streamCalls).toBe(providerTurns)
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/agent-and-context/m3-01.test.ts`. Expected: the new behavior fails for the intended missing behavior. Existing Session invariants may already pass: record that baseline and reuse their assertions without forcing a failure.
-- [ ] **3. Implement the smallest behavior:** Cover conflicting message IDs, historical projected retry reconciliation, resume:false, same-Session join, steer safe-boundary promotion, one-at-a-time queue promotion, provider allowance reset and history reload. Preserve EventV2 replay ownership and no automatic post-crash provider retry; reuse current passing tests rather than duplicating them.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/agent-and-context/m3-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `test(ftc): pin session admission and continuation invariants`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/agent-and-context/m3-01.test.ts`. Expected: the new behavior fails for the intended missing behavior. Existing Session invariants may already pass: record that baseline and reuse their assertions without forcing a failure.
+- [x] **3. Implement the smallest behavior:** Cover conflicting message IDs, historical projected retry reconciliation, resume:false, same-Session join, steer safe-boundary promotion, one-at-a-time queue promotion, provider allowance reset and history reload. Preserve EventV2 replay ownership and no automatic post-crash provider retry; reuse current passing tests rather than duplicating them.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/agent-and-context/m3-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `test(ftc): pin session admission and continuation invariants`.
+
+Verified 2026-10-06: candidate `97b5f4ee6`, reviewed repair `13838cc97`; [implementation evidence](../validation/M3-01-implementation.md), [independent review](../validation/M3-01-review.md). Existing Session runtime/tests remain unchanged; actual production gate/placement integration is later work.
 
 <a id="m3-02"></a>
 
@@ -94,16 +98,20 @@ expect(inputRowsForMessage).toHaveLength(1); expect(order).toEqual(['admit', 'wa
 
 **Interfaces:** Consumes gate port records specified in M2, not its implementation. Produces gated explicit resume/advisory wake paths using SessionStore placement lookup at drain start.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/agent-and-context/m3-02.test.ts`, add `resume wake and prompt cannot overlap different chats in one project`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/agent-and-context/m3-02.test.ts`, add `resume wake and prompt cannot overlap different chats in one project`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(blockedDrainStarts).toBe(0); expect(otherProjectDrainStarts).toBe(1); expect(releaseBeforeCleanup).toBe(false)
+expect(blockedDrainStarts).toBe(0)
+expect(otherProjectDrainStarts).toBe(1)
+expect(releaseBeforeCleanup).toBe(false)
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/agent-and-context/m3-02.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Bind a scoped lease to the existing process-global coordinator ownership chain; do not add Session-ID-specific layers or a second loop. Location resolution, tool/approval waits and interruption cleanup retain ownership. Isolated tests supply a controlled gate port.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/agent-and-context/m3-02.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): apply an injected gate at every session execution entry`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/agent-and-context/m3-02.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Bind a scoped lease to the existing process-global coordinator ownership chain; do not add Session-ID-specific layers or a second loop. Location resolution, tool/approval waits and interruption cleanup retain ownership. Isolated tests supply a controlled gate port.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/agent-and-context/m3-02.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): apply an injected gate at every session execution entry`.
+
+Verified 2026-10-07, reviewed repair `1aa520e9e`; [implementation evidence](../validation/M3-02-implementation.md), [independent review](../validation/M3-02-review.md). Actual production M2 admission/host composition remains later work.
 
 <a id="m3-03"></a>
 
@@ -118,7 +126,9 @@ expect(blockedDrainStarts).toBe(0); expect(otherProjectDrainStarts).toBe(1); exp
 - [ ] **1. Write the focused test:** In `packages/core/test/ftc/agent-and-context/m3-03.test.ts`, add `plan-first waits and stale approval cannot edit`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(writesBeforeApproval).toBe(0); expect(staleApproval.code).toBe('revision_conflict'); expect(directResult.applied).toBe(true)
+expect(writesBeforeApproval).toBe(0)
+expect(staleApproval.code).toBe("revision_conflict")
+expect(directResult.applied).toBe(true)
 ```
 
 - [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/agent-and-context/m3-03.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
@@ -139,7 +149,9 @@ expect(writesBeforeApproval).toBe(0); expect(staleApproval.code).toBe('revision_
 - [ ] **1. Write the focused test:** In `packages/core/test/ftc/agent-and-context/m3-04.test.ts`, add `context preserves project version freshness and missing facts`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(context.projectID).toBe(requestProjectID); expect(context.missingFacts).toContain('wheel-diameter'); expect(context.text).not.toContain(secret)
+expect(context.projectID).toBe(requestProjectID)
+expect(context.missingFacts).toContain("wheel-diameter")
+expect(context.text).not.toContain(secret)
 ```
 
 - [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/agent-and-context/m3-04.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
@@ -160,7 +172,9 @@ expect(context.projectID).toBe(requestProjectID); expect(context.missingFacts).t
 - [ ] **1. Write the focused test:** In `packages/core/test/ftc/agent-and-context/m3-05.test.ts`, add `failed tool is reported as failed and never fabricated success`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(result.kind).toBe('build_failed'); expect(result.artifact).toBeUndefined(); expect(robotDispatchesWithoutApproval).toBe(0)
+expect(result.kind).toBe("build_failed")
+expect(result.artifact).toBeUndefined()
+expect(robotDispatchesWithoutApproval).toBe(0)
 ```
 
 - [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/agent-and-context/m3-05.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
@@ -181,7 +195,9 @@ expect(result.kind).toBe('build_failed'); expect(result.artifact).toBeUndefined(
 - [ ] **1. Write the focused test:** In `packages/core/test/ftc-integration/m3-06.test.ts`, add `real wiring preserves global coordinators and Location tools`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
-expect(projectGateInstances).toBe(1); expect(controllerCoordinatorInstances).toBe(1); expect(toolLocations).toEqual(expectedLocations)
+expect(projectGateInstances).toBe(1)
+expect(controllerCoordinatorInstances).toBe(1)
+expect(toolLocations).toEqual(expectedLocations)
 ```
 
 - [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc-integration/m3-06.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
