@@ -1,0 +1,3 @@
+$ oxlint packages/core/src/ftc/controllers/adb.ts packages/core/src/ftc/controllers/panels.ts packages/schema/src/ftc-controller.ts packages/core/test/ftc-adapters/controller-endpoints.test.ts packages/core/test/ftc-adapters/fixtures/controller-endpoints/fixture.ts packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts "packages/core/test/ftc-evaluation/m8-04.test.ts"
+Found 0 warnings and 0 errors.
+Finished in 249ms on 7 files with 130 rules using 10 threads.

@@ -1,0 +1,48 @@
+$ oxlint packages/core/src/ftc/controllers/adb.ts packages/core/src/ftc/controllers/panels.ts packages/schema/src/ftc-controller.ts packages/core/test/ftc-adapters/controller-endpoints.test.ts packages/core/test/ftc-adapters/fixtures/controller-endpoints/fixture.ts packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts "packages/core/test/ftc-evaluation/m8-04.test.ts"
+
+  ! typescript-eslint(consistent-return): Function 'fetch' expected a return value.
+    ,-[packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts:20:38]
+ 19 |         if (socketUnavailable) return new Response("Panels has not started yet", { status: 503 })
+ 20 |         if (server.upgrade(request)) return
+    :                                      ^^^^^^
+ 21 |         return new Response("upgrade failed", { status: 400 })
+    `----
+
+  ! typescript-eslint(no-floating-promises): Promises must be awaited, add void operator to ignore.
+    ,-[packages/core/test/ftc-evaluation/m8-04.test.ts:39:5]
+ 38 |   } finally {
+ 39 |     local.close()
+    :     ^^^^^^^^^^^^^
+ 40 |   }
+    `----
+  help: The promise must end with a call to .catch, or end with a call to .then with a rejection handler, or be explicitly marked as ignored with the `void` operator.
+
+  ! typescript-eslint(no-floating-promises): Promises must be awaited, add void operator to ignore.
+    ,-[packages/core/test/ftc-evaluation/m8-04.test.ts:59:5]
+ 58 |   } finally {
+ 59 |     local.close()
+    :     ^^^^^^^^^^^^^
+ 60 |   }
+    `----
+  help: The promise must end with a call to .catch, or end with a call to .then with a rejection handler, or be explicitly marked as ignored with the `void` operator.
+
+  ! typescript-eslint(no-floating-promises): Promises must be awaited, add void operator to ignore.
+    ,-[packages/core/test/ftc-evaluation/m8-04.test.ts:89:5]
+ 88 |   } finally {
+ 89 |     first.close()
+    :     ^^^^^^^^^^^^^
+ 90 |     second.close()
+    `----
+  help: The promise must end with a call to .catch, or end with a call to .then with a rejection handler, or be explicitly marked as ignored with the `void` operator.
+
+  ! typescript-eslint(no-floating-promises): Promises must be awaited, add void operator to ignore.
+    ,-[packages/core/test/ftc-evaluation/m8-04.test.ts:90:5]
+ 89 |     first.close()
+ 90 |     second.close()
+    :     ^^^^^^^^^^^^^^
+ 91 |   }
+    `----
+  help: The promise must end with a call to .catch, or end with a call to .then with a rejection handler, or be explicitly marked as ignored with the `void` operator.
+
+Found 5 warnings and 0 errors.
+Finished in 580ms on 7 files with 130 rules using 10 threads.

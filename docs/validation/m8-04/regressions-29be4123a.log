@@ -1,0 +1,143 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-adapters/controller-endpoints.test.ts:
+(pass) scoped forwards select the explicit target and never rebind or remove unrelated forwards [2.93ms]
+(pass) second-forward conflict cleans up only the first owned lease [0.20ms]
+(pass) unauthorized candidate is never forwarded [0.06ms]
+(pass) offline candidate is never forwarded [0.02ms]
+(pass) unavailable candidate is never forwarded [0.02ms]
+(pass) unknown revisions fail before assuming any controller ports [0.04ms]
+(pass) cancellation and repeated construction release owned forwards without replay [0.59ms]
+(pass) invalid lease ports fail and release rather than expose unusable routes [0.08ms]
+(pass) endpoint errors are serializable canonical contracts [0.78ms]
+(pass) read endpoints record protocol observations without claiming identity, deployment or safe dashboard access [2.31ms]
+(pass) HTML fallback with 200 at /api/plugins fails validation [0.21ms]
+(pass) HTML fallback with 200 at /api/shas fails validation [0.13ms]
+(pass) HTML fallback with 200 at /api/configs/com.bylazar.telemetry fails validation [0.20ms]
+(pass) HTML fallback with 200 at /api/performance fails validation [0.15ms]
+(pass) missing resource / is not a working endpoint [0.06ms]
+(pass) missing resource /index.html is not a working endpoint [0.04ms]
+(pass) missing resource /api/plugins is not a working endpoint [0.04ms]
+(pass) missing resource /api/shas is not a working endpoint [0.08ms]
+(pass) missing resource /api/svelte/com.bylazar.telemetry is not a working endpoint [0.16ms]
+(pass) missing resource /api/configs/com.bylazar.telemetry is not a working endpoint [0.11ms]
+(pass) null plugin hash is missing evidence and never triggers an invented bundle route [0.22ms]
+(pass) unknown frontend version fails rather than promote protocol compatibility [0.12ms]
+(pass) unknown plugins are recorded but their resources are never fetched [0.16ms]
+(pass) healthy HTTP does not hide a disconnected data socket [0.15ms]
+(pass) battery value %s is preserved without inventing freshness [0.16ms]
+(pass) battery value %s is preserved without inventing freshness [0.11ms]
+(pass) battery value %s is preserved without inventing freshness [0.12ms]
+(pass) missing sample is distinct from valid zero and omitted on encoding [0.27ms]
+(pass) unsupported or mutation frame core/pluginReloaded is rejected [0.13ms]
+(pass) unsupported or mutation frame com.bylazar.opmodecontrol/initOpMode is rejected [0.10ms]
+(pass) unsupported or mutation frame com.bylazar.opmodecontrol/startActiveOpMode is rejected [0.10ms]
+(pass) unsupported or mutation frame com.bylazar.opmodecontrol/stopActiveOpMode is rejected [0.08ms]
+(pass) unsupported or mutation frame com.bylazar.configurables/updatedConfigurable is rejected [0.08ms]
+(pass) unsupported or mutation frame com.bylazar.gamepad/gamepad0 is rejected [0.09ms]
+(pass) unsupported or mutation frame com.bylazar.gamepad/gamepad1 is rejected [0.09ms]
+(pass) unsupported or mutation frame custom/read is rejected [0.09ms]
+(pass) unsupported or mutation frame com.bylazar.limelightproxy/status is rejected [0.07ms]
+(pass) malformed frame fails: not-json [0.12ms]
+(pass) malformed frame fails: {"pluginID":"com.bylazar.battery","messageID":"battery","data":NaN} [0.08ms]
+(pass) malformed frame fails: {"pluginID":"com.bylazar.telemetry","messageID":"telemetryPacket","data":0} [0.11ms]
+(pass) unsafe base endpoint http://user:password@localhost:8001 is rejected before I/O [0.05ms]
+(pass) unsafe base endpoint https://example.org/path is rejected before I/O [0.02ms]
+(pass) unsafe base endpoint file:///tmp/example is rejected before I/O [0.02ms]
+(pass) unsafe base endpoint http://localhost:8001/?command=start is rejected before I/O [0.02ms]
+(pass) same local port cannot describe distinct HTTP and socket forwards [0.11ms]
+(pass) cleanup failure cannot become successful forwarding completion [0.11ms]
+(pass) malformed hash at /api/sha256 is not accepted as version evidence [0.07ms]
+(pass) malformed hash at /api/shas is not accepted as version evidence [0.06ms]
+(pass) malformed hash at /api/svelte/com.bylazar.telemetry/sha256 is not accepted as version evidence [0.07ms]
+(pass) HTML fallback cannot masquerade as a JavaScript plugin resource [0.09ms]
+(pass) duplicate plugin identities are not merged silently [0.09ms]
+(pass) cancellation closes the scoped receive resource without reconnecting [0.26ms]
+(pass) textual telemetry preserves empty packets and valid textual zero [0.20ms]
+(pass) unrecognized read profile never probes guessed endpoints [0.03ms]
+
+test/ftc/controller-connections/m8-01.test.ts:
+(pass) unauthorized device is visible without deployment side effects [0.63ms]
+(pass) multiple targets retain authorization and reported model facts without identity guesses [0.20ms]
+(pass) keeps recovery visible but unavailable [0.07ms]
+(pass) keeps bootloader visible but unavailable [0.03ms]
+(pass) keeps sideload visible but unavailable [0.02ms]
+(pass) keeps future-state visible but unavailable [0.02ms]
+(pass) keeps no permissions (user in plugdev group) visible but unavailable [0.02ms]
+(pass) successful empty discovery differs from missing output [0.13ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: garbage
+SERIAL_A device
+ [0.04ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
+SERIAL_A
+ [0.03ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
+SERIAL_A device not-metadata
+ [0.03ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
+SERIAL_A device model:one model:two
+ [0.02ms]
+(pass) malformed transcript fails rather than reporting usable or empty targets: List of devices attached
+SERIAL_A device
+SERIAL_A offline
+ [0.03ms]
+(pass) ADB command failure differs from successful empty discovery [0.04ms]
+(pass) preserves adb_missing_tool from the read transport [0.08ms]
+(pass) preserves adb_transport_error from the read transport [0.02ms]
+(pass) releases the read resource after success [0.21ms]
+(pass) releases the read resource after malformed [0.05ms]
+(pass) releases the read resource after command [0.04ms]
+(pass) releases the read resource after transport [0.03ms]
+(pass) cancellation releases the active read and fresh scopes do not retain discovery state [0.35ms]
+(pass) canonical candidate contract omits optional values and is the exact facade contract [0.39ms]
+
+test/ftc-evaluation/m9-07.test.ts:
+(pass) owned process tree is gone after exit, including TERM-resistant inherited-pipe descendants [118.49ms]
+(pass) owned process tree is gone after timeout, including TERM-resistant inherited-pipe descendants [268.28ms]
+(pass) owned process tree is gone after abort, including TERM-resistant inherited-pipe descendants [267.13ms]
+{"mode":"http","restricted":false,"launcher":"absolute-bun","exit":0,"stdout":"probe_ready\n","stderr":"","received":["POST /broker"]}
+(pass) unrestricted absolute binary reaches owned HTTP broker despite filtered PATH [35.84ms]
+{"mode":"websocket","restricted":false,"launcher":"absolute-bun","exit":0,"stdout":"probe_ready\n","stderr":"","received":["probe"]}
+(pass) unrestricted process can send a dashboard-style WebSocket write [15.74ms]
+(skip) macOS candidate permits local development subprocess execution
+(skip) macOS candidate denies HTTP access to owned controller/broker fixture
+(skip) macOS candidate denies dashboard-style WebSocket writes
+(skip) real absolute ADB binary executes with filtered PATH (version only)
+(skip) real offline Gradle task reaches owned broker fixture without isolation
+(skip) NOT RUN: Windows process, USB, controller/broker and embedded dashboard isolation
+(skip) NOT RUN: macOS physical USB API and real controller HTTP/WebSocket denial
+(skip) NOT RUN: production extension/MCP descendants and broker capability isolation
+(skip) NOT RUN: real Electron embedded controls, preload/IPC, navigation and permissions
+(pass) M9-07 keeps unverified embedded dashboard and controls disabled [0.14ms]
+
+test/ftc-evaluation/m8-04.test.ts:
+(pass) source-derived protocol resolves HTTP, gzip plugin assets and receive-only data through owned TCP forwards [14.61ms]
+(pass) health 200 with socket 503 fails and closes both owned forwards [7.60ms]
+(pass) two synthetic controllers with identical software remain unknown identities on isolated routes [14.40ms]
+(skip) NOT RUN: real Control Hub and phone USB/Wi-Fi HTTP/WebSocket/plugin matrix
+(skip) NOT RUN: Windows ADB forwarding, conflicts, cancellation and resource cleanup
+(skip) NOT RUN: stable physical identity, alias convergence and deployed-build association
+(skip) NOT RUN: real robot logs and telemetry source/freshness across disconnect
+(skip) NOT RUN: Electron dashboard mediation, fixed-port routing, extra plugins and no-replay
+
+14 tests skipped:
+(skip) macOS candidate permits local development subprocess execution
+(skip) macOS candidate denies HTTP access to owned controller/broker fixture
+(skip) macOS candidate denies dashboard-style WebSocket writes
+(skip) real absolute ADB binary executes with filtered PATH (version only)
+(skip) real offline Gradle task reaches owned broker fixture without isolation
+(skip) NOT RUN: Windows process, USB, controller/broker and embedded dashboard isolation
+(skip) NOT RUN: macOS physical USB API and real controller HTTP/WebSocket denial
+(skip) NOT RUN: production extension/MCP descendants and broker capability isolation
+(skip) NOT RUN: real Electron embedded controls, preload/IPC, navigation and permissions
+(skip) NOT RUN: real Control Hub and phone USB/Wi-Fi HTTP/WebSocket/plugin matrix
+(skip) NOT RUN: Windows ADB forwarding, conflicts, cancellation and resource cleanup
+(skip) NOT RUN: stable physical identity, alias convergence and deployed-build association
+(skip) NOT RUN: real robot logs and telemetry source/freshness across disconnect
+(skip) NOT RUN: Electron dashboard mediation, fixed-port routing, extra plugins and no-replay
+
+ 85 pass
+ 14 skip
+ 0 fail
+ 207 expect() calls
+Ran 99 tests across 4 files. [823.00ms]

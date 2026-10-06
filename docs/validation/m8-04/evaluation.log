@@ -1,0 +1,52 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-evaluation/m8-04.test.ts:
+ 8 | export function loopback(socketUnavailable = false) {
+ 9 |   const source = fixture()
+10 |   const received: string[] = []
+11 |   const sockets = new Set<WebSocket>()
+12 |   const forwards = new Set<number>()
+13 |   const server = Bun.serve({
+                          ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at loopback (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts:13:22)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-evaluation/m8-04.test.ts:15:17)
+(fail) source-derived protocol resolves HTTP, gzip plugin assets and receive-only data through owned TCP forwards [5.13ms]
+ 8 | export function loopback(socketUnavailable = false) {
+ 9 |   const source = fixture()
+10 |   const received: string[] = []
+11 |   const sockets = new Set<WebSocket>()
+12 |   const forwards = new Set<number>()
+13 |   const server = Bun.serve({
+                          ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at loopback (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts:13:22)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-evaluation/m8-04.test.ts:34:17)
+(fail) health 200 with socket 503 fails and closes both owned forwards [0.17ms]
+ 8 | export function loopback(socketUnavailable = false) {
+ 9 |   const source = fixture()
+10 |   const received: string[] = []
+11 |   const sockets = new Set<WebSocket>()
+12 |   const forwards = new Set<number>()
+13 |   const server = Bun.serve({
+                          ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at loopback (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/fixtures/controller-endpoints/loopback.ts:13:22)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-evaluation/m8-04.test.ts:48:17)
+(fail) two synthetic controllers with identical software remain unknown identities on isolated routes [0.12ms]
+
+ 0 pass
+ 3 fail
+Ran 3 tests across 1 file. [55.00ms]

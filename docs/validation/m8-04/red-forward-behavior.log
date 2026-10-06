@@ -1,0 +1,110 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-adapters/controller-endpoints.test.ts:
+error
+{
+  code: "forward_invalid",
+}
+(fail) scoped forwards select the explicit target and never rebind or remove unrelated forwards [5.18ms]
+47 | })
+48 | 
+49 | test("second-forward conflict cleans up only the first owned lease", async () => {
+50 |   const fixture = forwards(true)
+51 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels(candidate, revision, fixture.transport)).pipe(Effect.flip))
+52 |   expect(result).toEqual({ code: "forward_conflict" })
+                      ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "code": "forward_conflict",
++   "code": "forward_invalid",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:52:18)
+(fail) second-forward conflict cleans up only the first owned lease [4.20ms]
+54 | })
+55 | 
+56 | test.each(["unauthorized", "offline", "unavailable"] as const)("%s candidate is never forwarded", async (state) => {
+57 |   const fixture = forwards()
+58 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels({ ...candidate, state }, revision, fixture.transport)).pipe(Effect.flip))
+59 |   expect(result.code).toBe("candidate_unavailable")
+                           ^
+error: expect(received).toBe(expected)
+
+Expected: "candidate_unavailable"
+Received: "forward_invalid"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:59:23)
+(fail) unauthorized candidate is never forwarded [0.61ms]
+54 | })
+55 | 
+56 | test.each(["unauthorized", "offline", "unavailable"] as const)("%s candidate is never forwarded", async (state) => {
+57 |   const fixture = forwards()
+58 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels({ ...candidate, state }, revision, fixture.transport)).pipe(Effect.flip))
+59 |   expect(result.code).toBe("candidate_unavailable")
+                           ^
+error: expect(received).toBe(expected)
+
+Expected: "candidate_unavailable"
+Received: "forward_invalid"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:59:23)
+(fail) offline candidate is never forwarded [0.06ms]
+54 | })
+55 | 
+56 | test.each(["unauthorized", "offline", "unavailable"] as const)("%s candidate is never forwarded", async (state) => {
+57 |   const fixture = forwards()
+58 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels({ ...candidate, state }, revision, fixture.transport)).pipe(Effect.flip))
+59 |   expect(result.code).toBe("candidate_unavailable")
+                           ^
+error: expect(received).toBe(expected)
+
+Expected: "candidate_unavailable"
+Received: "forward_invalid"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:59:23)
+(fail) unavailable candidate is never forwarded [0.04ms]
+61 | })
+62 | 
+63 | test("unknown revisions fail before assuming any controller ports", async () => {
+64 |   const fixture = forwards()
+65 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels(candidate, "future", fixture.transport)).pipe(Effect.flip))
+66 |   expect(result.code).toBe("protocol_unknown")
+                           ^
+error: expect(received).toBe(expected)
+
+Expected: "protocol_unknown"
+Received: "forward_invalid"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:66:23)
+(fail) unknown revisions fail before assuming any controller ports [0.07ms]
+(fail) cancellation and repeated construction release owned forwards without replay [5000.00ms]
+  ^ this test timed out after 5000ms.
+87 |   const closed: number[] = []
+88 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels(candidate, revision, {
+89 |     open: () => Effect.succeed({ localPort: 0, close: Effect.sync(() => { closed.push(0) }) }),
+90 |   })).pipe(Effect.flip))
+91 |   expect(result.code).toBe("forward_invalid")
+92 |   expect(closed).toEqual([0])
+                      ^
+error: expect(received).toEqual(expected)
+
+- [
+-   0,
+- ]
++ []
+
+- Expected  - 3
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:92:18)
+(fail) invalid lease ports fail and release rather than expose unusable routes [2.48ms]
+(pass) endpoint errors are serializable canonical contracts [1.13ms]
+
+ 1 pass
+ 8 fail
+ 8 expect() calls
+Ran 9 tests across 1 file. [5.08s]

@@ -1,0 +1,118 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-adapters/controller-endpoints.test.ts:
+32 | }
+33 | 
+34 | test("scoped forwards select the explicit target and never rebind or remove unrelated forwards", async () => {
+35 |   const fixture = forwards()
+36 |   const result = await Effect.runPromise(Effect.scoped(Effect.gen(function* () {
+37 |     const routes = yield* Adb.forwardPanels(candidate, revision, fixture.transport)
+                                   ^
+TypeError: Adb.forwardPanels is not a function. (In 'Adb.forwardPanels(candidate, revision, fixture.transport)', 'Adb.forwardPanels' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:37:31)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:36:31)
+(fail) scoped forwards select the explicit target and never rebind or remove unrelated forwards [3.62ms]
+46 |   expect([...fixture.active]).toEqual([49999])
+47 | })
+48 | 
+49 | test("second-forward conflict cleans up only the first owned lease", async () => {
+50 |   const fixture = forwards(true)
+51 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels(candidate, revision, fixture.transport)).pipe(Effect.flip))
+                                                                ^
+TypeError: Adb.forwardPanels is not a function. (In 'Adb.forwardPanels(candidate, revision, fixture.transport)', 'Adb.forwardPanels' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:51:60)
+(fail) second-forward conflict cleans up only the first owned lease [0.06ms]
+53 |   expect([...fixture.active]).toEqual([49999])
+54 | })
+55 | 
+56 | test.each(["unauthorized", "offline", "unavailable"] as const)("%s candidate is never forwarded", async (state) => {
+57 |   const fixture = forwards()
+58 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels({ ...candidate, state }, revision, fixture.transport)).pipe(Effect.flip))
+                                                                ^
+TypeError: Adb.forwardPanels is not a function. (In 'Adb.forwardPanels({ ...candidate, state }, revision, fixture.transport)', 'Adb.forwardPanels' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:58:60)
+(fail) unauthorized candidate is never forwarded [0.06ms]
+53 |   expect([...fixture.active]).toEqual([49999])
+54 | })
+55 | 
+56 | test.each(["unauthorized", "offline", "unavailable"] as const)("%s candidate is never forwarded", async (state) => {
+57 |   const fixture = forwards()
+58 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels({ ...candidate, state }, revision, fixture.transport)).pipe(Effect.flip))
+                                                                ^
+TypeError: Adb.forwardPanels is not a function. (In 'Adb.forwardPanels({ ...candidate, state }, revision, fixture.transport)', 'Adb.forwardPanels' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:58:60)
+(fail) offline candidate is never forwarded [0.02ms]
+53 |   expect([...fixture.active]).toEqual([49999])
+54 | })
+55 | 
+56 | test.each(["unauthorized", "offline", "unavailable"] as const)("%s candidate is never forwarded", async (state) => {
+57 |   const fixture = forwards()
+58 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels({ ...candidate, state }, revision, fixture.transport)).pipe(Effect.flip))
+                                                                ^
+TypeError: Adb.forwardPanels is not a function. (In 'Adb.forwardPanels({ ...candidate, state }, revision, fixture.transport)', 'Adb.forwardPanels' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:58:60)
+(fail) unavailable candidate is never forwarded [0.03ms]
+60 |   expect(fixture.requests).toEqual([])
+61 | })
+62 | 
+63 | test("unknown revisions fail before assuming any controller ports", async () => {
+64 |   const fixture = forwards()
+65 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels(candidate, "future", fixture.transport)).pipe(Effect.flip))
+                                                                ^
+TypeError: Adb.forwardPanels is not a function. (In 'Adb.forwardPanels(candidate, "future", fixture.transport)', 'Adb.forwardPanels' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:65:60)
+(fail) unknown revisions fail before assuming any controller ports [0.04ms]
+69 | 
+70 | test("cancellation and repeated construction release owned forwards without replay", async () => {
+71 |   const fixture = forwards()
+72 |   const ready = Deferred.makeUnsafe<void>()
+73 |   await Effect.runPromise(Effect.gen(function* () {
+74 |     const fiber = yield* Effect.scoped(Adb.forwardPanels(candidate, revision, fixture.transport).pipe(
+                                                ^
+TypeError: Adb.forwardPanels is not a function. (In 'Adb.forwardPanels(candidate, revision, fixture.transport)', 'Adb.forwardPanels' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:74:44)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:73:16)
+(fail) cancellation and repeated construction release owned forwards without replay [0.15ms]
+83 |   expect(fixture.requests).toHaveLength(4)
+84 | })
+85 | 
+86 | test("invalid lease ports fail and release rather than expose unusable routes", async () => {
+87 |   const closed: number[] = []
+88 |   const result = await Effect.runPromise(Effect.scoped(Adb.forwardPanels(candidate, revision, {
+                                                                ^
+TypeError: Adb.forwardPanels is not a function. (In 'Adb.forwardPanels(candidate, revision, {
+    open: () => Effect.succeed({ localPort: 0, close: Effect.sync(() => {
+      closed.push(0);
+    }) })
+  })', 'Adb.forwardPanels' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:88:60)
+(fail) invalid lease ports fail and release rather than expose unusable routes [0.06ms]
+204 |  *
+205 |  * @category decoding
+206 |  * @since 4.0.0
+207 |  */
+208 | export function decodeUnknownEffect(schema, options) {
+209 |   const parser = run(schema.ast);
+                           ^
+TypeError: undefined is not an object (evaluating 'schema.ast')
+      at decodeUnknownEffect (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/SchemaParser.js:209:22)
+      at decodeUnknownEffect (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Schema.js:626:31)
+      at decodeUnknownSync (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Schema.js:885:18)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:96:17)
+(fail) endpoint errors are serializable canonical contracts [0.07ms]
+
+ 0 pass
+ 9 fail
+Ran 9 tests across 1 file. [170.00ms]

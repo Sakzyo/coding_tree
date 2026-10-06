@@ -1,0 +1,17 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-adapters/controller-endpoints.test.ts:
+(pass) scoped forwards select the explicit target and never rebind or remove unrelated forwards [3.93ms]
+(pass) second-forward conflict cleans up only the first owned lease [0.24ms]
+(pass) unauthorized candidate is never forwarded [0.07ms]
+(pass) offline candidate is never forwarded [0.03ms]
+(pass) unavailable candidate is never forwarded [0.02ms]
+(pass) unknown revisions fail before assuming any controller ports [0.04ms]
+(pass) cancellation and repeated construction release owned forwards without replay [1.01ms]
+(pass) invalid lease ports fail and release rather than expose unusable routes [0.11ms]
+(pass) endpoint errors are serializable canonical contracts [0.88ms]
+
+ 9 pass
+ 0 fail
+ 20 expect() calls
+Ran 9 tests across 1 file. [57.00ms]

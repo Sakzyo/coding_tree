@@ -1,0 +1,11 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-evaluation/m8-04.test.ts:
+(pass) source-derived protocol resolves HTTP, gzip plugin assets and receive-only data through owned TCP forwards [29.41ms]
+(pass) health 200 with socket 503 fails and closes both owned forwards [7.30ms]
+(pass) two synthetic controllers with identical software remain unknown identities on isolated routes [14.17ms]
+
+ 3 pass
+ 0 fail
+ 18 expect() calls
+Ran 3 tests across 1 file. [106.00ms]

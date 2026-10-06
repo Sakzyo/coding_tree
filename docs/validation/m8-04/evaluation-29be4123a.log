@@ -1,0 +1,17 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-evaluation/m8-04.test.ts:
+(pass) source-derived protocol resolves HTTP, gzip plugin assets and receive-only data through owned TCP forwards [17.83ms]
+(pass) health 200 with socket 503 fails and closes both owned forwards [7.87ms]
+(pass) two synthetic controllers with identical software remain unknown identities on isolated routes [13.35ms]
+(skip) NOT RUN: real Control Hub and phone USB/Wi-Fi HTTP/WebSocket/plugin matrix
+(skip) NOT RUN: Windows ADB forwarding, conflicts, cancellation and resource cleanup
+(skip) NOT RUN: stable physical identity, alias convergence and deployed-build association
+(skip) NOT RUN: real robot logs and telemetry source/freshness across disconnect
+(skip) NOT RUN: Electron dashboard mediation, fixed-port routing, extra plugins and no-replay
+
+ 3 pass
+ 5 skip
+ 0 fail
+ 18 expect() calls
+Ran 8 tests across 1 file. [92.00ms]

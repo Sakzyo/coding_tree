@@ -1,0 +1,590 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-adapters/controller-endpoints.test.ts:
+(pass) scoped forwards select the explicit target and never rebind or remove unrelated forwards [4.38ms]
+(pass) second-forward conflict cleans up only the first owned lease [0.21ms]
+(pass) unauthorized candidate is never forwarded [0.07ms]
+(pass) offline candidate is never forwarded [0.03ms]
+(pass) unavailable candidate is never forwarded [0.02ms]
+(pass) unknown revisions fail before assuming any controller ports [0.04ms]
+(pass) cancellation and repeated construction release owned forwards without replay [1.37ms]
+(pass) invalid lease ports fail and release rather than expose unusable routes [0.08ms]
+(pass) endpoint errors are serializable canonical contracts [0.78ms]
+error
+{
+  code: "resource_invalid",
+}
+(fail) read endpoints record protocol observations without claiming identity, deployment or safe dashboard access [1.63ms]
+114 | })
+115 | 
+116 | test.each(["/api/plugins", "/api/shas", "/api/configs/com.bylazar.telemetry", "/api/performance"])("HTML fallback with 200 at %s fails validation", async (path) => {
+117 |   const source = fixture()
+118 |   source.resources[path] = source.resources["/"]
+119 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_invalid", resource: path })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+    "code": "resource_invalid",
+-   "resource": "/api/plugins",
+  }
+
+- Expected  - 1
++ Received  + 0
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:119:100)
+(fail) HTML fallback with 200 at /api/plugins fails validation [1.48ms]
+114 | })
+115 | 
+116 | test.each(["/api/plugins", "/api/shas", "/api/configs/com.bylazar.telemetry", "/api/performance"])("HTML fallback with 200 at %s fails validation", async (path) => {
+117 |   const source = fixture()
+118 |   source.resources[path] = source.resources["/"]
+119 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_invalid", resource: path })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+    "code": "resource_invalid",
+-   "resource": "/api/shas",
+  }
+
+- Expected  - 1
++ Received  + 0
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:119:100)
+(fail) HTML fallback with 200 at /api/shas fails validation [0.05ms]
+114 | })
+115 | 
+116 | test.each(["/api/plugins", "/api/shas", "/api/configs/com.bylazar.telemetry", "/api/performance"])("HTML fallback with 200 at %s fails validation", async (path) => {
+117 |   const source = fixture()
+118 |   source.resources[path] = source.resources["/"]
+119 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_invalid", resource: path })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+    "code": "resource_invalid",
+-   "resource": "/api/configs/com.bylazar.telemetry",
+  }
+
+- Expected  - 1
++ Received  + 0
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:119:100)
+(fail) HTML fallback with 200 at /api/configs/com.bylazar.telemetry fails validation [0.04ms]
+114 | })
+115 | 
+116 | test.each(["/api/plugins", "/api/shas", "/api/configs/com.bylazar.telemetry", "/api/performance"])("HTML fallback with 200 at %s fails validation", async (path) => {
+117 |   const source = fixture()
+118 |   source.resources[path] = source.resources["/"]
+119 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_invalid", resource: path })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+    "code": "resource_invalid",
+-   "resource": "/api/performance",
+  }
+
+- Expected  - 1
++ Received  + 0
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:119:100)
+(fail) HTML fallback with 200 at /api/performance fails validation [0.03ms]
+120 | })
+121 | 
+122 | test.each(["/", "/index.html", "/api/plugins", "/api/shas", "/api/svelte/com.bylazar.telemetry", "/api/configs/com.bylazar.telemetry"])("missing resource %s is not a working endpoint", async (path) => {
+123 |   const source = fixture()
+124 |   source.resources[path] = { status: 404, contentType: "text/plain", body: "not found" }
+125 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_missing", resource: path })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "resource_missing",
+-   "resource": "/",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 2
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:125:100)
+(fail) missing resource / is not a working endpoint [0.11ms]
+120 | })
+121 | 
+122 | test.each(["/", "/index.html", "/api/plugins", "/api/shas", "/api/svelte/com.bylazar.telemetry", "/api/configs/com.bylazar.telemetry"])("missing resource %s is not a working endpoint", async (path) => {
+123 |   const source = fixture()
+124 |   source.resources[path] = { status: 404, contentType: "text/plain", body: "not found" }
+125 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_missing", resource: path })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "resource_missing",
+-   "resource": "/index.html",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 2
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:125:100)
+(fail) missing resource /index.html is not a working endpoint [0.03ms]
+120 | })
+121 | 
+122 | test.each(["/", "/index.html", "/api/plugins", "/api/shas", "/api/svelte/com.bylazar.telemetry", "/api/configs/com.bylazar.telemetry"])("missing resource %s is not a working endpoint", async (path) => {
+123 |   const source = fixture()
+124 |   source.resources[path] = { status: 404, contentType: "text/plain", body: "not found" }
+125 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_missing", resource: path })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "resource_missing",
+-   "resource": "/api/plugins",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 2
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:125:100)
+(fail) missing resource /api/plugins is not a working endpoint [0.03ms]
+120 | })
+121 | 
+122 | test.each(["/", "/index.html", "/api/plugins", "/api/shas", "/api/svelte/com.bylazar.telemetry", "/api/configs/com.bylazar.telemetry"])("missing resource %s is not a working endpoint", async (path) => {
+123 |   const source = fixture()
+124 |   source.resources[path] = { status: 404, contentType: "text/plain", body: "not found" }
+125 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_missing", resource: path })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "resource_missing",
+-   "resource": "/api/shas",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 2
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:125:100)
+(fail) missing resource /api/shas is not a working endpoint [0.03ms]
+120 | })
+121 | 
+122 | test.each(["/", "/index.html", "/api/plugins", "/api/shas", "/api/svelte/com.bylazar.telemetry", "/api/configs/com.bylazar.telemetry"])("missing resource %s is not a working endpoint", async (path) => {
+123 |   const source = fixture()
+124 |   source.resources[path] = { status: 404, contentType: "text/plain", body: "not found" }
+125 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_missing", resource: path })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "resource_missing",
+-   "resource": "/api/svelte/com.bylazar.telemetry",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 2
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:125:100)
+(fail) missing resource /api/svelte/com.bylazar.telemetry is not a working endpoint [0.05ms]
+120 | })
+121 | 
+122 | test.each(["/", "/index.html", "/api/plugins", "/api/shas", "/api/svelte/com.bylazar.telemetry", "/api/configs/com.bylazar.telemetry"])("missing resource %s is not a working endpoint", async (path) => {
+123 |   const source = fixture()
+124 |   source.resources[path] = { status: 404, contentType: "text/plain", body: "not found" }
+125 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "resource_missing", resource: path })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "resource_missing",
+-   "resource": "/api/configs/com.bylazar.telemetry",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 2
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:125:100)
+(fail) missing resource /api/configs/com.bylazar.telemetry is not a working endpoint [0.03ms]
+error
+{
+  code: "resource_invalid",
+}
+(fail) null plugin hash is missing evidence and never triggers an invented bundle route [0.05ms]
+136 | 
+137 | test("unknown frontend version fails rather than promote protocol compatibility", async () => {
+138 |   const source = fixture()
+139 |   source.plugins.data.plugins[0].details.pluginsCoreVersion = "2.0.0"
+140 |   source.resources["/api/plugins"].body = JSON.stringify(source.plugins)
+141 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "protocol_unknown" })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "protocol_unknown",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:141:100)
+(fail) unknown frontend version fails rather than promote protocol compatibility [0.06ms]
+error
+{
+  code: "resource_invalid",
+}
+(fail) unknown plugins are recorded but their resources are never fetched [0.04ms]
+150 |   expect(source.requests.some((url) => url.includes("/api/configs/") || url.includes("/api/svelte/"))).toBe(false)
+151 | })
+152 | 
+153 | test("healthy HTTP does not hide a disconnected data socket", async () => {
+154 |   const source = fixture()
+155 |   expect(await Effect.runPromise(Panels.readEndpoints(input, { ...source.transport, receive: () => Effect.fail({ code: "socket_disconnected" }) }).pipe(Effect.flip))).toEqual({ code: "socket_disconnected" })
+                                                                                                                                                                             ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "code": "socket_disconnected",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:155:168)
+(fail) healthy HTTP does not hide a disconnected data socket [0.06ms]
+error
+{
+  code: "resource_invalid",
+}
+(fail) battery value %s is preserved without inventing freshness [0.04ms]
+error
+{
+  code: "resource_invalid",
+}
+(fail) battery value %s is preserved without inventing freshness [0.01ms]
+error
+{
+  code: "resource_invalid",
+}
+(fail) battery value %s is preserved without inventing freshness [0.02ms]
+error
+{
+  code: "resource_invalid",
+}
+(fail) missing sample is distinct from valid zero and omitted on encoding [0.03ms]
+176 |   ["com.bylazar.configurables", "updatedConfigurable"], ["com.bylazar.gamepad", "gamepad0"],
+177 |   ["com.bylazar.gamepad", "gamepad1"], ["custom", "read"], ["com.bylazar.limelightproxy", "status"],
+178 | ])("unsupported or mutation frame %s/%s is rejected", async (pluginID, messageID) => {
+179 |   const source = fixture()
+180 |   source.frames.value = JSON.stringify({ pluginID, messageID, data: 0 })
+181 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_unsupported" })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "frame_unsupported",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:181:100)
+(fail) unsupported or mutation frame core/pluginReloaded is rejected [0.06ms]
+176 |   ["com.bylazar.configurables", "updatedConfigurable"], ["com.bylazar.gamepad", "gamepad0"],
+177 |   ["com.bylazar.gamepad", "gamepad1"], ["custom", "read"], ["com.bylazar.limelightproxy", "status"],
+178 | ])("unsupported or mutation frame %s/%s is rejected", async (pluginID, messageID) => {
+179 |   const source = fixture()
+180 |   source.frames.value = JSON.stringify({ pluginID, messageID, data: 0 })
+181 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_unsupported" })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "frame_unsupported",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:181:100)
+(fail) unsupported or mutation frame com.bylazar.opmodecontrol/initOpMode is rejected [0.04ms]
+176 |   ["com.bylazar.configurables", "updatedConfigurable"], ["com.bylazar.gamepad", "gamepad0"],
+177 |   ["com.bylazar.gamepad", "gamepad1"], ["custom", "read"], ["com.bylazar.limelightproxy", "status"],
+178 | ])("unsupported or mutation frame %s/%s is rejected", async (pluginID, messageID) => {
+179 |   const source = fixture()
+180 |   source.frames.value = JSON.stringify({ pluginID, messageID, data: 0 })
+181 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_unsupported" })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "frame_unsupported",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:181:100)
+(fail) unsupported or mutation frame com.bylazar.opmodecontrol/startActiveOpMode is rejected [0.03ms]
+176 |   ["com.bylazar.configurables", "updatedConfigurable"], ["com.bylazar.gamepad", "gamepad0"],
+177 |   ["com.bylazar.gamepad", "gamepad1"], ["custom", "read"], ["com.bylazar.limelightproxy", "status"],
+178 | ])("unsupported or mutation frame %s/%s is rejected", async (pluginID, messageID) => {
+179 |   const source = fixture()
+180 |   source.frames.value = JSON.stringify({ pluginID, messageID, data: 0 })
+181 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_unsupported" })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "frame_unsupported",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:181:100)
+(fail) unsupported or mutation frame com.bylazar.opmodecontrol/stopActiveOpMode is rejected [0.03ms]
+176 |   ["com.bylazar.configurables", "updatedConfigurable"], ["com.bylazar.gamepad", "gamepad0"],
+177 |   ["com.bylazar.gamepad", "gamepad1"], ["custom", "read"], ["com.bylazar.limelightproxy", "status"],
+178 | ])("unsupported or mutation frame %s/%s is rejected", async (pluginID, messageID) => {
+179 |   const source = fixture()
+180 |   source.frames.value = JSON.stringify({ pluginID, messageID, data: 0 })
+181 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_unsupported" })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "frame_unsupported",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:181:100)
+(fail) unsupported or mutation frame com.bylazar.configurables/updatedConfigurable is rejected [0.03ms]
+176 |   ["com.bylazar.configurables", "updatedConfigurable"], ["com.bylazar.gamepad", "gamepad0"],
+177 |   ["com.bylazar.gamepad", "gamepad1"], ["custom", "read"], ["com.bylazar.limelightproxy", "status"],
+178 | ])("unsupported or mutation frame %s/%s is rejected", async (pluginID, messageID) => {
+179 |   const source = fixture()
+180 |   source.frames.value = JSON.stringify({ pluginID, messageID, data: 0 })
+181 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_unsupported" })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "frame_unsupported",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:181:100)
+(fail) unsupported or mutation frame com.bylazar.gamepad/gamepad0 is rejected [0.03ms]
+176 |   ["com.bylazar.configurables", "updatedConfigurable"], ["com.bylazar.gamepad", "gamepad0"],
+177 |   ["com.bylazar.gamepad", "gamepad1"], ["custom", "read"], ["com.bylazar.limelightproxy", "status"],
+178 | ])("unsupported or mutation frame %s/%s is rejected", async (pluginID, messageID) => {
+179 |   const source = fixture()
+180 |   source.frames.value = JSON.stringify({ pluginID, messageID, data: 0 })
+181 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_unsupported" })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "frame_unsupported",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:181:100)
+(fail) unsupported or mutation frame com.bylazar.gamepad/gamepad1 is rejected [0.04ms]
+176 |   ["com.bylazar.configurables", "updatedConfigurable"], ["com.bylazar.gamepad", "gamepad0"],
+177 |   ["com.bylazar.gamepad", "gamepad1"], ["custom", "read"], ["com.bylazar.limelightproxy", "status"],
+178 | ])("unsupported or mutation frame %s/%s is rejected", async (pluginID, messageID) => {
+179 |   const source = fixture()
+180 |   source.frames.value = JSON.stringify({ pluginID, messageID, data: 0 })
+181 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_unsupported" })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "frame_unsupported",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:181:100)
+(fail) unsupported or mutation frame custom/read is rejected [0.04ms]
+176 |   ["com.bylazar.configurables", "updatedConfigurable"], ["com.bylazar.gamepad", "gamepad0"],
+177 |   ["com.bylazar.gamepad", "gamepad1"], ["custom", "read"], ["com.bylazar.limelightproxy", "status"],
+178 | ])("unsupported or mutation frame %s/%s is rejected", async (pluginID, messageID) => {
+179 |   const source = fixture()
+180 |   source.frames.value = JSON.stringify({ pluginID, messageID, data: 0 })
+181 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_unsupported" })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "frame_unsupported",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:181:100)
+(fail) unsupported or mutation frame com.bylazar.limelightproxy/status is rejected [0.03ms]
+182 | })
+183 | 
+184 | test.each(["not-json", '{"pluginID":"com.bylazar.battery","messageID":"battery","data":NaN}', '{"pluginID":"com.bylazar.telemetry","messageID":"telemetryPacket","data":0}'])("malformed frame fails: %s", async (frame) => {
+185 |   const source = fixture()
+186 |   source.frames.value = frame
+187 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_invalid" })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "frame_invalid",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:187:100)
+(fail) malformed frame fails: not-json [0.05ms]
+182 | })
+183 | 
+184 | test.each(["not-json", '{"pluginID":"com.bylazar.battery","messageID":"battery","data":NaN}', '{"pluginID":"com.bylazar.telemetry","messageID":"telemetryPacket","data":0}'])("malformed frame fails: %s", async (frame) => {
+185 |   const source = fixture()
+186 |   source.frames.value = frame
+187 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_invalid" })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "frame_invalid",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:187:100)
+(fail) malformed frame fails: {"pluginID":"com.bylazar.battery","messageID":"battery","data":NaN} [0.03ms]
+182 | })
+183 | 
+184 | test.each(["not-json", '{"pluginID":"com.bylazar.battery","messageID":"battery","data":NaN}', '{"pluginID":"com.bylazar.telemetry","messageID":"telemetryPacket","data":0}'])("malformed frame fails: %s", async (frame) => {
+185 |   const source = fixture()
+186 |   source.frames.value = frame
+187 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_invalid" })
+                                                                                                         ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "frame_invalid",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:187:100)
+(fail) malformed frame fails: {"pluginID":"com.bylazar.telemetry","messageID":"telemetryPacket","data":0} [0.03ms]
+187 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_invalid" })
+188 | })
+189 | 
+190 | test.each(["http://user:password@localhost:8001", "https://example.org/path", "file:///tmp/example", "http://localhost:8001/?command=start"])("unsafe base endpoint %s is rejected before I/O", async (httpOrigin) => {
+191 |   const source = fixture()
+192 |   expect(await Effect.runPromise(Panels.readEndpoints({ ...input, httpOrigin }, source.transport).pipe(Effect.flip))).toMatchObject({ code: "endpoint_invalid" })
+                                                                                                                            ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "endpoint_invalid",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:192:119)
+(fail) unsafe base endpoint http://user:password@localhost:8001 is rejected before I/O [0.05ms]
+187 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_invalid" })
+188 | })
+189 | 
+190 | test.each(["http://user:password@localhost:8001", "https://example.org/path", "file:///tmp/example", "http://localhost:8001/?command=start"])("unsafe base endpoint %s is rejected before I/O", async (httpOrigin) => {
+191 |   const source = fixture()
+192 |   expect(await Effect.runPromise(Panels.readEndpoints({ ...input, httpOrigin }, source.transport).pipe(Effect.flip))).toMatchObject({ code: "endpoint_invalid" })
+                                                                                                                            ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "endpoint_invalid",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:192:119)
+(fail) unsafe base endpoint https://example.org/path is rejected before I/O [0.03ms]
+187 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_invalid" })
+188 | })
+189 | 
+190 | test.each(["http://user:password@localhost:8001", "https://example.org/path", "file:///tmp/example", "http://localhost:8001/?command=start"])("unsafe base endpoint %s is rejected before I/O", async (httpOrigin) => {
+191 |   const source = fixture()
+192 |   expect(await Effect.runPromise(Panels.readEndpoints({ ...input, httpOrigin }, source.transport).pipe(Effect.flip))).toMatchObject({ code: "endpoint_invalid" })
+                                                                                                                            ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "endpoint_invalid",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:192:119)
+(fail) unsafe base endpoint file:///tmp/example is rejected before I/O [0.02ms]
+187 |   expect(await Effect.runPromise(Panels.readEndpoints(input, source.transport).pipe(Effect.flip))).toMatchObject({ code: "frame_invalid" })
+188 | })
+189 | 
+190 | test.each(["http://user:password@localhost:8001", "https://example.org/path", "file:///tmp/example", "http://localhost:8001/?command=start"])("unsafe base endpoint %s is rejected before I/O", async (httpOrigin) => {
+191 |   const source = fixture()
+192 |   expect(await Effect.runPromise(Panels.readEndpoints({ ...input, httpOrigin }, source.transport).pipe(Effect.flip))).toMatchObject({ code: "endpoint_invalid" })
+                                                                                                                            ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "code": "endpoint_invalid",
++   "code": "resource_invalid",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-adapters/controller-endpoints.test.ts:192:119)
+(fail) unsafe base endpoint http://localhost:8001/?command=start is rejected before I/O [0.03ms]
+
+ 9 pass
+ 35 fail
+ 48 expect() calls
+Ran 44 tests across 1 file. [160.00ms]
