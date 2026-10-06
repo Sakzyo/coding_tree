@@ -30,6 +30,13 @@ export const make = <Key, E>(options: {
   Effect.gen(function* () {
     const active = new Map<Key, Entry<E>>()
     const fork = yield* FiberSet.makeRuntime<never, void, never>()
+    let closed = false
+    // Finalizers run in reverse order: disable successors before FiberSet interrupts owners.
+    yield* Effect.addFinalizer(() =>
+      Effect.sync(() => {
+        closed = true
+      }),
+    )
 
     const makeEntry = (
       ownership = options.acquire ? { scope: Scope.makeUnsafe(), acquired: false } : undefined,
@@ -72,14 +79,14 @@ export const make = <Key, E>(options: {
 
     const settle = (key: Key, entry: Entry<E>, exit: Exit.Exit<void, E>): Effect.Effect<void> =>
       Effect.suspend(() => {
-        if (Exit.isSuccess(exit) && !entry.stopping && entry.pendingWake) {
+        if (!closed && Exit.isSuccess(exit) && !entry.stopping && entry.pendingWake) {
           entry.pendingWake = false
           start(key, entry, false, true)
           return Effect.void
         }
 
         // A pending successor inherits ownership before old waiters are settled.
-        if (entry.pendingWake) {
+        if (!closed && entry.pendingWake) {
           const successor = makeEntry(entry.ownership)
           active.set(key, successor)
           start(key, successor, false, true)
@@ -92,7 +99,7 @@ export const make = <Key, E>(options: {
         return (entry.ownership ? Scope.close(entry.ownership.scope, exit) : Effect.void).pipe(
           Effect.ensuring(
             Effect.sync(() => {
-              if (entry.pendingWake) {
+              if (!closed && entry.pendingWake) {
                 const successor = makeEntry()
                 active.set(key, successor)
                 start(key, successor, false, true)
@@ -108,6 +115,7 @@ export const make = <Key, E>(options: {
 
     const run = (key: Key): Effect.Effect<void, E> =>
       Effect.uninterruptibleMask((restore) => {
+        if (closed) return restore(Effect.interrupt)
         const entry = active.get(key)
         if (entry !== undefined) {
           if (entry.stopping) return restore(Deferred.await(entry.done).pipe(Effect.andThen(run(key))))
@@ -122,6 +130,7 @@ export const make = <Key, E>(options: {
 
     const wake = (key: Key) =>
       Effect.sync(() => {
+        if (closed) return
         const entry = active.get(key)
         if (entry !== undefined) {
           entry.pendingWake = true

@@ -1,0 +1,187 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-02.test.ts:
+(pass) resume wake and prompt cannot overlap different chats in one project [49.94ms]
+(pass) same Session joins and coalesced wakes retain one lease across drains [4.20ms]
+(pass) tool and approval waits retain ownership through interruption cleanup and successor [2.70ms]
+(pass) failed drain transfers ownership to its pending successor [2.84ms]
+(pass) managed membership rejection never falls back to legacy execution [17.42ms]
+(pass) unmanaged Sessions retain legacy execution with no gate claim [58.21ms]
+(pass) acquisition failure or cancellation cleans ownership without starting a runner [2.08ms]
+(pass) scope disposal awaits runner cleanup before exact lease release [0.52ms]
+(pass) real Session prompt admits before local wake and a busy chat never reaches its Location runner [107.58ms]
+(pass) wake during terminal release acquires a fresh claim and stale release cannot unlock it [2.35ms]
+(pass) Location construction failure releases its acquired claim and missing Session never resolves membership [3.45ms]
+(pass) resume during successful asynchronous release joins the settling execution [0.94ms]
+(pass) Location initialization and its interruption cleanup remain inside the gate claim [0.63ms]
+(pass) scope disposal releases an acquired claim despite a pending wake [0.47ms]
+(pass) scope disposal ignores wakes during delayed runner cleanup [0.52ms]
+(pass) scope disposal cancels delayed acquisition without launching its pending successor [0.45ms]
+(pass) scope disposal awaits delayed release and suppresses wakes before and during shutdown [2.33ms]
+
+test/ftc/agent-and-context/m3-01.test.ts:
+(pass) admission precedes wake and exact retry reconciles [542.81ms]
+
+test/session-prompt.test.ts:
+(pass) SessionV2.prompt > exposes the execution registry [6.90ms]
+(pass) SessionV2.prompt > delegates execution continuation through SessionExecution [18.20ms]
+(pass) SessionV2.prompt > delegates process-local interruption through SessionExecution [11.23ms]
+(pass) SessionV2.prompt > delegates interruption without requiring a recorded Session [12.40ms]
+(pass) SessionV2.prompt > durably admits one user message before transcript promotion [8.04ms]
+(pass) SessionV2.prompt > resolves attachment MIME before admission [9.92ms]
+(pass) SessionV2.prompt > streams durable Session events after an aggregate sequence [110.57ms]
+(pass) SessionV2.prompt > resumes through a recorded message without appending another prompt [10.45ms]
+(pass) SessionV2.prompt > records distinct messages when the ID is omitted [14.12ms]
+(pass) SessionV2.prompt > returns the original recorded message when the ID is retried [23.20ms]
+(pass) SessionV2.prompt > wakes execution when an exact prompt retry recovers a committed message [9.07ms]
+(pass) SessionV2.prompt > rejects reuse of one ID with a different prompt [8.55ms]
+(pass) SessionV2.prompt > rejects reuse of one ID with a different delivery mode [76.49ms]
+(pass) SessionV2.prompt > returns one recorded message to concurrent exact retries [17.40ms]
+(pass) SessionV2.prompt > promotes one message once under concurrent promotion attempts [16.11ms]
+(pass) SessionV2.prompt > promotes steers only through the captured inbox cutoff [39.70ms]
+(pass) SessionV2.prompt > reprojects pending inbox input without scheduling execution [25.47ms]
+(pass) SessionV2.prompt > returns an exact retry of a legacy projected prompt [11.22ms]
+(pass) SessionV2.prompt > returns an exact retry of a legacy projected queued prompt [12.00ms]
+(pass) SessionV2.prompt > rejects reuse of one globally unique message ID across sessions [5.80ms]
+(pass) SessionV2.prompt > rejects a prompt ID already used by visible Session history [18.16ms]
+(pass) SessionV2.prompt > starts execution by default after recording the prompt [26.60ms]
+(pass) SessionV2.prompt > starts execution when resume is explicitly true [7.00ms]
+(pass) SessionV2.prompt > only records the prompt when resume is false [21.63ms]
+
+test/session-runner.test.ts:
+(pass) SessionRunnerLLM > advertises and executes a globally attached application tool [156.99ms]
+(pass) SessionRunnerLLM > starts a real runner turn after default prompt recording [30.19ms]
+(pass) SessionRunnerLLM > streams one request with registry definitions from chronological V2 user history [155.23ms]
+(pass) SessionRunnerLLM > retries the first provider turn after system context becomes available [48.84ms]
+(pass) SessionRunnerLLM > interrupts a source Location runner after a Session moves [28.10ms]
+(pass) SessionRunnerLLM > fails gracefully when a stored context snapshot cannot be decoded [46.88ms]
+(pass) SessionRunnerLLM > reuses one durable baseline after the context producer changes [36.61ms]
+(pass) SessionRunnerLLM > includes the effective default agent system before durable context [34.96ms]
+(pass) SessionRunnerLLM > uses the configured default agent system for omitted-agent sessions [29.79ms]
+(pass) SessionRunnerLLM > uses an explicitly selected non-build agent system [34.59ms]
+(pass) SessionRunnerLLM > updates selected-agent skill guidance after an agent switch [75.43ms]
+(pass) SessionRunnerLLM > keeps the sampled agent when selection changes during observation [33.31ms]
+(pass) SessionRunnerLLM > keeps the sampled model when selection changes during model resolution [28.93ms]
+(pass) SessionRunnerLLM > admits removed context as a chronological System message [32.77ms]
+(pass) SessionRunnerLLM > keeps the baseline and chronological System updates after a model switch [93.37ms]
+(pass) SessionRunnerLLM > preserves the baseline while context is temporarily unavailable [98.74ms]
+(pass) SessionRunnerLLM > rebuilds the baseline directly after completed compaction [81.95ms]
+(pass) SessionRunnerLLM > automatically compacts into a completed summary and retained recent turn [150.15ms]
+(pass) SessionRunnerLLM > retains only complete serialized messages during compaction [108.00ms]
+(pass) SessionRunnerLLM > summarizes an oversized newest message without retaining a fragment [55.16ms]
+(pass) SessionRunnerLLM > forces one compaction and retries after provider context overflow [71.60ms]
+(pass) SessionRunnerLLM > persists a second context overflow after one recovery [42.66ms]
+(pass) SessionRunnerLLM > recovers once from a raw context overflow failure [55.95ms]
+(pass) SessionRunnerLLM > publishes the original overflow when recovery summarization fails [66.59ms]
+(pass) SessionRunnerLLM > interrupts overflow recovery while the summary provider is running [93.49ms]
+(pass) SessionRunnerLLM > preserves effective System updates while compaction rebaseline is blocked [118.98ms]
+(pass) SessionRunnerLLM > projects reasoning and tool events without executing or continuing tools [90.51ms]
+(pass) SessionRunnerLLM > continues with reloaded history after durably settling one local tool call [129.16ms]
+(pass) SessionRunnerLLM > reloads a model switch before a tool-driven continuation turn [33.45ms]
+(pass) SessionRunnerLLM > restores durable reasoning provider metadata in a second-turn request [133.46ms]
+(pass) SessionRunnerLLM > replays durable provider-executed tool results inline in a second-turn request [55.91ms]
+(pass) SessionRunnerLLM > starts recorded local tools eagerly and awaits settlement before continuing [45.07ms]
+(pass) SessionRunnerLLM > settles repeated provider-local tool call IDs against their owning assistant messages [42.82ms]
+(pass) SessionRunnerLLM > joins concurrent resume calls into one active provider run [17.54ms]
+(pass) SessionRunnerLLM > steers an active provider turn with newly recorded prompts [19.89ms]
+(pass) SessionRunnerLLM > promotes queued input after continuation ends [21.48ms]
+(pass) SessionRunnerLLM > preserves durable queued input for a later wake after interruption [11.78ms]
+(pass) SessionRunnerLLM > preserves durable steering input for a later resume after interruption [15.03ms]
+(pass) SessionRunnerLLM > promotes queued inputs one at a time in FIFO order [17.89ms]
+(pass) SessionRunnerLLM > promotes queued input after steering continuation ends [9.71ms]
+(pass) SessionRunnerLLM > promotes steers before the next queued input [22.34ms]
+(pass) SessionRunnerLLM > coalesces multiple active steering prompts into one continuation turn [18.80ms]
+(pass) SessionRunnerLLM > runs steering input accepted while the active provider turn fails [14.10ms]
+(pass) SessionRunnerLLM > durably fails local tools left running by a prior process before continuing [9.73ms]
+(pass) SessionRunnerLLM > durably fails hosted tools left running by a prior process before continuing inline [12.91ms]
+(pass) SessionRunnerLLM > durably fails pending tool input left by a prior process before continuing [7.90ms]
+(pass) SessionRunnerLLM > promotes the first queued input when woken while idle [11.73ms]
+(pass) SessionRunnerLLM > retries inbox input after prompt projection rolls back [9.29ms]
+(pass) SessionRunnerLLM > does not strand a committed promotion when a post-commit listener defects [11.42ms]
+(pass) SessionRunnerLLM > runs different sessions concurrently [8.83ms]
+(pass) SessionRunnerLLM > adds session correlation headers to model requests [11.29ms]
+(pass) SessionRunnerLLM > adds the parent session header to child model requests [6.74ms]
+(pass) SessionRunnerLLM > bounds 64-character session prompt cache keys [7.92ms]
+(pass) SessionRunnerLLM > fans out one failed run and allows a later retry [12.11ms]
+(pass) SessionRunnerLLM > durably settles local tool failures before continuing [14.64ms]
+(pass) SessionRunnerLLM > returns unexpected local tool defects to the model and continues [11.23ms]
+(pass) SessionRunnerLLM > returns policy-blocked tools to the model and continues [10.22ms]
+(pass) SessionRunnerLLM > interrupts runner continuation when permission approval is declined [12.27ms]
+(pass) SessionRunnerLLM > returns permission corrections to the model and continues [9.21ms]
+(pass) SessionRunnerLLM > interrupts runner continuation when a question is dismissed [12.02ms]
+(pass) SessionRunnerLLM > awaits started local tools before surfacing provider stream failure [8.31ms]
+(pass) SessionRunnerLLM > durably fails blocked local tools when a provider turn is interrupted [15.70ms]
+(pass) SessionRunnerLLM > interrupts a blocked provider turn without local tool execution [5.25ms]
+(pass) SessionRunnerLLM > durably fails blocked local tools when interrupted while awaiting settlement [11.85ms]
+(pass) SessionRunnerLLM > forces a text response on an agent's configured final step [15.38ms]
+(pass) SessionRunnerLLM > resets the configured step allowance when steering input promotes [13.80ms]
+(pass) SessionRunnerLLM > projects provider errors as terminal assistant step failures [10.99ms]
+(pass) SessionRunnerLLM > projects provider errors emitted before assistant step start [7.16ms]
+(pass) SessionRunnerLLM > does not recover context overflow after durable assistant output [6.58ms]
+(pass) SessionRunnerLLM > projects raw provider stream failures as terminal assistant step failures [11.60ms]
+(pass) SessionRunnerLLM > does not continue automatically after a provider error follows a local tool call [7.35ms]
+(pass) SessionRunnerLLM > durably fails a hosted tool when its provider errors before returning a result [12.47ms]
+(pass) SessionRunnerLLM > durably fails a hosted tool left unresolved at normal provider EOF [13.27ms]
+(pass) SessionRunnerLLM > durably fails a hosted tool left unresolved by a raw provider stream failure [11.09ms]
+(pass) SessionRunnerLLM > keeps interleaved assistant text blocks separate [11.79ms]
+(pass) SessionRunnerLLM > broadcasts provider text deltas without storing projection rewrites [14.04ms]
+(pass) SessionRunnerLLM > durably closes partial text when the provider stream fails [8.32ms]
+(pass) SessionRunnerLLM > durably closes partial text when the provider stream is interrupted [7.07ms]
+(pass) SessionRunnerLLM > broadcasts provider reasoning deltas without storing projection rewrites [26.63ms]
+(pass) SessionRunnerLLM > durably closes partial reasoning when the provider stream fails [7.93ms]
+(pass) SessionRunnerLLM > durably closes partial reasoning when the provider stream is interrupted [6.95ms]
+(pass) SessionRunnerLLM > broadcasts provider tool input deltas without storing projection rewrites [13.39ms]
+(pass) SessionRunnerLLM > durably closes partial tool input when the provider stream fails [7.15ms]
+(pass) SessionRunnerLLM > durably closes partial tool input when the provider stream is interrupted [10.48ms]
+(pass) SessionRunnerLLM > rejects duplicate streamed text starts [5.63ms]
+(pass) SessionRunnerLLM > transitions streamed raw tool input to parsed called input [6.87ms]
+(pass) SessionRunnerLLM > rejects malformed streamed tool input ordering [7.58ms]
+
+test/session-run-coordinator.test.ts:
+(pass) SessionRunCoordinator > joins concurrent resumes for one key [0.33ms]
+(pass) SessionRunCoordinator > joins a wake-started execution without forcing a successor [0.23ms]
+(pass) SessionRunCoordinator > starts execution when woken while idle [0.14ms]
+(pass) SessionRunCoordinator > snapshots only active executions [0.38ms]
+(pass) SessionRunCoordinator > cleans active executions after failure and defect [0.21ms]
+(pass) SessionRunCoordinator > cleans active executions when its scope closes [0.19ms]
+(pass) SessionRunCoordinator > coalesces wakes received during active execution [0.24ms]
+(pass) SessionRunCoordinator > runs again when woken during the follow-up [0.30ms]
+(pass) SessionRunCoordinator > does nothing when interrupted while idle [0.08ms]
+(pass) SessionRunCoordinator > interrupts active execution and clears its pending wake [0.26ms]
+(pass) SessionRunCoordinator > runs a wake registered during interruption cleanup [0.28ms]
+(pass) SessionRunCoordinator > starts a resume registered during interruption cleanup [0.26ms]
+(pass) SessionRunCoordinator > starts one follow-up when a wake races with failure [0.21ms]
+(pass) SessionRunCoordinator > does not cancel execution when a joined waiter is interrupted [0.17ms]
+(pass) SessionRunCoordinator > runs different keys concurrently [0.19ms]
+(pass) SessionRunCoordinator > trampolines synchronous self-waking execution [41.05ms]
+
+test/session-runner-recorded.test.ts:
+(pass) SessionRunnerLLM recorded > executes one recorded V2 prompt through the recorded HTTP transport [17.29ms]
+
+test/effect/layer-node/node-build.test.ts:
+(pass) node build > does not build a location service map when the graph does not require it [0.17ms]
+(pass) node build > detects cycles through a replaced location service map [0.32ms]
+[16:32:08.500] INFO (#74583): watcher backend {
+  directory: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-0SrruH",
+  platform: "darwin",
+  backend: "fs-events",
+}
+[16:32:08.503] INFO (#74692): project copy refresh started {
+  projectID: "global",
+}
+[16:32:08.504] INFO (#74692): project copy refresh done {
+  projectID: "global",
+  updated: [],
+  removed: [],
+}
+[16:32:08.519] INFO (#74583): booting location services {
+  directory: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-0SrruH",
+  workspaceID: undefined,
+}
+(pass) node build > shares top-level project with location services [55.56ms]
+(pass) node build > returns a composed application layer [0.18ms]
+
+ 150 pass
+ 0 fail
+ 471 expect() calls
+Ran 150 tests across 7 files. [5.63s]

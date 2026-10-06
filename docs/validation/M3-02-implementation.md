@@ -1,6 +1,8 @@
 # M3-02 — Injected Session execution gate
 
-**Candidate: DONE, frozen for coordinator review.** Implementation/test owner `/root/m3_02`; dispatch base `13838cc9778c80c3411e6ff5b0d404aa288a11b4`. No staging, commit, checklist or progress edits by this owner. Root's disjoint M4 and M11 commits advanced the shared HEAD to `7a5d893673e4b4308406ba8ec9ffe55da9cec98d` during verification. Frozen source/test SHA-256 values are in [SHA256SUMS](m3-02/SHA256SUMS).
+**Candidate: fix round 1, frozen for re-review.** Current repair base: `fcf89eb8d6fd40e358c9b559ffd5d1d3b52a2f87`; see the final section and [repair hashes](m3-02/fix1-SHA256SUMS). Earlier sections retain the original reviewed candidate and its historical test/benchmark evidence.
+
+**Original candidate record.** Implementation/test owner `/root/m3_02`; dispatch base `13838cc9778c80c3411e6ff5b0d404aa288a11b4`. No staging, commit, checklist or progress edits by this owner. Root's disjoint M4 and M11 commits advanced the shared HEAD to `7a5d893673e4b4308406ba8ec9ffe55da9cec98d` during verification. Frozen source/test SHA-256 values are in [SHA256SUMS](m3-02/SHA256SUMS).
 
 ## Contract and scope
 
@@ -94,3 +96,40 @@ Final median total times per 1000 lifecycles: baseline **9.671 ms**, explicit un
 ## Review limits and remaining gates
 
 M2-managed production host composition, admission reservation handoff/draft rejection, settled stop facade, real gate+host integration, Windows, packaged Electron, real provider/tool/approval UI, offline inference and physical robots remain their named task/release gates. These tests establish the injected M3 seam, not those downstream outcomes. Importing the gate module starts no I/O; process-global production ownership remains the existing node/coordinator. No ownership is persisted and no crash/provider work recovery was added. Coordinator independent review and commit remain outstanding.
+
+
+## Fix round 1 — disposal leak I1 and expected diagnostics M1
+
+Review input: [M3-02-review.md](M3-02-review.md). The independent reviewer reproduced an important leak: closing the execution scope with a pending wake caused the interrupted owner to transfer its acquired lease to a successor after FiberSet had closed. FiberSet returned an interrupted fiber without evaluating the successor effect, so neither its terminal cleanup nor ownership release ran. The active Session and project claim remained after disposal. The original ordinary-disposal test did not combine a pending wake with closure.
+
+The repair changes only `packages/core/src/session/run-coordinator.ts` and the assigned focused test, plus this report/evidence. A coordinator-local `closed` flag is set by a finalizer registered after FiberSet construction; reverse finalizer order establishes closure before FiberSet interrupts its owners. All coalesced/successor branches check this flag. During shutdown, owners terminally close their lease scope and settle/remove the entry instead of forking a successor. Late advisory wakes become no-ops; a resume against a disposed coordinator interrupts rather than creating an entry for a closed runtime. Ordinary live join, coalescing, failure-successor and explicit interruption-successor semantics remain covered and passing. The pre-existing Fiber generic lint warning is unchanged.
+
+Four new regressions use the actual local execution factory, real coordinator and explicitly closed Effect scope:
+
+| Current test line | Disposal assertion |
+| --- | --- |
+| `m3-02.test.ts:571` | An acquired claim plus pending wake closes with exactly one release, one drain, zero project owners and empty active set; post-close wake/resume cannot recreate ownership. |
+| `m3-02.test.ts:591` | Closure waits for delayed runner cleanup; same-Session and different-Session wakes during cleanup start no successor; the original claim releases after cleanup. |
+| `m3-02.test.ts:619` | Closure cancels delayed acquisition and waits for its interruption cleanup; a pending/cleanup-time wake starts no successor; no lease is released without acquisition. |
+| `m3-02.test.ts:652` | Closure waits for asynchronous lease release; wakes registered before or during shutdown cannot transfer ownership into the closed FiberSet; one exact release and empty active registry. |
+
+Before the fix, the four new cases failed while the original uncomplicated scope-disposal case passed: **1 pass, 4 fail, 16 assertions**, exit 1, [RED](m3-02/fix1-red.log). This independently reproduces the reviewed leak through the real local factory. After the fix and log assertions, the focused suite passes **17 tests / 100 assertions**, exit 0, [GREEN](m3-02/fix1-green.log).
+
+For M1, the two intentional defect cases now use the test-local `expectedFailure` logger layer at line 125. Each asserts exactly one Error record, its Session-drain message and expected cause. There is no process-global logger replacement and no blanket suppression of unexpected records. This adds eight assertions and removes those deliberate ERROR records from the focused stdout. Remaining logs in the broader unchanged regression suites are not modified.
+
+Repair checks used the pinned Bun 1.3.14 PATH above. Core tests/types used task-owned `OPENCODE_TEST_HOME=/private/tmp/ftc-m3-02-fix1/home` and corresponding `XDG_{DATA,CONFIG,CACHE,STATE}_HOME=/private/tmp/ftc-m3-02-fix1/{data,config,cache,state}`. Runtime checks were executed from package directories; no user app/server was restarted.
+
+| Command | Cwd | Exit/result | Evidence |
+| --- | --- | --- | --- |
+| `bun test ./test/ftc/agent-and-context/m3-02.test.ts --test-name-pattern 'scope disposal'` before repair | `packages/core` | 1; 1 pass, 4 fail, 16 assertions | [RED](m3-02/fix1-red.log) |
+| `bun test ./test/ftc/agent-and-context/m3-02.test.ts` | `packages/core` | 0; 17 pass, 0 fail, 100 assertions | [focused](m3-02/fix1-green.log) |
+| `bun test ./test/ftc/agent-and-context/m3-02.test.ts ./test/ftc/agent-and-context/m3-01.test.ts ./test/session-prompt.test.ts ./test/session-runner.test.ts ./test/session-run-coordinator.test.ts ./test/session-runner-recorded.test.ts ./test/effect/layer-node/node-build.test.ts` | `packages/core` | 0; 150 pass, 0 fail, 471 assertions, final repair source | [covering regressions](m3-02/fix1-regressions.log) |
+| `bun typecheck` | `packages/core` | 0 | [Core types](m3-02/fix1-core-typecheck.log) |
+| `bun typecheck` | `packages/server` | 0; pinned PATH, no runtime work | [Server types](m3-02/fix1-server-typecheck.log) |
+| `bunx --no-install oxlint packages/core/src/session/run-coordinator.ts packages/core/test/ftc/agent-and-context/m3-02.test.ts` | repository | 0; 0 errors, one unchanged pre-existing warning | [lint](m3-02/fix1-lint.log) |
+| `bunx --no-install prettier --check packages/core/src/session/run-coordinator.ts packages/core/test/ftc/agent-and-context/m3-02.test.ts` | repository | 0 | [format](m3-02/fix1-format-check.log) |
+| `git diff --check -- packages/core/src/session/run-coordinator.ts packages/core/test/ftc/agent-and-context/m3-02.test.ts docs/validation/M3-02-implementation.md` | repository | 0 | [diff](m3-02/fix1-diff-check.log) |
+
+No public error contract, Schema, host, M2 facade or renderer behavior changed in this repair. Its normal live path adds boolean disposal guards and one scope finalizer; the measured lifecycle algorithm is otherwise unchanged. This does not materially invalidate the prior bounded overhead comparison, so the scoped benchmark was not repeated. Its distributions remain explicitly historical initial-candidate measurements, not a fresh repair measurement or a shutdown-latency benchmark. The new disposal tests provide the relevant behavioral evidence. All previously listed downstream production/platform/robot gates remain unrun.
+
+Current complete M3 source/test identities are [fix1-SHA256SUMS](m3-02/fix1-SHA256SUMS). No staging, commits, checklist/progress changes or new tasks by the repair owner. Root owns commit, same-reviewer re-review and the user-requested progress update before stopping.

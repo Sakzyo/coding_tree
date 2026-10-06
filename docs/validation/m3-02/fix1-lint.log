@@ -1,0 +1,11 @@
+
+  ! typescript-eslint(no-unnecessary-type-arguments): This is the default value for this type parameter, so it can be omitted.
+    ,-[packages/core/src/session/run-coordinator.ts:19:29]
+ 18 |   readonly done: Deferred.Deferred<void, E>
+ 19 |   owner?: Fiber.Fiber<void, never>
+    :                             ^^^^^
+ 20 |   pendingWake: boolean
+    `----
+
+Found 1 warning and 0 errors.
+Finished in 3.2s on 2 files with 130 rules using 10 threads.

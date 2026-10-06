@@ -1,0 +1,123 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-02.test.ts:
+(pass) scope disposal awaits runner cleanup before exact lease release [9.30ms]
+548 |   const f = yield* fixture().pipe(Effect.provideService(Scope.Scope, scope))
+549 |   yield* f.execution.wake(f.sessions[0].id)
+550 |   yield* Deferred.await(f.started[0])
+551 |   yield* f.execution.wake(f.sessions[0].id)
+552 |   yield* Scope.close(scope, Exit.void)
+553 |   expect(f.released).toEqual(f.acquired)
+                           ^
+error: expect(received).toEqual(expected)
+
+- [
+-   {
+-     "chatID": "chat_1120be3fe005BCQ1uDtXNw9PLL",
+-     "projectKey": "/canonical/association-0",
+-     "sessionID": "ses_eedf41c01ffest1y3EAnbi65xv",
+-     "token": "gate_0",
+-   },
+- ]
++ []
+
+- Expected  - 8
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-02.test.ts:553:22)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+(fail) scope disposal releases an acquired claim despite a pending wake [1.65ms]
+573 |   yield* f.execution.wake(f.sessions[2].id)
+574 |   expect(f.released).toHaveLength(0)
+575 |   expect(f.acquired).toHaveLength(1)
+576 |   yield* Deferred.succeed(cleanup, undefined)
+577 |   yield* Fiber.join(closing)
+578 |   expect(f.released).toEqual(f.acquired)
+                           ^
+error: expect(received).toEqual(expected)
+
+- [
+-   {
+-     "chatID": "chat_1120be404005of63cOqV1ubwWE",
+-     "projectKey": "/canonical/association-0",
+-     "sessionID": "ses_eedf41bfbffeZUEpmkNDer9B9X",
+-     "token": "gate_0",
+-   },
+- ]
++ []
+
+- Expected  - 8
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-02.test.ts:578:22)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) scope disposal ignores wakes during delayed runner cleanup [5.77ms]
+595 |   yield* Deferred.succeed(cleanup, undefined)
+596 |   yield* Fiber.join(closing)
+597 |   expect(f.acquired).toHaveLength(0)
+598 |   expect(f.released).toHaveLength(0)
+599 |   expect(f.starts).toHaveLength(0)
+600 |   expect(Array.from(yield* f.execution.active)).toEqual([])
+                                                      ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   "ses_eedf41bfaffe2Yr19L76XuKpfh",
++ ]
+
+- Expected  - 1
++ Received  + 3
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-02.test.ts:600:49)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) scope disposal cancels delayed acquisition without launching its pending successor [0.70ms]
+621 |   yield* Deferred.succeed(release, undefined)
+622 |   yield* Fiber.join(closing)
+623 |   expect(f.released).toEqual(f.acquired)
+624 |   expect(f.released).toHaveLength(1)
+625 |   expect(f.starts).toHaveLength(1)
+626 |   expect(Array.from(yield* local.active)).toEqual([])
+                                                ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   "ses_eedf41bf9ff7H737B5dDPH2jPh",
++   "ses_eedf41bf9ff59M6arWf2WFByu5",
++ ]
+
+- Expected  - 1
++ Received  + 4
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-02.test.ts:626:43)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:656:13)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) scope disposal awaits delayed release and suppresses wakes before and during shutdown [0.82ms]
+
+ 1 pass
+ 12 filtered out
+ 4 fail
+ 16 expect() calls
+Ran 5 tests across 1 file. [331.00ms]

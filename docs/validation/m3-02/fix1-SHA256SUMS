@@ -1,0 +1,6 @@
+a71d37b8032c60d4dca67d72a55f6d90ec8f55ca3dbcdb9a0042b036082f3471  packages/core/src/ftc/agent/gate.ts
+a6c6031fc6a667752b0bc4bcd2e2945ebb303c53ca93f7e8009d3dd23971ad5b  packages/core/src/session/execution/local.ts
+becc693d58a398b67a7eb459da55e42ec6bfa29fd99a17bbdf7a1aed76d4df9b  packages/core/src/session/execution.ts
+3da4af4b1cc062751f52b878b074f201d6ff88f25d654251b2614ff9a6986096  packages/core/src/session/runner/index.ts
+64c1d16703414f67ef4a0aff140d0ddd94fdf368004f4bb215fb07e0cce263d4  packages/core/src/session/run-coordinator.ts
+8b776a57a215c1f63d2c3f383c24577436a044ca8b14885dd8f46218d3766cd0  packages/core/test/ftc/agent-and-context/m3-02.test.ts

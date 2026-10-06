@@ -18,7 +18,7 @@ import { SessionMessage } from "@opencode-ai/core/session/message"
 import { SessionStore } from "@opencode-ai/core/session/store"
 import { Prompt } from "@opencode-ai/core/session/prompt"
 import { tmpdir } from "../../fixture/tmpdir"
-import { Cause, DateTime, Deferred, Effect, Exit, Fiber, Layer, LayerMap, Scope } from "effect"
+import { Cause, DateTime, Deferred, Effect, Exit, Fiber, Layer, LayerMap, Logger, Scope } from "effect"
 
 const fixture = (
   options: {
@@ -121,6 +121,25 @@ const fixture = (
   })
 
 const run = <A, E>(effect: Effect.Effect<A, E, Scope.Scope>) => Effect.runPromise(Effect.scoped(effect))
+
+const expectedFailure = <A, E>(message: string, effect: Effect.Effect<A, E, Scope.Scope>) =>
+  Effect.gen(function* () {
+    const records: Logger.Options<unknown>[] = []
+    const result = yield* effect.pipe(
+      Effect.provide(
+        Logger.layer([
+          Logger.make((record) => {
+            records.push(record)
+          }),
+        ]),
+      ),
+    )
+    expect(records).toHaveLength(1)
+    expect(records[0].logLevel).toBe("Error")
+    expect(records[0].message).toEqual(["Failed to drain Session"])
+    expect(Cause.pretty(records[0].cause)).toContain(message)
+    return result
+  })
 
 test("resume wake and prompt cannot overlap different chats in one project", () =>
   run(
@@ -229,29 +248,32 @@ test("tool and approval waits retain ownership through interruption cleanup and 
 
 test("failed drain transfers ownership to its pending successor", () =>
   run(
-    Effect.gen(function* () {
-      const fail = yield* Deferred.make<void>()
-      const next = yield* Deferred.make<void>()
-      const finish = yield* Deferred.make<void>()
-      const f = yield* fixture({
-        run: (_id, count) =>
-          count === 1
-            ? Deferred.await(fail).pipe(Effect.andThen(Effect.die("controlled runner failure")))
-            : Deferred.succeed(next, undefined).pipe(Effect.andThen(Deferred.await(finish))),
-      })
-      const first = yield* f.execution.resume(f.sessions[0].id).pipe(Effect.exit, Effect.forkChild)
-      yield* Deferred.await(f.started[0])
-      yield* f.execution.wake(f.sessions[0].id)
-      yield* Deferred.succeed(fail, undefined)
-      expect(Exit.isFailure(yield* Fiber.join(first))).toBe(true)
-      yield* Deferred.await(next)
-      expect(f.acquired).toHaveLength(1)
-      expect(f.released).toHaveLength(0)
-      const joined = yield* f.execution.resume(f.sessions[0].id).pipe(Effect.forkChild)
-      yield* Deferred.succeed(finish, undefined)
-      yield* Fiber.join(joined)
-      expect(f.released).toEqual(f.acquired)
-    }),
+    expectedFailure(
+      "controlled runner failure",
+      Effect.gen(function* () {
+        const fail = yield* Deferred.make<void>()
+        const next = yield* Deferred.make<void>()
+        const finish = yield* Deferred.make<void>()
+        const f = yield* fixture({
+          run: (_id, count) =>
+            count === 1
+              ? Deferred.await(fail).pipe(Effect.andThen(Effect.die("controlled runner failure")))
+              : Deferred.succeed(next, undefined).pipe(Effect.andThen(Deferred.await(finish))),
+        })
+        const first = yield* f.execution.resume(f.sessions[0].id).pipe(Effect.exit, Effect.forkChild)
+        yield* Deferred.await(f.started[0])
+        yield* f.execution.wake(f.sessions[0].id)
+        yield* Deferred.succeed(fail, undefined)
+        expect(Exit.isFailure(yield* Fiber.join(first))).toBe(true)
+        yield* Deferred.await(next)
+        expect(f.acquired).toHaveLength(1)
+        expect(f.released).toHaveLength(0)
+        const joined = yield* f.execution.resume(f.sessions[0].id).pipe(Effect.forkChild)
+        yield* Deferred.succeed(finish, undefined)
+        yield* Fiber.join(joined)
+        expect(f.released).toEqual(f.acquired)
+      }),
+    ),
   ))
 
 test("managed membership rejection never falls back to legacy execution", () =>
@@ -469,21 +491,24 @@ test("wake during terminal release acquires a fresh claim and stale release cann
 
 test("Location construction failure releases its acquired claim and missing Session never resolves membership", () =>
   run(
-    Effect.gen(function* () {
-      const f = yield* fixture()
-      const local = yield* SessionExecutionLocal.make({
-        store: { get: (id) => Effect.succeed(f.sessions.find((session) => session.id === id)) },
-        locations: { get: () => Layer.effect(SessionRunner.Service, Effect.die("Location construction failed")) },
-        gate: f.gate,
-      })
-      expect(Exit.isFailure(yield* local.resume(f.sessions[0].id).pipe(Effect.exit))).toBe(true)
-      expect(f.released).toEqual(f.acquired)
-      expect(f.starts).toHaveLength(0)
-      const resolutions = f.resolved.length
-      expect(Exit.isFailure(yield* local.resume(SessionSchema.ID.create()).pipe(Effect.exit))).toBe(true)
-      expect(f.resolved).toHaveLength(resolutions)
-      expect(Array.from(yield* local.active)).toEqual([])
-    }),
+    expectedFailure(
+      "Location construction failed",
+      Effect.gen(function* () {
+        const f = yield* fixture()
+        const local = yield* SessionExecutionLocal.make({
+          store: { get: (id) => Effect.succeed(f.sessions.find((session) => session.id === id)) },
+          locations: { get: () => Layer.effect(SessionRunner.Service, Effect.die("Location construction failed")) },
+          gate: f.gate,
+        })
+        expect(Exit.isFailure(yield* local.resume(f.sessions[0].id).pipe(Effect.exit))).toBe(true)
+        expect(f.released).toEqual(f.acquired)
+        expect(f.starts).toHaveLength(0)
+        const resolutions = f.resolved.length
+        expect(Exit.isFailure(yield* local.resume(SessionSchema.ID.create()).pipe(Effect.exit))).toBe(true)
+        expect(f.resolved).toHaveLength(resolutions)
+        expect(Array.from(yield* local.active)).toEqual([])
+      }),
+    ),
   ))
 
 test("resume during successful asynchronous release joins the settling execution", () =>
@@ -539,6 +564,123 @@ test("Location initialization and its interruption cleanup remain inside the gat
       yield* Fiber.join(stop)
       expect(f.starts).toHaveLength(0)
       expect(f.released).toEqual(f.acquired)
+      expect(Array.from(yield* local.active)).toEqual([])
+    }),
+  ))
+
+test("scope disposal releases an acquired claim despite a pending wake", () =>
+  run(
+    Effect.gen(function* () {
+      const scope = yield* Scope.make()
+      const f = yield* fixture().pipe(Effect.provideService(Scope.Scope, scope))
+      yield* f.execution.wake(f.sessions[0].id)
+      yield* Deferred.await(f.started[0])
+      yield* f.execution.wake(f.sessions[0].id)
+      yield* Scope.close(scope, Exit.void)
+      expect(f.released).toEqual(f.acquired)
+      expect(f.released).toHaveLength(1)
+      expect(f.starts).toHaveLength(1)
+      expect(f.owners.size).toBe(0)
+      expect(Array.from(yield* f.execution.active)).toEqual([])
+      yield* f.execution.wake(f.sessions[0].id)
+      expect(Exit.isFailure(yield* f.execution.resume(f.sessions[0].id).pipe(Effect.exit))).toBe(true)
+      expect(Array.from(yield* f.execution.active)).toEqual([])
+    }),
+  ))
+
+test("scope disposal ignores wakes during delayed runner cleanup", () =>
+  run(
+    Effect.gen(function* () {
+      const scope = yield* Scope.make()
+      const cleaning = yield* Deferred.make<void>()
+      const cleanup = yield* Deferred.make<void>()
+      const f = yield* fixture({
+        run: () =>
+          Effect.never.pipe(
+            Effect.ensuring(Deferred.succeed(cleaning, undefined).pipe(Effect.andThen(Deferred.await(cleanup)))),
+          ),
+      }).pipe(Effect.provideService(Scope.Scope, scope))
+      yield* f.execution.wake(f.sessions[0].id)
+      yield* Deferred.await(f.started[0])
+      const closing = yield* Scope.close(scope, Exit.void).pipe(Effect.forkChild)
+      yield* Deferred.await(cleaning)
+      yield* f.execution.wake(f.sessions[0].id)
+      yield* f.execution.wake(f.sessions[2].id)
+      expect(f.released).toHaveLength(0)
+      expect(f.acquired).toHaveLength(1)
+      yield* Deferred.succeed(cleanup, undefined)
+      yield* Fiber.join(closing)
+      expect(f.released).toEqual(f.acquired)
+      expect(f.starts).toHaveLength(1)
+      expect(Array.from(yield* f.execution.active)).toEqual([])
+    }),
+  ))
+
+test("scope disposal cancels delayed acquisition without launching its pending successor", () =>
+  run(
+    Effect.gen(function* () {
+      const scope = yield* Scope.make()
+      const acquiring = yield* Deferred.make<void>()
+      const cleaning = yield* Deferred.make<void>()
+      const cleanup = yield* Deferred.make<void>()
+      const f = yield* fixture({
+        gate: {
+          acquire: () =>
+            Deferred.succeed(acquiring, undefined).pipe(
+              Effect.andThen(Effect.never),
+              Effect.onInterrupt(() =>
+                Deferred.succeed(cleaning, undefined).pipe(Effect.andThen(Deferred.await(cleanup))),
+              ),
+            ),
+        },
+      }).pipe(Effect.provideService(Scope.Scope, scope))
+      yield* f.execution.wake(f.sessions[0].id)
+      yield* Deferred.await(acquiring)
+      yield* f.execution.wake(f.sessions[0].id)
+      const closing = yield* Scope.close(scope, Exit.void).pipe(Effect.forkChild)
+      yield* Deferred.await(cleaning)
+      yield* f.execution.wake(f.sessions[0].id)
+      yield* Deferred.succeed(cleanup, undefined)
+      yield* Fiber.join(closing)
+      expect(f.acquired).toHaveLength(0)
+      expect(f.released).toHaveLength(0)
+      expect(f.starts).toHaveLength(0)
+      expect(Array.from(yield* f.execution.active)).toEqual([])
+    }),
+  ))
+
+test("scope disposal awaits delayed release and suppresses wakes before and during shutdown", () =>
+  run(
+    Effect.gen(function* () {
+      const scope = yield* Scope.make()
+      const releasing = yield* Deferred.make<void>()
+      const release = yield* Deferred.make<void>()
+      const f = yield* fixture({ run: () => Effect.void }).pipe(Effect.provideService(Scope.Scope, scope))
+      const local = yield* SessionExecutionLocal.make({
+        store: { get: (id) => Effect.succeed(f.sessions.find((session) => session.id === id)) },
+        locations: f.locations,
+        gate: {
+          ...f.gate,
+          release: (lease) =>
+            Deferred.succeed(releasing, undefined).pipe(
+              Effect.andThen(Deferred.await(release)),
+              Effect.andThen(f.gate.release(lease)),
+            ),
+        },
+      }).pipe(Effect.provideService(Scope.Scope, scope))
+      yield* local.wake(f.sessions[0].id)
+      yield* Deferred.await(releasing)
+      yield* local.wake(f.sessions[0].id)
+      const closing = yield* Scope.close(scope, Exit.void).pipe(Effect.forkChild)
+      yield* Effect.yieldNow
+      yield* local.wake(f.sessions[0].id)
+      yield* local.wake(f.sessions[2].id)
+      expect(f.released).toHaveLength(0)
+      yield* Deferred.succeed(release, undefined)
+      yield* Fiber.join(closing)
+      expect(f.released).toEqual(f.acquired)
+      expect(f.released).toHaveLength(1)
+      expect(f.starts).toHaveLength(1)
       expect(Array.from(yield* local.active)).toEqual([])
     }),
   ))

@@ -1,0 +1,33 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-02.test.ts:
+(pass) resume wake and prompt cannot overlap different chats in one project [13.29ms]
+(pass) same Session joins and coalesced wakes retain one lease across drains [6.56ms]
+(pass) tool and approval waits retain ownership through interruption cleanup and successor [1.32ms]
+[16:29:09.487] ERROR (#32): Failed to drain Session Error: controlled runner failure
+    at causePrettyError (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:228:28) {
+  sessionID: "ses_eedf3d611ffenpUd1rHUCNBixT",
+}
+(pass) failed drain transfers ownership to its pending successor [1.34ms]
+(pass) managed membership rejection never falls back to legacy execution [0.49ms]
+(pass) unmanaged Sessions retain legacy execution with no gate claim [0.34ms]
+(pass) acquisition failure or cancellation cleans ownership without starting a runner [0.59ms]
+(pass) scope disposal awaits runner cleanup before exact lease release [0.63ms]
+(pass) real Session prompt admits before local wake and a busy chat never reaches its Location runner [32.33ms]
+(pass) wake during terminal release acquires a fresh claim and stale release cannot unlock it [1.09ms]
+[16:29:09.523] ERROR (#183): Failed to drain Session Error: Location construction failed
+    at causePrettyError (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:228:28) {
+  sessionID: "ses_eedf3d5ecffenQRe99QeiAGCu7",
+}
+(pass) Location construction failure releases its acquired claim and missing Session never resolves membership [0.47ms]
+(pass) resume during successful asynchronous release joins the settling execution [0.38ms]
+(pass) Location initialization and its interruption cleanup remain inside the gate claim [0.63ms]
+(pass) scope disposal releases an acquired claim despite a pending wake [0.44ms]
+(pass) scope disposal ignores wakes during delayed runner cleanup [0.39ms]
+(pass) scope disposal cancels delayed acquisition without launching its pending successor [0.37ms]
+(pass) scope disposal awaits delayed release and suppresses wakes before and during shutdown [0.43ms]
+
+ 17 pass
+ 0 fail
+ 92 expect() calls
+Ran 17 tests across 1 file. [312.00ms]
