@@ -50,7 +50,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 ## Task checklist
 
-- [ ] [M11-01 — Validate local content packages and bilingual IDs](#m11-01)
+- [x] [M11-01 — Validate local content packages and bilingual IDs](#m11-01)
 - [ ] [M11-02 — Query references by explicit version and language](#m11-02)
 - [ ] [M11-03 — Author version-matched pathing comparisons and setup guides](#m11-03)
 - [ ] [M11-04 — Author Java and FTC foundation lessons](#m11-04)
@@ -73,16 +73,18 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 **Interfaces:** Produces `validatePack({ manifest, files }): PackResult`; identical content IDs/versions pair en/zh while source/license/digest/version ranges are mandatory.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/ftc-knowledge/m11-01.test.ts`, add `translation pair preserves stable IDs and code tokens`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/ftc-knowledge/m11-01.test.ts`, add `translation pair preserves stable IDs and code tokens`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(en.id).toBe(zh.id); expect(en.codeTokens).toEqual(zh.codeTokens); expect(missingSource.code).toBe('invalid_content')
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/ftc-knowledge/m11-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Use small local fixture packs first. Check duplicate IDs, absent files, digests, version ranges and preserved identifiers. Stable lesson IDs and domain error codes are language independent; no module initialization downloads content.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/ftc-knowledge/m11-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): validate local content packages and bilingual ids`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/ftc-knowledge/m11-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Use small local fixture packs first. Check duplicate IDs, absent files, digests, version ranges and preserved identifiers. Stable lesson IDs and domain error codes are language independent; no module initialization downloads content.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/ftc-knowledge/m11-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): validate local content packages and bilingual ids`.
+
+Verified 2026-10-06: candidate `446c00550`, reviewed repair `9b71593fb`; [implementation evidence](../validation/M11-01-implementation.md), [independent review](../validation/M11-01-review.md). Synthetic fixtures do not establish published content or supported-library claims.
 
 <a id="m11-02"></a>
 

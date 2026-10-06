@@ -52,7 +52,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 ## Task checklist
 
 - [x] [M4-01 — Validate compatibility profiles](#m4-01)
-- [ ] [M4-02 — Inspect tools and imported project requirements](#m4-02)
+- [x] [M4-02 — Inspect tools and imported project requirements](#m4-02)
 - [ ] [M4-03 — Guide setup through readiness checks](#m4-03)
 - [ ] [M4-04 — Download and prepare one missing prerequisite](#m4-04)
 - [ ] [M4-05 — Report prepared offline availability](#m4-05)
@@ -94,16 +94,18 @@ Verified 2026-10-06 at `f7d2a93eabae724f29875a29840b000cee8749fb`: [implementati
 
 **Interfaces:** Consumes read-only process probes and project dependency snapshots. Produces `inspectEnvironment({ host, project, catalog }): Readiness` plus a candidate ToolchainDescriptor.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/environment-and-compatibility/m4-02.test.ts`, add `inspection preserves incompatible imported files`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/environment-and-compatibility/m4-02.test.ts`, add `inspection preserves incompatible imported files`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(afterFiles).toEqual(beforeFiles); expect(result.state).toBe('incompatible'); expect(probes).toContain('adb')
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/environment-and-compatibility/m4-02.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Probe build/editor Java separately, Android SDK, ADB and the project's Gradle wrapper. Reuse working tools, identify required permissions/manual steps and distinguish missing binaries from probe failure.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/environment-and-compatibility/m4-02.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): inspect tools and imported project requirements`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/environment-and-compatibility/m4-02.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Probe build/editor Java separately, Android SDK, ADB and the project's Gradle wrapper. Reuse working tools, identify required permissions/manual steps and distinguish missing binaries from probe failure.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/environment-and-compatibility/m4-02.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): inspect tools and imported project requirements`.
+
+Verified 2026-10-06: candidate `a94369c4c`, reviewed repair `f075a4348`; [implementation evidence](../validation/M4-02-implementation.md), [independent review](../validation/M4-02-review.md). Real platform/build acceptance remains in later tasks.
 
 <a id="m4-03"></a>
 

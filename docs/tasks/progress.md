@@ -3,7 +3,7 @@
 Date: 2026-10-06
 Planning baseline: `d7aca195c`
 
-**Implementation progress: 0 / 12 modules complete; 4 / 94 tasks complete.**
+**Implementation progress: 0 / 12 modules complete; 7 / 94 tasks complete.**
 
 These checkboxes track future development, not completion of this planning document. The existing OpenCode foundation is reused, but its presence does not prove that the FTC tasks are done. Both inputs describe unimplemented or unevaluated product work, so every implementation box starts unchecked.
 
@@ -12,16 +12,16 @@ These checkboxes track future development, not completion of this planning docum
 ## Module checklist
 
 - [ ] **M1 — [Desktop workspace](desktop-workspace.md)** — 0 / 14 tasks.
-- [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 2 / 6 tasks.
+- [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 3 / 6 tasks.
 - [ ] **M3 — [Agent and context](agent-and-context.md)** — 0 / 7 tasks.
-- [ ] **M4 — [Environment and compatibility](environment-and-compatibility.md)** — 1 / 7 tasks.
+- [ ] **M4 — [Environment and compatibility](environment-and-compatibility.md)** — 2 / 7 tasks.
 - [ ] **M5 — [Java development](java-development.md)** — 0 / 8 tasks.
 - [ ] **M6 — [FTC configuration and libraries](ftc-configuration-and-libraries.md)** — 0 / 6 tasks.
 - [ ] **M7 — [AI access and local inference](ai-access-and-local-inference.md)** — 0 / 8 tasks.
 - [ ] **M8 — [Controller connections](controller-connections.md)** — 1 / 6 tasks.
 - [ ] **M9 — [Robot approvals and operations](robot-approvals-and-operations.md)** — 0 / 9 tasks.
 - [ ] **M10 — [Diagnostics and dashboard](diagnostics-and-dashboard.md)** — 0 / 6 tasks.
-- [ ] **M11 — [FTC knowledge](ftc-knowledge.md)** — 0 / 10 tasks.
+- [ ] **M11 — [FTC knowledge](ftc-knowledge.md)** — 1 / 10 tasks.
 - [ ] **M12 — [Learning and personal progress](learning-and-progress.md)** — 0 / 7 tasks.
 
 Check a module only after its task checklist, substeps, module completion gate and assigned acceptance evidence pass. Update its count here after each task. Task completion is a count of checked entries in the module's **Task checklist**, not a count of all substep boxes. Counts are maintained here manually; do not mark a module complete just because its isolated suite passed.
@@ -402,3 +402,31 @@ M2-03 starts first; M4-02 and M11-01 run alongside it. Actual owner IDs, lifecyc
 - Dispatched `/root/m2_03`, `/root/m4_02` and `/root/m11_01` concurrently against starting base `3d496b0c9`, each with its exact saved brief and exclusive paths. Counts remain **4/94 tasks, 0/12 modules**.
 - Ruling: M2-03 same-chat acquisitions receive independent claim tokens under one canonical-root owner; release removes only its exact claim and frees the owner after the last claim — concurrent admission rollback must not release another holder — later M2-04/05/M3-02 must still implement transfer and terminal settlement, or ownership could be retained incorrectly. Raw acquisitions have explicit release responsibility; interrupted validation allocates no claim and scope disposal clears all claims. Assigned projects.ts only for a narrow public getProject lookup needed to validate canonical project/chat membership.
 - Ruling: M4-02 produces inspected candidate toolchains without build-verified setup readiness; a build-verification-pending step keeps readiness non-ready, and unknown imported requirements produce a manual requirements_unknown result without a descriptor — M4-03/06 own verification — an incorrect pending-state interpretation would need adjustment at setup composition.
+
+- Three parallel candidates are committed separately: M4-02 `a94369c4c`, M2-03 `258054ca9`, M11-01 `446c00550`. Coordinator matched all thirteen tested source hashes, then the combined M2/M4/M11 snapshot passed **196 tests / 595 assertions** and Core/Schema typechecks ([logs](../validation/parallel-2026-10-06/core-tests.log)). Existing unrelated Schema manifest failures remain recorded. Counts remain **4/94 tasks, 0/12 modules** until independent task review passes.
+- M4-02 independent review requires one Important fix: accepted Windows forward/mixed-separator wrapper paths are compared literally against a backslash join. Fix round 1/5 returned to original `/root/m4_02`, base `446c00550`, with meaningful regressions and covering checks required. No platform acceptance is credited.
+- M2-03 and M11-01 are in independent specification/quality review against their stable one-task commit ranges; reviewers write only their assigned reports and do not rerun unchanged suites.
+
+- M2-03 independent review finds specification compliant and one Important quality defect: repeated canonical ProjectContext validation in the facade/gate. Fix round 1/5 returned to original `/root/m2_03` for one shared pure validator, preserving boundary errors and existing behaviors. Coordinator independently confirmed archived/current event-manifest source and test bytes equal checkpoint `3d496b0c9`; baseline-failure provenance is resolved. Counts remain **4/94 tasks, 0/12 modules**.
+
+- M4-02 **DONE**: original candidate `a94369c4c`, repair `f075a4348`; independent scoped review approves specification and quality with the Important finding addressed and no open/new findings. Final focused **43 pass / 145 assertions**, covering M4 **105 pass / 242 assertions**, required types/lint/format pass. Checked exactly task entry plus five substeps. Counts **5/94 tasks, 0/12 modules**, M4 **2/7**. Real Windows/macOS process/build/clean-host acceptance remains separate.
+- M11-01 independent review found one Important protected-literal parsing gap: a valid longer tilde closing fence can hide identifier drift. Fix round 1/5 assigned to original `/root/m11_01` with actual-byte/rehashed drift regressions, covering checks and scoped re-review required.
+
+- M2-03 **DONE**: candidate `258054ca9`, repair `32dbfd69b`; independent scoped review approves specification and quality, one Important finding addressed and no new/open findings. Final M2 suite **50 pass / 169 assertions**, Core/Schema types, lint/format pass. Checked task entry plus five substeps. Counts **6/94 tasks, 0/12 modules**, M2 **3/6**. Production transfer/settlement remains later work.
+- Fresh `/root/m3_01` implements Session invariant coverage against reviewed checkpoint `32dbfd69b` while M11-01 repair proceeds. Only named test/evidence paths are assigned; runtime changes require demonstrated failure and explicit ownership. Next independent lane M4-03 may start from reviewed M4-02.
+
+- M11-01 **DONE**: candidate `446c00550`, repair `9b71593fb`; independent scoped review approves specification and quality, one Important finding addressed and no new/open findings. Final **58 pass / 231 assertions**, Core/Schema types and scoped lint/format pass; coordinator matched all five updated source hashes. Checked task entry plus five substeps. Counts **7/94 tasks, 0/12 modules**, M11 **1/10**. Production registry remains empty; content/source/course/platform acceptance is later work.
+- Ruling: M4-03 adds a guided facet without widening the inspection-only port contract; explicit preparation starts the first check and deliberate recheck repeats probes/build verification, while cancellation settles owned work — build evidence must match trusted project/toolchain/saved revisions and a current snapshot — an incorrect facet split would require simplification at M4-06 composition.
+- Ruling: Six new guided-message keys are scoped to the approved English/Simplified Chinese FTC release; existing key/placeholder/plural parity guards stay intact for all pre-existing locales, with explicit en/zh coverage for this exact six-key set — the broad repository key-parity expectation conflicts with the narrower product language scope — other FTC languages will need explicit translations before support is expanded. Assigned en.ts, zh.ts and the focused parity test; no language mechanics or existing copy changes.
+- M3-01 candidate has **128 Session tests / 360 assertions** passing with existing Session sources/tests unchanged; the new boundary test and evidence are ready for review. Its final Core typecheck remains pending while M4-03 scaffold is in progress; foreign errors are recorded rather than hidden.
+
+## Interrupted parallel handoff — 2026-10-06
+
+The root turn was intentionally interrupted. Reconciled live agents: M4-03 interrupted; M3-01 and all earlier task implementers/reviewers completed their assigned turns. No new task was dispatched afterward. Existing checkout `ftc-workspace`, product HEAD `9b71593fb`; reviewed completions remain **7/94 tasks, 0/12 modules** (M4-01/02, M8-01, M2-01/02/03, M11-01).
+
+Pending owned changes remain intact and uncommitted:
+
+- **M3-01 review candidate:** new real Session boundary test and complete [implementation report](../validation/M3-01-implementation.md). Focused **1 pass / 18 assertions**, affected Session selection **128 pass / 360 assertions**, scoped lint/format pass. Existing three Session test files and runtime files remain unchanged. Coordinator matched the recorded hashes and completed settled Core typecheck **exit 0**; no duplicate test rerun. A stable candidate commit and independent spec/quality review are still required.
+- **M4-03 implementation candidate, unreviewed:** environment.ts, ftc-environment.ts, m4-03 tests, six new en/zh guided messages and the specifically scoped parity test. Worker final logs record **44 focused pass / 152 assertions**, **149 covering M4 pass / 394 assertions**, **6 parity pass / 1003 assertions**, Core/Schema/App typechecks and scoped checks. Coordinator matched all files in `docs/validation/m4-03/SHA256SUMS`. The worker was interrupted before writing `M4-03-implementation.md`; reconcile and write its report from saved logs/source/translation provenance before a scoped commit and independent review. No task/substep checkbox is credited.
+
+Preserve all working-tree candidates, owned evidence and caches. On explicit resumption, finish the two pending candidates/reviews before advancing their consumers; M11-02 and M2-04 briefs are prepared but not dispatched. Reuse the parallel ownership rule, and serialize overlapping schemas, facade/runtime, translation, host, migration and Git-index writes. Mandatory physical/Windows/production gates remain open.

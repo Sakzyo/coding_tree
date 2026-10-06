@@ -51,7 +51,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 - [x] [M2-01 — Associate canonical project folders](#m2-01)
 - [x] [M2-02 — Persist separate chat-to-Session membership](#m2-02)
-- [ ] [M2-03 — Acquire one atomic project execution lease](#m2-03)
+- [x] [M2-03 — Acquire one atomic project execution lease](#m2-03)
 - [ ] [M2-04 — Submit without admitting a busy chat's draft](#m2-04)
 - [ ] [M2-05 — Release ownership after settled stop or completion](#m2-05)
 - [ ] [M2-06 — Expose project API and compose the execution gate](#m2-06)
@@ -110,16 +110,18 @@ expect(a.sessionID).not.toBe(b.sessionID); expect(reopened).toEqual([a, b])
 
 **Interfaces:** Produces `acquire(chat: ChatRef): GateResult`, `release(lease: GateLease): void`, and `activeChat({ projectID }): ChatRef | undefined`; keyed by canonical root, not manifest ID.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/projects-and-chats/m2-03.test.ts`, add `same project contends while another runs`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/projects-and-chats/m2-03.test.ts`, add `same project contends while another runs`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(same.kind).toBe('busy'); expect(other.kind).toBe('acquired'); expect(active.chatID).toBe(first.chatID)
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/projects-and-chats/m2-03.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Implement the actual scoped gate with atomic acquisition and token-checked release; race concurrent acquisitions, aliases and duplicate views. Importing the module must create no global state.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/projects-and-chats/m2-03.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): acquire one atomic project execution lease`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/projects-and-chats/m2-03.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Implement the actual scoped gate with atomic acquisition and token-checked release; race concurrent acquisitions, aliases and duplicate views. Importing the module must create no global state.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/projects-and-chats/m2-03.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): acquire one atomic project execution lease`.
+
+Verified 2026-10-06: candidate `258054ca9`, reviewed repair `32dbfd69b`; [implementation evidence](../validation/M2-03-implementation.md), [independent review](../validation/M2-03-review.md). Production admission/terminal-settlement composition remains in later tasks.
 
 <a id="m2-04"></a>
 
