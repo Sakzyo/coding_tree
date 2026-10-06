@@ -3,7 +3,7 @@
 Date: 2026-10-06
 Planning baseline: `d7aca195c`
 
-**Implementation progress: 0 / 12 modules complete; 3 / 94 tasks complete.**
+**Implementation progress: 0 / 12 modules complete; 4 / 94 tasks complete.**
 
 These checkboxes track future development, not completion of this planning document. The existing OpenCode foundation is reused, but its presence does not prove that the FTC tasks are done. Both inputs describe unimplemented or unevaluated product work, so every implementation box starts unchecked.
 
@@ -12,7 +12,7 @@ These checkboxes track future development, not completion of this planning docum
 ## Module checklist
 
 - [ ] **M1 — [Desktop workspace](desktop-workspace.md)** — 0 / 14 tasks.
-- [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 1 / 6 tasks.
+- [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 2 / 6 tasks.
 - [ ] **M3 — [Agent and context](agent-and-context.md)** — 0 / 7 tasks.
 - [ ] **M4 — [Environment and compatibility](environment-and-compatibility.md)** — 1 / 7 tasks.
 - [ ] **M5 — [Java development](java-development.md)** — 0 / 8 tasks.
@@ -359,3 +359,25 @@ Explicit continuation received. Reconciled `ftc-workspace` at `858c8d070afedde5e
 - M2-01 candidate `917fc044bad306de4428e24fb8c2655bfff50e12` enters **IN_REVIEW** against `e65f6c386b4abc97582d4814eb98a9ae3c97045a`. Focused association + migration suite 31 pass / 89 assertions; Core/Schema types, 8 Schema contracts, migration check, lint/format pass. Generator structural audit records only seven new DDL records for the M2-owned table, no changed/removed existing DDL. [Report](../validation/M2-01-implementation.md). Independent reviewer receives complete stable diff; task remains unchecked, counts **2/94 tasks, 0/12 modules**.
 
 - M2-01 **DONE** at `917fc044bad306de4428e24fb8c2655bfff50e12`: independent specification and quality review passes with no findings; coordinator verified all nine tested source hashes against current files. Checked exactly task entry and five substeps. [Review](../validation/M2-01-review.md). Counts **3/94 tasks, 0/12 modules**. Production folder binding/Windows and later chat/gate behavior remain outside this isolated task.
+
+- M2-02 dispatched to fresh `/root/m2_02`, sole product writer, review base `2c36be13c2d15707ac09a73c4b62b6e968bab131`. M2-01 independently complete. Allowed task files plus canonical producer-owned ChatRef/current command/error Schema, required minimal M2-01 port-fixture adaptation, owned evidence and generated migration artifacts. Persist only M2 membership through injected Session access; retain association/host identity distinction and no history copying or Session table writes. Required focused/covering/migration/Schema/type/lint checks in brief. Counts **3/94 tasks, 0/12 modules**. Read-only `/root/m3_gate_preflight` investigates unchanged Session APIs/races for upcoming integration.
+
+- Ruling (M2-02 cross-owner failure): Session creation may commit before a membership write fails or is interrupted. Retain any resulting unassociated Session, return failure/interruption, and never report a successful membership or delete Session-owned data. Test/document this boundary; unique M2 session_id prevents multiple chats sharing a Session. Existing Session API has no shared transaction/delete port. Focused checks in the dispatch brief govern; unchanged broad external Core suites remain not run.
+
+- Read-only M3 gate preflight complete; [report](../validation/M3-gate-preflight.md). Verified actual V2 host is Server routes and current coordinator lacks lease-bearing terminal-settlement hooks. Upcoming dispatches must reserve real host/coordinator paths and settle busy/reservation semantics explicitly; existing runner fixtures alone do not prove that integration. No task completion or new runtime verification credited.
+
+- User stop boundary received: finish current **M2-02**, including independent review and required repairs, update this ledger, then stop. Do not dispatch M2-03/M3-01 or another implementation task afterward. Prepared briefs and preflight records remain saved for a later explicit continuation.
+
+- M2-02 candidate `f8275c00cf0e01d2433e60a374aa6595219e318c` enters **IN_REVIEW** against `2c36be13c2d15707ac09a73c4b62b6e968bab131`. Final covering suite **50 pass / 152 assertions** (19 new, 13 M2-01, 18 migrations), 8 Schema contracts / 17 assertions, Core/Schema types, migration check and scoped lint/format pass. Coordinator verified all nine tested source hashes. Snapshot delta adds only nine ftc_chat DDL records, no changed/removed prior records. [Report](../validation/M2-02-implementation.md). Task stays unchecked until independent review; stop boundary remains M2-02.
+
+- M2-02 **DONE** at `f8275c00cf0e01d2433e60a374aa6595219e318c`: `/root/m2_02_review` independently approves specification and code quality, with no Critical/Important/Minor findings. [Review](../validation/M2-02-review.md). Checked exactly the task entry and five substeps. Counts **4/94 tasks, 0/12 modules**; M2 has **2/6 tasks** complete. Session history, production composition and execution gating remain later acceptance work.
+
+## User-requested stopping point — 2026-10-06
+
+**Stopped after completing M2-02**, as requested. No next implementation task was dispatched after this stop instruction. No implementation/review worker remains active; no app/server/robot processes were started for M2-02. Branch `ftc-workspace`; last product commit `f8275c00cf0e01d2433e60a374aa6595219e318c`. This documentation checkpoint preserves the final review, ledger and prior read-only preflight.
+
+Verified task checklist count: **4/94** (M4-01, M8-01, M2-01, M2-02); modules **0/12**. M2-02 final evidence: **50 passing tests / 152 assertions**, **8 Schema tests / 17 assertions**, Core/Schema typechecks, migration consistency, scoped lint/format, independent review with no findings. Coordinator matched all nine tested source hashes and checked all 18 linked evidence files. No fixture evidence is credited as production/platform acceptance.
+
+M9-07, M5-03 and M8-04 remain **BLOCKED** on their documented real-platform/physical/production evidence; their reviewed available-host subsets are preserved. Deferred Minor findings remain in M5-03/M8-04 review records. These are not completed tasks and no production execution path was enabled.
+
+On a later explicit continuation: begin **M2-03** with its prepared exact brief after recording the new current base and owner. Its M2-01/02 prerequisites are reviewed. Use the [Session gate preflight](../validation/M3-gate-preflight.md) to settle reservation/lifetime contracts and assign actual V2 host/coordinator paths before later integration. M3-01, M4-02 and M11-01 briefs are also prepared. Preserve existing evidence and owned tool/source caches; do not rerun unchanged successful suites or reset counts. Remain stopped until the user requests continuation.

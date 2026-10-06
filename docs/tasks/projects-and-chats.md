@@ -50,7 +50,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 ## Task checklist
 
 - [x] [M2-01 — Associate canonical project folders](#m2-01)
-- [ ] [M2-02 — Persist separate chat-to-Session membership](#m2-02)
+- [x] [M2-02 — Persist separate chat-to-Session membership](#m2-02)
 - [ ] [M2-03 — Acquire one atomic project execution lease](#m2-03)
 - [ ] [M2-04 — Submit without admitting a busy chat's draft](#m2-04)
 - [ ] [M2-05 — Release ownership after settled stop or completion](#m2-05)
@@ -89,16 +89,16 @@ expect(alias.projectID).toBe(opened.projectID); expect(afterFiles).toEqual(befor
 
 **Interfaces:** Consumes injected `createSession({ location })` and Session lookup. Produces `createChat({ projectID }): ChatRef` and `listChats({ projectID }): readonly ChatRef[]`.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/projects-and-chats/m2-02.test.ts`, add `reopen retains distinct chat Sessions`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/projects-and-chats/m2-02.test.ts`, add `reopen retains distinct chat Sessions`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(a.sessionID).not.toBe(b.sessionID); expect(reopened).toEqual([a, b])
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/projects-and-chats/m2-02.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Create Sessions only through Session access; persist membership without copying history. Reject Session/chat mismatches and test two projects using fresh temporary SQLite repositories.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/projects-and-chats/m2-02.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): persist separate chat-to-session membership`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/projects-and-chats/m2-02.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Create Sessions only through Session access; persist membership without copying history. Reject Session/chat mismatches and test two projects using fresh temporary SQLite repositories.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/projects-and-chats/m2-02.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): persist separate chat-to-session membership`.
 
 <a id="m2-03"></a>
 

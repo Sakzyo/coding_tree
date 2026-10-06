@@ -1,0 +1,2359 @@
+M2-02 complete review package
+Base: 2c36be13c2d15707ac09a73c4b62b6e968bab131
+Head: f8275c00cf0e01d2433e60a374aa6595219e318c
+
+f8275c00c feat(ftc): persist separate chat-to-session membership
+
+ docs/validation/M2-02-implementation.md            |  93 ++++
+ docs/validation/m2-02/core-typecheck-initial.log   |  11 +
+ docs/validation/m2-02/core-typecheck.log           |   1 +
+ docs/validation/m2-02/covering-initial.log         |  86 ++++
+ docs/validation/m2-02/covering.log                 |  62 +++
+ docs/validation/m2-02/focused-final.log            |  27 ++
+ docs/validation/m2-02/format.log                   |   2 +
+ docs/validation/m2-02/green.log                    |  24 +
+ docs/validation/m2-02/host-mapping-red.log         |  23 +
+ docs/validation/m2-02/lint-initial.log             |  26 ++
+ docs/validation/m2-02/lint.log                     |   2 +
+ docs/validation/m2-02/migration-check.log          |   4 +
+ docs/validation/m2-02/migration-generate.log       |   4 +
+ docs/validation/m2-02/red-expanded.log             |  54 +++
+ docs/validation/m2-02/red.log                      |  10 +
+ docs/validation/m2-02/schema-contracts.log         |  20 +
+ docs/validation/m2-02/schema-typecheck.log         |   1 +
+ docs/validation/m2-02/snapshot-delta.json          |  91 ++++
+ docs/validation/m2-02/source-sha256.txt            |   9 +
+ packages/core/schema.json                          |  90 +++-
+ packages/core/src/database/migration.gen.ts        |   1 +
+ .../20261006123700_ftc-chat-membership.ts          |  19 +
+ packages/core/src/database/schema.gen.ts           |   9 +
+ packages/core/src/ftc/projects.ts                  | 101 +++-
+ packages/core/src/ftc/projects/sql.ts              | 113 ++++-
+ .../core/test/ftc/projects-and-chats/m2-01.test.ts |  11 +-
+ .../core/test/ftc/projects-and-chats/m2-02.test.ts | 519 +++++++++++++++++++++
+ packages/schema/src/ftc-project.ts                 |  39 +-
+ 28 files changed, 1442 insertions(+), 10 deletions(-)
+
+diff --git a/docs/validation/M2-02-implementation.md b/docs/validation/M2-02-implementation.md
+new file mode 100644
+index 000000000..9d76ef1fb
+--- /dev/null
++++ b/docs/validation/M2-02-implementation.md
+@@ -0,0 +1,93 @@
++# M2-02 implementation evidence
++
++Date: 2026-10-06. Task: **M2-02 — Persist separate chat-to-Session membership**. Requirement coverage: PRJ-02 and the association-persistence portion of PRJ-03; contributes to AC-03. It does not complete AC-03 execution/history/restart acceptance or PRJ-04's later gate tasks.
++
++Base: `2c36be13c2d15707ac09a73c4b62b6e968bab131` (reviewed M2-01 product commit `917fc044b`). The tested snapshot is that base plus this task's owned changes; [source-sha256.txt](m2-02/source-sha256.txt) records exact final source bytes, including generated artifacts. Resolve delivery commit with `git log -1 --format=%H -- docs/validation/M2-02-implementation.md`. Concurrent coordinator documentation is excluded from the task commit.
++
++## Behavior and ownership
++
++`createChat({ projectID })` obtains the canonical M2 association, creates a Session only through `SessionAccess.createSession({ location })`, validates the returned record and a subsequent Session lookup, and inserts one local chat membership. `listChats({ projectID })` reads insertion-ordered memberships and validates each referenced Session before returning them. Missing projects, missing Sessions, mismatched returned IDs or placement, duplicate membership, changed project mappings, Session port errors, and SQLite failures never become successful results.
++
++The Schema package owns serializable `ChatID`, `ChatRef`, `ProjectRequest`, and `ChatError`. Core re-exports those exact schemas. The new ID generates and validates the `chat_` prefix. Existing Project and Session IDs are reused, and errors retain stable language-independent codes with optional omission.
++
++M2 `projectID` identifies one canonical-root association, not Session's upstream project. Sessions are checked against `project.location.project.id`, explicit canonical directory and workspace placement. Two roots can share `global` (or another host project ID) without sharing memberships. Folder aliases reopen the same association. New Session calls use canonical implicit-local `Location.Ref`; Schema `Session.Info` is the returned/looked-up record. The future host adapter must translate Session.get's typed not-found result into this narrow port's `undefined` result and translate other access errors. No host binding is implemented here.
++
++The module-owned `ftc_chat` table stores only sequence/order, chat ID, association ID, and Session ID. Unique Session ID prevents any two chats in this database from sharing a Session. The foreign key points only to the M2 association table. There is no Session-table foreign key, history copy, Session store/model loop, admission, wake, execution or gate operation. A transactional association recheck prevents committing membership if the host mapping changes during Session creation.
++
++Session creation and membership persistence are separate ownership boundaries, not one transaction. The coordinator confirmed that a Session created before a membership failure/interruption remains unassociated and must not be deleted by M2. Tests verify this with real SQLite write rejection and interrupted Session lookup. Retrying `createChat` creates a fresh Session; it is not an idempotent chat-create command. A crash/interruption exactly at a completed membership commit can leave durable membership visible on reopen; no exactly-once acknowledgement or cross-owner rollback is claimed. Consumers can list committed memberships. A later Session deletion/placement change makes listing fail visibly, without deleting the membership. No recovery execution is scheduled.
++
++All state/resources belong to supplied scoped instances. Constructing the layer performs no I/O. M2-01's test now supplies create/get ports that die if touched; its existing assertions are unchanged.
++
++## Environment and exact commands
++
++Darwin arm64; Bun 1.3.14 (`0d9b296a`) at `/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun`. Every test/typecheck/migration command used:
++
++```sh
++PATH=/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64:$PATH
++HOME=/private/tmp/m2-02-env/home
++OPENCODE_TEST_HOME=/private/tmp/m2-02-env/home
++XDG_DATA_HOME=/private/tmp/m2-02-env/data
++XDG_CONFIG_HOME=/private/tmp/m2-02-env/config
++XDG_CACHE_HOME=/private/tmp/m2-02-env/cache
++XDG_STATE_HOME=/private/tmp/m2-02-env/state
++```
++
++Tests use independent real temporary directories and SQLite connections, disposed by the fixture and Effect scope. No user database or project is changed. Working directories in the table are relative to `/Users/dylanxu/coding_tree`.
++
++| Command | Cwd | Result | Evidence |
++| --- | --- | --- | --- |
++| `bun test ./test/ftc/projects-and-chats/m2-02.test.ts` (initial RED) | `packages/core` | Test exit 1; 0 pass / 1 fail, explicit missing behavior after SQLite setup | [red.log](m2-02/red.log) |
++| Same (expanded RED) | `packages/core` | Exit 1; 0 pass / 16 fail | [red-expanded.log](m2-02/red-expanded.log) |
++| Same (first GREEN) | `packages/core` | Exit 0; 16 pass / 44 assertions | [green.log](m2-02/green.log) |
++| Same (final focused) | `packages/core` | Exit 0; 19 pass / 63 assertions | [focused-final.log](m2-02/focused-final.log) |
++| `bun test ./test/ftc/projects-and-chats/m2-02.test.ts ./test/ftc/projects-and-chats/m2-01.test.ts ./test/database-migration.test.ts` | `packages/core` | Exit 0; 50 pass / 152 assertions | [covering.log](m2-02/covering.log) |
++| `bun test ./test/ftc/projects-and-chats/m2-02.test.ts --test-name-pattern 'host mapping refresh'` with only the transaction mapping guard removed temporarily | `packages/core` | Exit 1; expected `project_changed`, received successful result; guard then restored and final focused run passed | [host-mapping-red.log](m2-02/host-mapping-red.log) |
++| `bun script/migration.ts --name ftc-chat-membership` | `packages/core` | Exit 0; one new task migration generated | [migration-generate.log](m2-02/migration-generate.log) |
++| `bun script/migration.ts --check` | `packages/core` | Exit 0; snapshot/schema/registry current | [migration-check.log](m2-02/migration-check.log) |
++| `bun typecheck` | `packages/core` | Exit 0 | [core-typecheck.log](m2-02/core-typecheck.log) |
++| `bun typecheck` | `packages/schema` | Exit 0 | [schema-typecheck.log](m2-02/schema-typecheck.log) |
++| `bun test ./test/contract-hygiene.test.ts ./test/compatibility.test.ts ./test/v1-isolation.test.ts` | `packages/schema` | Exit 0; 8 pass / 17 assertions | [schema-contracts.log](m2-02/schema-contracts.log) |
++| `bunx oxlint <eight TypeScript paths below>` | repository root | Exit 0; zero errors/warnings | [lint.log](m2-02/lint.log) |
++| `bunx prettier --check <same eight paths>` | repository root | Exit 0 | [format.log](m2-02/format.log) |
++| `git diff --check` | repository root | Exit 0 | Final pre-commit terminal check |
++
++Exact lint/format paths:
++
++```text
++packages/schema/src/ftc-project.ts
++packages/core/src/ftc/projects.ts
++packages/core/src/ftc/projects/sql.ts
++packages/core/test/ftc/projects-and-chats/m2-01.test.ts
++packages/core/test/ftc/projects-and-chats/m2-02.test.ts
++packages/core/src/database/migration/20261006123700_ftc-chat-membership.ts
++packages/core/src/database/migration.gen.ts
++packages/core/src/database/schema.gen.ts
++```
++
++Initial RED used callable service scaffolding that explicitly failed `M2-02 chat membership is not implemented`; no missing import or database harness failure. The initial shell displayed the captured log and therefore returned zero after the failing test, while the log records the test failure. The expanded RED command itself returned 1; its interruption test timed out because the missing operation never reached the start barrier. Upgrade and Schema verification were added after initial implementation; no preimplementation RED is claimed for those verification tests. The mapping guard has explicit removal/restoration RED/GREEN evidence.
++
++Initial covering verification was 49 pass / 1 fail because the contract test assumed refined scalar identifiers lived on `schema.ast.annotations`. Runtime inspection showed Effect keeps the identifier on the string refinement, and the generated JSON Schema correctly emitted `#/$defs/FtcProject.ChatID`. The assertion now checks generated references, the consumer-visible contract. Initial Core typecheck found a plain-string expected path array and mixed Result generic narrowing in tests; fixed with branded fixture roots and `_tag` discrimination. Initial lint reported one consistent-return warning; lookup now returns the validated Session. These initial results remain in [covering-initial.log](m2-02/covering-initial.log), [core-typecheck-initial.log](m2-02/core-typecheck-initial.log), and [lint-initial.log](m2-02/lint-initial.log). All final checks above pass.
++
++## Assertion map
++
++| Area | Evidence established | Limits |
++| --- | --- | --- |
++| Reopen/order and distinct chats | Two closed/reopened database scopes retain `[a,b]`, distinct chat/Session IDs and association IDs; listing rejects create attempts; actual Session table remains empty | Controlled complete Session.Info records retained by the test fixture; no claim of Session history persistence, actual app restart or live M3 binding |
++| Shared host identity and aliasing | Two real directories sharing `global` keep separate chats; a real symlink opens the first association and lists its original chat | macOS filesystem only; fixture resolves paths with realpath |
++| Missing project / scope independence | Another database cannot use the first database's project ID; create/list return `project_not_found` before Session creation | No global reset or host registry tested |
++| Placement and identity validation | Creation rejects wrong directory, association-ID-as-host-ID, explicit workspace, wrong lookup ID and missing record; reopen rejects missing, moved and wrong-ID records | Controlled Session lookup mutations; no permission/robot/model behavior |
++| Concurrency | Six separate SQLite connections offering one Session produce one chat and five `chat_session_conflict` errors | In-process connections; no multi-process stress or performance claim |
++| Storage failure and retry | Real `PRAGMA query_only=ON` rejects membership, no row appears, created Session remains; retry gets fresh Session/chat while original Session remains | No disk-full/corruption injection; no cross-owner rollback |
++| Cancellation | Interrupted lookup finalizer completes; no chat row; already-created Session remains | No forced interruption at the exact SQLite commit instruction |
++| Session access failures | Both create and lookup return structured error and no chat row | Injected typed failures rather than real Session owner failure |
++| Host mapping refresh | Association changed during Session creation prevents membership; guard-removal test demonstrates regression failure | Controlled ordering in one process |
++| Migration | All tracked migrations preceding this task create prior schema; original association survives upgrade and rerun; created chat reopens | Temporary SQLite only; no user database touched |
++| Schema contracts | Exact facade/schema and Project/Session ID identity, chat-prefix rejection, generated stable references, optional omission and existing contract checks | Protocol/Server surfaces unchanged; SDK regeneration not applicable |
++
++## Migration scope and self-review
++
++The migration generator was inspected before invocation. New migration `20261006123700_ftc-chat-membership.ts` creates only `ftc_chat`; generated registry gains one entry and full schema gains the same table. [snapshot-delta.json](m2-02/snapshot-delta.json) records nine added DDL records, all for `ftc_chat`, and zero removed/changed prior records. The integer primary key supplies durable insertion order; unique chat and Session IDs prevent membership overlap. No old migration or generated file was hand-edited.
++
++Self-review checked task scope, canonical ID ownership, Session table/history separation, project-key filtering, unique Session constraint, narrow port contract, scoped connection cleanup, failure propagation, ordered reopen, generated migration delta, and the unchanged M2-01 assertions. No unresolved implementation findings identified before independent review.
++
++Not run: unrelated broad Core external suites (coordinator confirmed scoped verification), Schema event-manifest tests with two known unrelated baseline failures, production Session composition, full app/server restart, Windows execution, robot/toolchain/model/provider work, and future gate/admission tasks. No package/dependency/lockfile or shared checklist/progress changes are included. User requested stopping after the current task; no later task was started.
+diff --git a/docs/validation/m2-02/core-typecheck-initial.log b/docs/validation/m2-02/core-typecheck-initial.log
+new file mode 100644
+index 000000000..2c222c602
+--- /dev/null
++++ b/docs/validation/m2-02/core-typecheck-initial.log
+@@ -0,0 +1,11 @@
++$ tsgo --noEmit
++test/ftc/projects-and-chats/m2-02.test.ts(137,94): error TS2769: No overload matches this call.
++  The last overload gave the following error.
++    Argument of type 'string[]' is not assignable to parameter of type '(string & Brand<"AbsolutePath">)[]'.
++      Type 'string' is not assignable to type 'string & Brand<"AbsolutePath">'.
++        Type 'string' is not assignable to type 'Brand<"AbsolutePath">'.
++test/ftc/projects-and-chats/m2-02.test.ts(169,48): error TS2345: Argument of type 'Result<ChatRef, ChatError> | Result<...>' is not assignable to parameter of type 'Result<ChatRef, ChatError>'.
++  Type 'Failure<readonly ChatRef[], ChatError>' is not assignable to type 'Result<ChatRef, ChatError>'.
++    Type 'Failure<readonly ChatRef[], ChatError>' is not assignable to type 'Failure<ChatRef, ChatError>'.
++      Type 'readonly ChatRef[]' is not assignable to type 'ChatRef'.
++        Type 'readonly ChatRef[]' is missing the following properties from type '{ readonly projectID: string & Brand<"Project.ID">; readonly chatID: string & Brand<"FtcProject.ChatID">; readonly sessionID: string & Brand<"SessionID">; }': projectID, chatID, sessionID
+diff --git a/docs/validation/m2-02/core-typecheck.log b/docs/validation/m2-02/core-typecheck.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m2-02/core-typecheck.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/docs/validation/m2-02/covering-initial.log b/docs/validation/m2-02/covering-initial.log
+new file mode 100644
+index 000000000..65d8a9040
+--- /dev/null
++++ b/docs/validation/m2-02/covering-initial.log
+@@ -0,0 +1,86 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc/projects-and-chats/m2-02.test.ts:
++(pass) reopen retains distinct chat Sessions [61.25ms]
++(pass) two roots with the same host ID keep separate chats and aliases restore membership [43.23ms]
++(pass) unknown association fails before Session creation and is not inherited by another database [78.39ms]
++(pass) create rejects directory Session mismatch without membership [42.72ms]
++(pass) create rejects host Session mismatch without membership [32.54ms]
++(pass) create rejects workspace Session mismatch without membership [26.65ms]
++(pass) create rejects lookup-id Session mismatch without membership [11.56ms]
++(pass) create rejects missing Session mismatch without membership [14.64ms]
++(pass) reopen rejects missing Session instead of returning a false association [15.21ms]
++(pass) reopen rejects placement Session instead of returning a false association [18.56ms]
++(pass) reopen rejects identity Session instead of returning a false association [47.44ms]
++(pass) concurrent separate connections cannot assign a Session to two chats [23.63ms]
++(pass) SQLite failure after Session creation retains the unassociated Session and retry creates a fresh chat [12.04ms]
++(pass) interruption during lookup releases the port and creates no membership [11.46ms]
++(pass) Session create failure does not become successful membership [33.12ms]
++(pass) Session lookup failure does not become successful membership [29.93ms]
++(pass) host mapping refresh during Session creation rejects stale membership [30.14ms]
++(pass) tracked chat migration preserves prior project association data and reopens membership [33.74ms]
++508 |     }),
++509 |   ).toEqual({ code: "chat_store_failed", projectID: Project.ID.global, recovery: "retry" })
++510 |   const identifiers = [FtcProject.ChatID, FtcProject.ChatRef, FtcProject.ProjectRequest, FtcProject.ChatError].map(
++511 |     (schema) => schema.ast.annotations?.identifier,
++512 |   )
++513 |   expect(identifiers).toEqual([
++                            ^
++error: expect(received).toEqual(expected)
++
++  [
++-   "FtcProject.ChatID",
+++   undefined,
++    "FtcProject.ChatRef",
++    "FtcProject.ProjectRequest",
++    "FtcProject.ChatError",
++  ]
++
++- Expected  - 1
+++ Received  + 1
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/projects-and-chats/m2-02.test.ts:513:23)
++(fail) chat contracts keep canonical identities, strict ID prefix and optional omission [2.64ms]
++
++test/ftc/projects-and-chats/m2-01.test.ts:
++(pass) folder aliases reopen one project [13.15ms]
++(pass) distinct local roots retain distinct association IDs with host ID global [10.87ms]
++(pass) distinct local roots retain distinct association IDs with host ID shared-remote [13.16ms]
++(pass) concurrent independent connections associate one canonical root exactly once [10.86ms]
++(pass) unavailable folder and regular file fail without associations or project-file edits [10.13ms]
++(pass) denied access is propagated before persistence [6.07ms]
++(pass) interrupting folder resolution leaves no association and releases its scope [7.56ms]
++(pass) inconsistent or nonlocal folder identities fail before persistence [7.36ms]
++(pass) association contract reuses canonical schemas and encodes optional fields without undefined [0.31ms]
++(pass) SQLite write failure is recoverable and does not create a partial association [12.13ms]
++(pass) fresh independent database scopes do not inherit another repository's associations [12.92ms]
++(pass) reopen refreshes the explicit host mapping without changing canonical ownership [11.46ms]
++(pass) tracked upgrade preserves existing project data and supports a new association [24.60ms]
++
++test/database-migration.test.ts:
++(pass) DatabaseMigration > defaults missing workspace names while preserving legacy workspace data [1.41ms]
++(pass) DatabaseMigration > imports unnamed legacy Drizzle journal entries by their actual migration timestamps [0.65ms]
++(pass) DatabaseMigration > rejects unknown legacy Drizzle journal timestamps instead of guessing completed migrations [1.47ms]
++(pass) DatabaseMigration > serializes concurrent embedded initialization for one database path [23.43ms]
++(pass) DatabaseMigration > applies tracked migrations to an empty database [22.59ms]
++(pass) DatabaseMigration > rejects a non-empty database without a session table [1.00ms]
++(pass) DatabaseMigration > backfills existing Context Epoch rows to the build agent [0.74ms]
++(pass) DatabaseMigration > keeps legacy credential fields nullable [0.75ms]
++(pass) DatabaseMigration > resets beta history and rebuilds event-sourced Session input storage [3.26ms]
++(pass) DatabaseMigration > preserves canonical V1 state and restarts its event stream [10.90ms]
++(pass) DatabaseMigration > resets incompatible projected Session messages before adding sequence order [1.40ms]
++(pass) DatabaseMigration > runs session usage backfill in order with schema changes [0.93ms]
++(pass) DatabaseMigration > normalizes Windows storage paths and leaves POSIX paths untouched [1.40ms]
++(pass) DatabaseMigration > maps native Windows paths through database columns [0.08ms]
++(pass) DatabaseMigration > imports existing drizzle migration state [0.74ms]
++(pass) DatabaseMigration > does not replay a migrated session metadata column [0.53ms]
++(pass) DatabaseMigration > accepts the temporary replacement session metadata migration id [2.37ms]
++(pass) DatabaseMigration > skips drizzle import when migration table already has state [0.83ms]
++
++1 tests failed:
++(fail) chat contracts keep canonical identities, strict ID prefix and optional omission [2.64ms]
++
++ 49 pass
++ 1 fail
++ 152 expect() calls
++Ran 50 tests across 3 files. [1214.00ms]
+diff --git a/docs/validation/m2-02/covering.log b/docs/validation/m2-02/covering.log
+new file mode 100644
+index 000000000..b28f5868f
+--- /dev/null
++++ b/docs/validation/m2-02/covering.log
+@@ -0,0 +1,62 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc/projects-and-chats/m2-02.test.ts:
++(pass) reopen retains distinct chat Sessions [206.17ms]
++(pass) two roots with the same host ID keep separate chats and aliases restore membership [30.15ms]
++(pass) unknown association fails before Session creation and is not inherited by another database [26.89ms]
++(pass) create rejects directory Session mismatch without membership [18.10ms]
++(pass) create rejects host Session mismatch without membership [13.91ms]
++(pass) create rejects workspace Session mismatch without membership [9.30ms]
++(pass) create rejects lookup-id Session mismatch without membership [14.04ms]
++(pass) create rejects missing Session mismatch without membership [12.45ms]
++(pass) reopen rejects missing Session instead of returning a false association [48.79ms]
++(pass) reopen rejects placement Session instead of returning a false association [13.53ms]
++(pass) reopen rejects identity Session instead of returning a false association [31.79ms]
++(pass) concurrent separate connections cannot assign a Session to two chats [119.02ms]
++(pass) SQLite failure after Session creation retains the unassociated Session and retry creates a fresh chat [17.07ms]
++(pass) interruption during lookup releases the port and creates no membership [40.09ms]
++(pass) Session create failure does not become successful membership [18.27ms]
++(pass) Session lookup failure does not become successful membership [20.61ms]
++(pass) host mapping refresh during Session creation rejects stale membership [17.81ms]
++(pass) tracked chat migration preserves prior project association data and reopens membership [35.56ms]
++(pass) chat contracts keep canonical identities, strict ID prefix and optional omission [1.33ms]
++
++test/ftc/projects-and-chats/m2-01.test.ts:
++(pass) folder aliases reopen one project [17.26ms]
++(pass) distinct local roots retain distinct association IDs with host ID global [10.41ms]
++(pass) distinct local roots retain distinct association IDs with host ID shared-remote [13.63ms]
++(pass) concurrent independent connections associate one canonical root exactly once [19.94ms]
++(pass) unavailable folder and regular file fail without associations or project-file edits [8.56ms]
++(pass) denied access is propagated before persistence [9.04ms]
++(pass) interrupting folder resolution leaves no association and releases its scope [7.94ms]
++(pass) inconsistent or nonlocal folder identities fail before persistence [7.97ms]
++(pass) association contract reuses canonical schemas and encodes optional fields without undefined [0.31ms]
++(pass) SQLite write failure is recoverable and does not create a partial association [8.37ms]
++(pass) fresh independent database scopes do not inherit another repository's associations [16.27ms]
++(pass) reopen refreshes the explicit host mapping without changing canonical ownership [8.27ms]
++(pass) tracked upgrade preserves existing project data and supports a new association [16.31ms]
++
++test/database-migration.test.ts:
++(pass) DatabaseMigration > defaults missing workspace names while preserving legacy workspace data [9.71ms]
++(pass) DatabaseMigration > imports unnamed legacy Drizzle journal entries by their actual migration timestamps [14.83ms]
++(pass) DatabaseMigration > rejects unknown legacy Drizzle journal timestamps instead of guessing completed migrations [0.67ms]
++(pass) DatabaseMigration > serializes concurrent embedded initialization for one database path [12.94ms]
++(pass) DatabaseMigration > applies tracked migrations to an empty database [2.84ms]
++(pass) DatabaseMigration > rejects a non-empty database without a session table [0.49ms]
++(pass) DatabaseMigration > backfills existing Context Epoch rows to the build agent [0.60ms]
++(pass) DatabaseMigration > keeps legacy credential fields nullable [0.60ms]
++(pass) DatabaseMigration > resets beta history and rebuilds event-sourced Session input storage [2.36ms]
++(pass) DatabaseMigration > preserves canonical V1 state and restarts its event stream [9.84ms]
++(pass) DatabaseMigration > resets incompatible projected Session messages before adding sequence order [1.28ms]
++(pass) DatabaseMigration > runs session usage backfill in order with schema changes [0.82ms]
++(pass) DatabaseMigration > normalizes Windows storage paths and leaves POSIX paths untouched [0.83ms]
++(pass) DatabaseMigration > maps native Windows paths through database columns [0.05ms]
++(pass) DatabaseMigration > imports existing drizzle migration state [0.44ms]
++(pass) DatabaseMigration > does not replay a migrated session metadata column [0.42ms]
++(pass) DatabaseMigration > accepts the temporary replacement session metadata migration id [0.42ms]
++(pass) DatabaseMigration > skips drizzle import when migration table already has state [0.35ms]
++
++ 50 pass
++ 0 fail
++ 152 expect() calls
++Ran 50 tests across 3 files. [1297.00ms]
+diff --git a/docs/validation/m2-02/focused-final.log b/docs/validation/m2-02/focused-final.log
+new file mode 100644
+index 000000000..18613d1ae
+--- /dev/null
++++ b/docs/validation/m2-02/focused-final.log
+@@ -0,0 +1,27 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc/projects-and-chats/m2-02.test.ts:
++(pass) reopen retains distinct chat Sessions [30.74ms]
++(pass) two roots with the same host ID keep separate chats and aliases restore membership [12.52ms]
++(pass) unknown association fails before Session creation and is not inherited by another database [11.92ms]
++(pass) create rejects directory Session mismatch without membership [6.37ms]
++(pass) create rejects host Session mismatch without membership [6.40ms]
++(pass) create rejects workspace Session mismatch without membership [8.07ms]
++(pass) create rejects lookup-id Session mismatch without membership [7.02ms]
++(pass) create rejects missing Session mismatch without membership [8.21ms]
++(pass) reopen rejects missing Session instead of returning a false association [6.99ms]
++(pass) reopen rejects placement Session instead of returning a false association [6.73ms]
++(pass) reopen rejects identity Session instead of returning a false association [9.46ms]
++(pass) concurrent separate connections cannot assign a Session to two chats [8.55ms]
++(pass) SQLite failure after Session creation retains the unassociated Session and retry creates a fresh chat [7.85ms]
++(pass) interruption during lookup releases the port and creates no membership [6.49ms]
++(pass) Session create failure does not become successful membership [5.19ms]
++(pass) Session lookup failure does not become successful membership [6.74ms]
++(pass) host mapping refresh during Session creation rejects stale membership [5.36ms]
++(pass) tracked chat migration preserves prior project association data and reopens membership [16.22ms]
++(pass) chat contracts keep canonical identities, strict ID prefix and optional omission [1.07ms]
++
++ 19 pass
++ 0 fail
++ 63 expect() calls
++Ran 19 tests across 1 file. [253.00ms]
+diff --git a/docs/validation/m2-02/format.log b/docs/validation/m2-02/format.log
+new file mode 100644
+index 000000000..4aa0d16e7
+--- /dev/null
++++ b/docs/validation/m2-02/format.log
+@@ -0,0 +1,2 @@
++Checking formatting...
++All matched files use Prettier code style!
+diff --git a/docs/validation/m2-02/green.log b/docs/validation/m2-02/green.log
+new file mode 100644
+index 000000000..2b315ec6a
+--- /dev/null
++++ b/docs/validation/m2-02/green.log
+@@ -0,0 +1,24 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc/projects-and-chats/m2-02.test.ts:
++(pass) reopen retains distinct chat Sessions [30.45ms]
++(pass) two roots with the same host ID keep separate chats and aliases restore membership [10.60ms]
++(pass) unknown association fails before Session creation and is not inherited by another database [12.30ms]
++(pass) create rejects directory Session mismatch without membership [7.11ms]
++(pass) create rejects host Session mismatch without membership [6.16ms]
++(pass) create rejects workspace Session mismatch without membership [5.52ms]
++(pass) create rejects lookup-id Session mismatch without membership [6.37ms]
++(pass) create rejects missing Session mismatch without membership [5.87ms]
++(pass) reopen rejects missing Session instead of returning a false association [6.72ms]
++(pass) reopen rejects placement Session instead of returning a false association [6.16ms]
++(pass) reopen rejects identity Session instead of returning a false association [7.74ms]
++(pass) concurrent separate connections cannot assign a Session to two chats [8.22ms]
++(pass) SQLite failure after Session creation retains the unassociated Session and retry creates a fresh chat [8.80ms]
++(pass) interruption during lookup releases the port and creates no membership [5.32ms]
++(pass) Session create failure does not become successful membership [4.92ms]
++(pass) Session lookup failure does not become successful membership [5.64ms]
++
++ 16 pass
++ 0 fail
++ 44 expect() calls
++Ran 16 tests across 1 file. [214.00ms]
+diff --git a/docs/validation/m2-02/host-mapping-red.log b/docs/validation/m2-02/host-mapping-red.log
+new file mode 100644
+index 000000000..35b32d9be
+--- /dev/null
++++ b/docs/validation/m2-02/host-mapping-red.log
+@@ -0,0 +1,23 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc/projects-and-chats/m2-02.test.ts:
++439 |             ),
++440 |         }),
++441 |       ),
++442 |     )
++443 |   })
++444 |   expect(Result.isFailure(result) && result.failure.code).toBe("project_changed")
++                                                                ^
++error: expect(received).toBe(expected)
++
++Expected: "project_changed"
++Received: false
++
++      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/projects-and-chats/m2-02.test.ts:444:59)
++(fail) host mapping refresh during Session creation rejects stale membership [23.93ms]
++
++ 0 pass
++ 18 filtered out
++ 1 fail
++ 1 expect() calls
++Ran 1 test across 1 file. [99.00ms]
+diff --git a/docs/validation/m2-02/lint-initial.log b/docs/validation/m2-02/lint-initial.log
+new file mode 100644
+index 000000000..220b4b3c2
+--- /dev/null
++++ b/docs/validation/m2-02/lint-initial.log
+@@ -0,0 +1,26 @@
++
++  ! typescript-eslint(consistent-return): Function expected a return value.
++     ,-[packages/core/src/ftc/projects.ts:94:50]
++  93 |       })
++  94 | ,->   const lookup = Effect.fn("FtcProjects.lookup")(function* (project: FtcProject.ProjectContext, sessionID: Session.ID) {
++  95 | |       const session = yield* sessions.getSession(sessionID)
++  96 | |       if (!session)
++  97 | |         return yield* Effect.fail({
++  98 | |           code: "session_not_found",
++  99 | |           projectID: project.projectID,
++ 100 | |           sessionID,
++ 101 | |           recovery: "reopen_project",
++ 102 | |         } satisfies FtcProject.ChatError)
++ 103 | |       if (session.id !== sessionID || !matches(project, session))
++ 104 | |         return yield* Effect.fail({
++ 105 | |           code: "session_mismatch",
++ 106 | |           projectID: project.projectID,
++ 107 | |           sessionID,
++ 108 | |           recovery: "reopen_project",
++ 109 | |         } satisfies FtcProject.ChatError)
++ 110 | `->   })
++ 111 |       return Layer.succeed(Service, {
++     `----
++
++Found 1 warning and 0 errors.
++Finished in 869ms on 8 files with 130 rules using 10 threads.
+diff --git a/docs/validation/m2-02/lint.log b/docs/validation/m2-02/lint.log
+new file mode 100644
+index 000000000..a14274d3c
+--- /dev/null
++++ b/docs/validation/m2-02/lint.log
+@@ -0,0 +1,2 @@
++Found 0 warnings and 0 errors.
++Finished in 839ms on 8 files with 130 rules using 10 threads.
+diff --git a/docs/validation/m2-02/migration-check.log b/docs/validation/m2-02/migration-check.log
+new file mode 100644
+index 000000000..c62b56afd
+--- /dev/null
++++ b/docs/validation/m2-02/migration-check.log
+@@ -0,0 +1,4 @@
++Reading config file '/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-check-nTiMhw/incremental.config.ts'
++No schema changes, nothing to migrate 😴
++Reading config file '/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-check-nTiMhw/full.config.ts'
++[✓] Your SQL migration ➜ /var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-check-nTiMhw/full/20261006123908_schema/migration.sql 🚀
+diff --git a/docs/validation/m2-02/migration-generate.log b/docs/validation/m2-02/migration-generate.log
+new file mode 100644
+index 000000000..f503e5f6b
+--- /dev/null
++++ b/docs/validation/m2-02/migration-generate.log
+@@ -0,0 +1,4 @@
++Reading config file '/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-hhQgar/incremental.config.ts'
++[✓] Your SQL migration ➜ /var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-hhQgar/incremental/20261006123700_ftc-chat-membership/migration.sql 🚀
++Reading config file '/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-hhQgar/full.config.ts'
++[✓] Your SQL migration ➜ /var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-hhQgar/full/20261006123700_schema/migration.sql 🚀
+diff --git a/docs/validation/m2-02/red-expanded.log b/docs/validation/m2-02/red-expanded.log
+new file mode 100644
+index 000000000..d76155c5b
+--- /dev/null
++++ b/docs/validation/m2-02/red-expanded.log
+@@ -0,0 +1,54 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc/projects-and-chats/m2-02.test.ts:
++error: M2-02 chat membership is not implemented
++M2-02 chat membership is not implemented
++(fail) reopen retains distinct chat Sessions [28.65ms]
++error: M2-02 chat membership is not implemented
++M2-02 chat membership is not implemented
++(fail) two roots with the same host ID keep separate chats and aliases restore membership [10.29ms]
++error: M2-02 chat membership is not implemented
++M2-02 chat membership is not implemented
++(fail) unknown association fails before Session creation and is not inherited by another database [12.26ms]
++error: M2-02 chat membership is not implemented
++M2-02 chat membership is not implemented
++(fail) create rejects directory Session mismatch without membership [5.87ms]
++error: M2-02 chat membership is not implemented
++M2-02 chat membership is not implemented
++(fail) create rejects host Session mismatch without membership [6.02ms]
++error: M2-02 chat membership is not implemented
++M2-02 chat membership is not implemented
++(fail) create rejects workspace Session mismatch without membership [5.80ms]
++error: M2-02 chat membership is not implemented
++M2-02 chat membership is not implemented
++(fail) create rejects lookup-id Session mismatch without membership [5.52ms]
++error: M2-02 chat membership is not implemented
++M2-02 chat membership is not implemented
++(fail) create rejects missing Session mismatch without membership [5.19ms]
++error: M2-02 chat membership is not implemented
++M2-02 chat membership is not implemented
++(fail) reopen rejects missing Session instead of returning a false association [6.98ms]
++error: M2-02 chat membership is not implemented
++M2-02 chat membership is not implemented
++(fail) reopen rejects placement Session instead of returning a false association [5.74ms]
++error: M2-02 chat membership is not implemented
++M2-02 chat membership is not implemented
++(fail) reopen rejects identity Session instead of returning a false association [4.74ms]
++error: M2-02 chat membership is not implemented
++M2-02 chat membership is not implemented
++(fail) concurrent separate connections cannot assign a Session to two chats [8.18ms]
++error: M2-02 chat membership is not implemented
++M2-02 chat membership is not implemented
++(fail) SQLite failure after Session creation retains the unassociated Session and retry creates a fresh chat [5.97ms]
++(fail) interruption during lookup releases the port and creates no membership [5000.00ms]
++  ^ this test timed out after 5000ms.
++error: M2-02 chat membership is not implemented
++M2-02 chat membership is not implemented
++(fail) Session create failure does not become successful membership [11.01ms]
++error: M2-02 chat membership is not implemented
++M2-02 chat membership is not implemented
++(fail) Session lookup failure does not become successful membership [4.46ms]
++
++ 0 pass
++ 16 fail
++Ran 16 tests across 1 file. [5.22s]
+diff --git a/docs/validation/m2-02/red.log b/docs/validation/m2-02/red.log
+new file mode 100644
+index 000000000..1087eebe7
+--- /dev/null
++++ b/docs/validation/m2-02/red.log
+@@ -0,0 +1,10 @@
++bun test v1.3.14 (0d9b296a)
++
++test/ftc/projects-and-chats/m2-02.test.ts:
++error: M2-02 chat membership is not implemented
++M2-02 chat membership is not implemented
++(fail) reopen retains distinct chat Sessions [26.21ms]
++
++ 0 pass
++ 1 fail
++Ran 1 test across 1 file. [234.00ms]
+diff --git a/docs/validation/m2-02/schema-contracts.log b/docs/validation/m2-02/schema-contracts.log
+new file mode 100644
+index 000000000..26dc61a7d
+--- /dev/null
++++ b/docs/validation/m2-02/schema-contracts.log
+@@ -0,0 +1,20 @@
++bun test v1.3.14 (0d9b296a)
++
++test/contract-hygiene.test.ts:
++(pass) contract hygiene > optional properties preserve transformations and omit undefined while encoding [2.80ms]
++(pass) contract hygiene > todo status and priority preserve arbitrary strings [0.03ms]
++(pass) contract hygiene > current ID constructors expose create [0.23ms]
++(pass) contract hygiene > reusable public identifiers are stable and unique [0.04ms]
++(pass) contract hygiene > current source avoids Any and mutable contract wrappers [1.12ms]
++
++test/compatibility.test.ts:
++(pass) schema compatibility > moved class schemas remain constructible [0.10ms]
++
++test/v1-isolation.test.ts:
++(pass) compatibility entrypoints preserve isolated V1 schema identity [0.01ms]
++(pass) current source does not import the V1 subtree directly [0.69ms]
++
++ 8 pass
++ 0 fail
++ 17 expect() calls
++Ran 8 tests across 3 files. [63.00ms]
+diff --git a/docs/validation/m2-02/schema-typecheck.log b/docs/validation/m2-02/schema-typecheck.log
+new file mode 100644
+index 000000000..019b598fe
+--- /dev/null
++++ b/docs/validation/m2-02/schema-typecheck.log
+@@ -0,0 +1 @@
++$ tsgo --noEmit
+diff --git a/docs/validation/m2-02/snapshot-delta.json b/docs/validation/m2-02/snapshot-delta.json
+new file mode 100644
+index 000000000..f7b4f5e7a
+--- /dev/null
++++ b/docs/validation/m2-02/snapshot-delta.json
+@@ -0,0 +1,91 @@
++{
++  "added": [
++    {
++      "autoincrement": false,
++      "default": null,
++      "entityType": "columns",
++      "generated": null,
++      "name": "chat_id",
++      "notNull": true,
++      "table": "ftc_chat",
++      "type": "text"
++    },
++    {
++      "autoincrement": false,
++      "default": null,
++      "entityType": "columns",
++      "generated": null,
++      "name": "project_id",
++      "notNull": true,
++      "table": "ftc_chat",
++      "type": "text"
++    },
++    {
++      "autoincrement": false,
++      "default": null,
++      "entityType": "columns",
++      "generated": null,
++      "name": "session_id",
++      "notNull": true,
++      "table": "ftc_chat",
++      "type": "text"
++    },
++    {
++      "autoincrement": true,
++      "default": null,
++      "entityType": "columns",
++      "generated": null,
++      "name": "sequence",
++      "notNull": false,
++      "table": "ftc_chat",
++      "type": "integer"
++    },
++    {
++      "columns": [
++        "chat_id"
++      ],
++      "entityType": "uniques",
++      "name": "ftc_chat_chat_id_unique",
++      "nameExplicit": false,
++      "table": "ftc_chat"
++    },
++    {
++      "columns": [
++        "project_id"
++      ],
++      "columnsTo": [
++        "project_id"
++      ],
++      "entityType": "fks",
++      "name": "fk_ftc_chat_project_id_ftc_project_association_project_id_fk",
++      "nameExplicit": false,
++      "onDelete": "NO ACTION",
++      "onUpdate": "NO ACTION",
++      "table": "ftc_chat",
++      "tableTo": "ftc_project_association"
++    },
++    {
++      "columns": [
++        "sequence"
++      ],
++      "entityType": "pks",
++      "name": "ftc_chat_pk",
++      "nameExplicit": false,
++      "table": "ftc_chat"
++    },
++    {
++      "columns": [
++        "session_id"
++      ],
++      "entityType": "uniques",
++      "name": "ftc_chat_session_id_unique",
++      "nameExplicit": false,
++      "table": "ftc_chat"
++    },
++    {
++      "entityType": "tables",
++      "name": "ftc_chat"
++    }
++  ],
++  "removed_or_changed": []
++}
+diff --git a/docs/validation/m2-02/source-sha256.txt b/docs/validation/m2-02/source-sha256.txt
+new file mode 100644
+index 000000000..f167e70b5
+--- /dev/null
++++ b/docs/validation/m2-02/source-sha256.txt
+@@ -0,0 +1,9 @@
++dfe2097b9ce35cb5dcf0aa69c997c8218e4612d1e889442062645f553e74d2c6  packages/schema/src/ftc-project.ts
++42c531e0669e5fa74419776f8a70337b6f2c95a2cc6f02c4bc2d9baef5db9446  packages/core/src/ftc/projects.ts
++cd0a1ba025a851abe189c679dccfd0a6d92cd102c057d2a00622ebbd3bc237bc  packages/core/src/ftc/projects/sql.ts
++763c84852e245553ec5ee363c1f6524e455847a3c45fe2f1dc5da7c994902a51  packages/core/test/ftc/projects-and-chats/m2-01.test.ts
++8f11d53b8618aa3d295b3bd20c2f87bc759953a82b7b94f326846d35a9c39d7d  packages/core/test/ftc/projects-and-chats/m2-02.test.ts
++9eb09b938c8a4a70ea162ddba5bdb66d8fb2814d69ceb1c355867536c734a315  packages/core/src/database/migration/20261006123700_ftc-chat-membership.ts
++e50acd86a0b141c50a586633d208e11a4631f7dc48ec9f17b5c79239dc246193  packages/core/src/database/migration.gen.ts
++bc6aadffeb52cb3492a8465092ab72dfd5b32c1e6fe62dd0787516d92cd269cb  packages/core/src/database/schema.gen.ts
++c07cf927b0785bde7da6c588239494af994030a6c74836ebf0fe92351c370ace  packages/core/schema.json
+diff --git a/packages/core/schema.json b/packages/core/schema.json
+index d438d00c5..82a0d2a61 100644
+--- a/packages/core/schema.json
++++ b/packages/core/schema.json
+@@ -1,70 +1,74 @@
+ {
+   "version": "7",
+   "dialect": "sqlite",
+-  "id": "d3fb1ce7-b53c-4fd3-9965-ce7dd5c1cb0b",
++  "id": "445bccd6-3162-4ce2-aa5e-ac75c867625a",
+   "prevIds": [
+-    "f14a9b18-8207-487e-a3d3-227e629ba9ad"
++    "d3fb1ce7-b53c-4fd3-9965-ce7dd5c1cb0b"
+   ],
+   "ddl": [
+     {
+       "name": "workspace",
+       "entityType": "tables"
+     },
+     {
+       "name": "data_migration",
+       "entityType": "tables"
+     },
+     {
+       "name": "account_state",
+       "entityType": "tables"
+     },
+     {
+       "name": "account",
+       "entityType": "tables"
+     },
+     {
+       "name": "control_account",
+       "entityType": "tables"
+     },
+     {
+       "name": "credential",
+       "entityType": "tables"
+     },
+     {
+       "name": "event_sequence",
+       "entityType": "tables"
+     },
+     {
+       "name": "event",
+       "entityType": "tables"
+     },
++    {
++      "name": "ftc_chat",
++      "entityType": "tables"
++    },
+     {
+       "name": "ftc_project_association",
+       "entityType": "tables"
+     },
+     {
+       "name": "permission",
+       "entityType": "tables"
+     },
+     {
+       "name": "project_directory",
+       "entityType": "tables"
+     },
+     {
+       "name": "project",
+       "entityType": "tables"
+     },
+     {
+       "name": "message",
+       "entityType": "tables"
+     },
+     {
+       "name": "part",
+       "entityType": "tables"
+     },
+     {
+       "name": "session_context_epoch",
+       "entityType": "tables"
+     },
+     {
+       "name": "session_input",
+@@ -519,60 +523,100 @@
+     {
+       "type": "integer",
+       "notNull": true,
+       "autoincrement": false,
+       "default": null,
+       "generated": null,
+       "name": "seq",
+       "entityType": "columns",
+       "table": "event"
+     },
+     {
+       "type": "text",
+       "notNull": true,
+       "autoincrement": false,
+       "default": null,
+       "generated": null,
+       "name": "type",
+       "entityType": "columns",
+       "table": "event"
+     },
+     {
+       "type": "text",
+       "notNull": true,
+       "autoincrement": false,
+       "default": null,
+       "generated": null,
+       "name": "data",
+       "entityType": "columns",
+       "table": "event"
+     },
++    {
++      "type": "integer",
++      "notNull": false,
++      "autoincrement": true,
++      "default": null,
++      "generated": null,
++      "name": "sequence",
++      "entityType": "columns",
++      "table": "ftc_chat"
++    },
++    {
++      "type": "text",
++      "notNull": true,
++      "autoincrement": false,
++      "default": null,
++      "generated": null,
++      "name": "chat_id",
++      "entityType": "columns",
++      "table": "ftc_chat"
++    },
++    {
++      "type": "text",
++      "notNull": true,
++      "autoincrement": false,
++      "default": null,
++      "generated": null,
++      "name": "project_id",
++      "entityType": "columns",
++      "table": "ftc_chat"
++    },
++    {
++      "type": "text",
++      "notNull": true,
++      "autoincrement": false,
++      "default": null,
++      "generated": null,
++      "name": "session_id",
++      "entityType": "columns",
++      "table": "ftc_chat"
++    },
+     {
+       "type": "text",
+       "notNull": false,
+       "autoincrement": false,
+       "default": null,
+       "generated": null,
+       "name": "canonical_root",
+       "entityType": "columns",
+       "table": "ftc_project_association"
+     },
+     {
+       "type": "text",
+       "notNull": true,
+       "autoincrement": false,
+       "default": null,
+       "generated": null,
+       "name": "project_id",
+       "entityType": "columns",
+       "table": "ftc_project_association"
+     },
+     {
+       "type": "text",
+       "notNull": true,
+       "autoincrement": false,
+       "default": null,
+       "generated": null,
+       "name": "host_project_id",
+       "entityType": "columns",
+       "table": "ftc_project_association"
+     },
+@@ -1544,60 +1588,75 @@
+     {
+       "columns": [
+         "active_account_id"
+       ],
+       "tableTo": "account",
+       "columnsTo": [
+         "id"
+       ],
+       "onUpdate": "NO ACTION",
+       "onDelete": "SET NULL",
+       "nameExplicit": false,
+       "name": "fk_account_state_active_account_id_account_id_fk",
+       "entityType": "fks",
+       "table": "account_state"
+     },
+     {
+       "columns": [
+         "aggregate_id"
+       ],
+       "tableTo": "event_sequence",
+       "columnsTo": [
+         "aggregate_id"
+       ],
+       "onUpdate": "NO ACTION",
+       "onDelete": "CASCADE",
+       "nameExplicit": false,
+       "name": "fk_event_aggregate_id_event_sequence_aggregate_id_fk",
+       "entityType": "fks",
+       "table": "event"
+     },
++    {
++      "columns": [
++        "project_id"
++      ],
++      "tableTo": "ftc_project_association",
++      "columnsTo": [
++        "project_id"
++      ],
++      "onUpdate": "NO ACTION",
++      "onDelete": "NO ACTION",
++      "nameExplicit": false,
++      "name": "fk_ftc_chat_project_id_ftc_project_association_project_id_fk",
++      "entityType": "fks",
++      "table": "ftc_chat"
++    },
+     {
+       "columns": [
+         "project_id"
+       ],
+       "tableTo": "project",
+       "columnsTo": [
+         "id"
+       ],
+       "onUpdate": "NO ACTION",
+       "onDelete": "CASCADE",
+       "nameExplicit": false,
+       "name": "fk_permission_project_id_project_id_fk",
+       "entityType": "fks",
+       "table": "permission"
+     },
+     {
+       "columns": [
+         "project_id"
+       ],
+       "tableTo": "project",
+       "columnsTo": [
+         "id"
+       ],
+       "onUpdate": "NO ACTION",
+       "onDelete": "CASCADE",
+       "nameExplicit": false,
+       "name": "fk_project_directory_project_id_project_id_fk",
+       "entityType": "fks",
+       "table": "project_directory"
+     },
+@@ -1787,60 +1846,69 @@
+       "table": "account",
+       "entityType": "pks"
+     },
+     {
+       "columns": [
+         "id"
+       ],
+       "nameExplicit": false,
+       "name": "credential_pk",
+       "table": "credential",
+       "entityType": "pks"
+     },
+     {
+       "columns": [
+         "aggregate_id"
+       ],
+       "nameExplicit": false,
+       "name": "event_sequence_pk",
+       "table": "event_sequence",
+       "entityType": "pks"
+     },
+     {
+       "columns": [
+         "id"
+       ],
+       "nameExplicit": false,
+       "name": "event_pk",
+       "table": "event",
+       "entityType": "pks"
+     },
++    {
++      "columns": [
++        "sequence"
++      ],
++      "nameExplicit": false,
++      "name": "ftc_chat_pk",
++      "table": "ftc_chat",
++      "entityType": "pks"
++    },
+     {
+       "columns": [
+         "canonical_root"
+       ],
+       "nameExplicit": false,
+       "name": "ftc_project_association_pk",
+       "table": "ftc_project_association",
+       "entityType": "pks"
+     },
+     {
+       "columns": [
+         "id"
+       ],
+       "nameExplicit": false,
+       "name": "permission_pk",
+       "table": "permission",
+       "entityType": "pks"
+     },
+     {
+       "columns": [
+         "id"
+       ],
+       "nameExplicit": false,
+       "name": "project_pk",
+       "table": "project",
+       "entityType": "pks"
+     },
+     {
+       "columns": [
+         "id"
+@@ -2187,42 +2255,60 @@
+       "table": "session"
+     },
+     {
+       "columns": [
+         {
+           "value": "parent_id",
+           "isExpression": false
+         }
+       ],
+       "isUnique": false,
+       "where": null,
+       "origin": "manual",
+       "name": "session_parent_idx",
+       "entityType": "indexes",
+       "table": "session"
+     },
+     {
+       "columns": [
+         {
+           "value": "session_id",
+           "isExpression": false
+         }
+       ],
+       "isUnique": false,
+       "where": null,
+       "origin": "manual",
+       "name": "todo_session_idx",
+       "entityType": "indexes",
+       "table": "todo"
+     },
++    {
++      "columns": [
++        "chat_id"
++      ],
++      "nameExplicit": false,
++      "name": "ftc_chat_chat_id_unique",
++      "entityType": "uniques",
++      "table": "ftc_chat"
++    },
++    {
++      "columns": [
++        "session_id"
++      ],
++      "nameExplicit": false,
++      "name": "ftc_chat_session_id_unique",
++      "entityType": "uniques",
++      "table": "ftc_chat"
++    },
+     {
+       "columns": [
+         "project_id"
+       ],
+       "nameExplicit": false,
+       "name": "ftc_project_association_project_id_unique",
+       "entityType": "uniques",
+       "table": "ftc_project_association"
+     }
+   ],
+   "renames": []
+ }
+\ No newline at end of file
+diff --git a/packages/core/src/database/migration.gen.ts b/packages/core/src/database/migration.gen.ts
+index b83143189..229f24270 100644
+--- a/packages/core/src/database/migration.gen.ts
++++ b/packages/core/src/database/migration.gen.ts
+@@ -14,32 +14,33 @@ export const migrations = (
+     import("./migration/20260323234822_events"),
+     import("./migration/20260410174513_workspace-name"),
+     import("./migration/20260413175956_chief_energizer"),
+     import("./migration/20260423070820_add_icon_url_override"),
+     import("./migration/20260427172553_slow_nightmare"),
+     import("./migration/20260428004200_add_session_path"),
+     import("./migration/20260501142318_next_venus"),
+     import("./migration/20260504145000_add_sync_owner"),
+     import("./migration/20260507164347_add_workspace_time"),
+     import("./migration/20260510033149_session_usage"),
+     import("./migration/20260511000411_data_migration_state"),
+     import("./migration/20260511173437_session-metadata"),
+     import("./migration/20260601010001_normalize_storage_paths"),
+     import("./migration/20260601202201_amazing_prowler"),
+     import("./migration/20260602002951_lowly_union_jack"),
+     import("./migration/20260602182828_add_project_directories"),
+     import("./migration/20260603001617_session_message_projection_indexes"),
+     import("./migration/20260603040000_session_message_projection_order"),
+     import("./migration/20260603141458_session_input_inbox"),
+     import("./migration/20260603160727_jittery_ezekiel_stane"),
+     import("./migration/20260604172448_event_sourced_session_input"),
+     import("./migration/20260605003541_add_session_context_snapshot"),
+     import("./migration/20260605042240_add_context_epoch_agent"),
+     import("./migration/20260611035744_credential"),
+     import("./migration/20260611192811_lush_chimera"),
+     import("./migration/20260612174303_project_dir_strategy"),
+     import("./migration/20260622142730_simplify_session_context_epoch"),
+     import("./migration/20260622170816_reset_v2_session_state"),
+     import("./migration/20260622202450_simplify_session_input"),
+     import("./migration/20261006121634_ftc-project-association"),
++    import("./migration/20261006123700_ftc-chat-membership"),
+   ])
+ ).map((module) => module.default) satisfies DatabaseMigration.Migration[]
+diff --git a/packages/core/src/database/migration/20261006123700_ftc-chat-membership.ts b/packages/core/src/database/migration/20261006123700_ftc-chat-membership.ts
+new file mode 100644
+index 000000000..7ae9c1d5d
+--- /dev/null
++++ b/packages/core/src/database/migration/20261006123700_ftc-chat-membership.ts
+@@ -0,0 +1,19 @@
++import { Effect } from "effect"
++import type { DatabaseMigration } from "../migration"
++
++export default {
++  id: "20261006123700_ftc-chat-membership",
++  up(tx) {
++    return Effect.gen(function* () {
++      yield* tx.run(`
++        CREATE TABLE \`ftc_chat\` (
++          \`sequence\` integer PRIMARY KEY AUTOINCREMENT,
++          \`chat_id\` text NOT NULL UNIQUE,
++          \`project_id\` text NOT NULL,
++          \`session_id\` text NOT NULL UNIQUE,
++          CONSTRAINT \`fk_ftc_chat_project_id_ftc_project_association_project_id_fk\` FOREIGN KEY (\`project_id\`) REFERENCES \`ftc_project_association\`(\`project_id\`)
++        );
++      `)
++    })
++  },
++} satisfies DatabaseMigration.Migration
+diff --git a/packages/core/src/database/schema.gen.ts b/packages/core/src/database/schema.gen.ts
+index db349ee9d..80f41a56f 100644
+--- a/packages/core/src/database/schema.gen.ts
++++ b/packages/core/src/database/schema.gen.ts
+@@ -59,60 +59,69 @@ export default {
+       yield* tx.run(`
+         CREATE TABLE \`credential\` (
+           \`id\` text PRIMARY KEY,
+           \`integration_id\` text,
+           \`label\` text NOT NULL,
+           \`value\` text NOT NULL,
+           \`connector_id\` text,
+           \`method_id\` text,
+           \`active\` integer,
+           \`time_created\` integer NOT NULL,
+           \`time_updated\` integer NOT NULL
+         );
+       `)
+       yield* tx.run(`
+         CREATE TABLE \`event_sequence\` (
+           \`aggregate_id\` text PRIMARY KEY,
+           \`seq\` integer NOT NULL,
+           \`owner_id\` text
+         );
+       `)
+       yield* tx.run(`
+         CREATE TABLE \`event\` (
+           \`id\` text PRIMARY KEY,
+           \`aggregate_id\` text NOT NULL,
+           \`seq\` integer NOT NULL,
+           \`type\` text NOT NULL,
+           \`data\` text NOT NULL,
+           CONSTRAINT \`fk_event_aggregate_id_event_sequence_aggregate_id_fk\` FOREIGN KEY (\`aggregate_id\`) REFERENCES \`event_sequence\`(\`aggregate_id\`) ON DELETE CASCADE
+         );
+       `)
++      yield* tx.run(`
++        CREATE TABLE \`ftc_chat\` (
++          \`sequence\` integer PRIMARY KEY AUTOINCREMENT,
++          \`chat_id\` text NOT NULL UNIQUE,
++          \`project_id\` text NOT NULL,
++          \`session_id\` text NOT NULL UNIQUE,
++          CONSTRAINT \`fk_ftc_chat_project_id_ftc_project_association_project_id_fk\` FOREIGN KEY (\`project_id\`) REFERENCES \`ftc_project_association\`(\`project_id\`)
++        );
++      `)
+       yield* tx.run(`
+         CREATE TABLE \`ftc_project_association\` (
+           \`canonical_root\` text PRIMARY KEY,
+           \`project_id\` text NOT NULL UNIQUE,
+           \`host_project_id\` text NOT NULL,
+           \`host_project_directory\` text NOT NULL
+         );
+       `)
+       yield* tx.run(`
+         CREATE TABLE \`permission\` (
+           \`id\` text PRIMARY KEY,
+           \`project_id\` text NOT NULL,
+           \`action\` text NOT NULL,
+           \`resource\` text NOT NULL,
+           \`time_created\` integer NOT NULL,
+           \`time_updated\` integer NOT NULL,
+           CONSTRAINT \`fk_permission_project_id_project_id_fk\` FOREIGN KEY (\`project_id\`) REFERENCES \`project\`(\`id\`) ON DELETE CASCADE
+         );
+       `)
+       yield* tx.run(`
+         CREATE TABLE \`project_directory\` (
+           \`project_id\` text NOT NULL,
+           \`directory\` text NOT NULL,
+           \`type\` text,
+           \`strategy\` text,
+           \`time_created\` integer NOT NULL,
+           CONSTRAINT \`project_directory_pk\` PRIMARY KEY(\`project_id\`, \`directory\`),
+           CONSTRAINT \`fk_project_directory_project_id_project_id_fk\` FOREIGN KEY (\`project_id\`) REFERENCES \`project\`(\`id\`) ON DELETE CASCADE
+         );
+       `)
+diff --git a/packages/core/src/ftc/projects.ts b/packages/core/src/ftc/projects.ts
+index 7a52cbdb1..67ac75652 100644
+--- a/packages/core/src/ftc/projects.ts
++++ b/packages/core/src/ftc/projects.ts
+@@ -1,54 +1,149 @@
+ export * as FtcProjects from "./projects"
+ 
+ import { Context, Effect, Layer } from "effect"
+ import path from "node:path"
+ import { FtcProject } from "@opencode-ai/schema/ftc-project"
++import { Location } from "@opencode-ai/schema/location"
++import { Session } from "@opencode-ai/schema/session"
+ 
+-export { ProjectContext, FolderRequest, AssociationError } from "@opencode-ai/schema/ftc-project"
++export {
++  ProjectContext,
++  FolderRequest,
++  AssociationError,
++  ChatID,
++  ChatRef,
++  ProjectRequest,
++  ChatError,
++} from "@opencode-ai/schema/ftc-project"
+ 
+ /** Resolves symlink/case aliases, inspects directory access, and supplies existing host identity without file edits. */
+ export interface FolderIdentity {
+   readonly resolve: (
+     input: FtcProject.FolderRequest,
+   ) => Effect.Effect<Omit<FtcProject.ProjectContext, "projectID">, FtcProject.AssociationError>
+ }
+ 
+ export interface Repository {
+   readonly associate: (
+     folder: Omit<FtcProject.ProjectContext, "projectID">,
+   ) => Effect.Effect<FtcProject.ProjectContext, FtcProject.AssociationError>
++  readonly getProject: (
++    input: FtcProject.ProjectRequest,
++  ) => Effect.Effect<FtcProject.ProjectContext | undefined, FtcProject.ChatError>
++  readonly addChat: (
++    project: FtcProject.ProjectContext,
++    chat: FtcProject.ChatRef,
++  ) => Effect.Effect<FtcProject.ChatRef, FtcProject.ChatError>
++  readonly listChats: (
++    input: FtcProject.ProjectRequest,
++  ) => Effect.Effect<readonly FtcProject.ChatRef[], FtcProject.ChatError>
++}
++
++export interface SessionAccess {
++  readonly createSession: (input: {
++    readonly location: Location.Ref
++  }) => Effect.Effect<Session.Info, FtcProject.ChatError>
++  readonly getSession: (id: Session.ID) => Effect.Effect<Session.Info | undefined, FtcProject.ChatError>
+ }
+ 
+ export interface Interface {
+   readonly createProject: (
+     input: FtcProject.FolderRequest,
+   ) => Effect.Effect<FtcProject.ProjectContext, FtcProject.AssociationError>
+   readonly openProject: (
+     input: FtcProject.FolderRequest,
+   ) => Effect.Effect<FtcProject.ProjectContext, FtcProject.AssociationError>
++  readonly createChat: (input: FtcProject.ProjectRequest) => Effect.Effect<FtcProject.ChatRef, FtcProject.ChatError>
++  readonly listChats: (
++    input: FtcProject.ProjectRequest,
++  ) => Effect.Effect<readonly FtcProject.ChatRef[], FtcProject.ChatError>
+ }
+ 
+ export class Service extends Context.Service<Service, Interface>()("@opencode/FtcProjects") {}
+ 
+ /**
+  * Construct within the owning Location scope; the caller owns the injected repository connection.
+  * Interruption before association leaves no row. Once the atomic write commits, retry reconciles by root.
+  */
+-export const layer = (folders: FolderIdentity, repository: Repository) => {
++export const layer = (folders: FolderIdentity, repository: Repository, sessions: SessionAccess) => {
+   const associate = Effect.fn("FtcProjects.associate")(function* (input: FtcProject.FolderRequest) {
+     const folder = yield* folders.resolve(input)
+     if (
+       !path.isAbsolute(folder.canonicalRoot) ||
+       folder.location.directory !== folder.canonicalRoot ||
+       !path.isAbsolute(folder.location.project.directory) ||
+       folder.location.workspaceID !== undefined
+     )
+       return yield* Effect.fail({
+         code: "invalid_folder_identity",
+         root: input.root,
+         recovery: "select_accessible_folder",
+       } satisfies FtcProject.AssociationError)
+     return yield* repository.associate(folder)
+   })
+-  return Layer.succeed(Service, { createProject: associate, openProject: associate })
++  const getProject = Effect.fn("FtcProjects.getProject")(function* (input: FtcProject.ProjectRequest) {
++    const project = yield* repository.getProject(input)
++    if (!project)
++      return yield* Effect.fail({
++        code: "project_not_found",
++        projectID: input.projectID,
++        recovery: "reopen_project",
++      } satisfies FtcProject.ChatError)
++    return project
++  })
++  const lookup = Effect.fn("FtcProjects.lookup")(function* (project: FtcProject.ProjectContext, sessionID: Session.ID) {
++    const session = yield* sessions.getSession(sessionID)
++    if (!session)
++      return yield* Effect.fail({
++        code: "session_not_found",
++        projectID: project.projectID,
++        sessionID,
++        recovery: "reopen_project",
++      } satisfies FtcProject.ChatError)
++    if (session.id !== sessionID || !matches(project, session))
++      return yield* Effect.fail({
++        code: "session_mismatch",
++        projectID: project.projectID,
++        sessionID,
++        recovery: "reopen_project",
++      } satisfies FtcProject.ChatError)
++    return session
++  })
++  return Layer.succeed(Service, {
++    createProject: associate,
++    openProject: associate,
++    createChat: Effect.fn("FtcProjects.createChat")(function* (input) {
++      const project = yield* getProject(input)
++      const session = yield* sessions.createSession({ location: { directory: project.location.directory } })
++      if (!matches(project, session))
++        return yield* Effect.fail({
++          code: "session_mismatch",
++          projectID: project.projectID,
++          sessionID: session.id,
++          recovery: "reopen_project",
++        } satisfies FtcProject.ChatError)
++      yield* lookup(project, session.id)
++      // Session creation and M2 persistence have separate owners. Failed/interrupted membership
++      // may leave an unassociated Session; M2 must never delete Session-owned data as compensation.
++      return yield* repository.addChat(project, {
++        projectID: project.projectID,
++        chatID: FtcProject.ChatID.create(),
++        sessionID: session.id,
++      })
++    }),
++    listChats: Effect.fn("FtcProjects.listChats")(function* (input) {
++      const project = yield* getProject(input)
++      const chats = yield* repository.listChats(input)
++      yield* Effect.forEach(chats, (chat) => lookup(project, chat.sessionID))
++      return chats
++    }),
++  })
++}
++
++function matches(project: FtcProject.ProjectContext, session: Session.Info) {
++  return (
++    session.projectID === project.location.project.id &&
++    session.location.directory === project.location.directory &&
++    session.location.workspaceID === project.location.workspaceID
++  )
+ }
+diff --git a/packages/core/src/ftc/projects/sql.ts b/packages/core/src/ftc/projects/sql.ts
+index eaf0f8600..77bc0cb8c 100644
+--- a/packages/core/src/ftc/projects/sql.ts
++++ b/packages/core/src/ftc/projects/sql.ts
+@@ -1,59 +1,170 @@
+ export * as ProjectAssociations from "./sql"
+ 
+ import type { EffectDrizzleSqlite } from "@opencode-ai/effect-drizzle-sqlite"
+ import { FtcProject } from "@opencode-ai/schema/ftc-project"
+ import { Location } from "@opencode-ai/schema/location"
+ import { Project } from "@opencode-ai/schema/project"
+-import { text, sqliteTable } from "drizzle-orm/sqlite-core"
++import { Session } from "@opencode-ai/schema/session"
++import { eq } from "drizzle-orm"
++import { integer, text, sqliteTable } from "drizzle-orm/sqlite-core"
+ import { Effect } from "effect"
+ import { absoluteColumn } from "../../database/path"
+ import type { FtcProjects } from "../projects"
+ 
+ export const ProjectAssociationTable = sqliteTable("ftc_project_association", {
+   canonical_root: absoluteColumn().primaryKey(),
+   project_id: text().$type<Project.ID>().notNull().unique(),
+   host_project_id: text().$type<Project.ID>().notNull(),
+   host_project_directory: absoluteColumn().notNull(),
+ })
+ 
++export const ChatTable = sqliteTable("ftc_chat", {
++  sequence: integer().primaryKey({ autoIncrement: true }),
++  chat_id: text().$type<FtcProject.ChatID>().notNull().unique(),
++  project_id: text()
++    .$type<Project.ID>()
++    .notNull()
++    .references(() => ProjectAssociationTable.project_id),
++  session_id: text().$type<Session.ID>().notNull().unique(),
++})
++
+ export function make(db: EffectDrizzleSqlite.EffectSQLiteDatabase): FtcProjects.Repository {
+   return {
+     associate: (folder) =>
+       Effect.gen(function* () {
+         const [row] = yield* db
+           .insert(ProjectAssociationTable)
+           .values({
+             canonical_root: folder.canonicalRoot,
+             project_id: Project.ID.make(`ftc_${crypto.randomUUID()}`),
+             host_project_id: folder.location.project.id,
+             host_project_directory: folder.location.project.directory,
+           })
+           .onConflictDoUpdate({
+             target: ProjectAssociationTable.canonical_root,
+             set: {
+               host_project_id: folder.location.project.id,
+               host_project_directory: folder.location.project.directory,
+             },
+           })
+           .returning()
+           .all()
+         return {
+           projectID: row.project_id,
+           canonicalRoot: row.canonical_root,
+           location: new Location.Info({
+             directory: row.canonical_root,
+             project: { id: row.host_project_id, directory: row.host_project_directory },
+           }),
+         }
+       }).pipe(
+         Effect.mapError(
+           (cause): FtcProject.AssociationError => ({
+             code: "association_store_failed",
+             root: folder.canonicalRoot,
+             detail: cause.message,
+             recovery: "retry",
+           }),
+         ),
+       ),
++    getProject: (input) =>
++      db
++        .select()
++        .from(ProjectAssociationTable)
++        .where(eq(ProjectAssociationTable.project_id, input.projectID))
++        .get()
++        .pipe(
++          Effect.map((row) => (row ? context(row) : undefined)),
++          Effect.mapError(
++            (cause): FtcProject.ChatError => ({
++              code: "chat_store_failed",
++              projectID: input.projectID,
++              detail: cause.message,
++              recovery: "retry",
++            }),
++          ),
++        ),
++    addChat: (project, chat) =>
++      db
++        .transaction((tx) =>
++          Effect.gen(function* () {
++            const current = yield* tx
++              .select()
++              .from(ProjectAssociationTable)
++              .where(eq(ProjectAssociationTable.project_id, project.projectID))
++              .get()
++            // An open may refresh the host mapping while Session creation is pending.
++            // Validate the association in the same SQLite transaction as membership insertion.
++            if (
++              !current ||
++              current.canonical_root !== project.canonicalRoot ||
++              current.host_project_id !== project.location.project.id ||
++              current.host_project_directory !== project.location.project.directory
++            )
++              return { kind: "changed" } as const
++            const [row] = yield* tx
++              .insert(ChatTable)
++              .values({ chat_id: chat.chatID, project_id: project.projectID, session_id: chat.sessionID })
++              .onConflictDoNothing()
++              .returning()
++              .all()
++            if (!row) return { kind: "conflict" } as const
++            return { kind: "created", chat: reference(row) } as const
++          }),
++        )
++        .pipe(
++          Effect.mapError(
++            (cause): FtcProject.ChatError => ({
++              code: "chat_store_failed",
++              projectID: project.projectID,
++              sessionID: chat.sessionID,
++              detail: cause.message,
++              recovery: "retry",
++            }),
++          ),
++          Effect.flatMap((result) =>
++            result.kind === "created"
++              ? Effect.succeed(result.chat)
++              : Effect.fail({
++                  code: result.kind === "changed" ? "project_changed" : "chat_session_conflict",
++                  projectID: project.projectID,
++                  sessionID: chat.sessionID,
++                  recovery: result.kind === "changed" ? "reopen_project" : "retry",
++                } satisfies FtcProject.ChatError),
++          ),
++        ),
++    listChats: (input) =>
++      db
++        .select()
++        .from(ChatTable)
++        .where(eq(ChatTable.project_id, input.projectID))
++        .orderBy(ChatTable.sequence)
++        .all()
++        .pipe(
++          Effect.map((rows) => rows.map(reference)),
++          Effect.mapError(
++            (cause): FtcProject.ChatError => ({
++              code: "chat_store_failed",
++              projectID: input.projectID,
++              detail: cause.message,
++              recovery: "retry",
++            }),
++          ),
++        ),
+   }
+ }
++
++function context(row: typeof ProjectAssociationTable.$inferSelect): FtcProject.ProjectContext {
++  return {
++    projectID: row.project_id,
++    canonicalRoot: row.canonical_root,
++    location: new Location.Info({
++      directory: row.canonical_root,
++      project: { id: row.host_project_id, directory: row.host_project_directory },
++    }),
++  }
++}
++
++function reference(row: typeof ChatTable.$inferSelect): FtcProject.ChatRef {
++  return { projectID: row.project_id, chatID: row.chat_id, sessionID: row.session_id }
++}
+diff --git a/packages/core/test/ftc/projects-and-chats/m2-01.test.ts b/packages/core/test/ftc/projects-and-chats/m2-01.test.ts
+index 2c4f90a4b..e8a5f2d3f 100644
+--- a/packages/core/test/ftc/projects-and-chats/m2-01.test.ts
++++ b/packages/core/test/ftc/projects-and-chats/m2-01.test.ts
+@@ -1,78 +1,83 @@
+ import { expect, test } from "bun:test"
+ import fs from "node:fs/promises"
+ import path from "node:path"
+ import { SqliteClient } from "@effect/sql-sqlite-bun"
+ import { EffectDrizzleSqlite } from "@opencode-ai/effect-drizzle-sqlite"
+ import { FtcProject } from "@opencode-ai/schema/ftc-project"
+ import { Location } from "@opencode-ai/schema/location"
+ import { Project } from "@opencode-ai/schema/project"
+ import { Workspace } from "@opencode-ai/schema/workspace"
+ import { AbsolutePath } from "@opencode-ai/schema/schema"
+ import { Deferred, Effect, Fiber, Result, Schema } from "effect"
+ import { sql } from "drizzle-orm"
+ import { DatabaseMigration } from "../../../src/database/migration"
+ import { migrations } from "../../../src/database/migration.gen"
+ import { FtcProjects } from "../../../src/ftc/projects"
+ import { ProjectAssociations } from "../../../src/ftc/projects/sql"
+ import { tmpdir } from "../../fixture/tmpdir"
+ 
++const sessions: FtcProjects.SessionAccess = {
++  createSession: () => Effect.die("Association must not create a Session"),
++  getSession: () => Effect.die("Association must not read a Session"),
++}
++
+ const folders: FtcProjects.FolderIdentity = {
+   resolve: ({ root }) =>
+     Effect.tryPromise({
+       try: async () => {
+         const directory = AbsolutePath.make(await fs.realpath(root))
+         if (!(await fs.stat(directory)).isDirectory()) throw new Error("not_a_directory")
+         await fs.access(directory, fs.constants.R_OK)
+         return {
+           canonicalRoot: directory,
+           location: new Location.Info({
+             directory,
+             project: { id: Project.ID.global, directory: AbsolutePath.make(path.parse(directory).root) },
+           }),
+         }
+       },
+       catch: (cause): FtcProject.AssociationError => ({
+         code: "folder_unavailable",
+         root,
+         detail: String(cause),
+         recovery: "select_accessible_folder",
+       }),
+     }),
+ }
+ 
+ function run<A, E>(filename: string, effect: Effect.Effect<A, E, FtcProjects.Service>, identity = folders) {
+   return Effect.runPromise(
+     Effect.gen(function* () {
+       const db = yield* EffectDrizzleSqlite.makeWithDefaults()
+       yield* DatabaseMigration.apply(db)
+-      return yield* effect.pipe(Effect.provide(FtcProjects.layer(identity, ProjectAssociations.make(db))))
++      return yield* effect.pipe(Effect.provide(FtcProjects.layer(identity, ProjectAssociations.make(db), sessions)))
+     }).pipe(Effect.provide(SqliteClient.layer({ filename })), Effect.scoped),
+   )
+ }
+ 
+ test("folder aliases reopen one project", async () => {
+   await using tmp = await tmpdir()
+   const root = AbsolutePath.make(path.join(tmp.path, "team"))
+   const aliasRoot = AbsolutePath.make(path.join(tmp.path, "alias"))
+   await fs.mkdir(root)
+   await fs.mkdir(path.join(root, "TeamCode"))
+   await Bun.write(path.join(root, "TeamCode/Main.java"), "// student code\n")
+   await Bun.write(path.join(root, "ftc-project.json"), '{"name":"team"}\n')
+   await fs.symlink(root, aliasRoot)
+   const beforeFiles = await files(root)
+   const filename = path.join(tmp.path, "local.sqlite")
+   const opened = await run(
+     filename,
+     Effect.gen(function* () {
+       const projects = yield* FtcProjects.Service
+       return yield* projects.createProject({ root })
+     }),
+   )
+   const alias = await run(
+     filename,
+     Effect.gen(function* () {
+       const projects = yield* FtcProjects.Service
+       return yield* projects.openProject({ root: aliasRoot })
+     }),
+   )
+   expect(alias.projectID).toBe(opened.projectID)
+@@ -297,61 +302,61 @@ test("inconsistent or nonlocal folder identities fail before persistence", async
+ test("association contract reuses canonical schemas and encodes optional fields without undefined", () => {
+   expect(FtcProjects.ProjectContext).toBe(FtcProject.ProjectContext)
+   expect(FtcProject.ProjectContext.fields.projectID).toBe(Project.ID)
+   expect(FtcProject.ProjectContext.fields.location).toBe(Location.Info)
+   expect(
+     Schema.encodeSync(FtcProject.AssociationError)({
+       code: "association_store_failed",
+       root: undefined,
+       detail: undefined,
+       recovery: "retry",
+     }),
+   ).toEqual({ code: "association_store_failed", recovery: "retry" })
+   const identifiers = [FtcProject.ProjectContext, FtcProject.FolderRequest, FtcProject.AssociationError].map(
+     (schema) => schema.ast.annotations?.identifier,
+   )
+   expect(identifiers.every((identifier) => typeof identifier === "string")).toBe(true)
+   expect(new Set(identifiers).size).toBe(3)
+ })
+ 
+ test("SQLite write failure is recoverable and does not create a partial association", async () => {
+   await using tmp = await tmpdir()
+   const filename = path.join(tmp.path, "local.sqlite")
+   const result = await Effect.runPromise(
+     Effect.gen(function* () {
+       const db = yield* EffectDrizzleSqlite.makeWithDefaults()
+       yield* DatabaseMigration.apply(db)
+       yield* db.run(sql`PRAGMA query_only = ON`)
+       return yield* Effect.gen(function* () {
+         const projects = yield* FtcProjects.Service
+         return yield* projects.openProject({ root: AbsolutePath.make(tmp.path) }).pipe(Effect.result)
+-      }).pipe(Effect.provide(FtcProjects.layer(folders, ProjectAssociations.make(db))))
++      }).pipe(Effect.provide(FtcProjects.layer(folders, ProjectAssociations.make(db), sessions)))
+     }).pipe(Effect.provide(SqliteClient.layer({ filename })), Effect.scoped),
+   )
+   expect(Result.isFailure(result) && result.failure.code).toBe("association_store_failed")
+   expect(Result.isFailure(result) && result.failure.recovery).toBe("retry")
+   expect(await rows(filename)).toEqual([])
+   const opened = await run(
+     filename,
+     Effect.gen(function* () {
+       const projects = yield* FtcProjects.Service
+       return yield* projects.openProject({ root: AbsolutePath.make(tmp.path) })
+     }),
+   )
+   expect(opened.canonicalRoot).toBe(AbsolutePath.make(tmp.path))
+ })
+ 
+ test("fresh independent database scopes do not inherit another repository's associations", async () => {
+   await using tmp = await tmpdir()
+   const open = Effect.gen(function* () {
+     const projects = yield* FtcProjects.Service
+     return yield* projects.openProject({ root: AbsolutePath.make(tmp.path) })
+   })
+   const first = await run(path.join(tmp.path, "first.sqlite"), open)
+   const second = await run(path.join(tmp.path, "second.sqlite"), open)
+   expect(first.projectID).not.toBe(second.projectID)
+   expect((await run(path.join(tmp.path, "first.sqlite"), open)).projectID).toBe(first.projectID)
+ })
+ 
+ test("reopen refreshes the explicit host mapping without changing canonical ownership", async () => {
+   await using tmp = await tmpdir()
+   const filename = path.join(tmp.path, "local.sqlite")
+@@ -373,51 +378,51 @@ test("reopen refreshes the explicit host mapping without changing canonical owne
+   })
+   expect(after.projectID).toBe(before.projectID)
+   expect(after.canonicalRoot).toBe(before.canonicalRoot)
+   expect(after.location.project.id).toBe(Project.ID.make("shared-remote"))
+   expect(await rows(filename)).toEqual([
+     {
+       canonical_root: root,
+       project_id: before.projectID,
+       host_project_id: "shared-remote",
+       host_project_directory: root,
+     },
+   ])
+ })
+ 
+ test("tracked upgrade preserves existing project data and supports a new association", async () => {
+   await using tmp = await tmpdir()
+   const filename = path.join(tmp.path, "local.sqlite")
+   await Effect.runPromise(
+     Effect.gen(function* () {
+       const db = yield* EffectDrizzleSqlite.makeWithDefaults()
+       const index = migrations.findIndex((migration) => migration.id.endsWith("_ftc-project-association"))
+       expect(index).toBeGreaterThan(0)
+       yield* DatabaseMigration.applyOnly(db, migrations.slice(0, index))
+       yield* db.run(
+         sql`INSERT INTO project (id, worktree, name, time_created, time_updated, sandboxes) VALUES ('existing', '/team', 'Student project', 1, 2, '[]')`,
+       )
+       yield* DatabaseMigration.apply(db)
+       const opened = yield* Effect.gen(function* () {
+         const projects = yield* FtcProjects.Service
+         return yield* projects.openProject({ root: AbsolutePath.make(tmp.path) })
+-      }).pipe(Effect.provide(FtcProjects.layer(folders, ProjectAssociations.make(db))))
++      }).pipe(Effect.provide(FtcProjects.layer(folders, ProjectAssociations.make(db), sessions)))
+       expect(opened.canonicalRoot).toBe(AbsolutePath.make(tmp.path))
+       expect(yield* db.all(sql`SELECT id, worktree, name, time_created, time_updated, sandboxes FROM project`)).toEqual(
+         [
+           {
+             id: "existing",
+             worktree: "/team",
+             name: "Student project",
+             time_created: 1,
+             time_updated: 2,
+             sandboxes: "[]",
+           },
+         ],
+       )
+       yield* DatabaseMigration.apply(db)
+       expect(yield* db.all(sql`SELECT project_id FROM ftc_project_association`)).toEqual([
+         { project_id: opened.projectID },
+       ])
+     }).pipe(Effect.provide(SqliteClient.layer({ filename })), Effect.scoped),
+   )
+ })
+diff --git a/packages/core/test/ftc/projects-and-chats/m2-02.test.ts b/packages/core/test/ftc/projects-and-chats/m2-02.test.ts
+new file mode 100644
+index 000000000..925e2befd
+--- /dev/null
++++ b/packages/core/test/ftc/projects-and-chats/m2-02.test.ts
+@@ -0,0 +1,519 @@
++import { expect, test } from "bun:test"
++import fs from "node:fs/promises"
++import path from "node:path"
++import { SqliteClient } from "@effect/sql-sqlite-bun"
++import { EffectDrizzleSqlite } from "@opencode-ai/effect-drizzle-sqlite"
++import { FtcProject } from "@opencode-ai/schema/ftc-project"
++import { Location } from "@opencode-ai/schema/location"
++import { Project } from "@opencode-ai/schema/project"
++import { Session } from "@opencode-ai/schema/session"
++import { Workspace } from "@opencode-ai/schema/workspace"
++import { AbsolutePath } from "@opencode-ai/schema/schema"
++import { DateTime, Deferred, Effect, Fiber, Result, Schema } from "effect"
++import { sql } from "drizzle-orm"
++import { DatabaseMigration } from "../../../src/database/migration"
++import { migrations } from "../../../src/database/migration.gen"
++import { FtcProjects } from "../../../src/ftc/projects"
++import { ProjectAssociations } from "../../../src/ftc/projects/sql"
++import { tmpdir } from "../../fixture/tmpdir"
++
++const folders: FtcProjects.FolderIdentity = {
++  resolve: ({ root }) =>
++    Effect.promise(async () => {
++      const directory = AbsolutePath.make(await fs.realpath(root))
++      return {
++        canonicalRoot: directory,
++        location: new Location.Info({
++          directory,
++          project: { id: Project.ID.global, directory: AbsolutePath.make(path.parse(directory).root) },
++        }),
++      }
++    }),
++}
++
++// Session owns these records. Only its narrow create/get ports are supplied to M2.
++function sessions() {
++  const records = new Map<Session.ID, Session.Info>()
++  const port: FtcProjects.SessionAccess = {
++    createSession: ({ location }) =>
++      Effect.sync(() => {
++        const session: Session.Info = {
++          id: Session.ID.create(),
++          projectID: Project.ID.global,
++          location,
++          title: "New session",
++          cost: 0,
++          tokens: { input: 0, output: 0, reasoning: 0, cache: { read: 0, write: 0 } },
++          time: { created: DateTime.makeUnsafe(1), updated: DateTime.makeUnsafe(1) },
++        }
++        records.set(session.id, session)
++        return session
++      }),
++    getSession: (id) => Effect.sync(() => records.get(id)),
++  }
++  return { records, port }
++}
++
++function run<A, E>(
++  filename: string,
++  port: FtcProjects.SessionAccess,
++  effect: Effect.Effect<A, E, FtcProjects.Service>,
++) {
++  return database(filename, (db) =>
++    effect.pipe(Effect.provide(FtcProjects.layer(folders, ProjectAssociations.make(db), port))),
++  )
++}
++
++function database<A, E>(
++  filename: string,
++  effect: (db: EffectDrizzleSqlite.EffectSQLiteDatabase) => Effect.Effect<A, E>,
++) {
++  return Effect.runPromise(
++    Effect.gen(function* () {
++      const db = yield* EffectDrizzleSqlite.makeWithDefaults()
++      yield* DatabaseMigration.apply(db)
++      return yield* effect(db)
++    }).pipe(Effect.provide(SqliteClient.layer({ filename })), Effect.scoped),
++  )
++}
++
++const open = (root: string) =>
++  Effect.gen(function* () {
++    const projects = yield* FtcProjects.Service
++    return yield* projects.openProject({ root: AbsolutePath.make(root) })
++  })
++
++// Removing membership persistence or reusing a Session makes these expectations fail.
++test("reopen retains distinct chat Sessions", async () => {
++  await using tmp = await tmpdir()
++  const filename = path.join(tmp.path, "local.sqlite")
++  const fixture = sessions()
++  const project = await run(filename, fixture.port, open(tmp.path))
++  const [a, b] = await run(
++    filename,
++    fixture.port,
++    Effect.gen(function* () {
++      const projects = yield* FtcProjects.Service
++      return [yield* projects.createChat(project), yield* projects.createChat(project)]
++    }),
++  )
++  expect(a.sessionID).not.toBe(b.sessionID)
++  expect(a.chatID).not.toBe(b.chatID)
++  expect(a.projectID).toBe(project.projectID)
++  const reopened = await run(
++    filename,
++    {
++      ...fixture.port,
++      createSession: () => Effect.die("Reopen must not create or execute a Session"),
++    },
++    Effect.gen(function* () {
++      const projects = yield* FtcProjects.Service
++      return yield* projects.listChats(project)
++    }),
++  )
++  expect(reopened).toEqual([a, b])
++  expect(await database(filename, (db) => db.all(sql`SELECT id FROM session`))).toEqual([])
++})
++
++test("two roots with the same host ID keep separate chats and aliases restore membership", async () => {
++  await using tmp = await tmpdir()
++  const filename = path.join(tmp.path, "local.sqlite")
++  const fixture = sessions()
++  const roots = [AbsolutePath.make(path.join(tmp.path, "a")), AbsolutePath.make(path.join(tmp.path, "b"))]
++  await Promise.all(roots.map((root) => fs.mkdir(root)))
++  await fs.symlink(roots[0], path.join(tmp.path, "alias"))
++  const projects = await Promise.all(roots.map((root) => run(filename, fixture.port, open(root))))
++  const chats = await run(
++    filename,
++    fixture.port,
++    Effect.gen(function* () {
++      const service = yield* FtcProjects.Service
++      return yield* Effect.forEach(projects, (project) => service.createChat(project))
++    }),
++  )
++  expect(chats[0].projectID).not.toBe(chats[1].projectID)
++  expect(chats[0].sessionID).not.toBe(chats[1].sessionID)
++  expect(projects.map((project) => project.location.project.id)).toEqual([Project.ID.global, Project.ID.global])
++  expect([...fixture.records.values()].map((session) => session.location.directory)).toEqual(roots)
++  const alias = await run(filename, fixture.port, open(path.join(tmp.path, "alias")))
++  expect(alias.projectID).toBe(projects[0].projectID)
++  const listed = await run(
++    filename,
++    fixture.port,
++    Effect.gen(function* () {
++      const service = yield* FtcProjects.Service
++      return yield* Effect.forEach([alias, projects[1]], (project) => service.listChats(project))
++    }),
++  )
++  expect(listed).toEqual([[chats[0]], [chats[1]]])
++})
++
++test("unknown association fails before Session creation and is not inherited by another database", async () => {
++  await using tmp = await tmpdir()
++  const fixture = sessions()
++  const project = await run(path.join(tmp.path, "first.sqlite"), fixture.port, open(tmp.path))
++  const result = await run(
++    path.join(tmp.path, "second.sqlite"),
++    {
++      ...fixture.port,
++      createSession: () => Effect.die("Unknown projects must not create Sessions"),
++    },
++    Effect.gen(function* () {
++      const service = yield* FtcProjects.Service
++      return [
++        yield* service.createChat(project).pipe(Effect.result),
++        yield* service.listChats(project).pipe(Effect.result),
++      ]
++    }),
++  )
++  expect(result.map((item) => item._tag === "Failure" && item.failure.code)).toEqual([
++    "project_not_found",
++    "project_not_found",
++  ])
++  expect(fixture.records.size).toBe(0)
++})
++
++test.each(["directory", "host", "workspace", "lookup-id", "missing"] as const)(
++  "create rejects %s Session mismatch without membership",
++  async (mismatch) => {
++    await using tmp = await tmpdir()
++    const filename = path.join(tmp.path, "local.sqlite")
++    const fixture = sessions()
++    const project = await run(filename, fixture.port, open(tmp.path))
++    const port: FtcProjects.SessionAccess = {
++      ...fixture.port,
++      createSession: (input) =>
++        fixture.port.createSession(input).pipe(
++          Effect.map((session) => {
++            const changed = {
++              ...session,
++              projectID: mismatch === "host" ? project.projectID : session.projectID,
++              location: {
++                directory:
++                  mismatch === "directory"
++                    ? AbsolutePath.make(path.join(tmp.path, "other"))
++                    : session.location.directory,
++                ...(mismatch === "workspace" ? { workspaceID: Workspace.ID.make("wrk_explicit") } : {}),
++              },
++            }
++            fixture.records.set(session.id, changed)
++            return changed
++          }),
++        ),
++      getSession: (id) =>
++        fixture.port.getSession(id).pipe(
++          Effect.map((session) => {
++            if (mismatch === "missing") return undefined
++            if (mismatch === "lookup-id" && session) return { ...session, id: Session.ID.create() }
++            return session
++          }),
++        ),
++    }
++    const result = await run(
++      filename,
++      port,
++      Effect.gen(function* () {
++        const service = yield* FtcProjects.Service
++        return yield* service.createChat(project).pipe(Effect.result)
++      }),
++    )
++    expect(Result.isFailure(result) && result.failure.code).toBe(
++      mismatch === "missing" ? "session_not_found" : "session_mismatch",
++    )
++    expect(
++      await run(
++        filename,
++        fixture.port,
++        Effect.gen(function* () {
++          const service = yield* FtcProjects.Service
++          return yield* service.listChats(project)
++        }),
++      ),
++    ).toEqual([])
++  },
++)
++
++test.each(["missing", "placement", "identity"] as const)(
++  "reopen rejects %s Session instead of returning a false association",
++  async (change) => {
++    await using tmp = await tmpdir()
++    const filename = path.join(tmp.path, "local.sqlite")
++    const fixture = sessions()
++    const project = await run(filename, fixture.port, open(tmp.path))
++    const chat = await run(
++      filename,
++      fixture.port,
++      Effect.gen(function* () {
++        const service = yield* FtcProjects.Service
++        return yield* service.createChat(project)
++      }),
++    )
++    const original = fixture.records.get(chat.sessionID)!
++    const port: FtcProjects.SessionAccess = {
++      ...fixture.port,
++      getSession: () =>
++        Effect.succeed(
++          change === "missing"
++            ? undefined
++            : {
++                ...original,
++                id: change === "identity" ? Session.ID.create() : original.id,
++                location:
++                  change === "placement"
++                    ? { directory: AbsolutePath.make(path.join(tmp.path, "other")) }
++                    : original.location,
++              },
++        ),
++    }
++    const result = await run(
++      filename,
++      port,
++      Effect.gen(function* () {
++        const service = yield* FtcProjects.Service
++        return yield* service.listChats(project).pipe(Effect.result)
++      }),
++    )
++    expect(Result.isFailure(result) && result.failure.code).toBe(
++      change === "missing" ? "session_not_found" : "session_mismatch",
++    )
++    expect(
++      await run(
++        filename,
++        fixture.port,
++        Effect.gen(function* () {
++          const service = yield* FtcProjects.Service
++          return yield* service.listChats(project)
++        }),
++      ),
++    ).toEqual([chat])
++  },
++)
++
++test("concurrent separate connections cannot assign a Session to two chats", async () => {
++  await using tmp = await tmpdir()
++  const filename = path.join(tmp.path, "local.sqlite")
++  const fixture = sessions()
++  const project = await run(filename, fixture.port, open(tmp.path))
++  const session = await Effect.runPromise(fixture.port.createSession({ location: project.location }))
++  const port = { ...fixture.port, createSession: () => Effect.succeed(session) }
++  const results = await Promise.all(
++    Array.from({ length: 6 }, () =>
++      run(
++        filename,
++        port,
++        Effect.gen(function* () {
++          const service = yield* FtcProjects.Service
++          return yield* service.createChat(project).pipe(Effect.result)
++        }),
++      ),
++    ),
++  )
++  expect(results.filter(Result.isSuccess)).toHaveLength(1)
++  expect(results.filter(Result.isFailure).map((item) => item.failure.code)).toEqual(
++    Array(5).fill("chat_session_conflict"),
++  )
++  expect(await database(filename, (db) => db.all(sql`SELECT session_id FROM ftc_chat`))).toEqual([
++    { session_id: session.id },
++  ])
++})
++
++test("SQLite failure after Session creation retains the unassociated Session and retry creates a fresh chat", async () => {
++  await using tmp = await tmpdir()
++  const filename = path.join(tmp.path, "local.sqlite")
++  const fixture = sessions()
++  const project = await run(filename, fixture.port, open(tmp.path))
++  const result = await database(filename, (db) =>
++    Effect.gen(function* () {
++      yield* db.run(sql`PRAGMA query_only = ON`)
++      return yield* Effect.gen(function* () {
++        const service = yield* FtcProjects.Service
++        return yield* service.createChat(project).pipe(Effect.result)
++      }).pipe(Effect.provide(FtcProjects.layer(folders, ProjectAssociations.make(db), fixture.port)))
++    }),
++  )
++  expect(Result.isFailure(result) && result.failure.code).toBe("chat_store_failed")
++  expect(fixture.records.size).toBe(1)
++  expect(await database(filename, (db) => db.all(sql`SELECT * FROM ftc_chat`))).toEqual([])
++  const orphan = [...fixture.records.keys()][0]
++  const retry = await run(
++    filename,
++    fixture.port,
++    Effect.gen(function* () {
++      const service = yield* FtcProjects.Service
++      return yield* service.createChat(project)
++    }),
++  )
++  expect(retry.sessionID).not.toBe(orphan)
++  expect(fixture.records.has(orphan)).toBe(true)
++})
++
++test("interruption during lookup releases the port and creates no membership", async () => {
++  await using tmp = await tmpdir()
++  const filename = path.join(tmp.path, "local.sqlite")
++  const fixture = sessions()
++  const project = await run(filename, fixture.port, open(tmp.path))
++  const started = Deferred.makeUnsafe<void>()
++  const released = Deferred.makeUnsafe<void>()
++  await run(
++    filename,
++    {
++      ...fixture.port,
++      getSession: () =>
++        Effect.scoped(
++          Effect.gen(function* () {
++            yield* Effect.addFinalizer(() => Deferred.succeed(released, undefined))
++            yield* Deferred.succeed(started, undefined)
++            return yield* Effect.never
++          }),
++        ),
++    },
++    Effect.gen(function* () {
++      const service = yield* FtcProjects.Service
++      const fiber = yield* service.createChat(project).pipe(Effect.forkChild)
++      yield* Deferred.await(started)
++      yield* Fiber.interrupt(fiber)
++      expect(yield* Deferred.isDone(released)).toBe(true)
++    }),
++  )
++  expect(fixture.records.size).toBe(1)
++  expect(await database(filename, (db) => db.all(sql`SELECT * FROM ftc_chat`))).toEqual([])
++})
++
++test.each(["create", "lookup"] as const)(
++  "Session %s failure does not become successful membership",
++  async (operation) => {
++    await using tmp = await tmpdir()
++    const filename = path.join(tmp.path, "local.sqlite")
++    const fixture = sessions()
++    const project = await run(filename, fixture.port, open(tmp.path))
++    const failure: FtcProject.ChatError = {
++      code: "session_access_failed",
++      projectID: project.projectID,
++      recovery: "retry",
++    }
++    const result = await run(
++      filename,
++      {
++        ...fixture.port,
++        ...(operation === "create"
++          ? { createSession: () => Effect.fail(failure) }
++          : { getSession: () => Effect.fail(failure) }),
++      },
++      Effect.gen(function* () {
++        const service = yield* FtcProjects.Service
++        return yield* service.createChat(project).pipe(Effect.result)
++      }),
++    )
++    expect(Result.isFailure(result) && result.failure).toEqual(failure)
++    expect(await database(filename, (db) => db.all(sql`SELECT * FROM ftc_chat`))).toEqual([])
++  },
++)
++
++test("host mapping refresh during Session creation rejects stale membership", async () => {
++  await using tmp = await tmpdir()
++  const filename = path.join(tmp.path, "local.sqlite")
++  const fixture = sessions()
++  const project = await run(filename, fixture.port, open(tmp.path))
++  const result = await database(filename, (db) => {
++    const repository = ProjectAssociations.make(db)
++    return Effect.gen(function* () {
++      const service = yield* FtcProjects.Service
++      return yield* service.createChat(project).pipe(Effect.result)
++    }).pipe(
++      Effect.provide(
++        FtcProjects.layer(folders, repository, {
++          ...fixture.port,
++          createSession: (input) =>
++            fixture.port.createSession(input).pipe(
++              Effect.tap(() =>
++                repository
++                  .associate({
++                    canonicalRoot: project.canonicalRoot,
++                    location: new Location.Info({
++                      directory: project.canonicalRoot,
++                      project: { id: Project.ID.make("new-host"), directory: project.canonicalRoot },
++                    }),
++                  })
++                  .pipe(Effect.orDie),
++              ),
++            ),
++        }),
++      ),
++    )
++  })
++  expect(Result.isFailure(result) && result.failure.code).toBe("project_changed")
++  expect(await database(filename, (db) => db.all(sql`SELECT * FROM ftc_chat`))).toEqual([])
++  expect(fixture.records.size).toBe(1)
++})
++
++test("tracked chat migration preserves prior project association data and reopens membership", async () => {
++  await using tmp = await tmpdir()
++  const filename = path.join(tmp.path, "local.sqlite")
++  const fixture = sessions()
++  const project = await Effect.runPromise(
++    Effect.gen(function* () {
++      const db = yield* EffectDrizzleSqlite.makeWithDefaults()
++      const index = migrations.findIndex((migration) => migration.id.endsWith("_ftc-chat-membership"))
++      expect(index).toBeGreaterThan(0)
++      yield* DatabaseMigration.applyOnly(db, migrations.slice(0, index))
++      const project = yield* open(tmp.path).pipe(
++        Effect.provide(FtcProjects.layer(folders, ProjectAssociations.make(db), fixture.port)),
++      )
++      const before = yield* db.all(sql`SELECT * FROM ftc_project_association`)
++      yield* DatabaseMigration.apply(db)
++      yield* DatabaseMigration.apply(db)
++      expect(yield* db.all(sql`SELECT * FROM ftc_project_association`)).toEqual(before)
++      expect(yield* db.all(sql`SELECT * FROM ftc_chat`)).toEqual([])
++      return project
++    }).pipe(Effect.provide(SqliteClient.layer({ filename })), Effect.scoped),
++  )
++  const chat = await run(
++    filename,
++    fixture.port,
++    Effect.gen(function* () {
++      const service = yield* FtcProjects.Service
++      return yield* service.createChat(project)
++    }),
++  )
++  expect(
++    await run(
++      filename,
++      fixture.port,
++      Effect.gen(function* () {
++        const service = yield* FtcProjects.Service
++        return yield* service.listChats(project)
++      }),
++    ),
++  ).toEqual([chat])
++})
++
++test("chat contracts keep canonical identities, strict ID prefix and optional omission", () => {
++  expect(FtcProjects.ChatRef).toBe(FtcProject.ChatRef)
++  expect(FtcProjects.ChatID).toBe(FtcProject.ChatID)
++  expect(FtcProjects.ProjectRequest).toBe(FtcProject.ProjectRequest)
++  expect(FtcProjects.ChatError).toBe(FtcProject.ChatError)
++  expect(FtcProject.ChatRef.fields.projectID).toBe(Project.ID)
++  expect(FtcProject.ChatRef.fields.sessionID).toBe(Session.ID)
++  expect(FtcProject.ChatRef.fields.chatID).toBe(FtcProject.ChatID)
++  expect(Schema.is(FtcProject.ChatID)(FtcProject.ChatID.create())).toBe(true)
++  expect(Schema.is(FtcProject.ChatID)("chat-invalid")).toBe(false)
++  expect(Schema.is(FtcProject.ChatID)("chat")).toBe(false)
++  expect(
++    Schema.encodeSync(FtcProject.ChatError)({
++      code: "chat_store_failed",
++      projectID: Project.ID.global,
++      sessionID: undefined,
++      detail: undefined,
++      recovery: "retry",
++    }),
++  ).toEqual({ code: "chat_store_failed", projectID: Project.ID.global, recovery: "retry" })
++  const identifiers = [FtcProject.ChatID, FtcProject.ChatRef, FtcProject.ProjectRequest, FtcProject.ChatError].map(
++    (schema) => Schema.toJsonSchemaDocument(schema).schema,
++  )
++  expect(identifiers).toEqual([
++    { $ref: "#/$defs/FtcProject.ChatID" },
++    { $ref: "#/$defs/FtcProject.ChatRef" },
++    { $ref: "#/$defs/FtcProject.ProjectRequest" },
++    { $ref: "#/$defs/FtcProject.ChatError" },
++  ])
++})
+diff --git a/packages/schema/src/ftc-project.ts b/packages/schema/src/ftc-project.ts
+index 785b00c13..2c0a13dd6 100644
+--- a/packages/schema/src/ftc-project.ts
++++ b/packages/schema/src/ftc-project.ts
+@@ -1,26 +1,63 @@
+ export * as FtcProject from "./ftc-project"
+ 
+ import { Schema } from "effect"
+ import { Location } from "./location"
+ import { Project } from "./project"
+-import { AbsolutePath, optional } from "./schema"
++import { Session } from "./session"
++import { ascending } from "./identifier"
++import { AbsolutePath, optional, statics } from "./schema"
+ 
+ export interface ProjectContext extends Schema.Schema.Type<typeof ProjectContext> {}
+ export const ProjectContext = Schema.Struct({
+   // Local association ID. Never pass this to legacy Project APIs; use location.project.id.
+   projectID: Project.ID,
+   // Execution ownership is keyed by this canonical root, independent of the host project ID.
+   canonicalRoot: AbsolutePath,
+   location: Location.Info,
+ }).annotate({ identifier: "FtcProject.ProjectContext" })
+ 
+ export interface FolderRequest extends Schema.Schema.Type<typeof FolderRequest> {}
+ export const FolderRequest = Schema.Struct({ root: AbsolutePath }).annotate({ identifier: "FtcProject.FolderRequest" })
+ 
+ export interface AssociationError extends Schema.Schema.Type<typeof AssociationError> {}
+ export const AssociationError = Schema.Struct({
+   code: Schema.Literals(["folder_unavailable", "invalid_folder_identity", "association_store_failed"]),
+   root: optional(AbsolutePath),
+   detail: optional(Schema.String),
+   recovery: Schema.Literals(["select_accessible_folder", "retry"]),
+ }).annotate({ identifier: "FtcProject.AssociationError" })
++
++export const ChatID = Schema.String.check(Schema.isStartsWith("chat_"))
++  .pipe(Schema.brand("FtcProject.ChatID"))
++  .annotate({ identifier: "FtcProject.ChatID" })
++  .pipe(statics((schema) => ({ create: () => schema.make(`chat_${ascending()}`) })))
++export type ChatID = typeof ChatID.Type
++
++export interface ChatRef extends Schema.Schema.Type<typeof ChatRef> {}
++export const ChatRef = Schema.Struct({
++  projectID: Project.ID,
++  chatID: ChatID,
++  sessionID: Session.ID,
++}).annotate({ identifier: "FtcProject.ChatRef" })
++
++export interface ProjectRequest extends Schema.Schema.Type<typeof ProjectRequest> {}
++export const ProjectRequest = Schema.Struct({ projectID: Project.ID }).annotate({
++  identifier: "FtcProject.ProjectRequest",
++})
++
++export interface ChatError extends Schema.Schema.Type<typeof ChatError> {}
++export const ChatError = Schema.Struct({
++  code: Schema.Literals([
++    "project_not_found",
++    "project_changed",
++    "session_not_found",
++    "session_mismatch",
++    "session_access_failed",
++    "chat_session_conflict",
++    "chat_store_failed",
++  ]),
++  projectID: Project.ID,
++  sessionID: optional(Session.ID),
++  detail: optional(Schema.String),
++  recovery: Schema.Literals(["reopen_project", "retry"]),
++}).annotate({ identifier: "FtcProject.ChatError" })

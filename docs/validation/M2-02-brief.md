@@ -1,6 +1,6 @@
 # M2-02 dispatch brief
 
-Prepared, not dispatched. Requires M2-01 implementation plus independent review; coordinator verifies completion and current review base at dispatch.
+Dispatched 2026-10-06 to /root/m2_02, sole product writer. M2-01 complete with independent specification/quality review and no findings. Review base 2c36be13c2d15707ac09a73c4b62b6e968bab131.
 
 Role: implement M2-02 chat-to-Session membership. Read exact task, owning module plan, root/applicable AGENTS and Schema conventions first. Consume actual M2-01 ProjectContext/repository API once committed; no duplicate association or ID schema.
 Allowed writes: three exact task files, plus packages/schema/src/ftc-project.ts for canonical ChatRef/current command/error records required by this producer (omitted from task Files but assigned under shared-contract rules); task-owned test fixtures if needed; existing M2-01 test only for minimal required port-injection adaptation without weakening assertions; docs/validation/M2-02-implementation.md and docs/validation/m2-02/ evidence. Generated migration-only scope: packages/core/schema.json, src/database/schema.gen.ts, src/database/migration.gen.ts and this task's new migration file. Never hand-edit generated files or old migrations. No Session runtime/store writes, existing Project table changes, composition, manifest/lock, or premature gate implementation.
