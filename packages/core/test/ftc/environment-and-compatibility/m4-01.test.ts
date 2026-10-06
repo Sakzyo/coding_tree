@@ -125,6 +125,10 @@ test("rejects invalid host resources and unpinned project versions", () => {
 const selectors = [
   "latest.release",
   "latest.integration",
+  "latest.milestone",
+  "LATEST.MILESTONE",
+  "latest.fixture-status",
+  "LaTeSt.Custom_Status",
   "1.+",
   "1.2+",
   "1+",
