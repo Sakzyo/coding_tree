@@ -1,0 +1,111 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-knowledge/m11-01.test.ts:
+(pass) translation pair preserves stable IDs and code tokens [6.43ms]
+(pass) rejects missing or whitespace source [0.71ms]
+(pass) rejects missing or whitespace license [0.60ms]
+(pass) requires each declared file and rejects duplicate file paths [0.58ms]
+(pass) rejects duplicate id/version/language but permits separate paired versions [0.91ms]
+(pass) requires the translation with the same stable id and version [0.54ms]
+(pass) digest is checked against actual injected bytes [0.35ms]
+(pass) rejects malformed digest  [0.15ms]
+(pass) rejects malformed digest "" [0.14ms]
+(pass) rejects malformed digest "bogus" [0.13ms]
+(pass) rejects invalid or empty SDK applicability  [0.16ms]
+(pass) rejects invalid or empty SDK applicability "" [0.15ms]
+(pass) rejects invalid or empty SDK applicability "not-a-range" [0.26ms]
+(pass) rejects invalid or empty SDK applicability ">=2.0.0 <1.0.0" [0.20ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:182:5)
+(fail) library applicability requires both library and satisfiable library range [1.03ms]
+(pass) translation pairs preserve applicability and declared code tokens [0.48ms]
+(pass) actual content identifier drift fails even with a freshly matching digest [0.85ms]
+(pass) actual document identity is checked instead of trusting manifest declarations "id":"synthetic-lesson" [0.18ms]
+(pass) actual document identity is checked instead of trusting manifest declarations "version":"1.0.0" [0.18ms]
+(pass) actual document identity is checked instead of trusting manifest declarations "language":"zh" [0.13ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:275:3)
+(fail) rejects malformed record null [0.14ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:275:3)
+(fail) rejects malformed record %j [0.12ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:275:3)
+(fail) rejects malformed record "record" [0.11ms]
+(pass) rejects malformed pack  [0.02ms]
+(pass) rejects malformed pack null
+(pass) rejects malformed pack {} [0.03ms]
+(pass) rejects malformed pack {"manifest":{"kind":"unsupported","records":[]},"files":[]} [0.02ms]
+(pass) rejects invalid content version "latest" [0.17ms]
+(pass) rejects invalid content version "1" [0.14ms]
+(pass) rejects invalid content version "not-a-version" [0.14ms]
+(pass) actual code is checked when both manifests declare the same incorrect tokens [0.14ms]
+(pass) malformed source URL is rejected [0.13ms]
+(pass) rejects malformed content bytes "not JSON" [0.22ms]
+(pass) rejects malformed content bytes "{}" [0.10ms]
+(pass) rejects malformed content bytes "{\"valid\":true}" [0.13ms]
+(pass) rejects malformed content bytes "[]" [0.10ms]
+(pass) rejects invalid UTF-8 and non-byte values [0.16ms]
+(pass) rejects nonlocal content path "../escape.json" [0.11ms]
+(pass) rejects nonlocal content path "/absolute.json" [0.10ms]
+(pass) rejects nonlocal content path "https://fixtures.invalid/file" [0.09ms]
+(pass) rejects nonlocal content path "en\\file.json" [0.09ms]
+(pass) synthetic provenance cannot populate a production pack [0.15ms]
+(pass) empty production manifest makes no course or support claim [1.65ms]
+(pass) independent inputs remain unchanged and cannot leak prior validation state [0.46ms]
+(pass) canonical contracts serialize and optional fields omit undefined [0.55ms]
+
+4 tests failed:
+(fail) library applicability requires both library and satisfiable library range [1.03ms]
+(fail) rejects malformed record null [0.14ms]
+(fail) rejects malformed record %j [0.12ms]
+(fail) rejects malformed record "record" [0.11ms]
+
+ 41 pass
+ 4 fail
+ 190 expect() calls
+Ran 45 tests across 1 file. [88.00ms]

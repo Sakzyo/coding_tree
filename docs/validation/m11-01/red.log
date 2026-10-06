@@ -1,0 +1,427 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-knowledge/m11-01.test.ts:
+47 |   return found
+48 | }
+49 | 
+50 | test("translation pair preserves stable IDs and code tokens", () => {
+51 |   const result = validatePack(pack())
+52 |   expect(result.kind).toBe("valid")
+                           ^
+error: expect(received).toBe(expected)
+
+Expected: "valid"
+Received: "invalid"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:52:23)
+(fail) translation pair preserves stable IDs and code tokens [7.34ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:70:5)
+(fail) rejects missing or whitespace source [0.71ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:70:5)
+(fail) rejects missing or whitespace license [0.07ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:76:10)
+(fail) requires each declared file and rejects duplicate file paths [0.05ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:82:3)
+(fail) rejects duplicate id/version/language but permits separate paired versions [0.06ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:93:3)
+(fail) requires the translation with the same stable id and version [0.06ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:101:3)
+(fail) digest is checked against actual injected bytes [0.04ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:107:3)
+(fail) rejects malformed digest  [0.03ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:107:3)
+(fail) rejects malformed digest "" [0.03ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:107:3)
+(fail) rejects malformed digest "bogus" [0.03ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:112:3)
+(fail) rejects invalid or empty SDK applicability "" [0.04ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:112:3)
+(fail) rejects invalid or empty SDK applicability "not-a-range" [0.03ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:112:3)
+(fail) rejects invalid or empty SDK applicability ">=2.0.0 <1.0.0" [0.03ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:118:5)
+(fail) library applicability requires both library and satisfiable library range [0.07ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:126:3)
+(fail) translation pairs preserve applicability and declared code tokens [0.04ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:134:5)
+(fail) actual content identifier drift fails even with a freshly matching digest [0.51ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:141:3)
+(fail) actual document identity is checked instead of trusting manifest declarations [0.05ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:146:3)
+(fail) rejects malformed content bytes "not JSON" [0.06ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:146:3)
+(fail) rejects malformed content bytes "{}" [0.03ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:146:3)
+(fail) rejects malformed content bytes "{\"valid\":true}" [0.03ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:146:3)
+(fail) rejects malformed content bytes "[]" [0.03ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:152:3)
+(fail) rejects invalid UTF-8 and non-byte values [0.11ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:158:3)
+(fail) rejects nonlocal content path "../escape.json" [0.04ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:158:3)
+(fail) rejects nonlocal content path "/absolute.json" [0.03ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:158:3)
+(fail) rejects nonlocal content path "https://fixtures.invalid/file" [0.03ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:158:3)
+(fail) rejects nonlocal content path "en\\file.json" [0.03ms]
+39 | const error = (input: unknown, reason: FtcKnowledge.PackError["reason"]) => {
+40 |   const result = validatePack(input)
+41 |   expect(result.kind).toBe("invalid")
+42 |   if (result.kind !== "invalid") throw new Error("Expected invalid synthetic content")
+43 |   const found = result.errors.find((entry) => entry.reason === reason)
+44 |   expect(found).toBeDefined()
+                     ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at error (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:44:17)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:163:3)
+(fail) synthetic provenance cannot populate a production pack [0.03ms]
+164 | })
+165 | 
+166 | test("empty production manifest makes no course or support claim", async () => {
+167 |   const manifest = await Bun.file(new URL("../../../resources/ftc/content/manifest.json", import.meta.url)).json()
+168 |   expect(manifest).toEqual({ kind: "production", records: [] })
+169 |   expect(validatePack({ manifest, files: [] })).toEqual({ kind: "valid", records: [] })
+                                                      ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "kind": "valid",
+-   "records": [],
++   "errors": [
++     {
++       "code": "invalid_content",
++       "reason": "invalid_input",
++     },
++   ],
++   "kind": "invalid",
+  }
+
+- Expected  - 2
++ Received  + 7
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:169:49)
+(fail) empty production manifest makes no course or support claim [2.82ms]
+170 | })
+171 | 
+172 | test("independent inputs remain unchanged and cannot leak prior validation state", () => {
+173 |   const input = pack()
+174 |   const before = JSON.stringify(input)
+175 |   expect(validatePack(input).kind).toBe("valid")
+                                         ^
+error: expect(received).toBe(expected)
+
+Expected: "valid"
+Received: "invalid"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/m11-01.test.ts:175:36)
+(fail) independent inputs remain unchanged and cannot leak prior validation state [0.14ms]
+(pass) canonical contracts serialize and optional fields omit undefined [1.82ms]
+
+ 1 pass
+ 29 fail
+ 61 expect() calls
+Ran 30 tests across 1 file. [75.00ms]

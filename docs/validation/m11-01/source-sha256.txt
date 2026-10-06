@@ -1,0 +1,5 @@
+00746629c56b88a0baed6a1d9a30c5fa6d95d5f0e3da694115092b36b21152ac  packages/schema/src/ftc-knowledge.ts
+c6b0e7a3736a4c97244dd12d4c46a34a2c17535b6e4b5623f4a915eeaa1e2517  packages/schema/src/index.ts
+e2b6516ed555e20860fb57d074d10a9d56dcf8311ec9876e20257f50c36deb4f  packages/core/src/ftc/knowledge.ts
+f033f18acfc08a6ee3e5b2fe17338e0c7bb4addb9c128095012d8b8cafe3790b  packages/core/resources/ftc/content/manifest.json
+94b38e6d9e72cca98fb1abc0c1bc11ac112d4c2ca05b642fb58a4d53c7c90003  packages/core/test/ftc/ftc-knowledge/m11-01.test.ts
