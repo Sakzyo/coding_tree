@@ -1,0 +1,4 @@
+b875a8530bcb2c29a6018fa0e08e98de65dcb7e197874234e6980469241f2833  packages/core/src/ftc/environment.ts
+759fb3cbdc1cec8fb156581ff7d673a3eb7ff4a325fcaed72b213b9590b7f60d  packages/core/src/ftc/environment/adapters.ts
+9a11467fedf21e61fbf788da572712f6e33e44f156c70305a3252b4a79bf3408  packages/schema/src/ftc-environment.ts
+2cfcc552fa881cf86099b886f7f776015d684a865e39b174669c60a16510a02f  packages/core/test/ftc/environment-and-compatibility/m4-04.test.ts

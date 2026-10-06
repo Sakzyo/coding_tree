@@ -1,0 +1,33 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/environment-and-compatibility/m4-04.test.ts:
+829 |         ),
+830 |         Effect.scoped,
+831 |       ),
+832 |     )
+833 |     expect(observed.result.readiness.steps.find((step) => step.id === "buildJdk")?.state).toBe("ready")
+834 |     expect(observed.result.readiness.steps.find((step) => step.id === "gradleWrapper")).toMatchObject({
+                                                                                              ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "cause": "manual_required",
+-   "recovery": "manual_setup",
+-   "state": "manual",
++   "cause": "binary_missing",
++   "id": "gradleWrapper",
++   "recovery": "install",
++   "state": "missing",
+  }
+
+- Expected  - 3
++ Received  + 4
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-04.test.ts:834:89)
+(fail) automatic refresh preserves manual imported wrapper recovery after preparing missing Java [20.95ms]
+
+ 0 pass
+ 37 filtered out
+ 1 fail
+ 2 expect() calls
+Ran 1 test across 1 file. [183.00ms]

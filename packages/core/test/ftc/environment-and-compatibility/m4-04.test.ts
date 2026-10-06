@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test"
 import { FtcEnvironment } from "@opencode-ai/schema/ftc-environment"
 import { Project } from "@opencode-ai/schema/project"
-import { Deferred, Effect, Exit, Option, Schema, Scope } from "effect"
+import { Deferred, Effect, Exit, Option, Schema, Scope, Stream } from "effect"
 import { mkdtemp, mkdir, rename, rm } from "node:fs/promises"
 import { dirname, join } from "node:path"
 import { Environment } from "../../../src/ftc/environment"
@@ -792,3 +792,70 @@ test.each([null, true, { archivePath: "relative-unowned", path: "relative-unowne
     )
   },
 )
+
+test("automatic refresh preserves manual imported wrapper recovery after preparing missing Java", async () => {
+  const supplied = await fixture()
+  try {
+    const observed = await Effect.runPromise(
+      Effect.gen(function* () {
+        const service = yield* Environment.GuidedService
+        const run = yield* service.prepareEnvironment(request)
+        const result = yield* run.result
+        const events = yield* run.events.pipe(
+          Stream.takeUntil((event) => event.type === "settled"),
+          Stream.runCollect,
+        )
+        const rechecked = yield* run.recheck()
+        return { result, events, rechecked }
+      }).pipe(
+        Effect.provide(
+          Environment.guidedLayer({
+            ...supplied.ports,
+            inspection: {
+              ...supplied.ports.inspection,
+              probes: {
+                inspect: (input) => {
+                  if (input.component === "gradleWrapper") return Effect.succeed({ state: "missing" })
+                  if (input.component === "buildJdk") return supplied.ports.inspection.probes.inspect(input)
+                  return Effect.succeed({
+                    state: "available",
+                    path: join(supplied.root, input.component),
+                    version: profile[input.component].version,
+                  })
+                },
+              },
+            },
+          }),
+        ),
+        Effect.scoped,
+      ),
+    )
+    expect(observed.result.readiness.steps.find((step) => step.id === "buildJdk")?.state).toBe("ready")
+    expect(observed.result.readiness.steps.find((step) => step.id === "gradleWrapper")).toMatchObject({
+      state: "manual",
+      cause: "manual_required",
+      recovery: "manual_setup",
+    })
+    expect(observed.result.readiness.state).toBe("missing")
+    expect(observed.result.readiness.candidateToolchain).toBeUndefined()
+    expect(observed.events.at(-1)).toMatchObject({ type: "settled", result: observed.result })
+    expect(
+      observed.events
+        .filter((event) => event.type === "step" && event.step.step.id === "gradleWrapper")
+        .every(
+          (event) =>
+            event.type === "step" && event.step.step.state === "manual" && event.step.step.recovery === "manual_setup",
+        ),
+    ).toBe(true)
+    expect(observed.rechecked.readiness.steps.find((step) => step.id === "gradleWrapper")).toMatchObject({
+      state: "manual",
+      recovery: "manual_setup",
+    })
+    expect(supplied.downloads).toEqual(["buildJdk"])
+    expect(supplied.commits).toEqual(["buildJdk"])
+    expect(supplied.builds).toEqual([])
+    expect(await Bun.file(join(supplied.root, "project", "gradlew")).text()).toBe("preserved imported wrapper")
+  } finally {
+    await supplied.cleanup()
+  }
+})

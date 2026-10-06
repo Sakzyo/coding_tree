@@ -382,14 +382,9 @@ export const guidedLayer = (ports: GuidedPorts) =>
                   : inspected.readiness
               // Installation pins require a resolved choice and known imported requirements.
               const initial: FtcEnvironment.Readiness = profile
-                ? {
-                    ...selected,
-                    steps: selected.steps.map((step) =>
-                      request.choice === "automatic" && step.id === "gradleWrapper" && step.recovery === "install"
-                        ? { ...step, state: "manual", cause: "manual_required", recovery: "manual_setup" }
-                        : step,
-                    ),
-                  }
+                ? request.choice === "automatic"
+                  ? automaticReadiness(selected)
+                  : selected
                 : {
                     ...selected,
                     steps: selected.steps.map((step) =>
@@ -437,7 +432,7 @@ export const guidedLayer = (ports: GuidedPorts) =>
                   { ...refreshed.readiness, candidateToolchain: undefined },
                   context,
                 )
-              const readiness = refreshed?.readiness ?? initial
+              const readiness = refreshed ? automaticReadiness(refreshed.readiness) : initial
               if (prepared) yield* observe(readiness, context, profile)
               if (!readiness.candidateToolchain) return state.result
               if (context.dirty) return failedSetup("build", "build_stale", readiness, context, profile)
@@ -589,6 +584,17 @@ export const guidedLayer = (ports: GuidedPorts) =>
       }
     }),
   )
+
+function automaticReadiness(readiness: FtcEnvironment.Readiness): FtcEnvironment.Readiness {
+  return {
+    ...readiness,
+    steps: readiness.steps.map((step) =>
+      step.id === "gradleWrapper" && step.recovery === "install"
+        ? { ...step, state: "manual", cause: "manual_required", recovery: "manual_setup" }
+        : step,
+    ),
+  }
+}
 
 function setupSteps(
   readiness: FtcEnvironment.Readiness,
