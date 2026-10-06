@@ -1,6 +1,6 @@
 # M5-03 dispatch brief
 
-Prepared; coordinator must record verified prerequisite and current review base at dispatch.
+Dispatch review base: `75f1038c48f7b5c9afbbba91fef837d2a7794506`. Prerequisite M4-01 complete and independently reviewed.
 
 Role: implement evaluation M5-03, M5 Java development, EDT-01 and ENV-04; AC-04 and editor evaluation remain pending until actual evidence.
 Prerequisite: M4-01 completed at f7d2a93eabae724f29875a29840b000cee8749fb after independent approval (62 focused tests / 97 assertions). Consume its canonical FtcEnvironment records and explicit separate build/editor runtimes, never duplicate contracts.

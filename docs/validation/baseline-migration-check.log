@@ -1,0 +1,4 @@
+Reading config file '/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-check-lJ4JsY/incremental.config.ts'
+No schema changes, nothing to migrate 😴
+Reading config file '/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-check-lJ4JsY/full.config.ts'
+[✓] Your SQL migration ➜ /var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-check-lJ4JsY/full/20261006062216_schema/migration.sql 🚀

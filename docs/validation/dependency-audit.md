@@ -16,3 +16,9 @@ Reviewer: `/root/dependency_audit`, read-only; no active M9-07 files inspected. 
 Ruling: Add these contract publication and shared-path reservations to dispatch scheduling — the source contract conventions require one canonical owner and first-method schemas — omission would create incompatible duplicates. This is implementation scheduling, not a scope change.
 
 The initial generated prerequisiteKinds labels were too broad for evaluation consumers. Corrected: M9-09→M9-08, M4-07→M4-06, M12-07→M1-11 and other actual evaluations require real prerequisite implementation. Exact task text remains authoritative; never schedule from labels alone.
+
+## Source-evaluation implications recorded 2026-10-06
+
+The completed [M8 source audit](M8-04-source-preflight.md) supplies constraints for upcoming M8-04/M10 tasks: telemetry is string lines, browser frame history is not robot logs, readiness needs more than socket-health 200, plugin hashes cannot verify controller identity, and fixed frontend ports/extra plugin proxies need explicit routing and mutation controls. M10 decoders must retain these distinctions rather than invent typed measurements, robot-log availability, sample timestamps or deployed-build provenance. Source-derived fixtures cannot pass real protocol gates.
+
+The pinned Panels setup guide mentions SDK 12 while available Java-evaluation cache includes FTC 11.1; these independent inputs must not be combined into a supported setup profile without actual compatible-combination evidence. Production compatibility catalog remains empty until its owner evaluations pass.

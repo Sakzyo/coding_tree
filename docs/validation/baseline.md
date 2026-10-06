@@ -42,3 +42,7 @@ PATH=/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64:/opt/homebrew/bin:$PATH PLAY
 [Raw build/test output](baseline-performance-node26.log); [all seven original status-bearing metric records](baseline-performance-records.json). These cover legacy/v2 tab switching, four streaming variants and review-pane load/file switching. Each streaming variant delivered 160 deltas with 0 pending and no row/Markdown replacement. Observed completion durations: 172701.8 ms legacy, 169045.4 ms v2 closed, 178210.1 ms v2 closed with diffs, 192395.8 ms v2 open.
 
 These are the existing 30x CPU-throttle stress scenarios, not simulated end-user performance, compositor frames or a packaged Electron benchmark. CPU/visual profiling remained at defaults. Other M4 task activity occurred during the run; timings are an initial comparison baseline with that limitation. No machine-dependent speed budget is asserted. Retain exact context/sample distributions in JSON when comparing changed timeline behavior later.
+
+## Database baseline before M2 persistence
+
+At `75f1038c48f7b5c9afbbba91fef837d2a7794506`, before any FTC SQL changes: from packages/core `bun test ./test/database-migration.test.ts` passed 18 tests / 39 assertions, exit 0, using the existing isolated XDG data directories and pinned Bun. `bun script/migration.ts --check` exit 0; snapshot/registry/full schema are current. Its generated SQL was temporary and cleaned by the script. [Tests](baseline-database-migration.log), [generation check](baseline-migration-check.log).
