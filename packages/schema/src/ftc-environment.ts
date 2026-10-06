@@ -110,3 +110,105 @@ export const ResolveResult = Schema.Union([
   Schema.Struct({ kind: Schema.Literal("matched"), profile: Profile }),
   Schema.Struct({ kind: Schema.Literal("unsupported"), reasons: Schema.Array(Reason).check(Schema.isMinLength(1)) }),
 ]).annotate({ identifier: "FtcEnvironment.ResolveResult" })
+
+const LocalPath = Text.check(Schema.isPattern(/^(?:\/|[a-zA-Z]:[\\/]|\\\\)/))
+
+export type ToolComponent = typeof ToolComponent.Type
+export const ToolComponent = Schema.Literals(["buildJdk", "editorJdk", "androidSdk", "adb", "gradleWrapper"]).annotate({
+  identifier: "FtcEnvironment.ToolComponent",
+})
+
+export interface InspectionProject extends Schema.Schema.Type<typeof InspectionProject> {}
+export const InspectionProject = Schema.Struct({ root: LocalPath }).annotate({
+  identifier: "FtcEnvironment.InspectionProject",
+})
+
+export interface InspectRequest extends Schema.Schema.Type<typeof InspectRequest> {}
+export const InspectRequest = Schema.Struct({ host: Host, project: InspectionProject, catalog: Catalog }).annotate({
+  identifier: "FtcEnvironment.InspectRequest",
+})
+
+export interface InspectionError extends Schema.Schema.Type<typeof InspectionError> {}
+export const InspectionError = Schema.Struct({
+  code: Schema.Literals(["binary_missing", "permission_denied", "manual_required", "probe_failed"]),
+  detail: optional(Text),
+}).annotate({ identifier: "FtcEnvironment.InspectionError" })
+
+export interface ProbeRequest extends Schema.Schema.Type<typeof ProbeRequest> {}
+export const ProbeRequest = Schema.Struct({
+  component: ToolComponent,
+  host: Host,
+  project: InspectionProject,
+  expectedVersion: optional(Version),
+}).annotate({ identifier: "FtcEnvironment.ProbeRequest" })
+
+export type ProbeResult = typeof ProbeResult.Type
+export const ProbeResult = Schema.Union([
+  Schema.Struct({ state: Schema.Literal("available"), path: LocalPath, version: Version }),
+  Schema.Struct({
+    state: Schema.Literals(["missing", "denied", "manual", "failed"]),
+    detail: optional(Text),
+  }),
+]).annotate({ identifier: "FtcEnvironment.ProbeResult" })
+
+export interface ToolchainVersions extends Schema.Schema.Type<typeof ToolchainVersions> {}
+export const ToolchainVersions = Schema.Struct({
+  buildJdk: Version,
+  editorJdk: Version,
+  androidSdk: Version,
+  adb: Version,
+  gradleWrapper: Version,
+  ftcSdk: Version,
+  androidGradlePlugin: Version,
+}).annotate({ identifier: "FtcEnvironment.ToolchainVersions" })
+
+// Discovery produces a candidate; only later build verification can establish setup readiness.
+export interface ToolchainDescriptor extends Schema.Schema.Type<typeof ToolchainDescriptor> {}
+export const ToolchainDescriptor = Schema.Struct({
+  profileID: Text,
+  buildJdk: LocalPath,
+  editorJdk: LocalPath,
+  androidSdk: LocalPath,
+  adb: LocalPath,
+  gradleWrapper: LocalPath,
+  versions: ToolchainVersions,
+}).annotate({ identifier: "FtcEnvironment.ToolchainDescriptor" })
+
+export interface ReadinessStep extends Schema.Schema.Type<typeof ReadinessStep> {}
+export const ReadinessStep = Schema.Struct({
+  id: Schema.Literals(["project", "profile", "buildJdk", "editorJdk", "androidSdk", "adb", "gradleWrapper", "build"]),
+  state: Schema.Literals(["ready", "missing", "incompatible", "failed", "manual", "pending"]),
+  cause: Schema.Literals([
+    "available",
+    "binary_missing",
+    "permission_denied",
+    "manual_required",
+    "probe_failed",
+    "invalid_input",
+    "invalid_response",
+    "version_mismatch",
+    "requirements_unknown",
+    "unsupported_profile",
+    "build_unverified",
+  ]),
+  recovery: Schema.Literals([
+    "reuse",
+    "install",
+    "grant_permission",
+    "manual_setup",
+    "retry_probe",
+    "review_project",
+    "verify_build",
+  ]),
+  detail: optional(Text),
+  reasons: optional(Schema.Array(Reason)),
+}).annotate({ identifier: "FtcEnvironment.ReadinessStep" })
+
+export interface Readiness extends Schema.Schema.Type<typeof Readiness> {}
+export const Readiness = Schema.Struct({
+  // Missing includes pending verification/manual prerequisites; missingAssets lists absent tools separately.
+  state: Schema.Literals(["ready", "missing", "incompatible", "failed"]),
+  steps: Schema.Array(ReadinessStep),
+  missingAssets: Schema.Array(Text),
+  candidateToolchain: optional(ToolchainDescriptor),
+}).annotate({ identifier: "FtcEnvironment.Readiness" })

@@ -1,0 +1,5 @@
+cf97b6b2ac4dd97de8979209cd3c7f4fe12bc1ca572a178f1fc6f33ac35b6fc4  packages/core/src/ftc/environment.ts
+e746b10d82ff405f3c8b2942cec24094f13f188e80501a089db61c6d47549a03  packages/core/src/ftc/environment/adapters.ts
+9beba0bf806b512b9051ad942ce981bae0617c9124798137874e15d938ca19f2  packages/schema/src/ftc-environment.ts
+03b1b17f331620881c44b9500861e9da8ed4b640b374fceb1ebd40cccb0d7c31  packages/core/test/ftc/environment-and-compatibility/m4-02.test.ts
+ef418c83450d039cd4b57d26ec90ee8f86dcd0524adac89e2bc24803baf2e6bd  docs/validation/M4-02-implementation.md

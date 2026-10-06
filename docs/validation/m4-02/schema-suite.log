@@ -1,0 +1,81 @@
+bun test v1.3.14 (0d9b296a)
+
+test/event-manifest.test.ts:
+ 7 | import { SessionV1 } from "../src/session-v1"
+ 8 | import { WorkspaceEvent } from "../src/workspace-event"
+ 9 | 
+10 | describe("public event manifest", () => {
+11 |   test("owns the complete public event surface", () => {
+12 |     expect(EventManifest.ServerDefinitions.length).toBe(55)
+                                                        ^
+error: expect(received).toBe(expected)
+
+Expected: 55
+Received: 58
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/schema/test/event-manifest.test.ts:12:52)
+(fail) public event manifest > owns the complete public event surface [0.18ms]
+40 |     expect(Integration.Event.Definitions).toEqual([Integration.Event.Updated, Integration.Event.ConnectionUpdated])
+41 |     expect(Permission.Event.Definitions).toEqual([Permission.Event.Asked, Permission.Event.Replied])
+42 |     expect(Reference.Event.Definitions).toEqual([Reference.Event.Updated])
+43 |     expect(EventManifest.Latest.has("ide.installed")).toBe(false)
+44 |     expect(IdeEvent.Definitions).toEqual([IdeEvent.Installed])
+45 |     expect(EventManifest.Definitions.slice(40, 43)).toEqual([
+                                                         ^
+error: expect(received).toEqual(expected)
+
+  [
+    {
+      "ast": Objects {
+        "_tag": "Objects",
+
+[Excerpt: large unchanged event-schema object diff omitted; full transient output /private/tmp/ftc-m4-02-state/schema-suite-full.log]
+
++         "makeEffect": [Function],
++         "makeOption": [Function],
++         "rebuild": [Function],
++         "transform": [Function: transform],
++       },
++     },
++     "make": [Function],
++     "makeEffect": [Function],
++     "makeOption": [Function],
++     "mapFields": [Function: mapFields],
++     "rebuild": [Function],
++     "type": "session.next.revert.committed",
+    },
+  ]
+
+- Expected  - 31912
++ Received  + 25274
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/schema/test/event-manifest.test.ts:45:53)
+(fail) public event manifest > uses canonical definitions for current public events [1216.24ms]
+
+test/event.test.ts:
+(pass) public event schemas > definition is pure [0.14ms]
+(pass) public event schemas > latest selection is independent of declaration order [0.11ms]
+(pass) public event schemas > durable definitions are indexed by type and version [0.05ms]
+
+test/compatibility.test.ts:
+(pass) schema compatibility > moved class schemas remain constructible [1.29ms]
+
+test/legacy-event.test.ts:
+(pass) legacy public event schemas > owns all SessionV1 definitions [0.06ms]
+(pass) legacy public event schemas > owns the legacy transient public definitions [0.02ms]
+
+test/contract-hygiene.test.ts:
+(pass) contract hygiene > optional properties preserve transformations and omit undefined while encoding [0.60ms]
+(pass) contract hygiene > todo status and priority preserve arbitrary strings [0.06ms]
+(pass) contract hygiene > current ID constructors expose create [0.24ms]
+(pass) contract hygiene > reusable public identifiers are stable and unique [0.03ms]
+(pass) contract hygiene > current source avoids Any and mutable contract wrappers [1.16ms]
+
+test/v1-isolation.test.ts:
+(pass) compatibility entrypoints preserve isolated V1 schema identity [0.02ms]
+(pass) current source does not import the V1 subtree directly [0.62ms]
+
+ 13 pass
+ 2 fail
+ 42 expect() calls
+Ran 15 tests across 6 files. [1284.00ms]

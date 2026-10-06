@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/environment-and-compatibility/m4-02.test.ts:
+60 |     ),
+61 |   )
+62 |   const afterFiles = await Promise.all(files.map((file) => Bun.file(`${root}/${file}`).text()))
+63 |   await Bun.$`rm -r ${root}`
+64 |   expect(afterFiles).toEqual(beforeFiles)
+65 |   expect(result.state).toBe("incompatible")
+                            ^
+error: expect(received).toBe(expected)
+
+Expected: "incompatible"
+Received: "missing"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-02.test.ts:65:24)
+(fail) inspection preserves incompatible imported files [12.64ms]
+
+ 0 pass
+ 1 fail
+ 2 expect() calls
+Ran 1 test across 1 file. [177.00ms]

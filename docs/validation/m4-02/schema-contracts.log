@@ -1,0 +1,13 @@
+bun test v1.3.14 (0d9b296a)
+
+test/contract-hygiene.test.ts:
+(pass) contract hygiene > optional properties preserve transformations and omit undefined while encoding [4.15ms]
+(pass) contract hygiene > todo status and priority preserve arbitrary strings [0.06ms]
+(pass) contract hygiene > current ID constructors expose create [1.10ms]
+(pass) contract hygiene > reusable public identifiers are stable and unique [0.14ms]
+(pass) contract hygiene > current source avoids Any and mutable contract wrappers [8.05ms]
+
+ 5 pass
+ 0 fail
+ 10 expect() calls
+Ran 5 tests across 1 file. [101.00ms]
