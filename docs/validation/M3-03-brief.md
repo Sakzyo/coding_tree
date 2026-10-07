@@ -111,3 +111,7 @@ expect(writesBeforeApproval).toBe(0); expect(staleApproval.code).toBe('revision_
 - [ ] **4. Verify:** Re-run `bun test ./test/ftc/agent-and-context/m3-03.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
 - [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): implement plan-first and direct code-change policy`.
 
+
+## Reviewed Java producer boundary
+
+M5-02 now defines canonical FtcJava.Revision (documentID/bufferRevision/diskRevision), EditProposal (projectID/edits/explanation) and EditResult. Its applyEdits consumes an opaque runtime authorization checked through trusted CodeChanges.check against the full immutable proposal/project/root/paths. No proposal-ID registry or JSON bearer approval exists. M3 owns plan identity and approvals. Existing opened-file edits only; template/new-file creation needs a future producer-owned extension before M6-04. Preserve independent robot permissions.

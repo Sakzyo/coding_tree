@@ -1,0 +1,33 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-03.test.ts:
+445 |       )
+446 |       const fiber = yield* approve(f.agent, plan, f.event(plan)).pipe(Effect.forkChild)
+447 |       yield* Deferred.await(entered)
+448 |       const application = f.state.applications[0]
+449 |       yield* Fiber.interrupt(fiber)
+450 |       expect(observed.error?.code).toBe("edit_unauthorized")
+                                         ^
+error: expect(received).toBe(expected)
+
+Expected: "edit_unauthorized"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-03.test.ts:450:36)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at doneUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Deferred.js:657:20)
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:625:24)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) caller cancellation revokes capability and consumes its claimed plan [17.26ms]
+
+ 0 pass
+ 18 filtered out
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [113.00ms]

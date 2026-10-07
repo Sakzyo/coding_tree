@@ -1,0 +1,9 @@
+$ tsgo --noEmit
+test/ftc/agent-and-context/m3-03.test.ts(40,47): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Type 'string' is not assignable to type 'string & Brand<"FtcJava.DocumentID">'.
+      Type 'string' is not assignable to type 'Brand<"FtcJava.DocumentID">'.
+test/ftc/agent-and-context/m3-03.test.ts(142,47): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'string & Brand<"SessionID">'.
+      Type 'string' is not assignable to type 'Brand<"SessionID">'.

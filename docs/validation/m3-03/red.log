@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-03.test.ts:
+18 | }
+19 | const grant = { projectID, canonicalRoot: AbsolutePath.make("/team"), paths: [AbsolutePath.make("/team/Main.java")] }
+20 | 
+21 | // Catches early application in plan-first and trusting request mode instead of user policy.
+22 | test("plan-first waits and stale approval cannot edit", async () => {
+23 |   expect(await Bun.file(new URL("../../../src/ftc/agent.ts", import.meta.url)).exists()).toBe(true)
+                                                                                              ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-03.test.ts:23:90)
+(fail) plan-first waits and stale approval cannot edit [1.14ms]
+
+ 0 pass
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [109.00ms]

@@ -1,0 +1,811 @@
+diff --git a/packages/schema/src/ftc-agent.ts b/packages/schema/src/ftc-agent.ts
+new file mode 100644
+index 000000000..c9473fa5d
+--- /dev/null
++++ b/packages/schema/src/ftc-agent.ts
+@@ -0,0 +1,27 @@
++export * as FtcAgent from "./ftc-agent"
++
++import { Schema } from "effect"
++import { FtcJava } from "./ftc-java"
++import { ascending } from "./identifier"
++import { Project } from "./project"
++import { statics } from "./schema"
++import { SessionID } from "./session-id"
++
++export const CodeMode = Schema.Literals(["plan-first", "direct"]).annotate({ identifier: "FtcAgent.CodeMode" })
++export type CodeMode = typeof CodeMode.Type
++
++export const PlanID = Schema.String.check(Schema.isStartsWith("plan_"))
++  .pipe(Schema.brand("FtcAgent.PlanID"))
++  .annotate({ identifier: "FtcAgent.PlanID" })
++  .pipe(statics((schema) => ({ create: () => schema.make(`plan_${ascending()}`) })))
++export type PlanID = typeof PlanID.Type
++
++export interface CodePlan extends Schema.Schema.Type<typeof CodePlan> {}
++export const CodePlan = Schema.Struct({
++  planID: PlanID,
++  projectID: Project.ID,
++  sessionID: SessionID,
++  proposal: FtcJava.EditProposal,
++  explanation: Schema.String,
++  expectedRevisions: Schema.Array(FtcJava.Revision).check(Schema.isMinLength(1)),
++}).annotate({ identifier: "FtcAgent.CodePlan" })
+diff --git a/packages/core/src/ftc/agent.ts b/packages/core/src/ftc/agent.ts
+new file mode 100644
+index 000000000..8479cf530
+--- /dev/null
++++ b/packages/core/src/ftc/agent.ts
+@@ -0,0 +1,232 @@
++export * as Agent from "./agent"
++
++import { FtcAgent } from "@opencode-ai/schema/ftc-agent"
++import { FtcJava } from "@opencode-ai/schema/ftc-java"
++import { Project } from "@opencode-ai/schema/project"
++import { AbsolutePath } from "@opencode-ai/schema/schema"
++import { SessionID } from "@opencode-ai/schema/session-id"
++import { Context, Effect, Exit, Fiber, Layer, Schema, Scope } from "effect"
++
++export { CodeMode, PlanID, CodePlan } from "@opencode-ai/schema/ftc-agent"
++
++export interface Grant {
++  readonly projectID: Project.ID
++  readonly canonicalRoot: AbsolutePath
++  readonly paths: readonly AbsolutePath[]
++}
++
++export interface Ports {
++  // Trusted application policy resolves Session/project membership, mode and allowed source paths.
++  readonly policy: {
++    readonly check: (input: {
++      readonly sessionID: SessionID
++      readonly proposal: FtcJava.EditProposal
++    }) => Effect.Effect<Grant & { readonly mode: FtcAgent.CodeMode }, FtcJava.DocumentError>
++  }
++  readonly approvals: {
++    // The host validates an actual user event against every value in this immutable plan.
++    readonly check: (input: {
++      readonly trustedUserEvent: object
++      readonly plan: FtcAgent.CodePlan
++    }) => Effect.Effect<boolean, FtcJava.DocumentError>
++  }
++  readonly edits: {
++    readonly applyEdits: (input: {
++      readonly proposal: FtcJava.EditProposal
++      readonly authorization: object
++    }) => Effect.Effect<FtcJava.EditResult, FtcJava.DocumentError>
++  }
++}
++
++export interface Interface {
++  readonly proposeCodeChange: (input: {
++    readonly sessionID: SessionID
++    readonly mode: FtcAgent.CodeMode
++    readonly proposal: FtcJava.EditProposal
++  }) => Effect.Effect<FtcAgent.CodePlan | FtcJava.EditResult, FtcJava.DocumentError>
++  readonly approveCodePlan: (input: {
++    readonly trustedUserEvent: object
++    readonly planID: FtcAgent.PlanID
++    readonly expectedRevisions: readonly FtcJava.Revision[]
++  }) => Effect.Effect<FtcJava.EditResult, FtcJava.DocumentError>
++  // Structurally matches the Java producer's CodeChanges port; no serializable bearer grant.
++  readonly codeChanges: {
++    readonly check: (input: {
++      readonly proposal: FtcJava.EditProposal
++      readonly authorization: object
++    }) => Effect.Effect<Grant, FtcJava.DocumentError>
++  }
++}
++
++export class Service extends Context.Service<Service, Interface>()("@opencode/FtcAgent") {}
++export const layer = (ports: Ports) => Layer.effect(Service, make(ports))
++
++export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope> =>
++  Effect.gen(function* () {
++    const applications = yield* Scope.make()
++    const plans = new Map<FtcAgent.PlanID, { readonly plan: FtcAgent.CodePlan; readonly grant: Grant }>()
++    const authorizations = new WeakMap<
++      object,
++      {
++        readonly sessionID: SessionID
++        readonly proposal: FtcJava.EditProposal
++        readonly mode: FtcAgent.CodeMode
++        readonly grant: Grant
++      }
++    >()
++    let closed = false
++    yield* Effect.addFinalizer(() =>
++      Effect.sync(() => {
++        closed = true
++        plans.clear()
++      }).pipe(Effect.andThen(Scope.close(applications, Exit.void))),
++    )
++    const active = () =>
++      Effect.suspend(() =>
++        closed ? Effect.fail({ code: "owner_closed" } satisfies FtcJava.DocumentError) : Effect.void,
++      )
++    const policy = Effect.fn("FtcAgent.policy")(function* (sessionID: SessionID, proposal: FtcJava.EditProposal) {
++      yield* active()
++      const value = yield* ports.policy.check({ sessionID, proposal })
++      yield* active()
++      if (value.projectID !== proposal.projectID || !Schema.is(FtcAgent.CodeMode)(value.mode))
++        return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
++      return Object.freeze({ ...value, paths: Object.freeze([...value.paths]) })
++    })
++    const apply = Effect.fn("FtcAgent.apply")(function* (
++      sessionID: SessionID,
++      proposal: FtcJava.EditProposal,
++      mode: FtcAgent.CodeMode,
++      grant: Grant,
++    ) {
++      yield* active()
++      const authorization = Object.freeze({})
++      authorizations.set(authorization, { sessionID, proposal, mode, grant })
++      // Caller cancellation and owner disposal both interrupt the port and revoke this application.
++      return yield* Effect.acquireUseRelease(
++        Effect.forkIn(ports.edits.applyEdits({ proposal, authorization }), applications),
++        Fiber.join,
++        (fiber) => Effect.sync(() => authorizations.delete(authorization)).pipe(Effect.andThen(Fiber.interrupt(fiber))),
++      ).pipe(Effect.ensuring(Effect.sync(() => authorizations.delete(authorization))))
++    })
++    return {
++      proposeCodeChange: Effect.fn("FtcAgent.proposeCodeChange")(function* (input) {
++        if (
++          !Schema.is(SessionID)(input.sessionID) ||
++          !Schema.is(FtcAgent.CodeMode)(input.mode) ||
++          !Schema.is(FtcJava.EditProposal)(input.proposal)
++        )
++          return yield* Effect.fail({ code: "invalid_document_input" } satisfies FtcJava.DocumentError)
++        const sessionID = input.sessionID
++        const mode = input.mode
++        const proposal = immutableProposal(input.proposal)
++        yield* active()
++        const grant = yield* policy(sessionID, proposal)
++        if (grant.mode !== mode)
++          return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
++        if (mode === "direct") return yield* apply(sessionID, proposal, mode, grant)
++        const plan = Object.freeze({
++          planID: FtcAgent.PlanID.create(),
++          projectID: proposal.projectID,
++          sessionID,
++          proposal,
++          explanation: proposal.explanation,
++          expectedRevisions: Object.freeze(proposal.edits.map((edit) => edit.expectedRevision)),
++        } satisfies FtcAgent.CodePlan)
++        plans.set(plan.planID, { plan, grant })
++        return plan
++      }),
++      approveCodePlan: Effect.fn("FtcAgent.approveCodePlan")(function* (input) {
++        const planID = input.planID
++        const trustedUserEvent = input.trustedUserEvent
++        if (!trustedUserEvent || typeof trustedUserEvent !== "object")
++          return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
++        if (!Schema.is(Schema.Array(FtcJava.Revision))(input.expectedRevisions))
++          return yield* Effect.fail({ code: "invalid_document_input" } satisfies FtcJava.DocumentError)
++        const expected = input.expectedRevisions.map((revision) => ({ ...revision }))
++        yield* active()
++        const pending = plans.get(planID)
++        if (!pending) return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
++        if (!(yield* ports.approvals.check({ trustedUserEvent, plan: pending.plan })))
++          return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
++        yield* active()
++        if (plans.get(pending.plan.planID) !== pending)
++          return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
++        // A trusted attempt consumes the plan before any asynchronous application. No replay on failure.
++        plans.delete(pending.plan.planID)
++        if (
++          expected.length !== pending.plan.expectedRevisions.length ||
++          expected.some((revision, index) => !sameRevision(revision, pending.plan.expectedRevisions[index]))
++        )
++          return yield* Effect.fail({ code: "revision_conflict" } satisfies FtcJava.DocumentError)
++        const grant = yield* policy(pending.plan.sessionID, pending.plan.proposal)
++        if (grant.mode !== "plan-first" || !sameGrant(grant, pending.grant))
++          return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
++        return yield* apply(pending.plan.sessionID, pending.plan.proposal, "plan-first", grant)
++      }),
++      codeChanges: {
++        check: Effect.fn("FtcAgent.checkChanges")(function* (input) {
++          const token = input.authorization
++          if (!Schema.is(FtcJava.EditProposal)(input.proposal))
++            return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
++          const proposal = immutableProposal(input.proposal)
++          yield* active()
++          const authorization = authorizations.get(token)
++          if (!authorization || !sameProposal(proposal, authorization.proposal))
++            return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
++          const grant = yield* policy(authorization.sessionID, authorization.proposal)
++          if (
++            authorizations.get(token) !== authorization ||
++            grant.mode !== authorization.mode ||
++            !sameGrant(grant, authorization.grant)
++          )
++            return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
++          return authorization.grant
++        }),
++      },
++    }
++  })
++
++function immutableProposal(proposal: FtcJava.EditProposal): FtcJava.EditProposal {
++  return Object.freeze({
++    projectID: proposal.projectID,
++    explanation: proposal.explanation,
++    edits: Object.freeze(
++      proposal.edits.map((edit) =>
++        Object.freeze({
++          path: edit.path,
++          replacement: edit.replacement,
++          expectedRevision: Object.freeze({ ...edit.expectedRevision }),
++        }),
++      ),
++    ),
++  })
++}
++function sameRevision(left: FtcJava.Revision, right: FtcJava.Revision) {
++  return (
++    left.documentID === right.documentID &&
++    left.bufferRevision === right.bufferRevision &&
++    left.diskRevision === right.diskRevision
++  )
++}
++function sameProposal(left: FtcJava.EditProposal, right: FtcJava.EditProposal) {
++  return (
++    left.projectID === right.projectID &&
++    left.explanation === right.explanation &&
++    left.edits.length === right.edits.length &&
++    left.edits.every(
++      (edit, index) =>
++        edit.path === right.edits[index].path &&
++        edit.replacement === right.edits[index].replacement &&
++        sameRevision(edit.expectedRevision, right.edits[index].expectedRevision),
++    )
++  )
++}
++function sameGrant(left: Grant, right: Grant) {
++  return (
++    left.projectID === right.projectID &&
++    left.canonicalRoot === right.canonicalRoot &&
++    left.paths.length === right.paths.length &&
++    left.paths.every((value, index) => value === right.paths[index])
++  )
++}
+diff --git a/packages/core/test/ftc/agent-and-context/m3-03.test.ts b/packages/core/test/ftc/agent-and-context/m3-03.test.ts
+new file mode 100644
+index 000000000..33d1dac54
+--- /dev/null
++++ b/packages/core/test/ftc/agent-and-context/m3-03.test.ts
+@@ -0,0 +1,483 @@
++import { expect, test } from "bun:test"
++import { FtcAgent } from "@opencode-ai/schema/ftc-agent"
++import { FtcJava } from "@opencode-ai/schema/ftc-java"
++import { Project } from "@opencode-ai/schema/project"
++import { AbsolutePath } from "@opencode-ai/schema/schema"
++import { SessionID } from "@opencode-ai/schema/session-id"
++import { Deferred, Effect, Exit, Fiber, Scope } from "effect"
++import { Agent } from "../../../src/ftc/agent"
++
++const sessionID = SessionID.make("ses_code")
++const projectID = Project.ID.make("team")
++const proposal: FtcJava.EditProposal = {
++  projectID,
++  explanation: "Replace the existing Java source",
++  edits: [
++    {
++      path: "/team/Main.java",
++      expectedRevision: { documentID: FtcJava.DocumentID.make("doc_main"), bufferRevision: 0, diskRevision: 0 },
++      replacement: "class Main {}",
++    },
++  ],
++}
++const grant = { projectID, canonicalRoot: AbsolutePath.make("/team"), paths: [AbsolutePath.make("/team/Main.java")] }
++
++// Catches early application in plan-first and trusting request mode instead of user policy.
++test("plan-first waits and stale approval cannot edit", async () => {
++  expect(Agent.CodeMode).toBe(FtcAgent.CodeMode)
++  expect(Agent.CodePlan).toBe(FtcAgent.CodePlan)
++  expect(Agent.PlanID).toBe(FtcAgent.PlanID)
++  await Effect.runPromise(
++    Effect.scoped(
++      Effect.gen(function* () {
++        const state = { mode: "plan-first" as "plan-first" | "direct", writes: 0 }
++        const event = Object.freeze({})
++        const agent = yield* Agent.make({
++          policy: { check: () => Effect.succeed({ ...grant, mode: state.mode }) },
++          approvals: { check: (input) => Effect.succeed(input.trustedUserEvent === event) },
++          edits: {
++            applyEdits: (input) =>
++              Effect.sync(() => {
++                state.writes++
++                return { kind: "applied" as const, proposal: input.proposal, applied: [] }
++              }),
++          },
++        })
++        const plan = yield* agent.proposeCodeChange({ sessionID, mode: "plan-first", proposal })
++        expect(state.writes).toBe(0)
++        if (!("planID" in plan)) throw new Error("Expected a pending code plan")
++        expect(plan.proposal).toEqual(proposal)
++        expect(plan.expectedRevisions.map((value) => ({ ...value, documentID: String(value.documentID) }))).toEqual([
++          { documentID: "doc_main", bufferRevision: 0, diskRevision: 0 },
++        ])
++        const stale = yield* agent
++          .approveCodePlan({
++            trustedUserEvent: event,
++            planID: plan.planID,
++            expectedRevisions: [{ ...plan.expectedRevisions[0], diskRevision: 1 }],
++          })
++          .pipe(Effect.flip)
++        expect(stale.code).toBe("revision_conflict")
++        expect(state.writes).toBe(0)
++        state.mode = "direct"
++        const direct = yield* agent.proposeCodeChange({ sessionID, mode: "direct", proposal })
++        expect("kind" in direct && direct.kind).toBe("applied")
++        expect(state.writes).toBe(1)
++      }),
++    ),
++  )
++})
++
++const fixture = (mode: FtcAgent.CodeMode = "plan-first") =>
++  Effect.gen(function* () {
++    const state = {
++      mode,
++      allowed: true,
++      grants: grant,
++      applications: [] as { proposal: FtcJava.EditProposal; authorization: object }[],
++      approvals: new Map<object, FtcAgent.CodePlan>(),
++      policyInput: undefined as { sessionID: SessionID; proposal: FtcJava.EditProposal } | undefined,
++      agent: undefined as Agent.Interface | undefined,
++      beforePolicy: Effect.void,
++      beforeApproval: Effect.void,
++      beforeApply: Effect.void,
++      outcome: undefined as FtcJava.EditResult | undefined,
++      error: undefined as FtcJava.DocumentError | undefined,
++    }
++    const agent = yield* Agent.make({
++      policy: {
++        check: (input) =>
++          Effect.gen(function* () {
++            state.policyInput = input
++            yield* state.beforePolicy
++            if (!state.allowed) return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
++            return { ...state.grants, mode: state.mode }
++          }),
++      },
++      approvals: {
++        check: (input) =>
++          state.beforeApproval.pipe(Effect.as(state.approvals.get(input.trustedUserEvent) === input.plan)),
++      },
++      edits: {
++        applyEdits: (input) =>
++          Effect.gen(function* () {
++            state.applications.push(input)
++            yield* state.beforeApply
++            yield* state.agent!.codeChanges.check(input)
++            if (state.error) return yield* Effect.fail(state.error)
++            return state.outcome ?? { kind: "applied" as const, proposal: input.proposal, applied: [] }
++          }),
++      },
++    })
++    state.agent = agent
++    return {
++      agent,
++      state,
++      event: (plan: FtcAgent.CodePlan) => {
++        const event = Object.freeze({})
++        state.approvals.set(event, plan)
++        return event
++      },
++    }
++  })
++const pendingPlan = (agent: Agent.Interface, value = proposal) =>
++  agent
++    .proposeCodeChange({
++      sessionID,
++      mode: "plan-first",
++      proposal: value,
++    })
++    .pipe(
++      Effect.map((plan) => {
++        if (!("planID" in plan)) throw new Error("Expected code plan")
++        return plan
++      }),
++    )
++const approve = (agent: Agent.Interface, plan: FtcAgent.CodePlan, event: object) =>
++  agent.approveCodePlan({
++    planID: plan.planID,
++    expectedRevisions: plan.expectedRevisions,
++    trustedUserEvent: event,
++  })
++const run = <A, E>(program: Effect.Effect<A, E, Scope.Scope>) => Effect.runPromise(Effect.scoped(program))
++
++test("model-selected direct mode and forged or wrong-plan events cannot apply", () =>
++  run(
++    Effect.gen(function* () {
++      const f = yield* fixture()
++      expect((yield* f.agent.proposeCodeChange({ sessionID, mode: "direct", proposal }).pipe(Effect.flip)).code).toBe(
++        "edit_unauthorized",
++      )
++      const one = yield* pendingPlan(f.agent)
++      const two = yield* pendingPlan(f.agent)
++      expect((yield* approve(f.agent, one, { planID: one.planID, approved: true }).pipe(Effect.flip)).code).toBe(
++        "edit_unauthorized",
++      )
++      expect((yield* approve(f.agent, two, f.event(one)).pipe(Effect.flip)).code).toBe("edit_unauthorized")
++      expect(f.state.applications).toHaveLength(0)
++      expect((yield* approve(f.agent, one, f.event(one))).kind).toBe("applied")
++      expect((yield* approve(f.agent, one, f.event(one)).pipe(Effect.flip)).code).toBe("edit_unauthorized")
++      expect(f.state.applications).toHaveLength(1)
++    }),
++  ))
++
++test("proposal and scalar envelope are copied before asynchronous policy resolution", () =>
++  run(
++    Effect.gen(function* () {
++      const f = yield* fixture()
++      const entered = yield* Deferred.make<void>()
++      const release = yield* Deferred.make<void>()
++      f.state.beforePolicy = Deferred.succeed(entered, undefined).pipe(
++        Effect.andThen(Deferred.await(release)),
++        Effect.asVoid,
++      )
++      const input = {
++        sessionID,
++        mode: "plan-first" as FtcAgent.CodeMode,
++        proposal: {
++          ...proposal,
++          edits: proposal.edits.map((edit) => ({ ...edit, expectedRevision: { ...edit.expectedRevision } })),
++        },
++      }
++      const fiber = yield* f.agent.proposeCodeChange(input).pipe(Effect.forkChild)
++      yield* Deferred.await(entered)
++      input.sessionID = SessionID.make("ses_attacker")
++      input.mode = "direct"
++      input.proposal.projectID = Project.ID.make("other")
++      input.proposal.explanation = "Deploy and start"
++      input.proposal.edits[0].replacement = "malicious"
++      input.proposal.edits[0].path = "/other/Main.java"
++      input.proposal.edits[0].expectedRevision.documentID = FtcJava.DocumentID.make("doc_other")
++      yield* Deferred.succeed(release, undefined)
++      const plan = yield* Fiber.join(fiber)
++      expect(plan).toMatchObject({
++        sessionID: "ses_code",
++        projectID: "team",
++        explanation: "Replace the existing Java source",
++        proposal,
++      })
++      expect(String(f.state.policyInput?.sessionID)).toBe("ses_code")
++      expect(f.state.applications).toHaveLength(0)
++      if (!("planID" in plan)) throw new Error("Expected plan")
++      expect(Object.isFrozen(plan)).toBe(true)
++      expect(Object.isFrozen(plan.proposal.edits[0].expectedRevision)).toBe(true)
++      const outcome = yield* approve(f.agent, plan, f.event(plan))
++      expect(outcome.proposal).toEqual(proposal)
++    }),
++  ))
++
++test("approval envelope mutation and concurrent claims cannot redirect or repeat application", () =>
++  run(
++    Effect.gen(function* () {
++      const f = yield* fixture()
++      const one = yield* pendingPlan(f.agent)
++      const two = yield* pendingPlan(f.agent)
++      const entered = yield* Deferred.make<void>()
++      const release = yield* Deferred.make<void>()
++      f.state.beforeApproval = Deferred.succeed(entered, undefined).pipe(
++        Effect.andThen(Deferred.await(release)),
++        Effect.asVoid,
++      )
++      const input = {
++        planID: one.planID,
++        trustedUserEvent: f.event(one),
++        expectedRevisions: one.expectedRevisions.map((value) => ({ ...value })),
++      }
++      const first = yield* f.agent.approveCodePlan(input).pipe(Effect.forkChild)
++      yield* Deferred.await(entered)
++      const duplicate = yield* approve(f.agent, one, input.trustedUserEvent).pipe(Effect.result, Effect.forkChild)
++      input.planID = two.planID
++      input.trustedUserEvent = { approved: true }
++      input.expectedRevisions[0].diskRevision = 99
++      yield* Deferred.succeed(release, undefined)
++      expect((yield* Fiber.join(first)).kind).toBe("applied")
++      const second = yield* Fiber.join(duplicate)
++      expect(second._tag).toBe("Failure")
++      if (second._tag === "Failure") expect(second.failure.code).toBe("edit_unauthorized")
++      expect(f.state.applications).toHaveLength(1)
++      expect((yield* approve(f.agent, two, f.event(two))).kind).toBe("applied")
++    }),
++  ))
++
++test.each(["mode", "root", "paths", "revoked"])(
++  "fresh trusted policy rejects changed %s and consumes approval",
++  (change) =>
++    run(
++      Effect.gen(function* () {
++        const f = yield* fixture()
++        const plan = yield* pendingPlan(f.agent)
++        if (change === "mode") f.state.mode = "direct"
++        if (change === "root") f.state.grants = { ...grant, canonicalRoot: AbsolutePath.make("/other") }
++        if (change === "paths") f.state.grants = { ...grant, paths: [AbsolutePath.make("/team/Other.java")] }
++        if (change === "revoked") f.state.allowed = false
++        expect((yield* approve(f.agent, plan, f.event(plan)).pipe(Effect.flip)).code).toBe("edit_unauthorized")
++        expect(f.state.applications).toHaveLength(0)
++        f.state.mode = "plan-first"
++        f.state.grants = grant
++        f.state.allowed = true
++        expect((yield* approve(f.agent, plan, f.event(plan)).pipe(Effect.flip)).code).toBe("edit_unauthorized")
++      }),
++    ),
++)
++
++test("opaque authorization binds every proposal field and expires after apply", () =>
++  run(
++    Effect.gen(function* () {
++      const f = yield* fixture("direct")
++      const entered = yield* Deferred.make<void>()
++      const release = yield* Deferred.make<void>()
++      f.state.beforeApply = Deferred.succeed(entered, undefined).pipe(
++        Effect.andThen(Deferred.await(release)),
++        Effect.asVoid,
++      )
++      const fiber = yield* f.agent.proposeCodeChange({ sessionID, mode: "direct", proposal }).pipe(Effect.forkChild)
++      yield* Deferred.await(entered)
++      const application = f.state.applications[0]
++      expect(yield* f.agent.codeChanges.check(application)).toMatchObject(grant)
++      const changes = [
++        { ...proposal, projectID: Project.ID.make("other") },
++        { ...proposal, explanation: "different" },
++        { ...proposal, edits: [{ ...proposal.edits[0], path: "/team/Other.java" }] },
++        { ...proposal, edits: [{ ...proposal.edits[0], replacement: "other" }] },
++        {
++          ...proposal,
++          edits: [
++            { ...proposal.edits[0], expectedRevision: { ...proposal.edits[0].expectedRevision, bufferRevision: 1 } },
++          ],
++        },
++        {
++          ...proposal,
++          edits: [
++            { ...proposal.edits[0], expectedRevision: { ...proposal.edits[0].expectedRevision, diskRevision: 1 } },
++          ],
++        },
++        {
++          ...proposal,
++          edits: [
++            {
++              ...proposal.edits[0],
++              expectedRevision: {
++                ...proposal.edits[0].expectedRevision,
++                documentID: FtcJava.DocumentID.make("doc_other"),
++              },
++            },
++          ],
++        },
++        { ...proposal, edits: [...proposal.edits, proposal.edits[0]] },
++      ]
++      for (const changed of changes)
++        expect((yield* f.agent.codeChanges.check({ ...application, proposal: changed }).pipe(Effect.flip)).code).toBe(
++          "edit_unauthorized",
++        )
++      expect(
++        (yield* f.agent.codeChanges
++          .check({ ...application, authorization: JSON.parse(JSON.stringify(application.authorization)) })
++          .pipe(Effect.flip)).code,
++      ).toBe("edit_unauthorized")
++      yield* Deferred.succeed(release, undefined)
++      yield* Fiber.join(fiber)
++      expect((yield* f.agent.codeChanges.check(application).pipe(Effect.flip)).code).toBe("edit_unauthorized")
++    }),
++  ))
++
++test.each(["mode", "root", "paths", "revoked"])(
++  "active application rechecks changed %s policy before edits",
++  (change) =>
++    run(
++      Effect.gen(function* () {
++        const f = yield* fixture("direct")
++        const entered = yield* Deferred.make<void>()
++        const release = yield* Deferred.make<void>()
++        f.state.beforeApply = Deferred.succeed(entered, undefined).pipe(
++          Effect.andThen(Deferred.await(release)),
++          Effect.asVoid,
++        )
++        const fiber = yield* f.agent
++          .proposeCodeChange({ sessionID, mode: "direct", proposal })
++          .pipe(Effect.result, Effect.forkChild)
++        yield* Deferred.await(entered)
++        if (change === "mode") f.state.mode = "plan-first"
++        if (change === "root") f.state.grants = { ...grant, canonicalRoot: AbsolutePath.make("/other") }
++        if (change === "paths") f.state.grants = { ...grant, paths: [AbsolutePath.make("/team/Other.java")] }
++        if (change === "revoked") f.state.allowed = false
++        yield* Deferred.succeed(release, undefined)
++        const result = yield* Fiber.join(fiber)
++        expect(result._tag).toBe("Failure")
++        if (result._tag === "Failure") expect(result.failure.code).toBe("edit_unauthorized")
++        f.state.allowed = true
++        f.state.mode = "direct"
++        f.state.grants = grant
++        expect((yield* f.agent.codeChanges.check(f.state.applications[0]).pipe(Effect.flip)).code).toBe(
++          "edit_unauthorized",
++        )
++      }),
++    ),
++)
++
++test("independent owners cannot exchange plans or active edit capabilities", () =>
++  run(
++    Effect.gen(function* () {
++      const first = yield* fixture()
++      const second = yield* fixture()
++      const plan = yield* pendingPlan(first.agent)
++      expect((yield* approve(second.agent, plan, first.event(plan)).pipe(Effect.flip)).code).toBe("edit_unauthorized")
++      const entered = yield* Deferred.make<void>()
++      const release = yield* Deferred.make<void>()
++      first.state.beforeApply = Deferred.succeed(entered, undefined).pipe(
++        Effect.andThen(Deferred.await(release)),
++        Effect.asVoid,
++      )
++      const fiber = yield* approve(first.agent, plan, first.event(plan)).pipe(Effect.forkChild)
++      yield* Deferred.await(entered)
++      expect((yield* second.agent.codeChanges.check(first.state.applications[0]).pipe(Effect.flip)).code).toBe(
++        "edit_unauthorized",
++      )
++      yield* Deferred.succeed(release, undefined)
++      expect((yield* Fiber.join(fiber)).kind).toBe("applied")
++      expect(second.state.applications).toHaveLength(0)
++    }),
++  ))
++
++test.each(["conflict", "failed", "error"])("canonical %s result is preserved and its plan never replays", (kind) =>
++  run(
++    Effect.gen(function* () {
++      const f = yield* fixture()
++      const plan = yield* pendingPlan(f.agent)
++      const snapshot: FtcJava.DocumentSnapshot = {
++        ...plan.expectedRevisions[0],
++        projectID,
++        path: grant.paths[0],
++        text: "unsaved",
++        dirty: true,
++      }
++      const result: FtcJava.EditResult =
++        kind === "conflict"
++          ? {
++              kind: "conflict",
++              proposal: plan.proposal,
++              applied: [],
++              conflicts: [
++                {
++                  path: snapshot.path,
++                  reason: "revision",
++                  current: snapshot,
++                  diskText: "external",
++                  choices: ["save", "merge", "defer"],
++                },
++              ],
++            }
++          : {
++              kind: "failed",
++              proposal: plan.proposal,
++              applied: [snapshot],
++              error: { code: "file_unavailable", outcome: "unknown" },
++              uncertainPaths: [snapshot.path],
++            }
++      f.state.outcome = result
++      if (kind === "error") f.state.error = { code: "file_unavailable" }
++      const applied = yield* approve(f.agent, plan, f.event(plan)).pipe(Effect.result)
++      if (kind === "error") {
++        expect(applied._tag).toBe("Failure")
++        if (applied._tag === "Failure") expect(applied.failure.code).toBe("file_unavailable")
++      }
++      if (kind !== "error") {
++        expect(applied._tag).toBe("Success")
++        if (applied._tag === "Success") expect(applied.success).toBe(result)
++      }
++      expect((yield* approve(f.agent, plan, f.event(plan)).pipe(Effect.flip)).code).toBe("edit_unauthorized")
++      expect(f.state.applications).toHaveLength(1)
++    }),
++  ),
++)
++
++test("caller cancellation revokes capability and consumes its claimed plan", () =>
++  run(
++    Effect.gen(function* () {
++      const f = yield* fixture()
++      const plan = yield* pendingPlan(f.agent)
++      const entered = yield* Deferred.make<void>()
++      const observed = { error: undefined as FtcJava.DocumentError | undefined }
++      f.state.beforeApply = Deferred.succeed(entered, undefined).pipe(
++        Effect.andThen(Effect.never),
++        Effect.onInterrupt(() =>
++          f.agent.codeChanges.check(f.state.applications[0]).pipe(
++            Effect.result,
++            Effect.tap((result) =>
++              Effect.sync(() => {
++                if (result._tag === "Failure") observed.error = result.failure
++              }),
++            ),
++          ),
++        ),
++      )
++      const fiber = yield* approve(f.agent, plan, f.event(plan)).pipe(Effect.forkChild)
++      yield* Deferred.await(entered)
++      const application = f.state.applications[0]
++      yield* Fiber.interrupt(fiber)
++      expect(observed.error?.code).toBe("edit_unauthorized")
++      expect((yield* f.agent.codeChanges.check(application).pipe(Effect.flip)).code).toBe("edit_unauthorized")
++      expect((yield* approve(f.agent, plan, f.event(plan)).pipe(Effect.flip)).code).toBe("edit_unauthorized")
++      expect(f.state.applications).toHaveLength(1)
++    }),
++  ))
++
++test("owner disposal revokes pending plans and active capabilities", () =>
++  run(
++    Effect.gen(function* () {
++      const owner = yield* Scope.make()
++      const f = yield* fixture().pipe(Scope.provide(owner))
++      const plan = yield* pendingPlan(f.agent)
++      const entered = yield* Deferred.make<void>()
++      f.state.beforeApply = Deferred.succeed(entered, undefined).pipe(Effect.andThen(Effect.never))
++      const fiber = yield* f.agent.proposeCodeChange({ sessionID, mode: "direct", proposal }).pipe(Effect.forkChild)
++      // Trusted policy still plan-first; the direct request must reject before opening an application.
++      expect((yield* Fiber.join(fiber).pipe(Effect.flip)).code).toBe("edit_unauthorized")
++      f.state.mode = "direct"
++      const active = yield* f.agent.proposeCodeChange({ sessionID, mode: "direct", proposal }).pipe(Effect.forkChild)
++      yield* Deferred.await(entered)
++      yield* Scope.close(owner, Exit.void)
++      expect(Exit.isFailure(yield* Fiber.await(active))).toBe(true)
++      expect((yield* f.agent.codeChanges.check(f.state.applications[0]).pipe(Effect.flip)).code).toBe("owner_closed")
++      expect((yield* approve(f.agent, plan, f.event(plan)).pipe(Effect.flip)).code).toBe("owner_closed")
++    }),
++  ))
+diff --git a/packages/schema/test/ftc-agent.test.ts b/packages/schema/test/ftc-agent.test.ts
+new file mode 100644
+index 000000000..99d84c70c
+--- /dev/null
++++ b/packages/schema/test/ftc-agent.test.ts
+@@ -0,0 +1,45 @@
++import { expect, test } from "bun:test"
++import { Schema } from "effect"
++import { FtcAgent } from "../src/index"
++import { CodeMode, PlanID, CodePlan } from "../src/ftc-agent"
++
++test("code plans preserve canonical proposal and complete revisions through JSON", () => {
++  const value = {
++    planID: "plan_fixture",
++    projectID: "team",
++    sessionID: "ses_code",
++    proposal: {
++      projectID: "team",
++      edits: [
++        {
++          path: "/team/Main.java",
++          replacement: "class Main {}",
++          expectedRevision: { documentID: "doc_main", bufferRevision: 2, diskRevision: 1 },
++        },
++      ],
++      explanation: "Update Java",
++    },
++    explanation: "Update Java",
++    expectedRevisions: [{ documentID: "doc_main", bufferRevision: 2, diskRevision: 1 }],
++  }
++  expect(Schema.encodeSync(FtcAgent.CodePlan)(Schema.decodeUnknownSync(FtcAgent.CodePlan)(value))).toEqual(value)
++  expect(FtcAgent.CodeMode).toBe(CodeMode)
++  expect(FtcAgent.PlanID).toBe(PlanID)
++  expect(FtcAgent.CodePlan).toBe(CodePlan)
++  expect(() =>
++    Schema.decodeUnknownSync(FtcAgent.CodePlan)({ ...value, expectedRevisions: [{ bufferRevision: 2 }] }),
++  ).toThrow()
++  for (const mode of ["plan-first", "direct"] as const)
++    expect(Schema.decodeUnknownSync(FtcAgent.CodeMode)(mode)).toBe(mode)
++  expect(() => Schema.decodeUnknownSync(FtcAgent.CodeMode)("deploy")).toThrow()
++  for (const id of ["plan", "plans_fixture", "approval_fixture"])
++    expect(() => Schema.decodeUnknownSync(FtcAgent.PlanID)(id)).toThrow()
++  const first = FtcAgent.PlanID.create()
++  expect(Schema.decodeUnknownSync(FtcAgent.PlanID)(first)).toBe(first)
++  expect(first).not.toBe(FtcAgent.PlanID.create())
++  expect(
++    [FtcAgent.PlanID, FtcAgent.CodeMode, FtcAgent.CodePlan].map((value) =>
++      "identifier" in value ? value.identifier : value.ast.annotations?.identifier,
++    ),
++  ).toEqual(["FtcAgent.PlanID", "FtcAgent.CodeMode", "FtcAgent.CodePlan"])
++})

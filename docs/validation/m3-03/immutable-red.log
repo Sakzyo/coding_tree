@@ -1,0 +1,42 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-03.test.ts:
+(pass) plan-first waits and stale approval cannot edit [11.19ms]
+(pass) model-selected direct mode and forged or wrong-plan events cannot apply [2.81ms]
+141 |   expect(plan).toMatchObject({ sessionID: "ses_code", projectID: "team", explanation: "Replace the existing Java source", proposal })
+142 |   expect(f.state.policyInput?.sessionID).toBe("ses_code")
+143 |   expect(f.state.applications).toHaveLength(0)
+144 |   if (!("planID" in plan)) throw new Error("Expected plan")
+145 |   expect(Object.isFrozen(plan)).toBe(true)
+146 |   expect(Object.isFrozen(plan.proposal.edits[0].expectedRevision)).toBe(true)
+                                                                         ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-03.test.ts:146:68)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) proposal and scalar envelope are copied before asynchronous policy resolution [1.45ms]
+(pass) approval envelope mutation and concurrent claims cannot redirect or repeat application [4.43ms]
+(pass) fresh trusted policy rejects changed mode and consumes approval [0.68ms]
+(pass) fresh trusted policy rejects changed root and consumes approval [0.43ms]
+(pass) fresh trusted policy rejects changed paths and consumes approval [0.35ms]
+(pass) fresh trusted policy rejects changed revoked and consumes approval [0.34ms]
+(pass) opaque authorization binds every proposal field and expires after apply [1.39ms]
+(pass) canonical conflict result is preserved and its plan never replays [0.70ms]
+(pass) canonical failed result is preserved and its plan never replays [0.37ms]
+(pass) canonical error result is preserved and its plan never replays [0.38ms]
+(pass) caller cancellation revokes capability and consumes its claimed plan [0.76ms]
+(pass) owner disposal revokes pending plans and active capabilities [1.42ms]
+
+ 13 pass
+ 1 fail
+ 66 expect() calls
+Ran 14 tests across 1 file. [122.00ms]

@@ -1,0 +1,6 @@
+268c6e8718110ed3ddd51f3407e406df002f3f679698bbebd446da8889bd01e3  packages/schema/src/ftc-agent.ts
+212bad68e3085ae2798758b29ef8e00249a1acd8235bc1febd5762e5ddee7987  packages/core/src/ftc/agent.ts
+34ca4b32d4f3ebb8e6bdf83ee7ecf1b317456b804d94967d331c8eda7924e7d7  packages/core/test/ftc/agent-and-context/m3-03.test.ts
+0582f88318874b39edec10746bee7a637ef6885be830259d3c93eedd45da9dd9  packages/schema/test/ftc-agent.test.ts
+a3879985f7bf17b276e7cc4e8e972fa70a1c80fee70d9659d8c000b574172ff0  packages/schema/src/index.ts
+d88d6d719d8c32cf090e37cbb6fe757b1f1cf31c64b6b3d63b76ababdb059a13  packages/schema/src/ftc-java.ts

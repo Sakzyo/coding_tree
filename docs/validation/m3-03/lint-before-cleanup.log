@@ -1,0 +1,33 @@
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+    ,-[packages/core/test/ftc/agent-and-context/m3-03.test.ts:81:33]
+ 80 |       agent: undefined as Agent.Interface | undefined,
+ 81 |       beforePolicy: Effect.void as Effect.Effect<void>,
+    :                     ^^^^^|^^^^^ ^^^^^^^^^^^|^^^^^^^^^^^
+    :                          |                 `-- Casting it to 'Effect<void, never, never>' is unnecessary
+    :                          `-- This expression already has the type 'Effect<void, never, never>'
+ 82 |       beforeApproval: Effect.void as Effect.Effect<void>,
+    `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+    ,-[packages/core/test/ftc/agent-and-context/m3-03.test.ts:82:35]
+ 81 |       beforePolicy: Effect.void as Effect.Effect<void>,
+ 82 |       beforeApproval: Effect.void as Effect.Effect<void>,
+    :                       ^^^^^|^^^^^ ^^^^^^^^^^^|^^^^^^^^^^^
+    :                            |                 `-- Casting it to 'Effect<void, never, never>' is unnecessary
+    :                            `-- This expression already has the type 'Effect<void, never, never>'
+ 83 |       beforeApply: Effect.void as Effect.Effect<void>,
+    `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+    ,-[packages/core/test/ftc/agent-and-context/m3-03.test.ts:83:32]
+ 82 |       beforeApproval: Effect.void as Effect.Effect<void>,
+ 83 |       beforeApply: Effect.void as Effect.Effect<void>,
+    :                    ^^^^^|^^^^^ ^^^^^^^^^^^|^^^^^^^^^^^
+    :                         |                 `-- Casting it to 'Effect<void, never, never>' is unnecessary
+    :                         `-- This expression already has the type 'Effect<void, never, never>'
+ 84 |       outcome: undefined as FtcJava.EditResult | undefined,
+    `----
+
+Found 3 warnings and 0 errors.
+Finished in 1.6s on 5 files with 130 rules using 10 threads.

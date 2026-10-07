@@ -1,0 +1,67 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-01.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+EPERM: operation not permitted, mkdir '/Users/dylanxu/.local/state/opencode'
+    path: "/Users/dylanxu/.local/state/opencode",
+ syscall: "mkdir",
+   errno: -1,
+    code: "EPERM"
+
+-------------------------------
+
+
+test/ftc/agent-and-context/m3-02.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+EPERM: operation not permitted, mkdir '/Users/dylanxu/.local/state/opencode'
+    path: "/Users/dylanxu/.local/state/opencode",
+ syscall: "mkdir",
+   errno: -1,
+    code: "EPERM"
+
+-------------------------------
+
+
+test/ftc/java-development/m5-02.test.ts:
+(pass) dirty or externally changed files reject stale edits [77.60ms]
+(pass) saving the current dirty buffer advances only disk revision and preserves BOM and CRLF [30.31ms]
+(pass) save rejects external changes and stale buffer or disk revision without losing either version [18.21ms]
+(pass) authorized clean edits save immutable snapshots and publish confirmed saved events [20.58ms]
+(pass) preflight rejects the whole multifile proposal when a later file is dirty [13.76ms]
+(pass) a conditional-write race preserves the external bytes and the dirty buffer [16.62ms]
+(pass) partial filesystem failure reports committed files and an uncertain failed write without rollback [28.88ms]
+(pass) forged authorization and a trusted grant for the wrong file cannot mutate source [13.13ms]
+(pass) a fresh owner rejects save and proposals carrying the previous document identity [8.07ms]
+(pass) duplicate canonical aliases and unopened/new-file edits are rejected before writing [11.63ms]
+(pass) save and apply independently reject symlink escape after the document opened [6.48ms]
+(pass) authorization revoked after preflight prevents the first mutation [12.63ms]
+(pass) proposal input is captured before the asynchronous trusted authorization boundary [12.67ms]
+(pass) caller cancellation during save preflight releases the read and admits no write [7.94ms]
+(pass) closed owners reject escaped save and edit APIs [4.37ms]
+(pass) observed disk conflict permits explicit merge or save with the returned fresh pair [11.79ms]
+(pass) agent replacements retain an existing BOM without normalizing supplied line endings [7.79ms]
+(pass) missing mutation capabilities fail visibly and never synthesize original bytes [10.37ms]
+(pass) owner disposal interrupts pending trusted authorization and releases its resource [4.61ms]
+(pass) canonical edit facade is the exact Schema contract identity [0.63ms]
+(pass) a later conditional conflict reports earlier commits and preserves the external second file [21.42ms]
+(pass) concurrent proposals at one revision admit exactly one application [18.43ms]
+(pass) an unchanged buffer with externally changed disk rejects edits and publishes the observed revision [15.75ms]
+(pass) save write failures retain the dirty buffer and identify unknown disk outcome [6.31ms]
+(pass) cancellation at a confirmed commit boundary keeps disk and owner snapshot consistent [12.67ms]
+(pass) invalid UTF8 source bytes are rejected without decoding and rewriting them [3.78ms]
+(pass) authorization revoked during the final disk read is rechecked before writing [12.77ms]
+(pass) unpaired Unicode cannot be silently encoded as different source bytes [4.33ms]
+(pass) revocation during final scope resolution stops file %s before its conditional write [13.12ms]
+(pass) revocation during final scope resolution stops file %s before its conditional write [16.84ms]
+
+2 tests failed:
+
+ 30 pass
+ 2 fail
+ 2 errors
+ 125 expect() calls
+Ran 32 tests across 3 files. [2.82s]

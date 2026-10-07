@@ -1,0 +1,61 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-03.test.ts:
+(pass) plan-first waits and stale approval cannot edit [38.84ms]
+(pass) model-selected direct mode and forged or wrong-plan events cannot apply [14.06ms]
+141 |   expect(plan).toMatchObject({ sessionID: "ses_code", projectID: "team", explanation: "Replace the existing Java source", proposal })
+142 |   expect(f.state.policyInput?.sessionID).toBe("ses_code")
+143 |   expect(f.state.applications).toHaveLength(0)
+144 |   if (!("planID" in plan)) throw new Error("Expected plan")
+145 |   expect(Object.isFrozen(plan)).toBe(true)
+146 |   expect(Object.isFrozen(plan.proposal.edits[0].expectedRevision)).toBe(true)
+                                                                         ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-03.test.ts:146:68)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) proposal and scalar envelope are copied before asynchronous policy resolution [3.31ms]
+(pass) approval envelope mutation and concurrent claims cannot redirect or repeat application [12.49ms]
+(pass) fresh trusted policy rejects changed mode and consumes approval [10.52ms]
+(pass) fresh trusted policy rejects changed root and consumes approval [1.90ms]
+(pass) fresh trusted policy rejects changed paths and consumes approval [2.19ms]
+(pass) fresh trusted policy rejects changed revoked and consumes approval [3.06ms]
+(pass) opaque authorization binds every proposal field and expires after apply [13.06ms]
+(pass) canonical conflict result is preserved and its plan never replays [3.63ms]
+(pass) canonical failed result is preserved and its plan never replays [1.01ms]
+(pass) canonical error result is preserved and its plan never replays [1.01ms]
+(pass) caller cancellation revokes capability and consumes its claimed plan [1.76ms]
+261 |   expect((yield* Fiber.join(fiber).pipe(Effect.flip)).code).toBe("edit_unauthorized")
+262 |   f.state.mode = "direct"
+263 |   const active = yield* f.agent.proposeCodeChange({ sessionID, mode: "direct", proposal }).pipe(Effect.forkChild)
+264 |   yield* Deferred.await(entered)
+265 |   yield* Scope.close(owner, Exit.void)
+266 |   expect(Exit.isInterrupted(yield* Fiber.await(active))).toBe(true)
+                    ^
+TypeError: Exit.isInterrupted is not a function. (In 'Exit.isInterrupted(yield* Fiber.await(active))', 'Exit.isInterrupted' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-03.test.ts:266:15)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at doneUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Deferred.js:657:20)
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:625:24)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) owner disposal revokes pending plans and active capabilities [15.80ms]
+
+ 12 pass
+ 2 fail
+ 63 expect() calls
+Ran 14 tests across 1 file. [605.00ms]

@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-03.test.ts:
+(pass) plan-first waits and stale approval cannot edit [21.60ms]
+(pass) model-selected direct mode and forged or wrong-plan events cannot apply [14.84ms]
+(pass) proposal and scalar envelope are copied before asynchronous policy resolution [20.65ms]
+(pass) approval envelope mutation and concurrent claims cannot redirect or repeat application [7.41ms]
+(pass) fresh trusted policy rejects changed mode and consumes approval [15.82ms]
+(pass) fresh trusted policy rejects changed root and consumes approval [0.71ms]
+(pass) fresh trusted policy rejects changed paths and consumes approval [34.35ms]
+(pass) fresh trusted policy rejects changed revoked and consumes approval [6.03ms]
+(pass) opaque authorization binds every proposal field and expires after apply [23.19ms]
+(pass) canonical conflict result is preserved and its plan never replays [3.80ms]
+(pass) canonical failed result is preserved and its plan never replays [3.23ms]
+(pass) canonical error result is preserved and its plan never replays [5.70ms]
+(pass) caller cancellation revokes capability and consumes its claimed plan [7.26ms]
+(pass) owner disposal revokes pending plans and active capabilities [109.72ms]
+
+ 14 pass
+ 0 fail
+ 67 expect() calls
+Ran 14 tests across 1 file. [383.00ms]
