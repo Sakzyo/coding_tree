@@ -72,3 +72,63 @@ export const ManifestEvent = Schema.Struct({
   previousRevision: Schema.NullOr(Revision),
   result: ReadResult,
 }).annotate({ identifier: "FtcConfiguration.ManifestEvent" })
+
+export interface HardwareChange extends Schema.Schema.Type<typeof HardwareChange> {}
+export const HardwareChange = Schema.Struct({ hardware: Schema.Array(Hub) }).annotate({
+  identifier: "FtcConfiguration.HardwareChange",
+  parseOptions: { onExcessProperty: "error" },
+})
+
+export interface DeviceCatalog extends Schema.Schema.Type<typeof DeviceCatalog> {}
+export const DeviceCatalog = Schema.Struct({
+  // Trusted producer's selected SDK and project-hub snapshot, not controller configuration.
+  sdkVersion: Text,
+  revision: Text,
+  hubs: Schema.Array(
+    Schema.Struct({
+      id: Text,
+      categories: Schema.Array(
+        Schema.Struct({
+          category: Text,
+          ports: Schema.Array(NonNegativeInt.check(Schema.isLessThanOrEqualTo(Number.MAX_SAFE_INTEGER))),
+          types: Schema.Array(Text),
+        }).annotate({ parseOptions: { onExcessProperty: "error" } }),
+      ),
+    }).annotate({ parseOptions: { onExcessProperty: "error" } }),
+  ),
+})
+  .annotate({ identifier: "FtcConfiguration.DeviceCatalog" })
+  .check(
+    Schema.makeFilter(
+      (catalog) =>
+        new Set(catalog.hubs.map((hub) => hub.id)).size === catalog.hubs.length &&
+        catalog.hubs.every(
+          (hub) =>
+            new Set(hub.categories.map((rule) => rule.category)).size === hub.categories.length &&
+            hub.categories.every(
+              (rule) =>
+                new Set(rule.ports).size === rule.ports.length && new Set(rule.types).size === rule.types.length,
+            ),
+        ),
+      // Effect checks read parser options from their filter annotation.
+      { parseOptions: { onExcessProperty: "error" } },
+    ),
+  )
+
+export interface HardwareError extends Schema.Schema.Type<typeof HardwareError> {}
+export const HardwareError = Schema.Struct({
+  code: Schema.Literals([
+    "invalid_hardware",
+    "invalid_catalog",
+    "manifest_missing",
+    "missing_name",
+    "duplicate_name",
+    "invalid_hub",
+    "duplicate_hub",
+    "invalid_category",
+    "invalid_port",
+    "occupied_port",
+    "invalid_type",
+  ]),
+  field: Schema.Array(Schema.Union([Schema.String, NonNegativeInt])),
+}).annotate({ identifier: "FtcConfiguration.HardwareError" })

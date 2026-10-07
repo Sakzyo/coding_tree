@@ -1,0 +1,87 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-02.test.ts:
+(pass) form and chat enforce the same port and name rules [22.64ms]
+(pass) rejects missing_name at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Motor",
+  name: "",
+} [2.55ms]
+(pass) rejects missing_name at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Motor",
+} [1.92ms]
+(pass) rejects missing_name at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Motor",
+  name: " \t ",
+} [1.66ms]
+(pass) rejects invalid_category at the offending field: {
+  category: "other",
+  port: 0,
+  type: "fixture.Motor",
+  name: "drive",
+} [1.40ms]
+(pass) rejects invalid_type at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Servo",
+  name: "drive",
+} [1.55ms]
+(pass) rejects invalid_hardware at the offending field: {
+  category: "motor",
+  port: -1,
+  type: "fixture.Motor",
+  name: "drive",
+} [1.84ms]
+(pass) rejects invalid_hardware at the offending field: {
+  category: "motor",
+  port: 0.5,
+  type: "fixture.Motor",
+  name: "drive",
+} [1.44ms]
+(pass) rejects hub or occupancy conflict invalid_hub [1.75ms]
+(pass) rejects hub or occupancy conflict duplicate_hub [1.26ms]
+(pass) rejects hub or occupancy conflict occupied_port [1.55ms]
+(pass) preserves identifiers and pathing while accepting distinct category ports and exact names [9.23ms]
+(pass) uses the supplied SDK catalog snapshot and rejects ambiguous or malformed catalogs [2.93ms]
+(pass) stale hardware command preserves external bytes [2.25ms]
+(pass) hardware update requires existing manifest [1.63ms]
+(pass) rejects malformed expected revision before persistence [1.05ms]
+(pass) hub rules remain project-local and an empty replacement removes only hardware [8.38ms]
+(pass) copies admitted hardware before asynchronous manifest read [3.88ms]
+(pass) hardware command retains owner revision protection during staging [3.26ms]
+
+test/ftc/ftc-configuration-and-libraries/m6-01.test.ts:
+(pass) stale manifest update preserves external bytes [4.06ms]
+(pass) absent read proposes initialization without writing, explicit initialization survives reopen [3.74ms]
+(pass) concurrent initializer cannot replace external bytes at exclusive publication [2.92ms]
+(pass) external edit during staging is detected before replacement and staging is removed [2.71ms]
+(pass) cancellation after staging preserves the manifest and removes only its staging [3.31ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[],"managedPathing":"neither","credentials":"secret"} [0.78ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[{"id":"hub","approvals":[],"devices":[]}],"managedPathing":"neither"} [0.51ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[{"id":"hub","devices":[{"category":"motor","port":0,"type":"fixture","name":"drive","machinePaths":["/private"]}]}],"managedPathing":"neither"} [0.44ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":0,"hardware":[],"managedPathing":"neither"} [2.37ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[],"managedPathing":["pedro","road-runner"]} [0.66ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[{"id":"hub","devices":[{"category":"motor","port":-1,"type":"fixture","name":"drive"}]}],"managedPathing":"neither"} [0.50ms]
+(pass) unsupported or invalid external content is never replaced {"bytes":"{\"schemaVersion\":2,\"hardware\":[],\"managedPathing\":\"neither\",\"future\":true}","code":"unsupported_schema_version"} [1.73ms]
+(pass) unsupported or invalid external content is never replaced {"bytes":"{\"schemaVersion\":1,\"hardware\":[],\"managedPathing\":\"neither\",\"chats\":[]}","code":"invalid_manifest"} [1.42ms]
+(pass) unsupported or invalid external content is never replaced {"bytes":"malformed json","code":"invalid_manifest"} [1.63ms]
+(pass) revision events report commits and observed external bytes, without unchanged-read duplicates [5.52ms]
+(pass) manifest symlink cannot write outside the project [2.10ms]
+(pass) scope closure rejects retained commands and ends event consumers [0.89ms]
+(pass) canonical facade and serializable manifest preserve shared hardware fields [0.39ms]
+(pass) concurrent updates serialize and only one expected revision can publish [5.91ms]
+(pass) canonical root alias retargeted during staging cannot publish to either project [3.46ms]
+(pass) cancellation during the final filesystem check does not publish staged content [2.57ms]
+(pass) an unchanged manifest update emits no revision event [4.94ms]
+(pass) root relocation cannot make scoped cleanup remove a foreign directory symlink [3.19ms]
+(pass) root relocation cannot make scoped cleanup remove a foreign directory replacement [5.11ms]
+
+ 43 pass
+ 0 fail
+ 130 expect() calls
+Ran 43 tests across 2 files. [364.00ms]

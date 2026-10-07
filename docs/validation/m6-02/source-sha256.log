@@ -1,0 +1,4 @@
+1afab570adc4b8374eff59223367df19a22b0ad9286ecd04bab56744a4c5a984  packages/core/src/ftc/configuration.ts
+0445dde0c7b137fb41848a3612c9d303463087064984477cc510802d072eb730  packages/schema/src/ftc-configuration.ts
+7dc5163160b096ed0541914da138db109b684853aa94f7b51ac85589c3fdd269  packages/core/test/ftc/ftc-configuration-and-libraries/m6-02.test.ts
+34142f96559124a2fbc00c54e2c96baa8ba5b7b886e273f63ebf5ac874a58610  packages/schema/test/ftc-hardware.test.ts

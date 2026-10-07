@@ -1,0 +1,61 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-02.test.ts:
+(pass) form and chat enforce the same port and name rules [266.89ms]
+(pass) rejects missing_name at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Motor",
+  name: "",
+} [35.41ms]
+(pass) rejects missing_name at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Motor",
+} [19.00ms]
+(pass) rejects missing_name at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Motor",
+  name: " \t ",
+} [4.58ms]
+(pass) rejects invalid_category at the offending field: {
+  category: "other",
+  port: 0,
+  type: "fixture.Motor",
+  name: "drive",
+} [106.62ms]
+(pass) rejects invalid_type at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Servo",
+  name: "drive",
+} [15.21ms]
+(pass) rejects invalid_hardware at the offending field: {
+  category: "motor",
+  port: -1,
+  type: "fixture.Motor",
+  name: "drive",
+} [6.53ms]
+(pass) rejects invalid_hardware at the offending field: {
+  category: "motor",
+  port: 0.5,
+  type: "fixture.Motor",
+  name: "drive",
+} [31.64ms]
+(pass) rejects hub or occupancy conflict invalid_hub [15.24ms]
+(pass) rejects hub or occupancy conflict duplicate_hub [5.82ms]
+(pass) rejects hub or occupancy conflict occupied_port [15.68ms]
+(pass) preserves identifiers and pathing while accepting distinct category ports and exact names [31.89ms]
+(pass) uses the supplied SDK catalog snapshot and rejects ambiguous or malformed catalogs [7.96ms]
+(pass) stale hardware command preserves external bytes [16.19ms]
+(pass) hardware update requires existing manifest [83.29ms]
+(pass) rejects malformed expected revision before persistence [75.13ms]
+(pass) hub rules remain project-local and an empty replacement removes only hardware [64.62ms]
+(pass) copies admitted hardware before asynchronous manifest read [55.39ms]
+(pass) hardware command retains owner revision protection during staging [235.07ms]
+
+ 19 pass
+ 0 fail
+ 63 expect() calls
+Ran 19 tests across 1 file. [2.50s]

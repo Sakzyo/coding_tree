@@ -1,0 +1,38 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-02.test.ts:
+203 | 
+204 | // A malformed expected revision must not escape as an unserializable conflict error.
+205 | test("rejects malformed expected revision before persistence", () =>
+206 |   run((service, root) =>
+207 |     Effect.gen(function* () {
+208 |       expect(yield* service.updateHardware({ root, expectedRevision: "stale", change: { hardware }, deviceCatalog: catalog }).pipe(Effect.flip)).toEqual({ code: "invalid_manifest" })
+      ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "code": "invalid_manifest",
++   "actualRevision": "f7dc8fa3d8c8a0d285784636082e66b7c5af2a61d4d771c5a53531bf2d400819",
++   "code": "revision_conflict",
++   "expectedRevision": "stale",
+  }
+
+- Expected  - 1
++ Received  + 3
+
+      at toEqual (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-02.test.ts:208:146
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:910:23)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Effect.js:8151:9
+      at node:fs:363:13
+      at processTicksAndRejections (unknown:7:39)
+(fail) rejects malformed expected revision before persistence [19.73ms]
+
+ 0 pass
+ 16 filtered out
+ 1 fail
+ 2 expect() calls
+Ran 1 test across 1 file. [248.00ms]

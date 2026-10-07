@@ -1,0 +1,49 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-hardware.test.ts:
+(pass) catalog rejects ambiguous or machine-local producer data {"sdkVersion":"fixture-sdk-1","revision":"fixture-catalog-1","hubs":[{"id":"hub-a","categories":[{"category":"motor","ports":[0],"types":["fixture.Motor"]}]},{"id":"hub-a","categories":[{"category":"motor","ports":[0],"types":["fixture.Motor"]}]}]} [4.61ms]
+(pass) catalog rejects ambiguous or machine-local producer data {"sdkVersion":"fixture-sdk-1","revision":"fixture-catalog-1","hubs":[{"id":"hub-a","categories":[{"category":"motor","ports":[0],"types":["fixture.Motor"]},{"category":"motor","ports":[0],"types":["fixture.Motor"]}]}]} [0.20ms]
+(pass) catalog rejects ambiguous or machine-local producer data {"sdkVersion":"fixture-sdk-1","revision":"fixture-catalog-1","hubs":[{"id":"hub-a","categories":[{"category":"motor","ports":[0,0],"types":["fixture.Motor"]}]}]} [0.11ms]
+(pass) catalog rejects ambiguous or machine-local producer data {"sdkVersion":"fixture-sdk-1","revision":"fixture-catalog-1","hubs":[{"id":"hub-a","categories":[{"category":"motor","ports":[0],"types":["fixture.Motor","fixture.Motor"]}]}]} [0.29ms]
+17 |     ...catalog,
+18 |     hubs: [{ id: "hub-a", categories: [{ category: "motor", ports: [0], types: ["fixture.Motor", "fixture.Motor"] }] }],
+19 |   },
+20 |   { ...catalog, machinePath: "/private/fixture" },
+21 | ])("catalog rejects ambiguous or machine-local producer data %j", (input) => {
+22 |   expect(() => Schema.decodeUnknownSync(FtcConfiguration.DeviceCatalog)(input)).toThrow()
+                                                                                     ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  sdkVersion: "fixture-sdk-1",
+  revision: "fixture-catalog-1",
+  hubs: [
+    {
+      id: "hub-a",
+      categories: [
+        {
+          category: "motor",
+          ports: [ 0 ],
+          types: [ "fixture.Motor" ],
+        }
+      ],
+    }
+  ],
+}
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/schema/test/ftc-hardware.test.ts:22:81)
+(fail) catalog rejects ambiguous or machine-local producer data {"sdkVersion":"fixture-sdk-1","revision":"fixture-catalog-1","hubs":[{"id":"hub-a","categories":[{"category":"motor","ports":[0],"types":["fixture.Motor"]}]}],"machinePath":"/private/fixture"} [0.36ms]
+(pass) hardware contracts preserve exact serializable identifiers and error fields [0.85ms]
+
+test/ftc-configuration.test.ts:
+(pass) canonical manifest decoder rejects additional personal fields {"schemaVersion":1,"hardware":[{"id":"hub-a","devices":[{"category":"motor","port":0,"type":"catalog-type","name":"drive"}]}],"managedPathing":"neither","credentials":"secret"} [0.19ms]
+(pass) canonical manifest decoder rejects additional personal fields {"schemaVersion":1,"hardware":[{"id":"hub-a","devices":[{"category":"motor","port":0,"type":"catalog-type","name":"drive"}],"chat":"personal"}],"managedPathing":"neither"} [0.13ms]
+(pass) canonical manifest decoder rejects additional personal fields {"schemaVersion":1,"hardware":[{"id":"hub-a","devices":[{"category":"motor","port":0,"type":"catalog-type","name":"drive","approval":true}]}],"managedPathing":"neither"} [0.10ms]
+(pass) hardware and proposals serialize without machine-local fields or undefined error keys [0.51ms]
+(pass) public contract identifiers are unique and domain-qualified [0.07ms]
+
+ 10 pass
+ 1 fail
+ 15 expect() calls
+Ran 11 tests across 2 files. [124.00ms]
