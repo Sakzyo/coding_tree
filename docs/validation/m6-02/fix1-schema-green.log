@@ -1,0 +1,28 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-hardware.test.ts:
+(pass) catalog rejects ambiguous or machine-local producer data {"sdkVersion":"fixture-sdk-1","revision":"fixture-catalog-1","hubs":[{"id":"hub-a","categories":[{"category":"motor","ports":[0],"types":["fixture.Motor"]}]},{"id":"hub-a","categories":[{"category":"motor","ports":[0],"types":["fixture.Motor"]}]}]} [8.30ms]
+(pass) catalog rejects ambiguous or machine-local producer data {"sdkVersion":"fixture-sdk-1","revision":"fixture-catalog-1","hubs":[{"id":"hub-a","categories":[{"category":"motor","ports":[0],"types":["fixture.Motor"]},{"category":"motor","ports":[0],"types":["fixture.Motor"]}]}]} [0.62ms]
+(pass) catalog rejects ambiguous or machine-local producer data {"sdkVersion":"fixture-sdk-1","revision":"fixture-catalog-1","hubs":[{"id":"hub-a","categories":[{"category":"motor","ports":[0,0],"types":["fixture.Motor"]}]}]} [0.42ms]
+(pass) catalog rejects ambiguous or machine-local producer data {"sdkVersion":"fixture-sdk-1","revision":"fixture-catalog-1","hubs":[{"id":"hub-a","categories":[{"category":"motor","ports":[0],"types":["fixture.Motor","fixture.Motor"]}]}]} [0.25ms]
+(pass) catalog rejects ambiguous or machine-local producer data {"sdkVersion":"fixture-sdk-1","revision":"fixture-catalog-1","hubs":[{"id":"hub-a","categories":[{"category":"motor","ports":[0],"types":["fixture.Motor"]}]}],"machinePath":"/private/fixture"} [0.23ms]
+(pass) hardware contracts preserve exact serializable identifiers and error fields [2.11ms]
+
+test/ftc-configuration.test.ts:
+(pass) canonical manifest decoder rejects additional personal fields {"schemaVersion":1,"hardware":[{"id":"hub-a","devices":[{"category":"motor","port":0,"type":"catalog-type","name":"drive"}]}],"managedPathing":"neither","credentials":"secret"} [0.23ms]
+(pass) canonical manifest decoder rejects additional personal fields {"schemaVersion":1,"hardware":[{"id":"hub-a","devices":[{"category":"motor","port":0,"type":"catalog-type","name":"drive"}],"chat":"personal"}],"managedPathing":"neither"} [0.25ms]
+(pass) canonical manifest decoder rejects additional personal fields {"schemaVersion":1,"hardware":[{"id":"hub-a","devices":[{"category":"motor","port":0,"type":"catalog-type","name":"drive","approval":true}]}],"managedPathing":"neither"} [0.21ms]
+(pass) hardware and proposals serialize without machine-local fields or undefined error keys [1.04ms]
+(pass) public contract identifiers are unique and domain-qualified [0.18ms]
+
+test/contract-hygiene.test.ts:
+(pass) contract hygiene > optional properties preserve transformations and omit undefined while encoding [0.51ms]
+(pass) contract hygiene > todo status and priority preserve arbitrary strings [0.08ms]
+(pass) contract hygiene > current ID constructors expose create [2.44ms]
+(pass) contract hygiene > reusable public identifiers are stable and unique [0.15ms]
+(pass) contract hygiene > current source avoids Any and mutable contract wrappers [23.52ms]
+
+ 16 pass
+ 0 fail
+ 25 expect() calls
+Ran 16 tests across 3 files. [214.00ms]

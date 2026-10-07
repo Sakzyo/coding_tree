@@ -291,3 +291,88 @@ test("hardware command retains owner revision protection during staging", () => 
     }),
   )
 })
+
+// Rereading the mutable root after I/O can redirect publication to a second project with identical bytes.
+test("captures command envelope root before asynchronous manifest read", async () => {
+  await using second = await tmpdir()
+  const secondFile = path.join(second.path, "ftc-project.json")
+  await fs.writeFile(secondFile, JSON.stringify(initial))
+  const envelope = { root: "", expectedRevision: "", change: { hardware }, deviceCatalog: catalog }
+  let armed = false
+  await run(
+    (service, root) =>
+      Effect.gen(function* () {
+        const before = yield* service.readManifest({ root })
+        if (!("revision" in before)) throw new Error("Expected manifest")
+        envelope.root = root
+        envelope.expectedRevision = before.revision
+        armed = true
+        const saved = yield* service.updateHardware(envelope)
+        expect(envelope.root).toBe(second.path)
+        expect(saved.manifest).toEqual({ ...initial, hardware })
+        expect(
+          JSON.parse(yield* Effect.promise(() => fs.readFile(path.join(root, "ftc-project.json"), "utf8"))),
+        ).toEqual({ ...initial, hardware })
+        expect(yield* Effect.promise(() => fs.readFile(secondFile, "utf8"))).toBe(JSON.stringify(initial))
+        expect(yield* Effect.promise(() => fs.readdir(second.path))).toEqual(["ftc-project.json"])
+      }),
+    false,
+    (filesystem) => ({
+      ...filesystem,
+      readFile: (filename) =>
+        filesystem.readFile(filename).pipe(
+          Effect.tap(() =>
+            Effect.sync(() => {
+              if (!armed) return
+              armed = false
+              envelope.root = second.path
+            }),
+          ),
+        ),
+    }),
+  )
+})
+
+// Rereading expectedRevision after I/O can replace a captured stale revision with the newly observed one.
+test("captures command envelope revision before asynchronous manifest read", async () => {
+  const envelope = { root: "", expectedRevision: "", change: { hardware }, deviceCatalog: catalog }
+  let replacement = ""
+  let armed = false
+  await run(
+    (service, root) =>
+      Effect.gen(function* () {
+        const before = yield* service.readManifest({ root })
+        if (!("revision" in before)) throw new Error("Expected manifest")
+        const external = '{"schemaVersion":1,"hardware":[],"managedPathing":"road-runner"}\n'
+        yield* Effect.promise(() => fs.writeFile(path.join(root, "ftc-project.json"), external))
+        const after = yield* service.readManifest({ root })
+        if (!("revision" in after)) throw new Error("Expected manifest")
+        envelope.root = root
+        envelope.expectedRevision = before.revision
+        replacement = after.revision
+        armed = true
+        const result = yield* service.updateHardware(envelope).pipe(Effect.result)
+        expect(envelope.expectedRevision).toBe(after.revision)
+        expect(result).toMatchObject({
+          _tag: "Failure",
+          failure: { code: "revision_conflict", expectedRevision: before.revision, actualRevision: after.revision },
+        })
+        expect(yield* Effect.promise(() => fs.readFile(path.join(root, "ftc-project.json"), "utf8"))).toBe(external)
+        expect(yield* Effect.promise(() => fs.readdir(root))).toEqual(["ftc-project.json"])
+      }),
+    false,
+    (filesystem) => ({
+      ...filesystem,
+      readFile: (filename) =>
+        filesystem.readFile(filename).pipe(
+          Effect.tap(() =>
+            Effect.sync(() => {
+              if (!armed) return
+              armed = false
+              envelope.expectedRevision = replacement
+            }),
+          ),
+        ),
+    }),
+  )
+})

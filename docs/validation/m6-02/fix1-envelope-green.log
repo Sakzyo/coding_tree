@@ -1,0 +1,11 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-02.test.ts:
+(pass) captures command envelope root before asynchronous manifest read [24.66ms]
+(pass) captures command envelope revision before asynchronous manifest read [4.23ms]
+
+ 2 pass
+ 19 filtered out
+ 0 fail
+ 11 expect() calls
+Ran 2 tests across 1 file. [247.00ms]

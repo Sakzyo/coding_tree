@@ -1,0 +1,131 @@
+diff --git a/packages/core/src/ftc/configuration.ts b/packages/core/src/ftc/configuration.ts
+index addbae448..02c221d4f 100644
+--- a/packages/core/src/ftc/configuration.ts
++++ b/packages/core/src/ftc/configuration.ts
+@@ -42,25 +42,27 @@ export const layer = (ports: ManifestRepository.Ports) =>
+       return {
+         ...owner,
+         updateHardware: Effect.fn("Configuration.updateHardware")(function* (input) {
+-          if (!Schema.is(FtcConfiguration.Revision)(input.expectedRevision))
++          const root = input.root
++          const expectedRevision = input.expectedRevision
++          if (!Schema.is(FtcConfiguration.Revision)(expectedRevision))
+             return yield* Effect.fail({ code: "invalid_manifest" } satisfies FtcConfiguration.ManifestError)
+           // Validate and copy before I/O so mutable caller values cannot change the admitted replacement.
+           const hardware = yield* Effect.fromResult(validateHardware(input.change, input.deviceCatalog))
+-          const current = yield* owner.readManifest({ root: input.root })
++          const current = yield* owner.readManifest({ root })
+           if (!("revision" in current))
+             return yield* Effect.fail({
+               code: "manifest_missing",
+               field: ["hardware"],
+             } satisfies FtcConfiguration.HardwareError)
+-          if (current.revision !== input.expectedRevision)
++          if (current.revision !== expectedRevision)
+             return yield* Effect.fail({
+               code: "revision_conflict",
+-              expectedRevision: input.expectedRevision,
++              expectedRevision,
+               actualRevision: current.revision,
+             } satisfies FtcConfiguration.ManifestError)
+           return yield* owner.updateManifest({
+-            root: input.root,
+-            expectedRevision: input.expectedRevision,
++            root,
++            expectedRevision,
+             change: { ...current.manifest, hardware },
+           })
+         }),
+diff --git a/packages/core/test/ftc/ftc-configuration-and-libraries/m6-02.test.ts b/packages/core/test/ftc/ftc-configuration-and-libraries/m6-02.test.ts
+index 4b202cd55..67396169d 100644
+--- a/packages/core/test/ftc/ftc-configuration-and-libraries/m6-02.test.ts
++++ b/packages/core/test/ftc/ftc-configuration-and-libraries/m6-02.test.ts
+@@ -291,3 +291,88 @@ test("hardware command retains owner revision protection during staging", () =>
+     }),
+   )
+ })
++
++// Rereading the mutable root after I/O can redirect publication to a second project with identical bytes.
++test("captures command envelope root before asynchronous manifest read", async () => {
++  await using second = await tmpdir()
++  const secondFile = path.join(second.path, "ftc-project.json")
++  await fs.writeFile(secondFile, JSON.stringify(initial))
++  const envelope = { root: "", expectedRevision: "", change: { hardware }, deviceCatalog: catalog }
++  let armed = false
++  await run(
++    (service, root) =>
++      Effect.gen(function* () {
++        const before = yield* service.readManifest({ root })
++        if (!("revision" in before)) throw new Error("Expected manifest")
++        envelope.root = root
++        envelope.expectedRevision = before.revision
++        armed = true
++        const saved = yield* service.updateHardware(envelope)
++        expect(envelope.root).toBe(second.path)
++        expect(saved.manifest).toEqual({ ...initial, hardware })
++        expect(
++          JSON.parse(yield* Effect.promise(() => fs.readFile(path.join(root, "ftc-project.json"), "utf8"))),
++        ).toEqual({ ...initial, hardware })
++        expect(yield* Effect.promise(() => fs.readFile(secondFile, "utf8"))).toBe(JSON.stringify(initial))
++        expect(yield* Effect.promise(() => fs.readdir(second.path))).toEqual(["ftc-project.json"])
++      }),
++    false,
++    (filesystem) => ({
++      ...filesystem,
++      readFile: (filename) =>
++        filesystem.readFile(filename).pipe(
++          Effect.tap(() =>
++            Effect.sync(() => {
++              if (!armed) return
++              armed = false
++              envelope.root = second.path
++            }),
++          ),
++        ),
++    }),
++  )
++})
++
++// Rereading expectedRevision after I/O can replace a captured stale revision with the newly observed one.
++test("captures command envelope revision before asynchronous manifest read", async () => {
++  const envelope = { root: "", expectedRevision: "", change: { hardware }, deviceCatalog: catalog }
++  let replacement = ""
++  let armed = false
++  await run(
++    (service, root) =>
++      Effect.gen(function* () {
++        const before = yield* service.readManifest({ root })
++        if (!("revision" in before)) throw new Error("Expected manifest")
++        const external = '{"schemaVersion":1,"hardware":[],"managedPathing":"road-runner"}\n'
++        yield* Effect.promise(() => fs.writeFile(path.join(root, "ftc-project.json"), external))
++        const after = yield* service.readManifest({ root })
++        if (!("revision" in after)) throw new Error("Expected manifest")
++        envelope.root = root
++        envelope.expectedRevision = before.revision
++        replacement = after.revision
++        armed = true
++        const result = yield* service.updateHardware(envelope).pipe(Effect.result)
++        expect(envelope.expectedRevision).toBe(after.revision)
++        expect(result).toMatchObject({
++          _tag: "Failure",
++          failure: { code: "revision_conflict", expectedRevision: before.revision, actualRevision: after.revision },
++        })
++        expect(yield* Effect.promise(() => fs.readFile(path.join(root, "ftc-project.json"), "utf8"))).toBe(external)
++        expect(yield* Effect.promise(() => fs.readdir(root))).toEqual(["ftc-project.json"])
++      }),
++    false,
++    (filesystem) => ({
++      ...filesystem,
++      readFile: (filename) =>
++        filesystem.readFile(filename).pipe(
++          Effect.tap(() =>
++            Effect.sync(() => {
++              if (!armed) return
++              armed = false
++              envelope.expectedRevision = replacement
++            }),
++          ),
++        ),
++    }),
++  )
++})

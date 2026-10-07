@@ -42,25 +42,27 @@ export const layer = (ports: ManifestRepository.Ports) =>
       return {
         ...owner,
         updateHardware: Effect.fn("Configuration.updateHardware")(function* (input) {
-          if (!Schema.is(FtcConfiguration.Revision)(input.expectedRevision))
+          const root = input.root
+          const expectedRevision = input.expectedRevision
+          if (!Schema.is(FtcConfiguration.Revision)(expectedRevision))
             return yield* Effect.fail({ code: "invalid_manifest" } satisfies FtcConfiguration.ManifestError)
           // Validate and copy before I/O so mutable caller values cannot change the admitted replacement.
           const hardware = yield* Effect.fromResult(validateHardware(input.change, input.deviceCatalog))
-          const current = yield* owner.readManifest({ root: input.root })
+          const current = yield* owner.readManifest({ root })
           if (!("revision" in current))
             return yield* Effect.fail({
               code: "manifest_missing",
               field: ["hardware"],
             } satisfies FtcConfiguration.HardwareError)
-          if (current.revision !== input.expectedRevision)
+          if (current.revision !== expectedRevision)
             return yield* Effect.fail({
               code: "revision_conflict",
-              expectedRevision: input.expectedRevision,
+              expectedRevision,
               actualRevision: current.revision,
             } satisfies FtcConfiguration.ManifestError)
           return yield* owner.updateManifest({
-            root: input.root,
-            expectedRevision: input.expectedRevision,
+            root,
+            expectedRevision,
             change: { ...current.manifest, hardware },
           })
         }),

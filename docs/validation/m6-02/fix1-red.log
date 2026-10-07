@@ -1,0 +1,95 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-02.test.ts:
+310 |         const saved = yield* service.updateHardware(envelope)
+311 |         expect(envelope.root).toBe(second.path)
+312 |         expect(saved.manifest).toEqual({ ...initial, hardware })
+313 |         expect(
+314 |           JSON.parse(yield* Effect.promise(() => fs.readFile(path.join(root, "ftc-project.json"), "utf8"))),
+315 |         ).toEqual({ ...initial, hardware })
+                ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "hardware": [
+-     {
+-       "devices": [
+-         {
+-           "category": "motor",
+-           "name": "drive",
+-           "port": 0,
+-           "type": "fixture.Motor",
+-         },
+-       ],
+-       "id": "hub-a",
+-     },
+-   ],
++   "hardware": [],
+    "managedPathing": "pedro",
+    "schemaVersion": 1,
+  }
+
+- Expected  - 13
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-02.test.ts:315:11)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) captures command envelope root before asynchronous manifest read [35.97ms]
+351 |         envelope.expectedRevision = before.revision
+352 |         replacement = after.revision
+353 |         armed = true
+354 |         const result = yield* service.updateHardware(envelope).pipe(Effect.result)
+355 |         expect(envelope.expectedRevision).toBe(after.revision)
+356 |         expect(result).toMatchObject({
+                             ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "_tag": "Failure",
+-   "failure": {
+-     "actualRevision": "dfbd75bf02197f3eed5860fc569bfcbc6412c56ca5069c66c8610c81e6535cdf",
+-     "code": "revision_conflict",
+-     "expectedRevision": "f7dc8fa3d8c8a0d285784636082e66b7c5af2a61d4d771c5a53531bf2d400819",
++   "success": {
++     "manifest": {
++       "hardware": [
++         {
++           "devices": [
++             {
++               "category": "motor",
++               "name": "drive",
++               "port": 0,
++               "type": "fixture.Motor",
++             },
++           ],
++           "id": "hub-a",
++         },
++       ],
++       "managedPathing": "road-runner",
++       "schemaVersion": 1,
++     },
++     "revision": "baee82215200ca87bdde9e7a3b7b8d11747fb9ec5d8ef1308a12546aa6124295",
+    },
+  }
+
+- Expected  - 5
++ Received  + 19
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-02.test.ts:356:24)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Effect.js:8151:9)
+(fail) captures command envelope revision before asynchronous manifest read [12.83ms]
+
+ 0 pass
+ 19 filtered out
+ 2 fail
+ 7 expect() calls
+Ran 2 tests across 1 file. [423.00ms]

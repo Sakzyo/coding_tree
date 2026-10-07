@@ -1,0 +1,63 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-02.test.ts:
+(pass) form and chat enforce the same port and name rules [232.06ms]
+(pass) rejects missing_name at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Motor",
+  name: "",
+} [18.72ms]
+(pass) rejects missing_name at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Motor",
+} [9.44ms]
+(pass) rejects missing_name at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Motor",
+  name: " \t ",
+} [4.04ms]
+(pass) rejects invalid_category at the offending field: {
+  category: "other",
+  port: 0,
+  type: "fixture.Motor",
+  name: "drive",
+} [4.96ms]
+(pass) rejects invalid_type at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Servo",
+  name: "drive",
+} [4.05ms]
+(pass) rejects invalid_hardware at the offending field: {
+  category: "motor",
+  port: -1,
+  type: "fixture.Motor",
+  name: "drive",
+} [15.41ms]
+(pass) rejects invalid_hardware at the offending field: {
+  category: "motor",
+  port: 0.5,
+  type: "fixture.Motor",
+  name: "drive",
+} [22.33ms]
+(pass) rejects hub or occupancy conflict invalid_hub [13.39ms]
+(pass) rejects hub or occupancy conflict duplicate_hub [5.94ms]
+(pass) rejects hub or occupancy conflict occupied_port [14.94ms]
+(pass) preserves identifiers and pathing while accepting distinct category ports and exact names [215.85ms]
+(pass) uses the supplied SDK catalog snapshot and rejects ambiguous or malformed catalogs [19.71ms]
+(pass) stale hardware command preserves external bytes [13.81ms]
+(pass) hardware update requires existing manifest [12.33ms]
+(pass) rejects malformed expected revision before persistence [3.18ms]
+(pass) hub rules remain project-local and an empty replacement removes only hardware [86.46ms]
+(pass) copies admitted hardware before asynchronous manifest read [22.36ms]
+(pass) hardware command retains owner revision protection during staging [84.38ms]
+(pass) captures command envelope root before asynchronous manifest read [16.81ms]
+(pass) captures command envelope revision before asynchronous manifest read [14.17ms]
+
+ 21 pass
+ 0 fail
+ 74 expect() calls
+Ran 21 tests across 1 file. [1.87s]
