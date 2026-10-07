@@ -42,5 +42,6 @@ export const migrations = (
     import("./migration/20260622202450_simplify_session_input"),
     import("./migration/20261006121634_ftc-project-association"),
     import("./migration/20261006123700_ftc-chat-membership"),
+    import("./migration/20261007052343_ftc-learning-progress"),
   ])
 ).map((module) => module.default) satisfies DatabaseMigration.Migration[]

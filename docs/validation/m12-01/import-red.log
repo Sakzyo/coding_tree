@@ -1,0 +1,31 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/learning-and-progress/m12-01.test.ts:
+50 |     stdout: "pipe",
+51 |     stderr: "pipe",
+52 |   })
+53 |   const output = await new Response(child.stderr).text()
+54 |   expect({ exit: await child.exited, output }).toEqual({ exit: 0, output: "" })
+55 |   expect(await fs.readdir(tmp.path)).toEqual([])
+                                          ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   "cache",
++   "config",
++   "state",
++   "data",
++ ]
+
+- Expected  - 1
++ Received  + 6
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/learning-and-progress/m12-01.test.ts:55:38)
+(fail) importing learning starts no application-state or database I/O [163.83ms]
+
+ 0 pass
+ 16 filtered out
+ 1 fail
+ 2 expect() calls
+Ran 1 test across 1 file. [323.00ms]

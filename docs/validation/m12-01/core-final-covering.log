@@ -1,0 +1,45 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/learning-and-progress/m12-01.test.ts:
+(pass) importing learning starts no application-state or database I/O [527.84ms]
+(pass) progress survives reopen and language changes [245.73ms]
+(pass) older lesson versions retain provenance without crediting the current version [109.04ms]
+(pass) cross-project attempts preserve outcomes, evidence references and configuration revisions [204.39ms]
+(pass) concurrent connections reconcile exact retries and preserve independent attempts [107.39ms]
+(pass) concurrent conflicting reuse produces one durable winner without rewriting provenance [37.53ms]
+(pass) rejects lesson_not_found without storing an attempt [54.81ms]
+(pass) rejects lesson_version_changed without storing an attempt [95.51ms]
+(pass) rejects course_not_found without storing an attempt [44.85ms]
+(pass) rejects invalid_input without storing an attempt [19.04ms]
+(pass) rejects invalid_input without storing an attempt [30.36ms]
+(pass) Core facade exposes the canonical Schema contract identities [0.38ms]
+(pass) lookup failure, malformed or duplicate current lessons cannot become empty successful progress [55.56ms]
+(pass) SQLite read-only failure keeps personal progress unchanged and releases the connection [73.27ms]
+(pass) malformed persisted evidence is reported rather than silently losing progress [97.00ms]
+(pass) cancelling lesson lookup releases its scope and writes no attempt [38.35ms]
+(pass) tracked learning migration upgrades a populated database, preserves host rows and reopens [222.67ms]
+
+test/database-migration.test.ts:
+(pass) DatabaseMigration > defaults missing workspace names while preserving legacy workspace data [6.13ms]
+(pass) DatabaseMigration > imports unnamed legacy Drizzle journal entries by their actual migration timestamps [3.12ms]
+(pass) DatabaseMigration > rejects unknown legacy Drizzle journal timestamps instead of guessing completed migrations [2.39ms]
+(pass) DatabaseMigration > serializes concurrent embedded initialization for one database path [44.18ms]
+(pass) DatabaseMigration > applies tracked migrations to an empty database [8.15ms]
+(pass) DatabaseMigration > rejects a non-empty database without a session table [6.58ms]
+(pass) DatabaseMigration > backfills existing Context Epoch rows to the build agent [5.17ms]
+(pass) DatabaseMigration > keeps legacy credential fields nullable [5.88ms]
+(pass) DatabaseMigration > resets beta history and rebuilds event-sourced Session input storage [8.82ms]
+(pass) DatabaseMigration > preserves canonical V1 state and restarts its event stream [24.58ms]
+(pass) DatabaseMigration > resets incompatible projected Session messages before adding sequence order [4.41ms]
+(pass) DatabaseMigration > runs session usage backfill in order with schema changes [3.31ms]
+(pass) DatabaseMigration > normalizes Windows storage paths and leaves POSIX paths untouched [3.74ms]
+(pass) DatabaseMigration > maps native Windows paths through database columns [0.23ms]
+(pass) DatabaseMigration > imports existing drizzle migration state [1.51ms]
+(pass) DatabaseMigration > does not replay a migrated session metadata column [1.22ms]
+(pass) DatabaseMigration > accepts the temporary replacement session metadata migration id [1.11ms]
+(pass) DatabaseMigration > skips drizzle import when migration table already has state [0.93ms]
+
+ 35 pass
+ 0 fail
+ 91 expect() calls
+Ran 35 tests across 2 files. [3.05s]

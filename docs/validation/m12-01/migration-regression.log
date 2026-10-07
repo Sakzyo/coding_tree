@@ -1,0 +1,26 @@
+bun test v1.3.14 (0d9b296a)
+
+test/database-migration.test.ts:
+(pass) DatabaseMigration > defaults missing workspace names while preserving legacy workspace data [57.99ms]
+(pass) DatabaseMigration > imports unnamed legacy Drizzle journal entries by their actual migration timestamps [3.25ms]
+(pass) DatabaseMigration > rejects unknown legacy Drizzle journal timestamps instead of guessing completed migrations [2.29ms]
+(pass) DatabaseMigration > serializes concurrent embedded initialization for one database path [40.25ms]
+(pass) DatabaseMigration > applies tracked migrations to an empty database [7.43ms]
+(pass) DatabaseMigration > rejects a non-empty database without a session table [1.12ms]
+(pass) DatabaseMigration > backfills existing Context Epoch rows to the build agent [1.87ms]
+(pass) DatabaseMigration > keeps legacy credential fields nullable [2.08ms]
+(pass) DatabaseMigration > resets beta history and rebuilds event-sourced Session input storage [7.29ms]
+(pass) DatabaseMigration > preserves canonical V1 state and restarts its event stream [22.18ms]
+(pass) DatabaseMigration > resets incompatible projected Session messages before adding sequence order [3.57ms]
+(pass) DatabaseMigration > runs session usage backfill in order with schema changes [2.46ms]
+(pass) DatabaseMigration > normalizes Windows storage paths and leaves POSIX paths untouched [2.41ms]
+(pass) DatabaseMigration > maps native Windows paths through database columns [0.12ms]
+(pass) DatabaseMigration > imports existing drizzle migration state [1.14ms]
+(pass) DatabaseMigration > does not replay a migrated session metadata column [1.27ms]
+(pass) DatabaseMigration > accepts the temporary replacement session metadata migration id [1.24ms]
+(pass) DatabaseMigration > skips drizzle import when migration table already has state [1.02ms]
+
+ 18 pass
+ 0 fail
+ 39 expect() calls
+Ran 18 tests across 1 file. [1054.00ms]

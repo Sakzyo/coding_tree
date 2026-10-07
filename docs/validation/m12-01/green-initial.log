@@ -1,0 +1,44 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/learning-and-progress/m12-01.test.ts:
+(pass) progress survives reopen and language changes [50.68ms]
+(pass) older lesson versions retain provenance without crediting the current version [15.37ms]
+(pass) cross-project attempts preserve outcomes, evidence references and configuration revisions [29.32ms]
+(pass) concurrent connections reconcile exact retries and preserve independent attempts [36.50ms]
+(pass) concurrent conflicting reuse produces one durable winner without rewriting provenance [20.67ms]
+(pass) rejects lesson_not_found without storing an attempt [11.31ms]
+(pass) rejects lesson_version_changed without storing an attempt [11.27ms]
+(pass) rejects course_not_found without storing an attempt [10.42ms]
+(pass) rejects invalid_input without storing an attempt [12.15ms]
+(pass) lookup failure, malformed or duplicate current lessons cannot become empty successful progress [14.27ms]
+(pass) SQLite read-only failure keeps personal progress unchanged and releases the connection [18.75ms]
+(pass) malformed persisted evidence is reported rather than silently losing progress [15.29ms]
+(pass) cancelling lesson lookup releases its scope and writes no attempt [17.49ms]
+277 |       }
+278 | 
+279 |       assertUnreachable(cacheStrat)
+280 |     }).pipe(
+281 |       Effect.catch((e) => {
+282 |         return Effect.fail(new EffectDrizzleQueryError({ query: queryString, params, cause: Cause.fail(e) }))
+                                 ^
+error: Failed query: INSERT INTO project (id, worktree, time_created, time_updated) VALUES (?, ?, ?, ?)
+params: host-preserved,/fixture,1,2
+  query: "INSERT INTO project (id, worktree, time_created, time_updated) VALUES (?, ?, ?, ?)",
+ params: [
+  "host-preserved", "/fixture", 1, 2
+],
+   _tag: "EffectDrizzleQueryError",
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/effect-drizzle-sqlite/src/sqlite-core/effect/session.ts:282:28)
+      at ~effect/Utils/internal (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Utils.js:89:16)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:656:13)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) tracked learning migration upgrades a populated database, preserves host rows and reopens [34.66ms]
+
+ 13 pass
+ 1 fail
+ 36 expect() calls
+Ran 14 tests across 1 file. [445.00ms]

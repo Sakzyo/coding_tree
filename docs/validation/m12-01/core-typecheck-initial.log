@@ -1,0 +1,69 @@
+$ tsgo --noEmit
+src/ftc/java.ts(7,37): error TS2305: Module '"./java/documents"' has no exported member 'CodeChanges'.
+test/ftc/java-development/m5-02.test.ts(38,103): error TS2353: Object literal may only specify known properties, and 'codeChanges' does not exist in type 'Ports'.
+test/ftc/java-development/m5-02.test.ts(38,126): error TS7006: Parameter 'input' implicitly has an 'any' type.
+test/ftc/java-development/m5-02.test.ts(38,286): error TS7006: Parameter 'edit' implicitly has an 'any' type.
+test/ftc/java-development/m5-02.test.ts(45,32): error TS2322: Type 'Effect<void, unknown, unknown>' is not assignable to type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/java-development/m5-02.test.ts(46,24): error TS2339: Property 'applyEdits' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(51,32): error TS2339: Property 'applyEdits' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(69,32): error TS2322: Type 'Effect<void, unknown, unknown>' is not assignable to type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/java-development/m5-02.test.ts(73,31): error TS2339: Property 'saveDocument' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(76,24): error TS2339: Property 'saveDocument' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(85,32): error TS2322: Type 'Effect<void, unknown, unknown>' is not assignable to type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/java-development/m5-02.test.ts(88,25): error TS2339: Property 'saveDocument' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(89,25): error TS2339: Property 'saveDocument' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(91,32): error TS2339: Property 'saveDocument' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(105,32): error TS2322: Type 'Effect<void, unknown, unknown>' is not assignable to type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/java-development/m5-02.test.ts(111,32): error TS2339: Property 'applyEdits' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(128,32): error TS2322: Type 'Effect<void, unknown, unknown>' is not assignable to type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/java-development/m5-02.test.ts(133,32): error TS2339: Property 'applyEdits' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(146,32): error TS2322: Type 'Effect<void, unknown, unknown>' is not assignable to type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/java-development/m5-02.test.ts(149,33): error TS2339: Property 'saveDocument' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(152,57): error TS7006: Parameter 'input' implicitly has an 'any' type.
+test/ftc/java-development/m5-02.test.ts(161,32): error TS2322: Type 'Effect<void, unknown, unknown>' is not assignable to type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/java-development/m5-02.test.ts(165,32): error TS2339: Property 'applyEdits' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(167,32): error TS7006: Parameter 'document' implicitly has an 'any' type.
+test/ftc/java-development/m5-02.test.ts(175,57): error TS7006: Parameter 'input' implicitly has an 'any' type.
+test/ftc/java-development/m5-02.test.ts(183,32): error TS2322: Type 'Effect<void, unknown, unknown>' is not assignable to type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/java-development/m5-02.test.ts(185,33): error TS2339: Property 'applyEdits' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(188,32): error TS2322: Type 'Effect<void, unknown, unknown>' is not assignable to type 'Effect<unknown, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/java-development/m5-02.test.ts(190,25): error TS2339: Property 'applyEdits' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(200,32): error TS2322: Type 'Effect<void, unknown, unknown>' is not assignable to type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/java-development/m5-02.test.ts(203,25): error TS2339: Property 'saveDocument' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(204,25): error TS2339: Property 'applyEdits' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(214,32): error TS2322: Type 'Effect<void, unknown, unknown>' is not assignable to type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/java-development/m5-02.test.ts(217,25): error TS2339: Property 'applyEdits' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(218,25): error TS2339: Property 'applyEdits' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(233,32): error TS2322: Type 'Effect<void, unknown, unknown>' is not assignable to type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/java-development/m5-02.test.ts(236,25): error TS2339: Property 'saveDocument' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(237,25): error TS2339: Property 'applyEdits' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(248,32): error TS2322: Type 'Effect<void, unknown, unknown>' is not assignable to type 'Effect<unknown, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/java-development/m5-02.test.ts(250,25): error TS2339: Property 'applyEdits' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(262,32): error TS2322: Type 'Effect<void, unknown, unknown>' is not assignable to type 'Effect<unknown, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/java-development/m5-02.test.ts(265,33): error TS2339: Property 'applyEdits' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(270,12): error TS18046: 'result' is of type 'unknown'.
+test/ftc/java-development/m5-02.test.ts(271,12): error TS18046: 'result' is of type 'unknown'.
+test/ftc/java-development/m5-02.test.ts(272,32): error TS7006: Parameter 'input' implicitly has an 'any' type.
+test/ftc/java-development/m5-02.test.ts(272,238): error TS7006: Parameter 'edit' implicitly has an 'any' type.
+test/ftc/java-development/m5-02.test.ts(284,32): error TS2322: Type 'Effect<void, unknown, unknown>' is not assignable to type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/java-development/m5-02.test.ts(288,33): error TS2339: Property 'saveDocument' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(295,50): error TS7006: Parameter 'value' implicitly has an 'any' type.
+test/ftc/java-development/m5-02.test.ts(306,10): error TS2571: Object is of type 'unknown'.
+test/ftc/java-development/m5-02.test.ts(306,48): error TS2339: Property 'saveDocument' does not exist on type 'Interface'.
+test/ftc/java-development/m5-02.test.ts(307,10): error TS2571: Object is of type 'unknown'.
+test/ftc/java-development/m5-02.test.ts(307,48): error TS2339: Property 'applyEdits' does not exist on type 'Interface'.

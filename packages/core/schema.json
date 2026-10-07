@@ -1,9 +1,9 @@
 {
   "version": "7",
   "dialect": "sqlite",
-  "id": "445bccd6-3162-4ce2-aa5e-ac75c867625a",
+  "id": "b310966e-4f7f-45fa-aa53-ea72cb0a1459",
   "prevIds": [
-    "d3fb1ce7-b53c-4fd3-9965-ce7dd5c1cb0b"
+    "445bccd6-3162-4ce2-aa5e-ac75c867625a"
   ],
   "ddl": [
     {
@@ -36,6 +36,10 @@
     },
     {
       "name": "event",
+      "entityType": "tables"
+    },
+    {
+      "name": "ftc_learning_attempt",
       "entityType": "tables"
     },
     {
@@ -549,6 +553,96 @@
       "name": "data",
       "entityType": "columns",
       "table": "event"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "course_id",
+      "entityType": "columns",
+      "table": "ftc_learning_attempt"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "lesson_id",
+      "entityType": "columns",
+      "table": "ftc_learning_attempt"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "lesson_version",
+      "entityType": "columns",
+      "table": "ftc_learning_attempt"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "attempt_id",
+      "entityType": "columns",
+      "table": "ftc_learning_attempt"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "project_id",
+      "entityType": "columns",
+      "table": "ftc_learning_attempt"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "configuration_revision",
+      "entityType": "columns",
+      "table": "ftc_learning_attempt"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "outcome",
+      "entityType": "columns",
+      "table": "ftc_learning_attempt"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "evidence_json",
+      "entityType": "columns",
+      "table": "ftc_learning_attempt"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "explanation",
+      "entityType": "columns",
+      "table": "ftc_learning_attempt"
     },
     {
       "type": "integer",
@@ -1789,6 +1883,18 @@
       "name": "control_account_pk",
       "entityType": "pks",
       "table": "control_account"
+    },
+    {
+      "columns": [
+        "course_id",
+        "lesson_id",
+        "lesson_version",
+        "attempt_id"
+      ],
+      "nameExplicit": false,
+      "name": "ftc_learning_attempt_pk",
+      "entityType": "pks",
+      "table": "ftc_learning_attempt"
     },
     {
       "columns": [

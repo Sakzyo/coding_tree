@@ -1,0 +1,113 @@
+{
+  "added": 11,
+  "removed": 0,
+  "addedRecords": [
+    {
+      "entityType": "tables",
+      "name": "ftc_learning_attempt"
+    },
+    {
+      "autoincrement": false,
+      "default": null,
+      "entityType": "columns",
+      "generated": null,
+      "name": "course_id",
+      "notNull": true,
+      "table": "ftc_learning_attempt",
+      "type": "text"
+    },
+    {
+      "autoincrement": false,
+      "default": null,
+      "entityType": "columns",
+      "generated": null,
+      "name": "lesson_id",
+      "notNull": true,
+      "table": "ftc_learning_attempt",
+      "type": "text"
+    },
+    {
+      "autoincrement": false,
+      "default": null,
+      "entityType": "columns",
+      "generated": null,
+      "name": "lesson_version",
+      "notNull": true,
+      "table": "ftc_learning_attempt",
+      "type": "text"
+    },
+    {
+      "autoincrement": false,
+      "default": null,
+      "entityType": "columns",
+      "generated": null,
+      "name": "attempt_id",
+      "notNull": true,
+      "table": "ftc_learning_attempt",
+      "type": "text"
+    },
+    {
+      "autoincrement": false,
+      "default": null,
+      "entityType": "columns",
+      "generated": null,
+      "name": "project_id",
+      "notNull": true,
+      "table": "ftc_learning_attempt",
+      "type": "text"
+    },
+    {
+      "autoincrement": false,
+      "default": null,
+      "entityType": "columns",
+      "generated": null,
+      "name": "configuration_revision",
+      "notNull": true,
+      "table": "ftc_learning_attempt",
+      "type": "text"
+    },
+    {
+      "autoincrement": false,
+      "default": null,
+      "entityType": "columns",
+      "generated": null,
+      "name": "outcome",
+      "notNull": true,
+      "table": "ftc_learning_attempt",
+      "type": "text"
+    },
+    {
+      "autoincrement": false,
+      "default": null,
+      "entityType": "columns",
+      "generated": null,
+      "name": "evidence_json",
+      "notNull": true,
+      "table": "ftc_learning_attempt",
+      "type": "text"
+    },
+    {
+      "autoincrement": false,
+      "default": null,
+      "entityType": "columns",
+      "generated": null,
+      "name": "explanation",
+      "notNull": true,
+      "table": "ftc_learning_attempt",
+      "type": "text"
+    },
+    {
+      "columns": [
+        "course_id",
+        "lesson_id",
+        "lesson_version",
+        "attempt_id"
+      ],
+      "entityType": "pks",
+      "name": "ftc_learning_attempt_pk",
+      "nameExplicit": false,
+      "table": "ftc_learning_attempt"
+    }
+  ],
+  "removedRecords": []
+}

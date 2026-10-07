@@ -1,0 +1,11 @@
+packages/schema/src/ftc-learning.ts: OK
+packages/schema/test/ftc-learning.test.ts: OK
+packages/core/src/ftc/learning.ts: OK
+packages/core/src/ftc/learning/sql.ts: OK
+packages/core/test/ftc/learning-and-progress/m12-01.test.ts: OK
+packages/schema/src/index.ts: OK
+packages/core/src/database/migration/20261007052343_ftc-learning-progress.ts: OK
+packages/core/src/database/migration.gen.ts: OK
+packages/core/src/database/schema.gen.ts: OK
+packages/core/schema.json: OK
+docs/validation/m12-01/snapshot-delta.json: OK

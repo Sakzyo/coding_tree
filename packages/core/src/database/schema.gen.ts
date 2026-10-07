@@ -87,6 +87,20 @@ export default {
         );
       `)
       yield* tx.run(`
+        CREATE TABLE \`ftc_learning_attempt\` (
+          \`course_id\` text NOT NULL,
+          \`lesson_id\` text NOT NULL,
+          \`lesson_version\` text NOT NULL,
+          \`attempt_id\` text NOT NULL,
+          \`project_id\` text NOT NULL,
+          \`configuration_revision\` text NOT NULL,
+          \`outcome\` text NOT NULL,
+          \`evidence_json\` text NOT NULL,
+          \`explanation\` text NOT NULL,
+          CONSTRAINT \`ftc_learning_attempt_pk\` PRIMARY KEY(\`course_id\`, \`lesson_id\`, \`lesson_version\`, \`attempt_id\`)
+        );
+      `)
+      yield* tx.run(`
         CREATE TABLE \`ftc_chat\` (
           \`sequence\` integer PRIMARY KEY AUTOINCREMENT,
           \`chat_id\` text NOT NULL UNIQUE,

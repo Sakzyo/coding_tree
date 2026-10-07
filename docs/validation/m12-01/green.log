@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/learning-and-progress/m12-01.test.ts:
+(pass) progress survives reopen and language changes [50.04ms]
+(pass) older lesson versions retain provenance without crediting the current version [15.06ms]
+(pass) cross-project attempts preserve outcomes, evidence references and configuration revisions [27.11ms]
+(pass) concurrent connections reconcile exact retries and preserve independent attempts [35.06ms]
+(pass) concurrent conflicting reuse produces one durable winner without rewriting provenance [16.66ms]
+(pass) rejects lesson_not_found without storing an attempt [11.16ms]
+(pass) rejects lesson_version_changed without storing an attempt [11.27ms]
+(pass) rejects course_not_found without storing an attempt [11.28ms]
+(pass) rejects invalid_input without storing an attempt [10.99ms]
+(pass) lookup failure, malformed or duplicate current lessons cannot become empty successful progress [15.79ms]
+(pass) SQLite read-only failure keeps personal progress unchanged and releases the connection [20.49ms]
+(pass) malformed persisted evidence is reported rather than silently losing progress [14.45ms]
+(pass) cancelling lesson lookup releases its scope and writes no attempt [17.54ms]
+(pass) tracked learning migration upgrades a populated database, preserves host rows and reopens [48.99ms]
+
+ 14 pass
+ 0 fail
+ 41 expect() calls
+Ran 14 tests across 1 file. [451.00ms]

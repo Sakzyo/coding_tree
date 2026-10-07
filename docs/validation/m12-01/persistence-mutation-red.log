@@ -1,0 +1,63 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/learning-and-progress/m12-01.test.ts:
+71 |         Effect.provide(Database.layerFromPath(path.join(tmp.path, "personal.sqlite"))),
+72 |         Effect.scoped,
+73 |       ),
+74 |     )
+75 |   const savedProgress = await run("en", true)
+76 |   expect(savedProgress).toEqual({
+                             ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "attempts": [
+-     {
+-       "attemptID": "attempt_114d2e945001zq11lRS9fPQAUP",
+-       "configurationRevision": "config-a-1",
+-       "courseID": "foundations",
+-       "evidence": [
+-         {
+-           "kind": "reading",
+-           "provenance": {
+-             "kind": "student_observation",
+-             "observation": "Read the page.",
+-           },
+-           "source": "lesson-page",
+-           "timestamp": 123,
+-         },
+-       ],
+-       "explanation": "init runs once and loop repeats.",
+-       "lessonID": "opmode-lifecycle",
+-       "lessonVersion": "1.0.0",
+-       "outcome": "submitted",
+-       "projectID": "ftc_project_a",
+-     },
+-   ],
++   "attempts": [],
+    "courseID": "foundations",
+    "lessons": [
+      {
+-       "attemptIDs": [
+-         "attempt_114d2e945001zq11lRS9fPQAUP",
+-       ],
++       "attemptIDs": [],
+        "lessonID": "opmode-lifecycle",
+        "lessonVersion": "1.0.0",
+-       "status": "recorded",
++       "status": "not_started",
+      },
+    ],
+  }
+
+- Expected  - 27
++ Received  + 3
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/learning-and-progress/m12-01.test.ts:76:25)
+(fail) progress survives reopen and language changes [61.75ms]
+
+ 0 pass
+ 15 filtered out
+ 1 fail
+ 2 expect() calls
+Ran 1 test across 1 file. [248.00ms]

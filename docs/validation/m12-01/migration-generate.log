@@ -1,0 +1,4 @@
+Reading config file '/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-LgYnuv/incremental.config.ts'
+[✓] Your SQL migration ➜ /var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-LgYnuv/incremental/20261007052343_ftc-learning-progress/migration.sql 🚀
+Reading config file '/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-LgYnuv/full.config.ts'
+[✓] Your SQL migration ➜ /var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-migration-LgYnuv/full/20261007052345_schema/migration.sql 🚀

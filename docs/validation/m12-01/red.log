@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/learning-and-progress/m12-01.test.ts:
+29 |   const manifest = path.join(tmp.path, "ftc-project.json")
+30 |   const bytes = '{"hardware":[],"pathing":"neither"}\n'
+31 |   await Bun.write(manifest, bytes)
+32 |   const before = await fs.stat(manifest)
+33 |   // Assert missing behavior as RED, without failing module resolution before the test runs.
+34 |   expect(await Bun.file(new URL("../../../src/ftc/learning.ts", import.meta.url)).exists()).toBe(true)
+                                                                                                 ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/learning-and-progress/m12-01.test.ts:34:93)
+(fail) progress survives reopen and language changes [3.74ms]
+
+ 0 pass
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [137.00ms]
