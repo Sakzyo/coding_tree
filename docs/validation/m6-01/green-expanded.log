@@ -1,0 +1,40 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-01.test.ts:
+(pass) stale manifest update preserves external bytes [9.98ms]
+55 |   await using directory = await tmpdir()
+56 |   await run((filesystem) => Effect.gen(function* () {
+57 |     const owner = yield* ManifestRepository.make({ filesystem })
+58 |     const proposed = yield* owner.readManifest({ root: directory.path })
+59 |     expect(proposed).toEqual({ kind: "initialization_proposal", filename: "ftc-project.json", expectedRevision: null, manifest: initial })
+60 |     expect(awaitDirectory()).toBeDefined()
+                ^
+ReferenceError: awaitDirectory is not defined
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-01.test.ts:60:12)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Effect.js:8149:9)
+(fail) absent read proposes initialization without writing, explicit initialization survives reopen [1.54ms]
+(pass) concurrent initializer cannot replace external bytes at exclusive publication [2.16ms]
+(pass) external edit during staging is detected before replacement and staging is removed [1.97ms]
+(pass) cancellation after staging preserves the manifest and removes only its staging [2.16ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[],"managedPathing":"neither","credentials":"secret"} [0.54ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[{"id":"hub","approvals":[],"devices":[]}],"managedPathing":"neither"} [0.44ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[{"id":"hub","devices":[{"category":"motor","port":0,"type":"fixture","name":"drive","machinePaths":["/private"]}]}],"managedPathing":"neither"} [0.34ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":0,"hardware":[],"managedPathing":"neither"} [1.44ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[],"managedPathing":["pedro","road-runner"]} [0.57ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[{"id":"hub","devices":[{"category":"motor","port":-1,"type":"fixture","name":"drive"}]}],"managedPathing":"neither"} [0.62ms]
+(pass) unsupported or invalid external content is never replaced {"bytes":"{\"schemaVersion\":2,\"hardware\":[],\"managedPathing\":\"neither\",\"future\":true}","code":"unsupported_schema_version"} [1.09ms]
+(pass) unsupported or invalid external content is never replaced {"bytes":"{\"schemaVersion\":1,\"hardware\":[],\"managedPathing\":\"neither\",\"chats\":[]}","code":"invalid_manifest"} [0.78ms]
+(pass) unsupported or invalid external content is never replaced {"bytes":"malformed json","code":"invalid_manifest"} [0.81ms]
+(pass) revision events report commits and observed external bytes, without unchanged-read duplicates [3.15ms]
+(pass) manifest symlink cannot write outside the project [1.10ms]
+(pass) scope closure rejects retained commands and ends event consumers [0.44ms]
+(pass) canonical facade and serializable manifest preserve shared hardware fields [0.25ms]
+
+ 17 pass
+ 1 fail
+ 43 expect() calls
+Ran 18 tests across 1 file. [136.00ms]

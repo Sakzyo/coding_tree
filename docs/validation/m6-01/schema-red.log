@@ -1,0 +1,113 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-configuration.test.ts:
+ 7 | test.each([
+ 8 |   { ...manifest, credentials: "secret" },
+ 9 |   { ...manifest, hardware: [{ ...manifest.hardware[0], chat: "personal" }] },
+10 |   { ...manifest, hardware: [{ ...manifest.hardware[0], devices: [{ ...manifest.hardware[0].devices[0], approval: true }] }] },
+11 | ])("canonical manifest decoder rejects additional personal fields %j", (value) => {
+12 |   expect(() => Schema.decodeUnknownSync(FtcConfiguration.Manifest)(value)).toThrow()
+                                                                                ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  schemaVersion: 1,
+  hardware: [
+    {
+      id: "hub-a",
+      devices: [
+        {
+          category: "motor",
+          port: 0,
+          type: "catalog-type",
+          name: "drive",
+        }
+      ],
+    }
+  ],
+  managedPathing: "neither",
+}
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/schema/test/ftc-configuration.test.ts:12:76)
+(fail) canonical manifest decoder rejects additional personal fields {"schemaVersion":1,"hardware":[{"id":"hub-a","devices":[{"category":"motor","port":0,"type":"catalog-type","name":"drive"}]}],"managedPathing":"neither","credentials":"secret"} [3.42ms]
+ 7 | test.each([
+ 8 |   { ...manifest, credentials: "secret" },
+ 9 |   { ...manifest, hardware: [{ ...manifest.hardware[0], chat: "personal" }] },
+10 |   { ...manifest, hardware: [{ ...manifest.hardware[0], devices: [{ ...manifest.hardware[0].devices[0], approval: true }] }] },
+11 | ])("canonical manifest decoder rejects additional personal fields %j", (value) => {
+12 |   expect(() => Schema.decodeUnknownSync(FtcConfiguration.Manifest)(value)).toThrow()
+                                                                                ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  schemaVersion: 1,
+  hardware: [
+    {
+      id: "hub-a",
+      devices: [
+        {
+          category: "motor",
+          port: 0,
+          type: "catalog-type",
+          name: "drive",
+        }
+      ],
+    }
+  ],
+  managedPathing: "neither",
+}
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/schema/test/ftc-configuration.test.ts:12:76)
+(fail) canonical manifest decoder rejects additional personal fields {"schemaVersion":1,"hardware":[{"id":"hub-a","devices":[{"category":"motor","port":0,"type":"catalog-type","name":"drive"}],"chat":"personal"}],"managedPathing":"neither"} [0.11ms]
+ 7 | test.each([
+ 8 |   { ...manifest, credentials: "secret" },
+ 9 |   { ...manifest, hardware: [{ ...manifest.hardware[0], chat: "personal" }] },
+10 |   { ...manifest, hardware: [{ ...manifest.hardware[0], devices: [{ ...manifest.hardware[0].devices[0], approval: true }] }] },
+11 | ])("canonical manifest decoder rejects additional personal fields %j", (value) => {
+12 |   expect(() => Schema.decodeUnknownSync(FtcConfiguration.Manifest)(value)).toThrow()
+                                                                                ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  schemaVersion: 1,
+  hardware: [
+    {
+      id: "hub-a",
+      devices: [
+        {
+          category: "motor",
+          port: 0,
+          type: "catalog-type",
+          name: "drive",
+        }
+      ],
+    }
+  ],
+  managedPathing: "neither",
+}
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/schema/test/ftc-configuration.test.ts:12:76)
+(fail) canonical manifest decoder rejects additional personal fields {"schemaVersion":1,"hardware":[{"id":"hub-a","devices":[{"category":"motor","port":0,"type":"catalog-type","name":"drive","approval":true}]}],"managedPathing":"neither"} [0.06ms]
+(pass) hardware and proposals serialize without machine-local fields or undefined error keys [0.39ms]
+18 |   expect(Schema.encodeSync(FtcConfiguration.ManifestError)({ code: "invalid_manifest", actualRevision: undefined, expectedRevision: undefined })).toEqual({ code: "invalid_manifest" })
+19 | })
+20 | 
+21 | test("public contract identifiers are unique and domain-qualified", () => {
+22 |   const identifiers = [FtcConfiguration.Device, FtcConfiguration.Hub, FtcConfiguration.Manifest, FtcConfiguration.Revision, FtcConfiguration.ManifestSnapshot, FtcConfiguration.InitializationProposal, FtcConfiguration.ReadResult, FtcConfiguration.ManifestError, FtcConfiguration.ManifestEvent].map((schema) => schema.ast.annotations?.identifier)
+23 |   expect(identifiers.every((identifier) => typeof identifier === "string" && identifier.startsWith("FtcConfiguration."))).toBe(true)
+                                                                                                                               ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/schema/test/ftc-configuration.test.ts:23:123)
+(fail) public contract identifiers are unique and domain-qualified [0.07ms]
+
+ 1 pass
+ 4 fail
+ 6 expect() calls
+Ran 5 tests across 1 file. [54.00ms]

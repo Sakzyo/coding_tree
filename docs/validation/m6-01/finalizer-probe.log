@@ -1,0 +1,4 @@
+{"mode":"direct","nativeRealpath":"/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-qDyByc","trace":[{"boundary":"generator-consumer","value":true}]}
+{"mode":"direct-void","nativeRealpath":"/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-qDyByc","trace":[{"boundary":"generator-consumer","value":true}]}
+{"mode":"flatmap","nativeRealpath":"/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-qDyByc","trace":[]}
+{"mode":"joined","nativeRealpath":"/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-qDyByc","trace":[{"boundary":"generator-consumer","value":"/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-qDyByc"}]}

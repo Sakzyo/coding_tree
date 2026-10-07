@@ -1,0 +1,18 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-01.test.ts:
+error
+{
+  revision: "7932d13fa967e3bf6e7d4c7a41eed5622a8a74d2d48b8c78b8d2d9942be223f9",
+  manifest: {
+    schemaVersion: 1,
+    hardware: [],
+    managedPathing: "road-runner",
+  },
+}
+(fail) stale manifest update preserves external bytes [10.20ms]
+
+ 0 pass
+ 19 filtered out
+ 1 fail
+Ran 1 test across 1 file. [120.00ms]

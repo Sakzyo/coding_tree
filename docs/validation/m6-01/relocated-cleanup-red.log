@@ -1,0 +1,16 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-01.test.ts:
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-aUqDNM/foreign/.ftc-manifest-wdg6Oo/team-owned.txt'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-aUqDNM/foreign/.ftc-manifest-wdg6Oo/team-owned.txt",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+(fail) root relocation cannot make scoped cleanup remove a foreign directory [23.94ms]
+
+ 0 pass
+ 22 filtered out
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [248.00ms]

@@ -1,0 +1,28 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-01.test.ts:
+447 |     expect(unchanged).toEqual(before)
+448 |     yield* owner.updateManifest({ root: directory.path, expectedRevision: before.revision, change: { ...initial, managedPathing: "pedro" } })
+449 |     const result = Array.from(yield* Fiber.join(collected))
+450 |     const observed = result[0]?.result
+451 |     if (!observed || !("revision" in observed)) throw new Error("Expected manifest event")
+452 |     expect(observed.manifest.managedPathing).toBe("pedro")
+                                                   ^
+error: expect(received).toBe(expected)
+
+Expected: "pedro"
+Received: "neither"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-01.test.ts:452:46)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Effect.js:8151:9)
+(fail) an unchanged manifest update emits no revision event [26.99ms]
+
+ 0 pass
+ 21 filtered out
+ 1 fail
+ 2 expect() calls
+Ran 1 test across 1 file. [239.00ms]

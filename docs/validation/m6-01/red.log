@@ -1,0 +1,21 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-01.test.ts:
+13 |   await using directory = await tmpdir()
+14 |   const filename = path.join(directory.path, "ftc-project.json")
+15 |   await fs.writeFile(filename, JSON.stringify(initial))
+16 |   const moduleURL = new URL("../../../src/ftc/configuration/manifest.ts", import.meta.url)
+17 |   const owner = (await Bun.file(moduleURL).exists()) ? await import("../../../src/ftc/configuration/manifest") : undefined
+18 |   expect(owner?.make).toBeFunction()
+                           ^
+error: expect(received).toBeFunction()
+
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-01.test.ts:18:23)
+(fail) stale manifest update preserves external bytes [1.82ms]
+
+ 0 pass
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [108.00ms]

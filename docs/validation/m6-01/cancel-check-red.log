@@ -1,0 +1,35 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-01.test.ts:
+405 |     yield* Deferred.await(checking)
+406 |     const cancelling = yield* Effect.forkChild(Fiber.interrupt(pending))
+407 |     yield* Effect.yieldNow
+408 |     yield* Deferred.succeed(release, undefined)
+409 |     yield* Fiber.join(cancelling)
+410 |     expect(yield* Effect.promise(() => fs.readFile(filename, "utf8"))).toBe(beforeBytes)
+                                                                             ^
+error: expect(received).toBe(expected)
+
+- "{"schemaVersion":1,"hardware":[],"managedPathing":"neither"}"
++ "{
++   "schemaVersion": 1,
++   "hardware": [],
++   "managedPathing": "pedro"
++ }
++ "
+
+- Expected  - 1
++ Received  + 6
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-01.test.ts:410:72)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) cancellation during the final filesystem check does not publish staged content [19.34ms]
+
+ 0 pass
+ 20 filtered out
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [237.00ms]

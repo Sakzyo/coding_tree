@@ -1,0 +1,32 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-01.test.ts:
+(pass) stale manifest update preserves external bytes [245.82ms]
+(pass) absent read proposes initialization without writing, explicit initialization survives reopen [33.36ms]
+(pass) concurrent initializer cannot replace external bytes at exclusive publication [18.04ms]
+(pass) external edit during staging is detected before replacement and staging is removed [16.84ms]
+(pass) cancellation after staging preserves the manifest and removes only its staging [17.81ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[],"managedPathing":"neither","credentials":"secret"} [2.61ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[{"id":"hub","approvals":[],"devices":[]}],"managedPathing":"neither"} [2.16ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[{"id":"hub","devices":[{"category":"motor","port":0,"type":"fixture","name":"drive","machinePaths":["/private"]}]}],"managedPathing":"neither"} [1.84ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":0,"hardware":[],"managedPathing":"neither"} [12.63ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[],"managedPathing":["pedro","road-runner"]} [2.71ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[{"id":"hub","devices":[{"category":"motor","port":-1,"type":"fixture","name":"drive"}]}],"managedPathing":"neither"} [2.31ms]
+(pass) unsupported or invalid external content is never replaced {"bytes":"{\"schemaVersion\":2,\"hardware\":[],\"managedPathing\":\"neither\",\"future\":true}","code":"unsupported_schema_version"} [14.72ms]
+(pass) unsupported or invalid external content is never replaced {"bytes":"{\"schemaVersion\":1,\"hardware\":[],\"managedPathing\":\"neither\",\"chats\":[]}","code":"invalid_manifest"} [13.78ms]
+(pass) unsupported or invalid external content is never replaced {"bytes":"malformed json","code":"invalid_manifest"} [5.56ms]
+(pass) revision events report commits and observed external bytes, without unchanged-read duplicates [29.77ms]
+(pass) manifest symlink cannot write outside the project [41.79ms]
+(pass) scope closure rejects retained commands and ends event consumers [5.75ms]
+(pass) canonical facade and serializable manifest preserve shared hardware fields [1.20ms]
+(pass) concurrent updates serialize and only one expected revision can publish [28.92ms]
+(pass) canonical root alias retargeted during staging cannot publish to either project [14.53ms]
+(pass) cancellation during the final filesystem check does not publish staged content [43.54ms]
+(pass) an unchanged manifest update emits no revision event [20.36ms]
+(pass) root relocation cannot make scoped cleanup remove a foreign directory symlink [22.88ms]
+(pass) root relocation cannot make scoped cleanup remove a foreign directory replacement [15.07ms]
+
+ 24 pass
+ 0 fail
+ 67 expect() calls
+Ran 24 tests across 1 file. [1144.00ms]

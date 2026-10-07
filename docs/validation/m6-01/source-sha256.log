@@ -1,0 +1,7 @@
+fc539404fa88c804c18b0881267e6a5ebc31189106d493635e2674dc0238b463  packages/schema/src/ftc-configuration.ts
+842884647c4e38a04525b5f1f9005a5dc5c24de40eb755fd3b49561f6955b1c1  packages/schema/src/index.ts
+e2bbdc282af0b9946307b5886ecfef023f56410a69a6f0a5e42c6454e87f5408  packages/schema/test/ftc-configuration.test.ts
+04159288d908bd0368c6ed3bdd80c12bc27cf1c5d6a5d969cd8d6851b6fded3a  packages/core/src/ftc/configuration.ts
+445dd2b27d95d259c9defbb05c99e5802907cc621b149a5648fe5a998e949421  packages/core/src/ftc/configuration/manifest.ts
+ccb415b4cff827dfdc11a6b7bf8f92cb091f0b7dcb8ae1d0b933d65b88de651e  packages/core/test/ftc/ftc-configuration-and-libraries/m6-01.test.ts
+638b932ad90a1fbfc10ae191b9d4335417845bd6c079ec929bf8a4a4aca9d007  docs/validation/m6-01/finalizer-probe.ts

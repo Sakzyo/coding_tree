@@ -1,0 +1,13 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-configuration.test.ts:
+(pass) canonical manifest decoder rejects additional personal fields {"schemaVersion":1,"hardware":[{"id":"hub-a","devices":[{"category":"motor","port":0,"type":"catalog-type","name":"drive"}]}],"managedPathing":"neither","credentials":"secret"} [1.69ms]
+(pass) canonical manifest decoder rejects additional personal fields {"schemaVersion":1,"hardware":[{"id":"hub-a","devices":[{"category":"motor","port":0,"type":"catalog-type","name":"drive"}],"chat":"personal"}],"managedPathing":"neither"} [1.12ms]
+(pass) canonical manifest decoder rejects additional personal fields {"schemaVersion":1,"hardware":[{"id":"hub-a","devices":[{"category":"motor","port":0,"type":"catalog-type","name":"drive","approval":true}]}],"managedPathing":"neither"} [0.45ms]
+(pass) hardware and proposals serialize without machine-local fields or undefined error keys [1.77ms]
+(pass) public contract identifiers are unique and domain-qualified [5.52ms]
+
+ 5 pass
+ 0 fail
+ 7 expect() calls
+Ran 5 tests across 1 file. [503.00ms]
