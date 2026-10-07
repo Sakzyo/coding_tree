@@ -52,7 +52,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 - [x] [M2-01 — Associate canonical project folders](#m2-01)
 - [x] [M2-02 — Persist separate chat-to-Session membership](#m2-02)
 - [x] [M2-03 — Acquire one atomic project execution lease](#m2-03)
-- [ ] [M2-04 — Submit without admitting a busy chat's draft](#m2-04)
+- [x] [M2-04 — Submit without admitting a busy chat's draft](#m2-04)
 - [ ] [M2-05 — Release ownership after settled stop or completion](#m2-05)
 - [ ] [M2-06 — Expose project API and compose the execution gate](#m2-06)
 
@@ -133,16 +133,18 @@ Verified 2026-10-06: candidate `258054ca9`, reviewed repair `32dbfd69b`; [implem
 
 **Interfaces:** Consumes a Session admission port with existing prompt/retry semantics. Produces `submitPrompt({ chat, prompt }): { kind: 'admitted', receipt } | { kind: 'busy', active }`; receipt is the existing Session admission receipt.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/projects-and-chats/m2-04.test.ts`, add `busy submission does not call admission`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/projects-and-chats/m2-04.test.ts`, add `busy submission does not call admission`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(admittedChatIDs).toEqual([first.chatID]); expect(afterIdleAdmissionCount).toBe(1)
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/projects-and-chats/m2-04.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Reserve before admission, retain same-chat steer/queue semantics, and reject a different busy chat before durable admission. Roll back an unused lease on failure. Preserve resume:false as explicit admit-only admission, never as storage for a rejected draft.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/projects-and-chats/m2-04.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): submit without admitting a busy chat's draft`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/projects-and-chats/m2-04.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Reserve before admission, retain same-chat steer/queue semantics, and reject a different busy chat before durable admission. Roll back an unused lease on failure. Preserve resume:false as explicit admit-only admission, never as storage for a rejected draft.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/projects-and-chats/m2-04.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): submit without admitting a busy chat's draft`.
+
+Verified 2026-10-07 at `960ef135c`: [implementation evidence](../validation/M2-04-implementation.md), [independent review](../validation/M2-04-review.md). Production handoff/settlement remains M2-05/06 work.
 
 <a id="m2-05"></a>
 

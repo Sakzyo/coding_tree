@@ -3,7 +3,7 @@
 Date: 2026-10-07
 Planning baseline: `d7aca195c`
 
-**Implementation progress: 0 / 12 modules complete; 14 / 94 tasks complete.**
+**Implementation progress: 0 / 12 modules complete; 15 / 94 tasks complete.**
 
 These checkboxes track future development, not completion of this planning document. The existing OpenCode foundation is reused, but its presence does not prove that the FTC tasks are done. Both inputs describe unimplemented or unevaluated product work, so every implementation box starts unchecked.
 
@@ -12,7 +12,7 @@ These checkboxes track future development, not completion of this planning docum
 ## Module checklist
 
 - [ ] **M1 — [Desktop workspace](desktop-workspace.md)** — 0 / 14 tasks.
-- [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 3 / 6 tasks.
+- [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 4 / 6 tasks.
 - [ ] **M3 — [Agent and context](agent-and-context.md)** — 2 / 7 tasks.
 - [ ] **M4 — [Environment and compatibility](environment-and-compatibility.md)** — 5 / 7 tasks.
 - [ ] **M5 — [Java development](java-development.md)** — 0 / 8 tasks.
@@ -518,3 +518,17 @@ Meaningful RED→GREEN, affected covering tests and package-local types are requ
 - M2-04 stable candidate committed `960ef135c`; all four source hashes matched. Fresh `/root/m2_04_review` independently reviews complete range from `af062679b`. Final focused **14 pass / 77 assertions**, affected covering **121 pass / 422 assertions**, Schema **7/19**, Core/Schema types and scoped checks pass. Counts remain **14/94**, task unchecked pending review.
 - Ruling: M6-01 owns a narrow atomic conditional manifest adapter instead of expanding shared FileMutation. Publish complete staged bytes atomically, compare expected bytes under module serialization immediately before commit and revalidate canonical paths; initial creation must be exclusive — the existing helper writes in place and cannot fulfill atomic replacement — external writers do not participate in a filesystem compare-and-swap, so the last-check/rename race remains an explicit limitation rather than an invented guarantee. Detection of observed external changes, newer versions and cleanup remain required.
 - Dispatched `/root/m6_01` with its exact prepared brief and this boundary decision. M5-01 remains in final verification; M2-04 in review.
+
+- M5-01 stable candidate committed `9bcb23ce6`; all six source/test/barrel hashes matched. Fresh `/root/m5_01_review` independently reviews full range from `a748fb24f`. Focused **20 pass / 69 assertions**, affected **36/100**, Schema **21/36**, Schema types/lint/format pass. Owner-read disposal regression is RED→GREEN. Latest Core types record only M6 in-flight event typing and will be settled before completion. Task unchecked; counts **14/94**.
+- Shared Schema barrel is serialized: M5-01 commits only FtcJava; after that stable commit the coordinator adds FtcConfiguration for M6-01 verification. M6-01 consumes its own atomic manifest adapter and preserves shared FileMutation unchanged.
+
+- M2-04 **DONE** at `960ef135c`: independent specification/quality review approves with no findings; four frozen hashes matched, Core/Schema types and scoped checks pass. Final focused **14/77**, affected covering **121/422**, Schema **7/19**. Checked exactly task plus five substeps. Counts **15/94 tasks, 0/12 modules**, M2 **4/6**. Production handoff remains M2-05/06.
+- Next M2-05 starts from current reviewed source checkpoint `9bcb23ce6`; prerequisites M2-03/04 are approved. Exclusive projects.ts, projects/gate.ts, canonical ftc-project.ts extension only if necessary, m2-05 tests/evidence. Consumes supplied execution notifications/interruption; no Session runtime, host or sibling state edits. The admission reservation/terminal-generation contract is reconciled before coding.
+
+- Dispatched `/root/m2_05` for the next lease-settlement task. M5-01 reviewer identified current-barrel drift; coordinator confirmed the committed `9bcb23ce6` index hash exactly matches the frozen M5 evidence. Current delta is the deliberately serialized M6 FtcConfiguration export, not an untested M5 change.
+
+- M5-01 independent review approves spec/quality with no Critical/Important findings. Minor (deferred): its initial RED establishes absent scaffolding, and the later dirty-buffer mutation proves regression sensitivity rather than earlier TDD chronology; the evidence report already distinguishes them. Committed barrel hash matches original M5 evidence; final combined Core types are being reconciled.
+- Ruling: M2-05 consumes exact terminal notifications separately for admission and execution claims, retaining accepted admission reservations through their applicable terminal/no-work/rejection/cancel notification. Stops and disposal await bounded handoffs before interruption; real-gate held(lease) validates ownership — an older execution callback cannot establish terminality of a newer admission — M2-06 must implement and prove the domain-owned reservation-to-coordinator adapter (and any needed M3 lifecycle seam), not hide policy in composition or infer it from wake return. Fixture notifications do not complete that composed gate.
+- M6-01 discovered and reproduced scoped-temp cleanup following a retargeted project root into an unrelated directory. Ruling: use same-module staging acquireRelease with observed canonical/device/inode identity checks, and skip cleanup when identity has changed, leaving bounded owned orphan staging — preserving unrelated files takes priority over cleanup after root retargeting — remaining check/remove race is explicitly not an atomic no-follow guarantee. Shared FileMutation stays unchanged; real filesystem RED and subsequent checks are required.
+
+- Next disjoint M7-01 is fixture-ready, base `9bcb23ce6`: exclusive ftc-inference.ts, inference/catalog.ts, models.json, m7-01 tests/evidence. Production profiles/minimum hardware remain unpromoted until M7-08 measurements. Root Schema exports/Git/ledger remain serialized. M2-05 owns projects/lifecycle; M6-01 owns manifest/filesystem adapter; M5-01 awaits settled combined types after its clean review.
