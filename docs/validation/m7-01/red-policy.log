@@ -1,0 +1,470 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ai-access-and-local-inference/m7-01.test.ts:
+49 |   const result = FtcInferenceCatalog.recommendModels({
+50 |     ...input,
+51 |     hostResources: { ...input.hostResources, availableMemoryBytes: 999 },
+52 |   })
+53 |   expect(result.eligible).toEqual([])
+54 |   expect(result.excluded[0]?.reason).toBe("insufficient_memory")
+                                          ^
+error: expect(received).toBe(expected)
+
+Expected: "insufficient_memory"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:54:38)
+(fail) insufficient resources exclude model with a reason [0.23ms]
+55 | })
+56 | 
+57 | test("exact memory boundary includes desktop, JDT, Gradle and concurrent project reservations", () => {
+58 |   const result = FtcInferenceCatalog.recommendModels(input)
+59 |   expect(result.excluded).toEqual([])
+60 |   expect(result.eligible).toHaveLength(1)
+                               ^
+error: expect(received).toHaveLength(expected)
+
+Expected length: 1
+Received length: 0
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:60:27)
+(fail) exact memory boundary includes desktop, JDT, Gradle and concurrent project reservations [1.03ms]
+67 |       ...input.concurrentWork,
+68 |       [component]: { ...input.concurrentWork[component], memoryBytes: 101 },
+69 |     },
+70 |   })
+71 |   expect(result.eligible).toEqual([])
+72 |   expect(result.excluded[0]?.reason).toBe("insufficient_memory")
+                                          ^
+error: expect(received).toBe(expected)
+
+Expected: "insufficient_memory"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:72:38)
+(fail) desktop headroom cannot be omitted from memory accounting [0.07ms]
+67 |       ...input.concurrentWork,
+68 |       [component]: { ...input.concurrentWork[component], memoryBytes: 101 },
+69 |     },
+70 |   })
+71 |   expect(result.eligible).toEqual([])
+72 |   expect(result.excluded[0]?.reason).toBe("insufficient_memory")
+                                          ^
+error: expect(received).toBe(expected)
+
+Expected: "insufficient_memory"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:72:38)
+(fail) jdt headroom cannot be omitted from memory accounting [0.04ms]
+67 |       ...input.concurrentWork,
+68 |       [component]: { ...input.concurrentWork[component], memoryBytes: 101 },
+69 |     },
+70 |   })
+71 |   expect(result.eligible).toEqual([])
+72 |   expect(result.excluded[0]?.reason).toBe("insufficient_memory")
+                                          ^
+error: expect(received).toBe(expected)
+
+Expected: "insufficient_memory"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:72:38)
+(fail) gradle headroom cannot be omitted from memory accounting [0.04ms]
+82 |         { projectID: "other-project", resources: { memoryBytes: 1, gpuMemoryBytes: 0, diskBytes: 0 } },
+83 |       ],
+84 |     },
+85 |   })
+86 |   expect(result.eligible).toEqual([])
+87 |   expect(result.excluded[0]?.reason).toBe("insufficient_memory")
+                                          ^
+error: expect(received).toBe(expected)
+
+Expected: "insufficient_memory"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:87:38)
+(fail) every concurrent project reserves resources [0.07ms]
+91 |   const result = FtcInferenceCatalog.recommendModels({
+92 |     ...input,
+93 |     concurrentWork: { ...input.concurrentWork, gradle: { ...input.concurrentWork.gradle, diskBytes: 401 } },
+94 |   })
+95 |   expect(result.eligible).toEqual([])
+96 |   expect(result.excluded[0]?.reason).toBe("insufficient_disk")
+                                          ^
+error: expect(received).toBe(expected)
+
+Expected: "insufficient_disk"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:96:38)
+(fail) disk requirements reserve workspace disk before a model download [0.07ms]
+104 |   const result = FtcInferenceCatalog.recommendModels({
+105 |     ...input,
+106 |     hostResources: { ...input.hostResources, os: fixture.os, architecture: fixture.architecture, backends: fixture.backends },
+107 |   })
+108 |   expect(result.eligible).toEqual([])
+109 |   expect(result.excluded[0]?.reason).toBe(fixture.want)
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "unsupported_platform"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:109:38)
+(fail) rejects incompatible host facts: {"os":"windows","architecture":"arm64","backends":["cpu"],"want":"unsupported_platform"} [0.05ms]
+104 |   const result = FtcInferenceCatalog.recommendModels({
+105 |     ...input,
+106 |     hostResources: { ...input.hostResources, os: fixture.os, architecture: fixture.architecture, backends: fixture.backends },
+107 |   })
+108 |   expect(result.eligible).toEqual([])
+109 |   expect(result.excluded[0]?.reason).toBe(fixture.want)
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "unsupported_platform"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:109:38)
+(fail) rejects incompatible host facts: {"os":"macos","architecture":"x64","backends":["cpu"],"want":"unsupported_platform"} [0.04ms]
+104 |   const result = FtcInferenceCatalog.recommendModels({
+105 |     ...input,
+106 |     hostResources: { ...input.hostResources, os: fixture.os, architecture: fixture.architecture, backends: fixture.backends },
+107 |   })
+108 |   expect(result.eligible).toEqual([])
+109 |   expect(result.excluded[0]?.reason).toBe(fixture.want)
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "unsupported_backend"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:109:38)
+(fail) rejects incompatible host facts: {"os":"macos","architecture":"arm64","backends":["metal"],"want":"unsupported_backend"} [0.03ms]
+113 |   const result = FtcInferenceCatalog.recommendModels({
+114 |     ...input,
+115 |     concurrentWork: { ...input.concurrentWork, requiredContextTokens: 4097 },
+116 |   })
+117 |   expect(result.eligible).toEqual([])
+118 |   expect(result.excluded[0]?.reason).toBe("insufficient_context")
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "insufficient_context"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:118:38)
+(fail) context requirements cannot silently truncate working history [0.05ms]
+122 |   const result = FtcInferenceCatalog.recommendModels({
+123 |     ...input,
+124 |     concurrentWork: { ...input.concurrentWork, requiredCapabilities: ["structured_tools"] },
+125 |   })
+126 |   expect(result.eligible).toEqual([])
+127 |   expect(result.excluded[0]?.reason).toBe("untested_capability")
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "untested_capability"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:127:38)
+(fail) required structured tools must have profile-specific test evidence [0.05ms]
+135 |   const result = FtcInferenceCatalog.recommendModels({
+136 |     ...input,
+137 |     catalog: { kind: fixture.kind, profiles: [{ ...profile, evaluation: fixture.evaluation }] },
+138 |   })
+139 |   expect(result.eligible).toEqual([])
+140 |   expect(result.excluded[0]?.reason).toBe(fixture.want)
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "unevaluated_profile"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:140:38)
+(fail) catalog provenance fails closed: {"evaluation":{"status":"unevaluated"},"kind":"synthetic","want":"unevaluated_profile"} [0.06ms]
+135 |   const result = FtcInferenceCatalog.recommendModels({
+136 |     ...input,
+137 |     catalog: { kind: fixture.kind, profiles: [{ ...profile, evaluation: fixture.evaluation }] },
+138 |   })
+139 |   expect(result.eligible).toEqual([])
+140 |   expect(result.excluded[0]?.reason).toBe(fixture.want)
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "evaluation_kind"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:140:38)
+(fail) catalog provenance fails closed: {"evaluation":{"status":"evaluated","kind":"synthetic","evidence":["fixture-only"]},"kind":"production","want":"evaluation_kind"} [0.03ms]
+135 |   const result = FtcInferenceCatalog.recommendModels({
+136 |     ...input,
+137 |     catalog: { kind: fixture.kind, profiles: [{ ...profile, evaluation: fixture.evaluation }] },
+138 |   })
+139 |   expect(result.eligible).toEqual([])
+140 |   expect(result.excluded[0]?.reason).toBe(fixture.want)
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "evaluation_kind"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:140:38)
+(fail) catalog provenance fails closed: {"evaluation":{"status":"evaluated","kind":"platform","evidence":["fixture-only"]},"kind":"synthetic","want":"evaluation_kind"} [0.03ms]
+146 |   { ...input, concurrentWork: { ...input.concurrentWork, desktop: undefined } },
+147 |   { ...input, concurrentWork: { ...input.concurrentWork, requiredContextTokens: 0 } },
+148 | ])("invalid resource facts cannot produce a recommendation: %j", (fixture) => {
+149 |   const result = FtcInferenceCatalog.recommendModels(fixture)
+150 |   expect(result.eligible).toEqual([])
+151 |   expect(result.excluded[0]?.reason).toBe("invalid_input")
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "invalid_input"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:151:38)
+(fail) invalid resource facts cannot produce a recommendation: {"hostResources":{"os":"macos","architecture":"arm64","availableMemoryBytes":-1,"availableDiskBytes":500,"backends":["cpu"]},"concurrentWork":{"desktop":{"memoryBytes":100,"gpuMemoryBytes":0,"diskBytes":0},"jdt":{"memoryBytes":100,"gpuMemoryBytes":0,"diskBytes":0},"gradle":{"memoryBytes":100,"gpuMemoryBytes":0,"diskBytes":0},"projects":[{"projectID":"fixture-project","resources":{"memoryBytes":100,"gpuMemoryBytes":0,"diskBytes":0}}],"requiredContextTokens":4096,"requiredCapabilities":["english"]},"catalog":{"kind":"synthetic","profiles":[{"id":"synthetic-cpu","runtime":{"revision":"fixture-runtime-1","source":"https://example.invalid/runtime","sha256":"1111111111111111111111111111111111111111111111111111111111111111","license":"fixture-license"},"model":{"revision":"fixture-model-1","source":"https://example.invalid/model","sha256":"2222222222222222222222222222222222222222222222222222222222222222","license":"fixture-license"},"quantization":"fixture-q4","template":"fixture-template","os":"macos","architecture":"arm64","backend":"cpu","contextTokens":4096,"resources":{"memoryBytes":600,"gpuMemoryBytes":0,"diskBytes":100},"testedCapabilities":["english"],"evaluation":{"status":"evaluated","kind":"synthetic","evidence":["fixture-only"]}}]}} [0.05ms]
+146 |   { ...input, concurrentWork: { ...input.concurrentWork, desktop: undefined } },
+147 |   { ...input, concurrentWork: { ...input.concurrentWork, requiredContextTokens: 0 } },
+148 | ])("invalid resource facts cannot produce a recommendation: %j", (fixture) => {
+149 |   const result = FtcInferenceCatalog.recommendModels(fixture)
+150 |   expect(result.eligible).toEqual([])
+151 |   expect(result.excluded[0]?.reason).toBe("invalid_input")
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "invalid_input"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:151:38)
+(fail) invalid resource facts cannot produce a recommendation: {"hostResources":{"os":"macos","architecture":"arm64","availableMemoryBytes":null,"availableDiskBytes":500,"backends":["cpu"]},"concurrentWork":{"desktop":{"memoryBytes":100,"gpuMemoryBytes":0,"diskBytes":0},"jdt":{"memoryBytes":100,"gpuMemoryBytes":0,"diskBytes":0},"gradle":{"memoryBytes":100,"gpuMemoryBytes":0,"diskBytes":0},"projects":[{"projectID":"fixture-project","resources":{"memoryBytes":100,"gpuMemoryBytes":0,"diskBytes":0}}],"requiredContextTokens":4096,"requiredCapabilities":["english"]},"catalog":{"kind":"synthetic","profiles":[{"id":"synthetic-cpu","runtime":{"revision":"fixture-runtime-1","source":"https://example.invalid/runtime","sha256":"1111111111111111111111111111111111111111111111111111111111111111","license":"fixture-license"},"model":{"revision":"fixture-model-1","source":"https://example.invalid/model","sha256":"2222222222222222222222222222222222222222222222222222222222222222","license":"fixture-license"},"quantization":"fixture-q4","template":"fixture-template","os":"macos","architecture":"arm64","backend":"cpu","contextTokens":4096,"resources":{"memoryBytes":600,"gpuMemoryBytes":0,"diskBytes":100},"testedCapabilities":["english"],"evaluation":{"status":"evaluated","kind":"synthetic","evidence":["fixture-only"]}}]}} [0.03ms]
+146 |   { ...input, concurrentWork: { ...input.concurrentWork, desktop: undefined } },
+147 |   { ...input, concurrentWork: { ...input.concurrentWork, requiredContextTokens: 0 } },
+148 | ])("invalid resource facts cannot produce a recommendation: %j", (fixture) => {
+149 |   const result = FtcInferenceCatalog.recommendModels(fixture)
+150 |   expect(result.eligible).toEqual([])
+151 |   expect(result.excluded[0]?.reason).toBe("invalid_input")
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "invalid_input"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:151:38)
+(fail) invalid resource facts cannot produce a recommendation: {"hostResources":{"os":"macos","architecture":"arm64","availableMemoryBytes":1000,"availableDiskBytes":500,"backends":["cpu"]},"concurrentWork":{"jdt":{"memoryBytes":100,"gpuMemoryBytes":0,"diskBytes":0},"gradle":{"memoryBytes":100,"gpuMemoryBytes":0,"diskBytes":0},"projects":[{"projectID":"fixture-project","resources":{"memoryBytes":100,"gpuMemoryBytes":0,"diskBytes":0}}],"requiredContextTokens":4096,"requiredCapabilities":["english"]},"catalog":{"kind":"synthetic","profiles":[{"id":"synthetic-cpu","runtime":{"revision":"fixture-runtime-1","source":"https://example.invalid/runtime","sha256":"1111111111111111111111111111111111111111111111111111111111111111","license":"fixture-license"},"model":{"revision":"fixture-model-1","source":"https://example.invalid/model","sha256":"2222222222222222222222222222222222222222222222222222222222222222","license":"fixture-license"},"quantization":"fixture-q4","template":"fixture-template","os":"macos","architecture":"arm64","backend":"cpu","contextTokens":4096,"resources":{"memoryBytes":600,"gpuMemoryBytes":0,"diskBytes":100},"testedCapabilities":["english"],"evaluation":{"status":"evaluated","kind":"synthetic","evidence":["fixture-only"]}}]}} [0.03ms]
+146 |   { ...input, concurrentWork: { ...input.concurrentWork, desktop: undefined } },
+147 |   { ...input, concurrentWork: { ...input.concurrentWork, requiredContextTokens: 0 } },
+148 | ])("invalid resource facts cannot produce a recommendation: %j", (fixture) => {
+149 |   const result = FtcInferenceCatalog.recommendModels(fixture)
+150 |   expect(result.eligible).toEqual([])
+151 |   expect(result.excluded[0]?.reason).toBe("invalid_input")
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "invalid_input"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:151:38)
+(fail) invalid resource facts cannot produce a recommendation: {"hostResources":{"os":"macos","architecture":"arm64","availableMemoryBytes":1000,"availableDiskBytes":500,"backends":["cpu"]},"concurrentWork":{"desktop":{"memoryBytes":100,"gpuMemoryBytes":0,"diskBytes":0},"jdt":{"memoryBytes":100,"gpuMemoryBytes":0,"diskBytes":0},"gradle":{"memoryBytes":100,"gpuMemoryBytes":0,"diskBytes":0},"projects":[{"projectID":"fixture-project","resources":{"memoryBytes":100,"gpuMemoryBytes":0,"diskBytes":0}}],"requiredContextTokens":0,"requiredCapabilities":["english"]},"catalog":{"kind":"synthetic","profiles":[{"id":"synthetic-cpu","runtime":{"revision":"fixture-runtime-1","source":"https://example.invalid/runtime","sha256":"1111111111111111111111111111111111111111111111111111111111111111","license":"fixture-license"},"model":{"revision":"fixture-model-1","source":"https://example.invalid/model","sha256":"2222222222222222222222222222222222222222222222222222222222222222","license":"fixture-license"},"quantization":"fixture-q4","template":"fixture-template","os":"macos","architecture":"arm64","backend":"cpu","contextTokens":4096,"resources":{"memoryBytes":600,"gpuMemoryBytes":0,"diskBytes":100},"testedCapabilities":["english"],"evaluation":{"status":"evaluated","kind":"synthetic","evidence":["fixture-only"]}}]}} [0.04ms]
+175 |       gpu: { ...gpuHost.gpu, memory: fixture.memory },
+176 |     },
+177 |     catalog: { ...input.catalog, profiles: [gpuProfile] },
+178 |   })
+179 |   expect(result.eligible).toEqual([])
+180 |   expect(result.excluded[0]?.reason).toBe("insufficient_memory")
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "insufficient_memory"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:180:38)
+(fail) GPU memory accounting respects the memory pool: {"memory":"shared","availableMemoryBytes":999} [0.06ms]
+175 |       gpu: { ...gpuHost.gpu, memory: fixture.memory },
+176 |     },
+177 |     catalog: { ...input.catalog, profiles: [gpuProfile] },
+178 |   })
+179 |   expect(result.eligible).toEqual([])
+180 |   expect(result.excluded[0]?.reason).toBe("insufficient_memory")
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "insufficient_memory"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:180:38)
+(fail) GPU memory accounting respects the memory pool: {"memory":"dedicated","availableMemoryBytes":799} [0.03ms]
+185 |     ...input,
+186 |     hostResources: { ...gpuHost, availableMemoryBytes: 800, gpu: { ...gpuHost.gpu, memory: "dedicated" } },
+187 |     catalog: { ...input.catalog, profiles: [gpuProfile] },
+188 |   })
+189 |   expect(result.excluded).toEqual([])
+190 |   expect(result.eligible).toHaveLength(1)
+                                ^
+error: expect(received).toHaveLength(expected)
+
+Expected length: 1
+Received length: 0
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:190:27)
+(fail) dedicated GPU allocation does not consume host RAM [0.05ms]
+196 |     hostResources: { ...gpuHost, availableMemoryBytes: 2000 },
+197 |     concurrentWork: { ...input.concurrentWork, desktop: { ...input.concurrentWork.desktop, gpuMemoryBytes: 101 } },
+198 |     catalog: { ...input.catalog, profiles: [gpuProfile] },
+199 |   })
+200 |   expect(result.eligible).toEqual([])
+201 |   expect(result.excluded[0]?.reason).toBe("insufficient_gpu_memory")
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "insufficient_gpu_memory"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:201:38)
+(fail) available GPU memory includes concurrent GPU headroom [0.06ms]
+206 |     ...input,
+207 |     hostResources: { ...input.hostResources, backends: ["cpu", "metal"] },
+208 |     catalog: { ...input.catalog, profiles: [gpuProfile] },
+209 |   })
+210 |   expect(result.eligible).toEqual([])
+211 |   expect(result.excluded[0]?.reason).toBe("gpu_unavailable")
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "gpu_unavailable"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:211:38)
+(fail) GPU configuration cannot be eligible without GPU resource facts [0.05ms]
+221 |   { ...profile, resources: { ...profile.resources, gpuMemoryBytes: 1 } },
+222 |   { ...profile, evaluation: { ...profile.evaluation, evidence: [] } },
+223 | ])("malformed catalog metadata fails closed: %j", (candidate) => {
+224 |   const result = FtcInferenceCatalog.recommendModels({ ...input, catalog: { ...input.catalog, profiles: [candidate] } })
+225 |   expect(result.eligible).toEqual([])
+226 |   expect(result.excluded[0]?.reason).toBe("invalid_catalog")
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "invalid_catalog"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:226:38)
+(fail) malformed catalog metadata fails closed: {"id":"synthetic-cpu","runtime":{"revision":"fixture-runtime-1","source":"https://example.invalid/runtime","sha256":"1111111111111111111111111111111111111111111111111111111111111111","license":"fixture-license"},"model":{"revision":"latest","source":"https://example.invalid/model","sha256":"2222222222222222222222222222222222222222222222222222222222222222","license":"fixture-license"},"quantization":"fixture-q4","template":"fixture-template","os":"macos","architecture":"arm64","backend":"cpu","contextTokens":4096,"resources":{"memoryBytes":600,"gpuMemoryBytes":0,"diskBytes":100},"testedCapabilities":["english"],"evaluation":{"status":"evaluated","kind":"synthetic","evidence":["fixture-only"]}} [0.05ms]
+221 |   { ...profile, resources: { ...profile.resources, gpuMemoryBytes: 1 } },
+222 |   { ...profile, evaluation: { ...profile.evaluation, evidence: [] } },
+223 | ])("malformed catalog metadata fails closed: %j", (candidate) => {
+224 |   const result = FtcInferenceCatalog.recommendModels({ ...input, catalog: { ...input.catalog, profiles: [candidate] } })
+225 |   expect(result.eligible).toEqual([])
+226 |   expect(result.excluded[0]?.reason).toBe("invalid_catalog")
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "invalid_catalog"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:226:38)
+(fail) malformed catalog metadata fails closed: {"id":"synthetic-cpu","runtime":{"revision":"fixture-runtime-1","source":"https://example.invalid/runtime","sha256":"1111111111111111111111111111111111111111111111111111111111111111","license":"fixture-license"},"model":{"revision":"latest.release","source":"https://example.invalid/model","sha256":"2222222222222222222222222222222222222222222222222222222222222222","license":"fixture-license"},"quantization":"fixture-q4","template":"fixture-template","os":"macos","architecture":"arm64","backend":"cpu","contextTokens":4096,"resources":{"memoryBytes":600,"gpuMemoryBytes":0,"diskBytes":100},"testedCapabilities":["english"],"evaluation":{"status":"evaluated","kind":"synthetic","evidence":["fixture-only"]}} [0.03ms]
+221 |   { ...profile, resources: { ...profile.resources, gpuMemoryBytes: 1 } },
+222 |   { ...profile, evaluation: { ...profile.evaluation, evidence: [] } },
+223 | ])("malformed catalog metadata fails closed: %j", (candidate) => {
+224 |   const result = FtcInferenceCatalog.recommendModels({ ...input, catalog: { ...input.catalog, profiles: [candidate] } })
+225 |   expect(result.eligible).toEqual([])
+226 |   expect(result.excluded[0]?.reason).toBe("invalid_catalog")
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "invalid_catalog"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:226:38)
+(fail) malformed catalog metadata fails closed: {"id":"synthetic-cpu","runtime":{"revision":"fixture-runtime-1","source":"https://example.invalid/runtime","sha256":"bad-digest","license":"fixture-license"},"model":{"revision":"fixture-model-1","source":"https://example.invalid/model","sha256":"2222222222222222222222222222222222222222222222222222222222222222","license":"fixture-license"},"quantization":"fixture-q4","template":"fixture-template","os":"macos","architecture":"arm64","backend":"cpu","contextTokens":4096,"resources":{"memoryBytes":600,"gpuMemoryBytes":0,"diskBytes":100},"testedCapabilities":["english"],"evaluation":{"status":"evaluated","kind":"synthetic","evidence":["fixture-only"]}} [0.12ms]
+221 |   { ...profile, resources: { ...profile.resources, gpuMemoryBytes: 1 } },
+222 |   { ...profile, evaluation: { ...profile.evaluation, evidence: [] } },
+223 | ])("malformed catalog metadata fails closed: %j", (candidate) => {
+224 |   const result = FtcInferenceCatalog.recommendModels({ ...input, catalog: { ...input.catalog, profiles: [candidate] } })
+225 |   expect(result.eligible).toEqual([])
+226 |   expect(result.excluded[0]?.reason).toBe("invalid_catalog")
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "invalid_catalog"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:226:38)
+(fail) malformed catalog metadata fails closed: {"id":"synthetic-cpu","runtime":{"revision":"fixture-runtime-1","source":"https://example.invalid/runtime","sha256":"1111111111111111111111111111111111111111111111111111111111111111","license":"fixture-license"},"model":{"revision":"fixture-model-1","source":"http://example.invalid/model","sha256":"2222222222222222222222222222222222222222222222222222222222222222","license":"fixture-license"},"quantization":"fixture-q4","template":"fixture-template","os":"macos","architecture":"arm64","backend":"cpu","contextTokens":4096,"resources":{"memoryBytes":600,"gpuMemoryBytes":0,"diskBytes":100},"testedCapabilities":["english"],"evaluation":{"status":"evaluated","kind":"synthetic","evidence":["fixture-only"]}} [0.03ms]
+221 |   { ...profile, resources: { ...profile.resources, gpuMemoryBytes: 1 } },
+222 |   { ...profile, evaluation: { ...profile.evaluation, evidence: [] } },
+223 | ])("malformed catalog metadata fails closed: %j", (candidate) => {
+224 |   const result = FtcInferenceCatalog.recommendModels({ ...input, catalog: { ...input.catalog, profiles: [candidate] } })
+225 |   expect(result.eligible).toEqual([])
+226 |   expect(result.excluded[0]?.reason).toBe("invalid_catalog")
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "invalid_catalog"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:226:38)
+(fail) malformed catalog metadata fails closed: {"id":"synthetic-cpu","runtime":{"revision":"fixture-runtime-1","source":"https://example.invalid/runtime","sha256":"1111111111111111111111111111111111111111111111111111111111111111","license":"fixture-license"},"model":{"revision":"fixture-model-1","source":"https://example.invalid/model","sha256":"2222222222222222222222222222222222222222222222222222222222222222","license":" "},"quantization":"fixture-q4","template":"fixture-template","os":"macos","architecture":"arm64","backend":"cpu","contextTokens":4096,"resources":{"memoryBytes":600,"gpuMemoryBytes":0,"diskBytes":100},"testedCapabilities":["english"],"evaluation":{"status":"evaluated","kind":"synthetic","evidence":["fixture-only"]}} [0.03ms]
+221 |   { ...profile, resources: { ...profile.resources, gpuMemoryBytes: 1 } },
+222 |   { ...profile, evaluation: { ...profile.evaluation, evidence: [] } },
+223 | ])("malformed catalog metadata fails closed: %j", (candidate) => {
+224 |   const result = FtcInferenceCatalog.recommendModels({ ...input, catalog: { ...input.catalog, profiles: [candidate] } })
+225 |   expect(result.eligible).toEqual([])
+226 |   expect(result.excluded[0]?.reason).toBe("invalid_catalog")
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "invalid_catalog"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:226:38)
+(fail) malformed catalog metadata fails closed: {"id":"synthetic-cpu","runtime":{"revision":"fixture-runtime-1","source":"https://example.invalid/runtime","sha256":"1111111111111111111111111111111111111111111111111111111111111111","license":"fixture-license"},"model":{"revision":"fixture-model-1","source":"https://example.invalid/model","sha256":"2222222222222222222222222222222222222222222222222222222222222222","license":"fixture-license"},"quantization":"fixture-q4","template":"","os":"macos","architecture":"arm64","backend":"cpu","contextTokens":4096,"resources":{"memoryBytes":600,"gpuMemoryBytes":0,"diskBytes":100},"testedCapabilities":["english"],"evaluation":{"status":"evaluated","kind":"synthetic","evidence":["fixture-only"]}} [0.04ms]
+221 |   { ...profile, resources: { ...profile.resources, gpuMemoryBytes: 1 } },
+222 |   { ...profile, evaluation: { ...profile.evaluation, evidence: [] } },
+223 | ])("malformed catalog metadata fails closed: %j", (candidate) => {
+224 |   const result = FtcInferenceCatalog.recommendModels({ ...input, catalog: { ...input.catalog, profiles: [candidate] } })
+225 |   expect(result.eligible).toEqual([])
+226 |   expect(result.excluded[0]?.reason).toBe("invalid_catalog")
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "invalid_catalog"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:226:38)
+(fail) malformed catalog metadata fails closed: {"id":"synthetic-cpu","runtime":{"revision":"fixture-runtime-1","source":"https://example.invalid/runtime","sha256":"1111111111111111111111111111111111111111111111111111111111111111","license":"fixture-license"},"model":{"revision":"fixture-model-1","source":"https://example.invalid/model","sha256":"2222222222222222222222222222222222222222222222222222222222222222","license":"fixture-license"},"quantization":"fixture-q4","template":"fixture-template","os":"macos","architecture":"arm64","backend":"cpu","contextTokens":4096,"resources":{"memoryBytes":600,"gpuMemoryBytes":1,"diskBytes":100},"testedCapabilities":["english"],"evaluation":{"status":"evaluated","kind":"synthetic","evidence":["fixture-only"]}} [0.03ms]
+221 |   { ...profile, resources: { ...profile.resources, gpuMemoryBytes: 1 } },
+222 |   { ...profile, evaluation: { ...profile.evaluation, evidence: [] } },
+223 | ])("malformed catalog metadata fails closed: %j", (candidate) => {
+224 |   const result = FtcInferenceCatalog.recommendModels({ ...input, catalog: { ...input.catalog, profiles: [candidate] } })
+225 |   expect(result.eligible).toEqual([])
+226 |   expect(result.excluded[0]?.reason).toBe("invalid_catalog")
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "invalid_catalog"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:226:38)
+(fail) malformed catalog metadata fails closed: {"id":"synthetic-cpu","runtime":{"revision":"fixture-runtime-1","source":"https://example.invalid/runtime","sha256":"1111111111111111111111111111111111111111111111111111111111111111","license":"fixture-license"},"model":{"revision":"fixture-model-1","source":"https://example.invalid/model","sha256":"2222222222222222222222222222222222222222222222222222222222222222","license":"fixture-license"},"quantization":"fixture-q4","template":"fixture-template","os":"macos","architecture":"arm64","backend":"cpu","contextTokens":4096,"resources":{"memoryBytes":600,"gpuMemoryBytes":0,"diskBytes":100},"testedCapabilities":["english"],"evaluation":{"status":"evaluated","kind":"synthetic","evidence":[]}} [0.03ms]
+227 | })
+228 | 
+229 | test("duplicate catalog identities cannot yield ambiguous recommendations", () => {
+230 |   const result = FtcInferenceCatalog.recommendModels({ ...input, catalog: { ...input.catalog, profiles: [profile, profile] } })
+231 |   expect(result.eligible).toEqual([])
+232 |   expect(result.excluded[0]?.reason).toBe("invalid_catalog")
+                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "invalid_catalog"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:232:38)
+(fail) duplicate catalog identities cannot yield ambiguous recommendations [0.05ms]
+
+ 0 pass
+ 33 fail
+ 66 expect() calls
+Ran 33 tests across 1 file. [16.00ms]

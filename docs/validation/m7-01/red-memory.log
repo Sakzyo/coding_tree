@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ai-access-and-local-inference/m7-01.test.ts:
+49 |   const result = FtcInferenceCatalog.recommendModels({
+50 |     ...input,
+51 |     hostResources: { ...input.hostResources, availableMemoryBytes: 999 },
+52 |   })
+53 |   expect(result.eligible).toEqual([])
+54 |   expect(result.excluded[0]?.reason).toBe("insufficient_memory")
+                                          ^
+error: expect(received).toBe(expected)
+
+Expected: "insufficient_memory"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:54:38)
+(fail) insufficient resources exclude model with a reason [0.22ms]
+
+ 0 pass
+ 1 fail
+ 2 expect() calls
+Ran 1 test across 1 file. [11.00ms]

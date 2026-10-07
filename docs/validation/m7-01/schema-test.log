@@ -1,0 +1,11 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-inference.test.ts:
+(pass) optional GPU facts and exclusion details omit undefined encoded keys [16.57ms]
+(pass) unknown resource facts cannot be represented as known zero budgets [0.74ms]
+(pass) public inference schemas have unique domain identifiers [0.13ms]
+
+ 3 pass
+ 0 fail
+ 6 expect() calls
+Ran 3 tests across 1 file. [157.00ms]

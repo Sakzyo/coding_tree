@@ -1,0 +1,19 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-inference.test.ts:
+(pass) root inference export preserves canonical Schema identity [1.64ms]
+(pass) optional GPU facts and exclusion details omit undefined encoded keys [5.29ms]
+(pass) unknown resource facts cannot be represented as known zero budgets [1.44ms]
+(pass) public inference schemas have unique domain identifiers [0.11ms]
+
+test/contract-hygiene.test.ts:
+(pass) contract hygiene > optional properties preserve transformations and omit undefined while encoding [0.59ms]
+(pass) contract hygiene > todo status and priority preserve arbitrary strings [0.07ms]
+(pass) contract hygiene > current ID constructors expose create [6.29ms]
+(pass) contract hygiene > reusable public identifiers are stable and unique [0.14ms]
+(pass) contract hygiene > current source avoids Any and mutable contract wrappers [14.91ms]
+
+ 9 pass
+ 0 fail
+ 18 expect() calls
+Ran 9 tests across 2 files. [334.00ms]

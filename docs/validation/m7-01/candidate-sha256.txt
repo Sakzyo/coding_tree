@@ -1,0 +1,6 @@
+f3233bd0c40a4d47f387da03cdd3d6242decfe4c825a092ee3f1aaae0dba2c0b  packages/schema/src/index.ts
+f5314080899d7b7baa1c42b1fab8d7d34f0fe5850d6303f0613944e25db53684  packages/schema/src/ftc-inference.ts
+2b6b0c831c7516f8d8657618e193cc5f648e993d153398166f2e07eb9c4505f0  packages/schema/test/ftc-inference.test.ts
+bddafca589ef0819b60e44d760b0437127e68d795d5486e9114af77deb458613  packages/core/src/ftc/inference/catalog.ts
+bc2b32994d18c54618f2759a948e455c847f82c3a988c5e17b8d785bec5de7e5  packages/core/resources/ftc/models.json
+7f2373fba93faef65c7a71e272835764c309dced53b70d2a7d05ad476de83f57  packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts

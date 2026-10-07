@@ -1,0 +1,32 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ai-access-and-local-inference/m7-01.test.ts:
+300 | test("overcommitted reservations retain the negative available budget in exclusion details", () => {
+301 |   const result = FtcInferenceCatalog.recommendModels({
+302 |     ...input,
+303 |     hostResources: { ...input.hostResources, availableMemoryBytes: 399 },
+304 |   })
+305 |   expect(result.excluded[0]?.reasons).toEqual([{ code: "insufficient_memory", required: 600, available: -1 }])
+                                            ^
+error: expect(received).toEqual(expected)
+
+  [
+    {
+-     "available": -1,
++     "available": 0,
+      "code": "insufficient_memory",
+      "required": 600,
+    },
+  ]
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts:305:39)
+(fail) overcommitted reservations retain the negative available budget in exclusion details [6.31ms]
+
+ 0 pass
+ 47 filtered out
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [105.00ms]

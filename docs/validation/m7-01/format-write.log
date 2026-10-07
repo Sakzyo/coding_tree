@@ -1,0 +1,3 @@
+src/ftc/inference/catalog.ts 127ms (unchanged)
+test/ftc/ai-access-and-local-inference/m7-01.test.ts 37ms (unchanged)
+../schema/src/ftc-inference.ts 16ms (unchanged)
