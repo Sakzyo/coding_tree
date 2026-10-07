@@ -3,7 +3,7 @@
 Date: 2026-10-07
 Planning baseline: `d7aca195c`
 
-**Implementation progress: 0 / 12 modules complete; 22 / 94 tasks complete.**
+**Implementation progress: 0 / 12 modules complete; 23 / 94 tasks complete.**
 
 These checkboxes track future development, not completion of this planning document. The existing OpenCode foundation is reused, but its presence does not prove that the FTC tasks are done. Both inputs describe unimplemented or unevaluated product work, so every implementation box starts unchecked.
 
@@ -13,7 +13,7 @@ These checkboxes track future development, not completion of this planning docum
 
 - [ ] **M1 — [Desktop workspace](desktop-workspace.md)** — 0 / 14 tasks.
 - [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 5 / 6 tasks.
-- [ ] **M3 — [Agent and context](agent-and-context.md)** — 2 / 7 tasks.
+- [ ] **M3 — [Agent and context](agent-and-context.md)** — 3 / 7 tasks.
 - [ ] **M4 — [Environment and compatibility](environment-and-compatibility.md)** — 5 / 7 tasks.
 - [ ] **M5 — [Java development](java-development.md)** — 2 / 8 tasks.
 - [ ] **M6 — [FTC configuration and libraries](ftc-configuration-and-libraries.md)** — 2 / 6 tasks.
@@ -593,3 +593,6 @@ Meaningful RED→GREEN, affected covering tests and package-local types are requ
 
 - M3-03 fix round **1/5** committed `10c34d122` (repair-only base `7d861ea4c`, intervening checkpoint from reviewed `118a1ac80` is documentation only). Four resource-wait RED failures are repaired; final focused **24/110**, Session covering **18/116**, scoped lint/format/diff pass and both repair hashes match. Same-reviewer scoped re-review marks I1 **ADDRESSED**, no new Critical/Important breakage, specification/quality Approved. Core type gate still records foreign in-flight M2/M6 diagnostics; task remains unchecked until settled Core types, without repeating already-passing suites.
 - Read-only `/root/m12_02_preflight` identifies M12 entry/skip persistence and missing canonical M11 metadata before next dispatch. It owns only its preflight document, no implementation or stores. Actual course/physical/translation acceptance remains separate; missing producer contracts are reconciled before consumer coding.
+
+- M3-03 **DONE**: candidate `118a1ac80`, I1 repair `10c34d122`; independent specification/quality review approves, I1 addressed with no new Critical/Important breakage. Coordinator Core `bun typecheck` exit 0 in `m3-03/fix1-core-types-settled.log`; both current repair hashes match. Focused **24/110**, affected Session **18/116**, canonical Schema **24/66** and scoped checks pass. Checked task plus five substeps; M3 **3/7**. Counts **23/94 tasks, 0/12 modules**. Trusted host policy/event authenticity and real Java/build/UI composition remain named M3-05/07 gates; reviewed M5-02 separately proves its producer's buffer/disk/revision boundary. No robot authority or production integration is credited here.
+- M6-03 stable candidate committed `4013bc15f`, full isolated range from `3812faff8`; all four frozen hashes match. Fresh `/root/m6_03_review` independently checks static inspection/parser/path scope and cleanup. Covering M6 **61/196**, Schema **13/19**, Schema types/lint/format pass; historical Core failures are in-flight M2 fixture diagnostics, with coordinator exit-0 snapshot separately retained. Conservative unsupported syntax remains explicit unknown, not successful Gradle resolution. Task stays unchecked pending review.

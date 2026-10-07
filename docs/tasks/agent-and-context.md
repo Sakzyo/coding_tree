@@ -55,7 +55,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 - [x] [M3-01 — Pin Session admission and continuation invariants](#m3-01)
 - [x] [M3-02 — Apply an injected gate at every Session execution entry](#m3-02)
-- [ ] [M3-03 — Implement plan-first and direct code-change policy](#m3-03)
+- [x] [M3-03 — Implement plan-first and direct code-change policy](#m3-03)
 - [ ] [M3-04 — Assemble versioned FTC context from public sources](#m3-04)
 - [ ] [M3-05 — Expose structured FTC tools with honest evidence](#m3-05)
 - [ ] [M3-06 — Bind real model and domain adapters in the host](#m3-06)
@@ -119,16 +119,18 @@ Verified 2026-10-07, reviewed repair `1aa520e9e`; [implementation evidence](../v
 
 **Interfaces:** Produces `proposeCodeChange({ sessionID, mode, proposal }): CodePlan | EditResult` and `approveCodePlan({ trustedUserEvent, planID, expectedRevisions }): EditResult`; consumes an edit-application port.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/agent-and-context/m3-03.test.ts`, add `plan-first waits and stale approval cannot edit`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/agent-and-context/m3-03.test.ts`, add `plan-first waits and stale approval cannot edit`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(writesBeforeApproval).toBe(0); expect(staleApproval.code).toBe('revision_conflict'); expect(directResult.applied).toBe(true)
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/agent-and-context/m3-03.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Present intended edits before plan approval; direct work may perform requested edits/local builds. Preserve the actual proposal/revisions and scope on approval. Neither mode grants deployment/start/tuning rights; missing robot facts become questions or explicit limits.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/agent-and-context/m3-03.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): implement plan-first and direct code-change policy`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/agent-and-context/m3-03.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Present intended edits before plan approval; direct work may perform requested edits/local builds. Preserve the actual proposal/revisions and scope on approval. Neither mode grants deployment/start/tuning rights; missing robot facts become questions or explicit limits.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/agent-and-context/m3-03.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): implement plan-first and direct code-change policy`.
+
+Verified 2026-10-07: candidate `118a1ac80`, scoped I1 repair `10c34d122`; [implementation evidence](../validation/M3-03-implementation.md), [independent review](../validation/M3-03-review.md). Host approval/policy, real edit/build composition and platform/robot gates remain separate.
 
 <a id="m3-04"></a>
 
