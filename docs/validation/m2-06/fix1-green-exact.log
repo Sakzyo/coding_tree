@@ -1,0 +1,13 @@
+bun test v1.3.14 (0d9b296a)
+
+test/session-tracked-wake.test.ts:
+(pass) wake during cancelled fresh-callback cleanup starts its own successor [5.06ms]
+
+test/ftc-integration/m2-06.test.ts:
+(pass) post-stop durable admission during cancelled callback cleanup receives its own drain [87.27ms]
+
+ 2 pass
+ 19 filtered out
+ 0 fail
+ 8 expect() calls
+Ran 2 tests across 2 files. [330.00ms]

@@ -468,6 +468,70 @@ test("owner event failure cannot leak or release a newer reservation", async () 
   )
 })
 
+test("post-stop durable admission during cancelled callback cleanup receives its own drain", async () => {
+  await using tmp = await tmpdir()
+  await run(
+    Effect.gen(function* () {
+      const closing = yield* Deferred.make<void>()
+      const release = yield* Deferred.make<void>()
+      const notifying = yield* Deferred.make<void>()
+      const finishNotify = yield* Deferred.make<void>()
+      const settled = yield* Deferred.make<void>()
+      let changes = 0
+      let turns = 0
+      const f = yield* fixture(tmp.path, {
+        changed: () =>
+          Effect.suspend(() =>
+            ++changes === 3
+              ? Deferred.succeed(closing, undefined).pipe(Effect.andThen(Deferred.await(release)))
+              : Effect.void,
+          ),
+        model: {
+          prepare: () => Effect.die("No transport"),
+          generate: () => Effect.die("No generation shortcut"),
+          stream: (() => {
+            turns++
+            return Stream.fromIterable<LLMEvent>([
+              LLMEvent.stepStart({ index: 0 }),
+              LLMEvent.textStart({ id: "text" }),
+              LLMEvent.textDelta({ id: "text", text: "controlled response" }),
+              LLMEvent.textEnd({ id: "text" }),
+              LLMEvent.stepFinish({ index: 0, reason: "stop" }),
+              LLMEvent.finish({ reason: "stop" }),
+            ])
+          }) as LLMClientShape["stream"],
+        },
+      })
+      const project = yield* f.projects.openProject({ root: AbsolutePath.make(tmp.path) })
+      const chat = yield* f.projects.createChat(project)
+      yield* f.commands.submitPrompt({ chat, prompt: Prompt.make({ text: "before stop" }) })
+      yield* Deferred.await(closing)
+      yield* f.runtime.execution.wakeWithSettlement(chat.sessionID, () =>
+        Deferred.succeed(notifying, undefined).pipe(Effect.andThen(Deferred.await(finishNotify))),
+      )
+      // Invoke the exact coordinator interruption targeted by the facade, without racing its membership lookup.
+      const stopping = yield* f.runtime.execution.interrupt(chat.sessionID).pipe(Effect.forkChild)
+      yield* Effect.yieldNow
+      yield* Deferred.succeed(release, undefined)
+      yield* Deferred.await(notifying)
+      const admitted = yield* f.commands.submitPrompt({ chat, prompt: Prompt.make({ text: "after stop" }) })
+      expect(admitted.kind).toBe("admitted")
+      yield* f.runtime.execution.wakeWithSettlement(chat.sessionID, () =>
+        Deferred.succeed(settled, undefined).pipe(Effect.asVoid),
+      )
+      yield* Deferred.succeed(finishNotify, undefined)
+      yield* Deferred.await(settled)
+      yield* Fiber.join(stopping)
+      yield* f.runtime.execution.interrupt(chat.sessionID)
+      expect(turns).toBe(2)
+      if (admitted.kind === "admitted")
+        expect((yield* SessionInput.find(f.database.db, admitted.receipt.id))?.promotedSeq).toBeDefined()
+      expect(JSON.stringify(yield* f.session.messages({ sessionID: chat.sessionID }))).toContain("after stop")
+      expect((yield* f.commands.active(project)).active).toBeUndefined()
+    }),
+  )
+})
+
 test("old completion cannot unlock a newer admission paused before durable write", async () => {
   await using tmp = await tmpdir()
   await run(

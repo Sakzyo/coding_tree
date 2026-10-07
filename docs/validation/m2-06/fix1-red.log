@@ -1,0 +1,32 @@
+bun test v1.3.14 (0d9b296a)
+
+test/session-tracked-wake.test.ts:
+190 |       )
+191 |       yield* Deferred.succeed(finishNotify, undefined)
+192 |       yield* Deferred.await(settled)
+193 |       yield* Fiber.join(stopping)
+194 |       yield* coordinator.interrupt("a")
+195 |       expect(drains).toBe(2)
+                           ^
+error: expect(received).toBe(expected)
+
+Expected: 2
+Received: 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/session-tracked-wake.test.ts:195:22)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:656:13)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) wake during cancelled fresh-callback cleanup starts its own successor [4.10ms]
+
+test/ftc-integration/m2-06.test.ts:
+(pass) post-stop durable admission during cancelled callback cleanup receives its own drain [68.40ms]
+
+ 1 pass
+ 19 filtered out
+ 1 fail
+ 6 expect() calls
+Ran 2 tests across 2 files. [340.00ms]

@@ -158,6 +158,59 @@ test("shutdown settles current and never-started fresh successor plus late regis
     }),
   ))
 
+test("wake during cancelled fresh-callback cleanup starts its own successor", () =>
+  run(
+    Effect.gen(function* () {
+      const closing = yield* Deferred.make<void>()
+      const release = yield* Deferred.make<void>()
+      const notifying = yield* Deferred.make<void>()
+      const finishNotify = yield* Deferred.make<void>()
+      const settled = yield* Deferred.make<void>()
+      const notices: number[] = []
+      let drains = 0
+      const coordinator = yield* SessionRunCoordinator.make<string, never>({
+        acquire: () =>
+          Effect.addFinalizer(() => Deferred.succeed(closing, undefined).pipe(Effect.andThen(Deferred.await(release)))),
+        drain: () =>
+          Effect.sync(() => {
+            drains++
+          }),
+      })
+      yield* coordinator.wakeWithSettlement("a", () =>
+        Effect.sync(() => {
+          notices.push(1)
+        }),
+      )
+      yield* Deferred.await(closing)
+      yield* coordinator.wakeWithSettlement("a", () =>
+        Deferred.succeed(notifying, undefined).pipe(
+          Effect.andThen(Deferred.await(finishNotify)),
+          Effect.andThen(
+            Effect.sync(() => {
+              notices.push(2)
+            }),
+          ),
+        ),
+      )
+      const stopping = yield* coordinator.interrupt("a").pipe(Effect.forkChild)
+      yield* Effect.yieldNow
+      yield* Deferred.succeed(release, undefined)
+      yield* Deferred.await(notifying)
+      yield* coordinator.wakeWithSettlement("a", () =>
+        Effect.sync(() => {
+          notices.push(3)
+        }).pipe(Effect.andThen(Deferred.succeed(settled, undefined)), Effect.asVoid),
+      )
+      yield* Deferred.succeed(finishNotify, undefined)
+      yield* Deferred.await(settled)
+      yield* Fiber.join(stopping)
+      yield* coordinator.interrupt("a")
+      expect(drains).toBe(2)
+      expect(notices).toEqual([1, 2, 3])
+      expect((yield* coordinator.active).size).toBe(0)
+    }),
+  ))
+
 test.each(["failure", "interrupt"] as const)("%s successor inherits callbacks until the new drain settles", (mode) =>
   run(
     Effect.gen(function* () {

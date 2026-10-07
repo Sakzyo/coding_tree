@@ -1,6 +1,6 @@
-export * as SessionRunCoordinator from "./run-coordinator"
+export * as SessionRunCoordinator from "./fix1-benchmark-base-coordinator"
 
-import { Deferred, Effect, Exit, Fiber, FiberSet, Scope } from "effect"
+import { Deferred, Effect, Exit, Fiber, FiberSet, Scope } from "../../../packages/core/node_modules/effect/dist/index.js"
 
 /** Serializes execution for each key while allowing different keys to run concurrently. */
 export interface Coordinator<Key, E> {
@@ -110,26 +110,31 @@ export const make = <Key, E>(options: {
         // Keep the entry visible while asynchronous release runs. New wakes become a
         // fresh chain after release; they cannot resurrect this closed scope.
         entry.closing = true
-        const finish: Effect.Effect<void> = Effect.suspend(() => {
-          if (!closed && entry.pendingWake) {
-            const successor = makeEntry(undefined, entry.freshNotifications.splice(0))
-            // Explicit undefined uses makeEntry's fresh ownership default.
-            active.set(key, successor)
-            start(key, successor, false, true)
-            Deferred.doneUnsafe(entry.done, exit)
-            return Effect.void
-          }
-          if (entry.freshNotifications.length > 0) {
-            // Cancelled callbacks may await. Detach this batch so new registrations
-            // remain eligible for a successor when notification finishes.
-            return notify(entry.freshNotifications.splice(0)).pipe(Effect.andThen(finish))
-          }
-          active.delete(key)
-          Deferred.doneUnsafe(entry.done, exit)
-          return Effect.void
-        })
         return (entry.ownership ? Scope.close(entry.ownership.scope, exit) : Effect.void).pipe(
-          Effect.ensuring(notify(entry.notifications).pipe(Effect.andThen(finish))),
+          Effect.ensuring(
+            notify(entry.notifications).pipe(
+              Effect.andThen(
+                Effect.suspend(() => {
+                  if (!closed && entry.pendingWake) {
+                    const successor = makeEntry(undefined, entry.freshNotifications)
+                    // Explicit undefined uses makeEntry's fresh ownership default.
+                    active.set(key, successor)
+                    start(key, successor, false, true)
+                    Deferred.doneUnsafe(entry.done, exit)
+                    return Effect.void
+                  }
+                  return notify(entry.freshNotifications).pipe(
+                    Effect.andThen(
+                      Effect.sync(() => {
+                        active.delete(key)
+                        Deferred.doneUnsafe(entry.done, exit)
+                      }),
+                    ),
+                  )
+                }),
+              ),
+            ),
+          ),
         )
       })
 
