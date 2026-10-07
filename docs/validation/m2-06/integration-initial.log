@@ -1,0 +1,85 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-integration/m2-06.test.ts:
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @opencode/v2/storage/Database (defined at /Users/dylanxu/coding_tree/packages/core/src/database/database.ts:20:38)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at processTicksAndRejections (native:7:39)
+(fail) composed duplicate windows cannot bypass gate [143.79ms]
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @opencode/v2/storage/Database (defined at /Users/dylanxu/coding_tree/packages/core/src/database/database.ts:20:38)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at processTicksAndRejections (native:7:39)
+(fail) composed Core guard refuses raw managed admission and JSON proof before writing [28.85ms]
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @opencode/v2/storage/Database (defined at /Users/dylanxu/coding_tree/packages/core/src/database/database.ts:20:38)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at processTicksAndRejections (native:7:39)
+(fail) exact retries preserve durable identity and admit-only releases its own reservation [35.22ms]
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @opencode/v2/storage/Database (defined at /Users/dylanxu/coding_tree/packages/core/src/database/database.ts:20:38)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at processTicksAndRejections (native:7:39)
+(fail) disabled host preserves associations and rejects every managed execution entrance [31.87ms]
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @opencode/v2/storage/Database (defined at /Users/dylanxu/coding_tree/packages/core/src/database/database.ts:20:38)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at processTicksAndRejections (native:7:39)
+(fail) unknown legacy idle refuses new activation and never associates the root [32.13ms]
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: @opencode/v2/storage/Database (defined at /Users/dylanxu/coding_tree/packages/core/src/database/database.ts:20:38)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at processTicksAndRejections (native:7:39)
+(fail) database reopen retains separate chats and pending inputs without automatic execution [43.44ms]
+
+ 0 pass
+ 6 fail
+Ran 6 tests across 1 file. [1459.00ms]

@@ -1,3 +1,4 @@
+import { FtcProject } from "@opencode-ai/schema/ftc-project"
 import { SessionMessage } from "@opencode-ai/schema/session-message"
 import { SessionInput } from "@opencode-ai/schema/session-input"
 import { PromptInput } from "@opencode-ai/schema/prompt-input"
@@ -211,7 +212,7 @@ export const makeSessionGroup = <I extends HttpApiMiddleware.AnyId, S>(sessionLo
           resume: Schema.Boolean.pipe(Schema.optional),
         }),
         success: Schema.Struct({ data: SessionInput.Admitted }),
-        error: [ConflictError, SessionNotFoundError],
+        error: [ConflictError, SessionNotFoundError, FtcProject.ExecutionUnavailable],
       })
         .middleware(sessionLocationMiddleware)
         .annotateMerge(
@@ -345,7 +346,7 @@ export const makeSessionGroup = <I extends HttpApiMiddleware.AnyId, S>(sessionLo
       HttpApiEndpoint.post("session.interrupt", "/api/session/:sessionID/interrupt", {
         params: { sessionID: Session.ID },
         success: HttpApiSchema.NoContent,
-        error: SessionNotFoundError,
+        error: [SessionNotFoundError, FtcProject.ExecutionUnavailable],
       })
         .middleware(sessionLocationMiddleware)
         .annotateMerge(

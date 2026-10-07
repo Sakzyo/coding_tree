@@ -1,5 +1,7 @@
 import { SessionV2 } from "@opencode-ai/core/session"
-import { DateTime, Effect, Stream } from "effect"
+import { FtcComposition } from "@opencode-ai/core/ftc/composition"
+import { FtcProjects } from "@opencode-ai/core/ftc/projects"
+import { DateTime, Effect, Option, Stream } from "effect"
 import { HttpApiBuilder, HttpApiSchema } from "effect/unstable/httpapi"
 import { Api } from "../api"
 import { SessionsCursor } from "@opencode-ai/protocol/groups/session"
@@ -19,6 +21,7 @@ const DefaultSessionHistoryLimit = 50
 export const SessionHandler = HttpApiBuilder.group(Api, "server.session", (handlers) =>
   Effect.gen(function* () {
     const session = yield* SessionV2.Service
+    const ftc = yield* Effect.serviceOption(FtcComposition.Service)
 
     return handlers
       .handle(
@@ -365,7 +368,24 @@ export const SessionHandler = HttpApiBuilder.group(Api, "server.session", (handl
       .handle(
         "session.interrupt",
         Effect.fn(function* (ctx) {
-          yield* session.interrupt(ctx.params.sessionID)
+          if (Option.isNone(ftc)) yield* session.interrupt(ctx.params.sessionID)
+          if (Option.isSome(ftc))
+            yield* ftc.value
+              .bind(session)
+              .stopRaw(ctx.params.sessionID)
+              .pipe(
+                Effect.mapError((error) =>
+                  error instanceof SessionV2.NotFoundError
+                    ? new SessionNotFoundError({
+                        sessionID: error.sessionID,
+                        message: `Session not found: ${error.sessionID}`,
+                      })
+                    : new FtcProjects.ExecutionUnavailable({
+                        code: "membership_unavailable",
+                        sessionID: ctx.params.sessionID,
+                      }),
+                ),
+              )
           return HttpApiSchema.NoContent.make()
         }),
       )

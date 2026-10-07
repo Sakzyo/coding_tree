@@ -1,0 +1,9 @@
+$ tsgo --noEmit
+test/ftc/learning-and-progress/m12-02.test.ts(154,16): error TS2540: Cannot assign to 'lookup' because it is a read-only property.
+test/ftc/learning-and-progress/m12-02.test.ts(154,26): error TS7006: Parameter 'requested' implicitly has an 'any' type.
+test/ftc/learning-and-progress/m12-02.test.ts(206,70): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'string' is not assignable to parameter of type '"attempt_conflict" | "course_lookup_failed" | "course_not_found" | "course_snapshot_changed" | "course_unavailable" | "invalid_course" | "invalid_input" | "invalid_lessons" | ... 8 more ... | false'.
+test/ftc/learning-and-progress/m12-02.test.ts(247,16): error TS2540: Cannot assign to 'lookup' because it is a read-only property.
+test/ftc/learning-and-progress/m12-02.test.ts(269,16): error TS2540: Cannot assign to 'lookup' because it is a read-only property.
+test/ftc/learning-and-progress/m12-02.test.ts(270,8): error TS2540: Cannot assign to 'lessons' because it is a read-only property.

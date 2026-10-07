@@ -1,0 +1,2 @@
+$ tsgo --noEmit
+test/server/httpapi-ftc-project.test.ts(17,25): error TS2339: Property 'unsafeMake' does not exist on type 'typeof import("/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Context")'.

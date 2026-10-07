@@ -21,17 +21,51 @@ export type InvalidRequestError = {
 export const isInvalidRequestError = (value: unknown): value is InvalidRequestError =>
   typeof value === "object" && value !== null && "_tag" in value && value["_tag"] === "InvalidRequestError"
 
-export type InvalidCursorError = { readonly _tag: "InvalidCursorError"; readonly message: string }
-export const isInvalidCursorError = (value: unknown): value is InvalidCursorError =>
-  typeof value === "object" && value !== null && "_tag" in value && value["_tag"] === "InvalidCursorError"
-
-export type SessionNotFoundError = {
-  readonly _tag: "SessionNotFoundError"
-  readonly sessionID: string
-  readonly message: string
+export type FtcProjectApiError = {
+  readonly _tag: "FtcProjectApiError"
+  readonly reason:
+    | {
+        readonly code:
+          | "folder_unavailable"
+          | "invalid_folder_identity"
+          | "association_store_failed"
+          | "activation_unavailable"
+        readonly root?: string
+        readonly detail?: string
+        readonly recovery: "select_accessible_folder" | "retry"
+      }
+    | {
+        readonly code:
+          | "project_not_found"
+          | "project_changed"
+          | "session_not_found"
+          | "session_mismatch"
+          | "session_access_failed"
+          | "chat_session_conflict"
+          | "chat_store_failed"
+        readonly projectID: string
+        readonly sessionID?: string
+        readonly detail?: string
+        readonly recovery: "reopen_project" | "retry"
+      }
+    | {
+        readonly code: "invalid_chat" | "chat_not_found" | "invalid_project" | "gate_closed" | "execution_disabled"
+        readonly projectID?: string
+        readonly recovery: "reopen_project" | "retry"
+      }
+    | {
+        readonly _tag: "FtcProjectExecutionUnavailable"
+        readonly code:
+          | "managed_submit_required"
+          | "execution_disabled"
+          | "membership_unavailable"
+          | "activation_unavailable"
+          | "legacy_execution_disabled"
+        readonly sessionID?: string
+      }
 }
-export const isSessionNotFoundError = (value: unknown): value is SessionNotFoundError =>
-  typeof value === "object" && value !== null && "_tag" in value && value["_tag"] === "SessionNotFoundError"
+export const isFtcProjectApiError = (value: unknown): value is FtcProjectApiError =>
+  typeof value === "object" && value !== null && "_tag" in value && value["_tag"] === "FtcProjectApiError"
 
 export type ConflictError = {
   readonly _tag: "ConflictError"
@@ -41,6 +75,14 @@ export type ConflictError = {
 export const isConflictError = (value: unknown): value is ConflictError =>
   typeof value === "object" && value !== null && "_tag" in value && value["_tag"] === "ConflictError"
 
+export type SessionNotFoundError = {
+  readonly _tag: "SessionNotFoundError"
+  readonly sessionID: string
+  readonly message: string
+}
+export const isSessionNotFoundError = (value: unknown): value is SessionNotFoundError =>
+  typeof value === "object" && value !== null && "_tag" in value && value["_tag"] === "SessionNotFoundError"
+
 export type ServiceUnavailableError = {
   readonly _tag: "ServiceUnavailableError"
   readonly message: string
@@ -48,6 +90,23 @@ export type ServiceUnavailableError = {
 }
 export const isServiceUnavailableError = (value: unknown): value is ServiceUnavailableError =>
   typeof value === "object" && value !== null && "_tag" in value && value["_tag"] === "ServiceUnavailableError"
+
+export type InvalidCursorError = { readonly _tag: "InvalidCursorError"; readonly message: string }
+export const isInvalidCursorError = (value: unknown): value is InvalidCursorError =>
+  typeof value === "object" && value !== null && "_tag" in value && value["_tag"] === "InvalidCursorError"
+
+export type FtcProjectExecutionUnavailable = {
+  readonly _tag: "FtcProjectExecutionUnavailable"
+  readonly code:
+    | "managed_submit_required"
+    | "execution_disabled"
+    | "membership_unavailable"
+    | "activation_unavailable"
+    | "legacy_execution_disabled"
+  readonly sessionID?: string
+}
+export const isFtcProjectExecutionUnavailable = (value: unknown): value is FtcProjectExecutionUnavailable =>
+  typeof value === "object" && value !== null && "_tag" in value && value["_tag"] === "FtcProjectExecutionUnavailable"
 
 export type MessageNotFoundError = {
   readonly _tag: "MessageNotFoundError"
@@ -102,6 +161,227 @@ export const isProjectCopyError = (value: unknown): value is ProjectCopyError =>
   typeof value === "object" && value !== null && "name" in value && value["name"] === "ProjectCopyError"
 
 export type HealthGetOutput = { readonly healthy: true }
+
+export type FtcProjectsCreateInput = { readonly root: { readonly root: string }["root"] }
+
+export type FtcProjectsCreateOutput = {
+  readonly projectID: string
+  readonly canonicalRoot: string
+  readonly location: {
+    readonly directory: string
+    readonly workspaceID?: string
+    readonly project: { readonly id: string; readonly directory: string }
+  }
+}
+
+export type FtcProjectsOpenInput = { readonly root: { readonly root: string }["root"] }
+
+export type FtcProjectsOpenOutput = {
+  readonly projectID: string
+  readonly canonicalRoot: string
+  readonly location: {
+    readonly directory: string
+    readonly workspaceID?: string
+    readonly project: { readonly id: string; readonly directory: string }
+  }
+}
+
+export type FtcProjectsReadInput = { readonly projectID: { readonly projectID: string }["projectID"] }
+
+export type FtcProjectsReadOutput = {
+  readonly projectID: string
+  readonly canonicalRoot: string
+  readonly location: {
+    readonly directory: string
+    readonly workspaceID?: string
+    readonly project: { readonly id: string; readonly directory: string }
+  }
+}
+
+export type FtcProjectsCreateChatInput = { readonly projectID: { readonly projectID: string }["projectID"] }
+
+export type FtcProjectsCreateChatOutput = {
+  readonly projectID: string
+  readonly chatID: string
+  readonly sessionID: string
+}
+
+export type FtcProjectsListChatsInput = { readonly projectID: { readonly projectID: string }["projectID"] }
+
+export type FtcProjectsListChatsOutput = ReadonlyArray<{
+  readonly projectID: string
+  readonly chatID: string
+  readonly sessionID: string
+}>
+
+export type FtcProjectsReadChatInput = {
+  readonly projectID: { readonly projectID: string; readonly chatID: string; readonly sessionID: string }["projectID"]
+  readonly chatID: { readonly projectID: string; readonly chatID: string; readonly sessionID: string }["chatID"]
+  readonly sessionID: { readonly projectID: string; readonly chatID: string; readonly sessionID: string }["sessionID"]
+}
+
+export type FtcProjectsReadChatOutput = {
+  readonly projectID: string
+  readonly chatID: string
+  readonly sessionID: string
+}
+
+export type FtcProjectsSubmitInput = {
+  readonly chat: {
+    readonly chat: { readonly projectID: string; readonly chatID: string; readonly sessionID: string }
+    readonly prompt: {
+      readonly text: string
+      readonly files?: ReadonlyArray<{
+        readonly uri: string
+        readonly name?: string
+        readonly description?: string
+        readonly source?: { readonly start: number; readonly end: number; readonly text: string }
+      }>
+      readonly agents?: ReadonlyArray<{
+        readonly name: string
+        readonly source?: { readonly start: number; readonly end: number; readonly text: string }
+      }>
+    }
+    readonly id?: string
+    readonly delivery?: "steer" | "queue"
+    readonly resume?: boolean
+  }["chat"]
+  readonly prompt: {
+    readonly chat: { readonly projectID: string; readonly chatID: string; readonly sessionID: string }
+    readonly prompt: {
+      readonly text: string
+      readonly files?: ReadonlyArray<{
+        readonly uri: string
+        readonly name?: string
+        readonly description?: string
+        readonly source?: { readonly start: number; readonly end: number; readonly text: string }
+      }>
+      readonly agents?: ReadonlyArray<{
+        readonly name: string
+        readonly source?: { readonly start: number; readonly end: number; readonly text: string }
+      }>
+    }
+    readonly id?: string
+    readonly delivery?: "steer" | "queue"
+    readonly resume?: boolean
+  }["prompt"]
+  readonly id?: {
+    readonly chat: { readonly projectID: string; readonly chatID: string; readonly sessionID: string }
+    readonly prompt: {
+      readonly text: string
+      readonly files?: ReadonlyArray<{
+        readonly uri: string
+        readonly name?: string
+        readonly description?: string
+        readonly source?: { readonly start: number; readonly end: number; readonly text: string }
+      }>
+      readonly agents?: ReadonlyArray<{
+        readonly name: string
+        readonly source?: { readonly start: number; readonly end: number; readonly text: string }
+      }>
+    }
+    readonly id?: string
+    readonly delivery?: "steer" | "queue"
+    readonly resume?: boolean
+  }["id"]
+  readonly delivery?: {
+    readonly chat: { readonly projectID: string; readonly chatID: string; readonly sessionID: string }
+    readonly prompt: {
+      readonly text: string
+      readonly files?: ReadonlyArray<{
+        readonly uri: string
+        readonly name?: string
+        readonly description?: string
+        readonly source?: { readonly start: number; readonly end: number; readonly text: string }
+      }>
+      readonly agents?: ReadonlyArray<{
+        readonly name: string
+        readonly source?: { readonly start: number; readonly end: number; readonly text: string }
+      }>
+    }
+    readonly id?: string
+    readonly delivery?: "steer" | "queue"
+    readonly resume?: boolean
+  }["delivery"]
+  readonly resume?: {
+    readonly chat: { readonly projectID: string; readonly chatID: string; readonly sessionID: string }
+    readonly prompt: {
+      readonly text: string
+      readonly files?: ReadonlyArray<{
+        readonly uri: string
+        readonly name?: string
+        readonly description?: string
+        readonly source?: { readonly start: number; readonly end: number; readonly text: string }
+      }>
+      readonly agents?: ReadonlyArray<{
+        readonly name: string
+        readonly source?: { readonly start: number; readonly end: number; readonly text: string }
+      }>
+    }
+    readonly id?: string
+    readonly delivery?: "steer" | "queue"
+    readonly resume?: boolean
+  }["resume"]
+}
+
+export type FtcProjectsSubmitOutput =
+  | {
+      readonly kind: "admitted"
+      readonly receipt: {
+        readonly admittedSeq: number
+        readonly id: string
+        readonly sessionID: string
+        readonly prompt: {
+          readonly text: string
+          readonly files?: ReadonlyArray<{
+            readonly uri: string
+            readonly mime: string
+            readonly name?: string
+            readonly description?: string
+            readonly source?: { readonly start: number; readonly end: number; readonly text: string }
+          }>
+          readonly agents?: ReadonlyArray<{
+            readonly name: string
+            readonly source?: { readonly start: number; readonly end: number; readonly text: string }
+          }>
+        }
+        readonly delivery: "steer" | "queue"
+        readonly timeCreated: number
+        readonly promotedSeq?: number
+      }
+    }
+  | {
+      readonly kind: "busy"
+      readonly active: { readonly projectID: string; readonly chatID: string; readonly sessionID: string }
+    }
+
+export type FtcProjectsResumeInput = {
+  readonly projectID: { readonly projectID: string; readonly chatID: string; readonly sessionID: string }["projectID"]
+  readonly chatID: { readonly projectID: string; readonly chatID: string; readonly sessionID: string }["chatID"]
+  readonly sessionID: { readonly projectID: string; readonly chatID: string; readonly sessionID: string }["sessionID"]
+}
+
+export type FtcProjectsResumeOutput =
+  | { readonly kind: "settled" }
+  | {
+      readonly kind: "busy"
+      readonly active: { readonly projectID: string; readonly chatID: string; readonly sessionID: string }
+    }
+
+export type FtcProjectsStopInput = {
+  readonly projectID: { readonly projectID: string; readonly chatID: string; readonly sessionID: string }["projectID"]
+  readonly chatID: { readonly projectID: string; readonly chatID: string; readonly sessionID: string }["chatID"]
+  readonly sessionID: { readonly projectID: string; readonly chatID: string; readonly sessionID: string }["sessionID"]
+}
+
+export type FtcProjectsStopOutput = void
+
+export type FtcProjectsActiveInput = { readonly projectID: { readonly projectID: string }["projectID"] }
+
+export type FtcProjectsActiveOutput = {
+  readonly projectID: string
+  readonly active?: { readonly projectID: string; readonly chatID: string; readonly sessionID: string }
+}
 
 export type LocationGetInput = {
   readonly location?: {

@@ -1,0 +1,294 @@
+[
+  {
+    "cwd": "/Users/dylanxu/coding_tree/packages/client",
+    "command": [
+      "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+      "run",
+      "generate"
+    ],
+    "environment": {
+      "OPENCODE_TEST_HOME": "/private/tmp/m2-06-freeze/client/home",
+      "XDG_DATA_HOME": "/private/tmp/m2-06-freeze/client/data",
+      "XDG_CACHE_HOME": "/private/tmp/m2-06-freeze/client/cache",
+      "XDG_CONFIG_HOME": "/private/tmp/m2-06-freeze/client/config",
+      "XDG_STATE_HOME": "/private/tmp/m2-06-freeze/client/state",
+      "OPENCODE_DISABLE_MODELS_FETCH": "true",
+      "OPENCODE_DISABLE_DEFAULT_PLUGINS": "true"
+    },
+    "exit": 0,
+    "log": "docs/validation/m2-06/freeze-generate.log"
+  },
+  {
+    "cwd": "/Users/dylanxu/coding_tree/packages/schema",
+    "command": [
+      "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+      "typecheck"
+    ],
+    "environment": {
+      "OPENCODE_TEST_HOME": "/private/tmp/m2-06-freeze/schema/home",
+      "XDG_DATA_HOME": "/private/tmp/m2-06-freeze/schema/data",
+      "XDG_CACHE_HOME": "/private/tmp/m2-06-freeze/schema/cache",
+      "XDG_CONFIG_HOME": "/private/tmp/m2-06-freeze/schema/config",
+      "XDG_STATE_HOME": "/private/tmp/m2-06-freeze/schema/state",
+      "OPENCODE_DISABLE_MODELS_FETCH": "true",
+      "OPENCODE_DISABLE_DEFAULT_PLUGINS": "true"
+    },
+    "exit": 0,
+    "log": "docs/validation/m2-06/freeze-schema-types.log"
+  },
+  {
+    "cwd": "/Users/dylanxu/coding_tree/packages/protocol",
+    "command": [
+      "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+      "typecheck"
+    ],
+    "environment": {
+      "OPENCODE_TEST_HOME": "/private/tmp/m2-06-freeze/protocol/home",
+      "XDG_DATA_HOME": "/private/tmp/m2-06-freeze/protocol/data",
+      "XDG_CACHE_HOME": "/private/tmp/m2-06-freeze/protocol/cache",
+      "XDG_CONFIG_HOME": "/private/tmp/m2-06-freeze/protocol/config",
+      "XDG_STATE_HOME": "/private/tmp/m2-06-freeze/protocol/state",
+      "OPENCODE_DISABLE_MODELS_FETCH": "true",
+      "OPENCODE_DISABLE_DEFAULT_PLUGINS": "true"
+    },
+    "exit": 0,
+    "log": "docs/validation/m2-06/freeze-protocol-types.log"
+  },
+  {
+    "cwd": "/Users/dylanxu/coding_tree/packages/client",
+    "command": [
+      "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+      "typecheck"
+    ],
+    "environment": {
+      "OPENCODE_TEST_HOME": "/private/tmp/m2-06-freeze/client/home",
+      "XDG_DATA_HOME": "/private/tmp/m2-06-freeze/client/data",
+      "XDG_CACHE_HOME": "/private/tmp/m2-06-freeze/client/cache",
+      "XDG_CONFIG_HOME": "/private/tmp/m2-06-freeze/client/config",
+      "XDG_STATE_HOME": "/private/tmp/m2-06-freeze/client/state",
+      "OPENCODE_DISABLE_MODELS_FETCH": "true",
+      "OPENCODE_DISABLE_DEFAULT_PLUGINS": "true"
+    },
+    "exit": 0,
+    "log": "docs/validation/m2-06/freeze-client-types.log"
+  },
+  {
+    "cwd": "/Users/dylanxu/coding_tree/packages/core",
+    "command": [
+      "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+      "typecheck"
+    ],
+    "environment": {
+      "OPENCODE_TEST_HOME": "/private/tmp/m2-06-freeze/core/home",
+      "XDG_DATA_HOME": "/private/tmp/m2-06-freeze/core/data",
+      "XDG_CACHE_HOME": "/private/tmp/m2-06-freeze/core/cache",
+      "XDG_CONFIG_HOME": "/private/tmp/m2-06-freeze/core/config",
+      "XDG_STATE_HOME": "/private/tmp/m2-06-freeze/core/state",
+      "OPENCODE_DISABLE_MODELS_FETCH": "true",
+      "OPENCODE_DISABLE_DEFAULT_PLUGINS": "true"
+    },
+    "exit": 2,
+    "log": "docs/validation/m2-06/freeze-core-types.log"
+  },
+  {
+    "cwd": "/Users/dylanxu/coding_tree/packages/server",
+    "command": [
+      "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+      "typecheck"
+    ],
+    "environment": {
+      "OPENCODE_TEST_HOME": "/private/tmp/m2-06-freeze/server/home",
+      "XDG_DATA_HOME": "/private/tmp/m2-06-freeze/server/data",
+      "XDG_CACHE_HOME": "/private/tmp/m2-06-freeze/server/cache",
+      "XDG_CONFIG_HOME": "/private/tmp/m2-06-freeze/server/config",
+      "XDG_STATE_HOME": "/private/tmp/m2-06-freeze/server/state",
+      "OPENCODE_DISABLE_MODELS_FETCH": "true",
+      "OPENCODE_DISABLE_DEFAULT_PLUGINS": "true"
+    },
+    "exit": 0,
+    "log": "docs/validation/m2-06/freeze-server-types.log"
+  },
+  {
+    "cwd": "/Users/dylanxu/coding_tree/packages/sdk-next",
+    "command": [
+      "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+      "typecheck"
+    ],
+    "environment": {
+      "OPENCODE_TEST_HOME": "/private/tmp/m2-06-freeze/sdk-next/home",
+      "XDG_DATA_HOME": "/private/tmp/m2-06-freeze/sdk-next/data",
+      "XDG_CACHE_HOME": "/private/tmp/m2-06-freeze/sdk-next/cache",
+      "XDG_CONFIG_HOME": "/private/tmp/m2-06-freeze/sdk-next/config",
+      "XDG_STATE_HOME": "/private/tmp/m2-06-freeze/sdk-next/state",
+      "OPENCODE_DISABLE_MODELS_FETCH": "true",
+      "OPENCODE_DISABLE_DEFAULT_PLUGINS": "true"
+    },
+    "exit": 0,
+    "log": "docs/validation/m2-06/freeze-sdk-next-types.log"
+  },
+  {
+    "cwd": "/Users/dylanxu/coding_tree/packages/opencode",
+    "command": [
+      "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+      "typecheck"
+    ],
+    "environment": {
+      "OPENCODE_TEST_HOME": "/private/tmp/m2-06-freeze/opencode/home",
+      "XDG_DATA_HOME": "/private/tmp/m2-06-freeze/opencode/data",
+      "XDG_CACHE_HOME": "/private/tmp/m2-06-freeze/opencode/cache",
+      "XDG_CONFIG_HOME": "/private/tmp/m2-06-freeze/opencode/config",
+      "XDG_STATE_HOME": "/private/tmp/m2-06-freeze/opencode/state",
+      "OPENCODE_DISABLE_MODELS_FETCH": "true",
+      "OPENCODE_DISABLE_DEFAULT_PLUGINS": "true"
+    },
+    "exit": 2,
+    "log": "docs/validation/m2-06/freeze-opencode-types.log"
+  },
+  {
+    "cwd": "/Users/dylanxu/coding_tree/packages/core",
+    "command": [
+      "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+      "test",
+      "./test/ftc-integration/m2-06.test.ts",
+      "./test/session-tracked-wake.test.ts",
+      "./test/ftc/projects-and-chats/m2-01.test.ts",
+      "./test/ftc/projects-and-chats/m2-02.test.ts",
+      "./test/ftc/projects-and-chats/m2-03.test.ts",
+      "./test/ftc/projects-and-chats/m2-04.test.ts",
+      "./test/ftc/projects-and-chats/m2-05.test.ts",
+      "./test/ftc/agent-and-context/m3-02.test.ts",
+      "./test/session-prompt.test.ts",
+      "./test/session-runner.test.ts",
+      "./test/session-run-coordinator.test.ts",
+      "./test/session-runner-recorded.test.ts"
+    ],
+    "environment": {
+      "OPENCODE_TEST_HOME": "/private/tmp/m2-06-freeze/core/home",
+      "XDG_DATA_HOME": "/private/tmp/m2-06-freeze/core/data",
+      "XDG_CACHE_HOME": "/private/tmp/m2-06-freeze/core/cache",
+      "XDG_CONFIG_HOME": "/private/tmp/m2-06-freeze/core/config",
+      "XDG_STATE_HOME": "/private/tmp/m2-06-freeze/core/state",
+      "OPENCODE_DISABLE_MODELS_FETCH": "true",
+      "OPENCODE_DISABLE_DEFAULT_PLUGINS": "true"
+    },
+    "exit": 0,
+    "log": "docs/validation/m2-06/freeze-core-tests.log"
+  },
+  {
+    "cwd": "/Users/dylanxu/coding_tree/packages/schema",
+    "command": [
+      "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+      "test",
+      "./test/ftc-project-api.test.ts",
+      "./test/ftc-submission.test.ts",
+      "./test/contract-hygiene.test.ts",
+      "./test/v1-isolation.test.ts"
+    ],
+    "environment": {
+      "OPENCODE_TEST_HOME": "/private/tmp/m2-06-freeze/schema/home",
+      "XDG_DATA_HOME": "/private/tmp/m2-06-freeze/schema/data",
+      "XDG_CACHE_HOME": "/private/tmp/m2-06-freeze/schema/cache",
+      "XDG_CONFIG_HOME": "/private/tmp/m2-06-freeze/schema/config",
+      "XDG_STATE_HOME": "/private/tmp/m2-06-freeze/schema/state",
+      "OPENCODE_DISABLE_MODELS_FETCH": "true",
+      "OPENCODE_DISABLE_DEFAULT_PLUGINS": "true"
+    },
+    "exit": 0,
+    "log": "docs/validation/m2-06/freeze-schema-tests.log"
+  },
+  {
+    "cwd": "/Users/dylanxu/coding_tree/packages/schema",
+    "command": [
+      "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+      "test",
+      "./test/event-manifest.test.ts"
+    ],
+    "environment": {
+      "OPENCODE_TEST_HOME": "/private/tmp/m2-06-freeze/schema/home",
+      "XDG_DATA_HOME": "/private/tmp/m2-06-freeze/schema/data",
+      "XDG_CACHE_HOME": "/private/tmp/m2-06-freeze/schema/cache",
+      "XDG_CONFIG_HOME": "/private/tmp/m2-06-freeze/schema/config",
+      "XDG_STATE_HOME": "/private/tmp/m2-06-freeze/schema/state",
+      "OPENCODE_DISABLE_MODELS_FETCH": "true",
+      "OPENCODE_DISABLE_DEFAULT_PLUGINS": "true"
+    },
+    "exit": 1,
+    "log": "docs/validation/m2-06/freeze-schema-baseline.log"
+  },
+  {
+    "cwd": "/Users/dylanxu/coding_tree/packages/server",
+    "command": [
+      "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+      "test",
+      "./test/ftc-project.test.ts"
+    ],
+    "environment": {
+      "OPENCODE_TEST_HOME": "/private/tmp/m2-06-freeze/server/home",
+      "XDG_DATA_HOME": "/private/tmp/m2-06-freeze/server/data",
+      "XDG_CACHE_HOME": "/private/tmp/m2-06-freeze/server/cache",
+      "XDG_CONFIG_HOME": "/private/tmp/m2-06-freeze/server/config",
+      "XDG_STATE_HOME": "/private/tmp/m2-06-freeze/server/state",
+      "OPENCODE_DISABLE_MODELS_FETCH": "true",
+      "OPENCODE_DISABLE_DEFAULT_PLUGINS": "true"
+    },
+    "exit": 0,
+    "log": "docs/validation/m2-06/freeze-server-tests.log"
+  },
+  {
+    "cwd": "/Users/dylanxu/coding_tree/packages/opencode",
+    "command": [
+      "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+      "test",
+      "./test/server/httpapi-ftc-project.test.ts"
+    ],
+    "environment": {
+      "OPENCODE_TEST_HOME": "/private/tmp/m2-06-freeze/opencode/home",
+      "XDG_DATA_HOME": "/private/tmp/m2-06-freeze/opencode/data",
+      "XDG_CACHE_HOME": "/private/tmp/m2-06-freeze/opencode/cache",
+      "XDG_CONFIG_HOME": "/private/tmp/m2-06-freeze/opencode/config",
+      "XDG_STATE_HOME": "/private/tmp/m2-06-freeze/opencode/state",
+      "OPENCODE_DISABLE_MODELS_FETCH": "true",
+      "OPENCODE_DISABLE_DEFAULT_PLUGINS": "true"
+    },
+    "exit": 1,
+    "log": "docs/validation/m2-06/freeze-opencode-host.log"
+  },
+  {
+    "cwd": "/Users/dylanxu/coding_tree/packages/client",
+    "command": [
+      "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+      "test",
+      "./test"
+    ],
+    "environment": {
+      "OPENCODE_TEST_HOME": "/private/tmp/m2-06-freeze/client/home",
+      "XDG_DATA_HOME": "/private/tmp/m2-06-freeze/client/data",
+      "XDG_CACHE_HOME": "/private/tmp/m2-06-freeze/client/cache",
+      "XDG_CONFIG_HOME": "/private/tmp/m2-06-freeze/client/config",
+      "XDG_STATE_HOME": "/private/tmp/m2-06-freeze/client/state",
+      "OPENCODE_DISABLE_MODELS_FETCH": "true",
+      "OPENCODE_DISABLE_DEFAULT_PLUGINS": "true"
+    },
+    "exit": 0,
+    "log": "docs/validation/m2-06/freeze-client-tests.log"
+  },
+  {
+    "cwd": "/Users/dylanxu/coding_tree/packages/sdk-next",
+    "command": [
+      "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+      "test",
+      "./test/ftc-project.test.ts"
+    ],
+    "environment": {
+      "OPENCODE_TEST_HOME": "/private/tmp/m2-06-freeze/sdk-next/home",
+      "XDG_DATA_HOME": "/private/tmp/m2-06-freeze/sdk-next/data",
+      "XDG_CACHE_HOME": "/private/tmp/m2-06-freeze/sdk-next/cache",
+      "XDG_CONFIG_HOME": "/private/tmp/m2-06-freeze/sdk-next/config",
+      "XDG_STATE_HOME": "/private/tmp/m2-06-freeze/sdk-next/state",
+      "OPENCODE_DISABLE_MODELS_FETCH": "true",
+      "OPENCODE_DISABLE_DEFAULT_PLUGINS": "true"
+    },
+    "exit": 0,
+    "log": "docs/validation/m2-06/freeze-sdk-tests.log"
+  }
+]

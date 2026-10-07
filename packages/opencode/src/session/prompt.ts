@@ -1,3 +1,6 @@
+import { FtcProjects } from "@opencode-ai/core/ftc/projects"
+import { FtcProjectAdapters } from "@opencode-ai/core/ftc/projects/adapters"
+import { AbsolutePath } from "@opencode-ai/core/schema"
 import { LayerNode } from "@opencode-ai/core/effect/layer-node"
 import { PermissionV1 } from "@opencode-ai/core/v1/permission"
 import path from "path"
@@ -101,10 +104,16 @@ function isOrphanedInterruptedTool(part: SessionV1.ToolPart) {
 
 export interface Interface {
   readonly cancel: (sessionID: SessionID) => Effect.Effect<void>
-  readonly prompt: (input: PromptInput) => Effect.Effect<SessionV1.WithParts, Image.Error>
-  readonly loop: (input: LoopInput) => Effect.Effect<SessionV1.WithParts>
-  readonly shell: (input: ShellInput) => Effect.Effect<SessionV1.WithParts, Session.BusyError>
-  readonly command: (input: CommandInput) => Effect.Effect<SessionV1.WithParts, Image.Error>
+  readonly prompt: (
+    input: PromptInput,
+  ) => Effect.Effect<SessionV1.WithParts, Image.Error | FtcProjects.ExecutionUnavailable>
+  readonly loop: (input: LoopInput) => Effect.Effect<SessionV1.WithParts, FtcProjects.ExecutionUnavailable>
+  readonly shell: (
+    input: ShellInput,
+  ) => Effect.Effect<SessionV1.WithParts, Session.BusyError | FtcProjects.ExecutionUnavailable>
+  readonly command: (
+    input: CommandInput,
+  ) => Effect.Effect<SessionV1.WithParts, Image.Error | FtcProjects.ExecutionUnavailable>
   readonly resolvePromptParts: (template: string) => Effect.Effect<PromptInput["parts"]>
 }
 
@@ -140,6 +149,11 @@ const layer = Layer.effect(
     const events = yield* EventV2Bridge.Service
     const flags = yield* RuntimeFlags.Service
     const database = yield* Database.Service
+    const requireUnmanaged = FtcProjectAdapters.legacy(database.db)
+    const requireExecutable = Effect.fn("SessionPrompt.requireExecutable")(function* (sessionID: SessionID) {
+      const session = yield* sessions.get(sessionID).pipe(Effect.orDie)
+      yield* requireUnmanaged({ root: AbsolutePath.make(session.directory) })
+    })
     const { db } = database
     const ops = Effect.fn("SessionPrompt.ops")(function* () {
       return {
@@ -1049,9 +1063,12 @@ const layer = Layer.effect(
       return { info, parts }
     }, Effect.scoped)
 
-    const prompt: (input: PromptInput) => Effect.Effect<SessionV1.WithParts, Image.Error> = Effect.fn(
+    const prompt: (
+      input: PromptInput,
+    ) => Effect.Effect<SessionV1.WithParts, Image.Error | FtcProjects.ExecutionUnavailable> = Effect.fn(
       "SessionPrompt.prompt",
     )(function* (input: PromptInput) {
+      yield* requireExecutable(input.sessionID)
       const session = yield* sessions.get(input.sessionID).pipe(Effect.orDie)
       yield* revert.cleanup(session)
       const message = yield* createUserMessage(input)
@@ -1340,20 +1357,25 @@ const layer = Layer.effect(
       },
     )
 
-    const loop: (input: LoopInput) => Effect.Effect<SessionV1.WithParts> = Effect.fn("SessionPrompt.loop")(function* (
-      input: LoopInput,
-    ) {
+    const loop: (input: LoopInput) => Effect.Effect<SessionV1.WithParts, FtcProjects.ExecutionUnavailable> = Effect.fn(
+      "SessionPrompt.loop",
+    )(function* (input: LoopInput) {
+      yield* requireExecutable(input.sessionID)
       return yield* state.ensureRunning(input.sessionID, lastAssistant(input.sessionID), runLoop(input.sessionID))
     })
 
-    const shell: (input: ShellInput) => Effect.Effect<SessionV1.WithParts, Session.BusyError> = Effect.fn(
+    const shell: (
+      input: ShellInput,
+    ) => Effect.Effect<SessionV1.WithParts, Session.BusyError | FtcProjects.ExecutionUnavailable> = Effect.fn(
       "SessionPrompt.shell",
     )(function* (input: ShellInput) {
+      yield* requireExecutable(input.sessionID)
       const ready = yield* Latch.make()
       return yield* state.startShell(input.sessionID, lastAssistant(input.sessionID), shellImpl(input, ready), ready)
     })
 
     const command = Effect.fn("SessionPrompt.command")(function* (input: CommandInput) {
+      yield* requireExecutable(input.sessionID)
       yield* Effect.logInfo("command", {
         "session.id": input.sessionID,
         command: input.command,

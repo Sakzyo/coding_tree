@@ -1,0 +1,17 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-integration/m2-06.test.ts:
+(pass) composed duplicate windows cannot bypass gate [495.80ms]
+(pass) composed Core guard refuses raw managed admission and JSON proof before writing [51.70ms]
+(pass) exact retries preserve durable identity and admit-only releases its own reservation [93.23ms]
+(pass) disabled host preserves associations and rejects every managed execution entrance [55.92ms]
+(pass) unknown legacy idle refuses new activation and never associates the root [26.01ms]
+(pass) database reopen retains separate chats and pending inputs without automatic execution [105.18ms]
+(pass) actual runner persists independent model histories and holds ownership through controlled tool cleanup [187.73ms]
+(pass) owner event failure cannot leak or release a newer reservation [24.90ms]
+(pass) old completion cannot unlock a newer admission paused before durable write [41.03ms]
+
+ 9 pass
+ 0 fail
+ 60 expect() calls
+Ran 9 tests across 1 file. [1.62s]

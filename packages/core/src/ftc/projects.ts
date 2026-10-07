@@ -19,6 +19,10 @@ export {
   ChatError,
   SubmitPrompt,
   SubmitResult,
+  ExecutionUnavailable,
+  OwnerChanged,
+  OwnerStatus,
+  GateError,
 } from "@opencode-ai/schema/ftc-project"
 
 export interface Submission {
@@ -28,7 +32,12 @@ export interface Submission {
     ) => Effect.Effect<FtcProject.GateResult, FtcProject.GateError | FtcProject.ChatError>
     readonly release: (lease: FtcProject.GateLease) => Effect.Effect<void>
   }
-  readonly admission: Pick<SessionV2.Interface, "prompt">
+  readonly admission: {
+    readonly prompt: (
+      input: Parameters<SessionV2.Interface["prompt"]>[0],
+      lease?: FtcProject.GateLease,
+    ) => ReturnType<SessionV2.Interface["prompt"]>
+  }
   /** Success accepts exact-token responsibility before wake. Failure leaves no accepted claim or scheduled wake.
    * This bounded registration must not await model execution or terminal settlement. The adapter releases only after
    * execution has acquired a distinct claim or terminal settlement, never on wake return. */
@@ -54,13 +63,16 @@ export const submitter = (input: Submission) => ({
           )
           if (reserved.kind === "busy") return reserved
           const receipt = yield* restore(
-            input.admission.prompt({
-              sessionID: chat.sessionID,
-              prompt: request.prompt,
-              id: request.id,
-              delivery: request.delivery,
-              resume: false,
-            }),
+            input.admission.prompt(
+              {
+                sessionID: chat.sessionID,
+                prompt: request.prompt,
+                id: request.id,
+                delivery: request.delivery,
+                resume: false,
+              },
+              reserved.lease,
+            ),
           )
           if (request.resume !== false) {
             // Accept exact-token ownership before interruption can observe success. Wake is not settlement.
@@ -243,6 +255,9 @@ export interface SessionAccess {
 }
 
 export interface Interface {
+  readonly getChat: (
+    chat: FtcProject.ChatRef,
+  ) => Effect.Effect<FtcProject.ChatRef, FtcProject.ChatError | FtcProject.GateError>
   readonly getProject: (
     input: FtcProject.ProjectRequest,
   ) => Effect.Effect<FtcProject.ProjectContext, FtcProject.ChatError>
@@ -264,7 +279,7 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Ft
  * Construct within the owning Location scope; the caller owns the injected repository connection.
  * Interruption before association leaves no row. Once the atomic write commits, retry reconciles by root.
  */
-export const layer = (folders: FolderIdentity, repository: Repository, sessions: SessionAccess) => {
+export const make = (folders: FolderIdentity, repository: Repository, sessions: SessionAccess): Interface => {
   const associate = Effect.fn("FtcProjects.associate")(function* (input: FtcProject.FolderRequest) {
     const folder = yield* folders.resolve(input)
     if (
@@ -280,6 +295,51 @@ export const layer = (folders: FolderIdentity, repository: Repository, sessions:
       } satisfies FtcProject.AssociationError)
     return yield* repository.associate(folder)
   })
+  const read = reader(repository, sessions)
+  return {
+    getProject: read.getProject,
+    getChat: (chat) =>
+      read.listChats(chat).pipe(
+        Effect.flatMap((chats) => {
+          const found = chats.find((item) => item.chatID === chat.chatID && item.sessionID === chat.sessionID)
+          return found
+            ? Effect.succeed(found)
+            : Effect.fail({
+                code: "chat_not_found",
+                projectID: chat.projectID,
+                recovery: "reopen_project",
+              } satisfies FtcProject.GateError)
+        }),
+      ),
+    createProject: associate,
+    openProject: associate,
+    createChat: Effect.fn("FtcProjects.createChat")(function* (input) {
+      const project = yield* read.getProject(input)
+      const session = yield* sessions.createSession({ location: { directory: project.location.directory } })
+      if (!matches(project, session))
+        return yield* Effect.fail({
+          code: "session_mismatch",
+          projectID: project.projectID,
+          sessionID: session.id,
+          recovery: "reopen_project",
+        } satisfies FtcProject.ChatError)
+      yield* read.lookup(project, session.id)
+      // Session creation and M2 persistence have separate owners. Failed/interrupted membership
+      // may leave an unassociated Session; M2 must never delete Session-owned data as compensation.
+      return yield* repository.addChat(project, {
+        projectID: project.projectID,
+        chatID: FtcProject.ChatID.create(),
+        sessionID: session.id,
+      })
+    }),
+    listChats: read.listChats,
+  }
+}
+
+export const layer = (folders: FolderIdentity, repository: Repository, sessions: SessionAccess) =>
+  Layer.succeed(Service, make(folders, repository, sessions))
+
+export const reader = (repository: Repository, sessions: Pick<SessionAccess, "getSession">) => {
   const getProject = Effect.fn("FtcProjects.getProject")(function* (input: FtcProject.ProjectRequest) {
     const project = yield* repository.getProject(input)
     if (!project)
@@ -314,36 +374,16 @@ export const layer = (folders: FolderIdentity, repository: Repository, sessions:
       } satisfies FtcProject.ChatError)
     return session
   })
-  return Layer.succeed(Service, {
+  return {
     getProject,
-    createProject: associate,
-    openProject: associate,
-    createChat: Effect.fn("FtcProjects.createChat")(function* (input) {
-      const project = yield* getProject(input)
-      const session = yield* sessions.createSession({ location: { directory: project.location.directory } })
-      if (!matches(project, session))
-        return yield* Effect.fail({
-          code: "session_mismatch",
-          projectID: project.projectID,
-          sessionID: session.id,
-          recovery: "reopen_project",
-        } satisfies FtcProject.ChatError)
-      yield* lookup(project, session.id)
-      // Session creation and M2 persistence have separate owners. Failed/interrupted membership
-      // may leave an unassociated Session; M2 must never delete Session-owned data as compensation.
-      return yield* repository.addChat(project, {
-        projectID: project.projectID,
-        chatID: FtcProject.ChatID.create(),
-        sessionID: session.id,
-      })
-    }),
-    listChats: Effect.fn("FtcProjects.listChats")(function* (input) {
+    lookup,
+    listChats: Effect.fn("FtcProjects.listChats")(function* (input: FtcProject.ProjectRequest) {
       const project = yield* getProject(input)
       const chats = yield* repository.listChats(input)
       yield* Effect.forEach(chats, (chat) => lookup(project, chat.sessionID))
       return chats
     }),
-  })
+  }
 }
 
 export function validProjectContext(project: FtcProject.ProjectContext, input: FtcProject.ProjectRequest) {

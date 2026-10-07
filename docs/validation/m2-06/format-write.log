@@ -1,0 +1,28 @@
+packages/client/src/contract.ts 35ms (unchanged)
+packages/core/src/ftc/projects.ts 31ms
+packages/core/src/ftc/projects/sql.ts 10ms (unchanged)
+packages/core/src/ftc/projects/adapters.ts 5ms
+packages/core/src/ftc/projects/execution.ts 8ms
+packages/core/src/ftc/composition.ts 3ms
+packages/core/src/session.ts 18ms (unchanged)
+packages/core/src/session/execution.ts 2ms (unchanged)
+packages/core/src/session/execution/local.ts 3ms (unchanged)
+packages/core/src/session/run-coordinator.ts 12ms (unchanged)
+packages/core/test/ftc-integration/m2-06.test.ts 21ms
+packages/core/test/session-tracked-wake.test.ts 10ms (unchanged)
+packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts 12ms
+packages/opencode/src/server/routes/instance/httpapi/server.ts 6ms
+packages/opencode/src/session/prompt.ts 45ms
+packages/opencode/test/server/httpapi-ftc-project.test.ts 4ms
+packages/protocol/src/api.ts 2ms (unchanged)
+packages/protocol/src/groups/session.ts 6ms (unchanged)
+packages/protocol/src/groups/ftc-project.ts 2ms
+packages/schema/src/event-manifest.ts 1ms (unchanged)
+packages/schema/src/ftc-project.ts 4ms (unchanged)
+packages/schema/test/ftc-project-api.test.ts 1ms
+packages/server/src/handlers.ts 1ms (unchanged)
+packages/server/src/handlers/session.ts 6ms
+packages/server/src/routes.ts 2ms
+packages/server/src/handlers/ftc-project.ts 2ms
+packages/server/test/ftc-project.test.ts 2ms
+packages/sdk-next/test/ftc-project.test.ts 1ms

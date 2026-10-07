@@ -1,5 +1,25 @@
 import type {
   HealthGetOutput,
+  FtcProjectsCreateInput,
+  FtcProjectsCreateOutput,
+  FtcProjectsOpenInput,
+  FtcProjectsOpenOutput,
+  FtcProjectsReadInput,
+  FtcProjectsReadOutput,
+  FtcProjectsCreateChatInput,
+  FtcProjectsCreateChatOutput,
+  FtcProjectsListChatsInput,
+  FtcProjectsListChatsOutput,
+  FtcProjectsReadChatInput,
+  FtcProjectsReadChatOutput,
+  FtcProjectsSubmitInput,
+  FtcProjectsSubmitOutput,
+  FtcProjectsResumeInput,
+  FtcProjectsResumeOutput,
+  FtcProjectsStopInput,
+  FtcProjectsStopOutput,
+  FtcProjectsActiveInput,
+  FtcProjectsActiveOutput,
   LocationGetInput,
   LocationGetOutput,
   AgentsListInput,
@@ -254,6 +274,134 @@ export function make(options: ClientOptions) {
           requestOptions,
         ),
     },
+    ftcProjects: {
+      create: (input: FtcProjectsCreateInput, requestOptions?: RequestOptions) =>
+        request<FtcProjectsCreateOutput>(
+          {
+            method: "POST",
+            path: `/api/ftc/project`,
+            body: { root: input["root"] },
+            successStatus: 200,
+            declaredStatuses: [409, 404, 503, 401, 400],
+            empty: false,
+          },
+          requestOptions,
+        ),
+      open: (input: FtcProjectsOpenInput, requestOptions?: RequestOptions) =>
+        request<FtcProjectsOpenOutput>(
+          {
+            method: "POST",
+            path: `/api/ftc/project/open`,
+            body: { root: input["root"] },
+            successStatus: 200,
+            declaredStatuses: [409, 404, 503, 401, 400],
+            empty: false,
+          },
+          requestOptions,
+        ),
+      read: (input: FtcProjectsReadInput, requestOptions?: RequestOptions) =>
+        request<FtcProjectsReadOutput>(
+          {
+            method: "POST",
+            path: `/api/ftc/project/read`,
+            body: { projectID: input["projectID"] },
+            successStatus: 200,
+            declaredStatuses: [409, 404, 503, 401, 400],
+            empty: false,
+          },
+          requestOptions,
+        ),
+      createChat: (input: FtcProjectsCreateChatInput, requestOptions?: RequestOptions) =>
+        request<FtcProjectsCreateChatOutput>(
+          {
+            method: "POST",
+            path: `/api/ftc/project/chat`,
+            body: { projectID: input["projectID"] },
+            successStatus: 200,
+            declaredStatuses: [409, 404, 503, 401, 400],
+            empty: false,
+          },
+          requestOptions,
+        ),
+      listChats: (input: FtcProjectsListChatsInput, requestOptions?: RequestOptions) =>
+        request<FtcProjectsListChatsOutput>(
+          {
+            method: "POST",
+            path: `/api/ftc/project/chats`,
+            body: { projectID: input["projectID"] },
+            successStatus: 200,
+            declaredStatuses: [409, 404, 503, 401, 400],
+            empty: false,
+          },
+          requestOptions,
+        ),
+      readChat: (input: FtcProjectsReadChatInput, requestOptions?: RequestOptions) =>
+        request<FtcProjectsReadChatOutput>(
+          {
+            method: "POST",
+            path: `/api/ftc/project/chat/read`,
+            body: { projectID: input["projectID"], chatID: input["chatID"], sessionID: input["sessionID"] },
+            successStatus: 200,
+            declaredStatuses: [409, 404, 503, 401, 400],
+            empty: false,
+          },
+          requestOptions,
+        ),
+      submit: (input: FtcProjectsSubmitInput, requestOptions?: RequestOptions) =>
+        request<FtcProjectsSubmitOutput>(
+          {
+            method: "POST",
+            path: `/api/ftc/project/submit`,
+            body: {
+              chat: input["chat"],
+              prompt: input["prompt"],
+              id: input["id"],
+              delivery: input["delivery"],
+              resume: input["resume"],
+            },
+            successStatus: 200,
+            declaredStatuses: [409, 404, 503, 401, 400],
+            empty: false,
+          },
+          requestOptions,
+        ),
+      resume: (input: FtcProjectsResumeInput, requestOptions?: RequestOptions) =>
+        request<FtcProjectsResumeOutput>(
+          {
+            method: "POST",
+            path: `/api/ftc/project/resume`,
+            body: { projectID: input["projectID"], chatID: input["chatID"], sessionID: input["sessionID"] },
+            successStatus: 200,
+            declaredStatuses: [409, 404, 503, 401, 400],
+            empty: false,
+          },
+          requestOptions,
+        ),
+      stop: (input: FtcProjectsStopInput, requestOptions?: RequestOptions) =>
+        request<FtcProjectsStopOutput>(
+          {
+            method: "POST",
+            path: `/api/ftc/project/stop`,
+            body: { projectID: input["projectID"], chatID: input["chatID"], sessionID: input["sessionID"] },
+            successStatus: 204,
+            declaredStatuses: [409, 404, 503, 401, 400],
+            empty: true,
+          },
+          requestOptions,
+        ),
+      active: (input: FtcProjectsActiveInput, requestOptions?: RequestOptions) =>
+        request<FtcProjectsActiveOutput>(
+          {
+            method: "POST",
+            path: `/api/ftc/project/active`,
+            body: { projectID: input["projectID"] },
+            successStatus: 200,
+            declaredStatuses: [409, 404, 503, 401, 400],
+            empty: false,
+          },
+          requestOptions,
+        ),
+    },
     location: {
       get: (input?: LocationGetInput, requestOptions?: RequestOptions) =>
         request<LocationGetOutput>(
@@ -374,7 +522,7 @@ export function make(options: ClientOptions) {
             path: `/api/session/${encodeURIComponent(input.sessionID)}/prompt`,
             body: { id: input["id"], prompt: input["prompt"], delivery: input["delivery"], resume: input["resume"] },
             successStatus: 200,
-            declaredStatuses: [409, 404, 400, 401],
+            declaredStatuses: [409, 404, 500, 400, 401],
             empty: false,
           },
           requestOptions,
@@ -476,7 +624,7 @@ export function make(options: ClientOptions) {
             method: "POST",
             path: `/api/session/${encodeURIComponent(input.sessionID)}/interrupt`,
             successStatus: 204,
-            declaredStatuses: [404, 400, 401],
+            declaredStatuses: [404, 500, 400, 401],
             empty: true,
           },
           requestOptions,

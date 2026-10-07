@@ -1,0 +1,4 @@
+$ tsgo --noEmit
+../server/src/handlers/ftc-project.ts(14,240): error TS2352: Conversion of type 'E & object & Record<"code", unknown>' to type 'AssociationError | ChatError | GateError' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'E & object & Record<"code", unknown>' is not comparable to type 'GateError'.
+    Property 'recovery' is missing in type 'E & object & Record<"code", unknown>' but required in type '{ readonly code: "chat_not_found" | "gate_closed" | "invalid_chat" | "invalid_project"; readonly projectID?: (string & Brand<"Project.ID">) | undefined; readonly recovery: "reopen_project" | "retry"; }'.

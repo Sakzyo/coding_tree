@@ -1,0 +1,25 @@
+$ bun run script/build.ts
+754 |     yield* Effect.forEach(
+755 |       output.files,
+756 |       (file) =>
+757 |         Effect.tryPromise({
+758 |           try: () => format(file.content, { filepath: file.path, parser: "typescript", semi: false, printWidth: 120 }),
+759 |           catch: (error) => new GenerationError({ reason: `Failed to format ${file.path}: ${String(error)}` }),
+                                  ^
+error: Failed to format types.ts: SyntaxError: '=' expected. (11:23)
+   9 | export const isInvalidRequestError = (value: unknown): value is InvalidRequestError => typeof value === "object" && value !== null && "_tag" in value && value["_tag"] === "InvalidRequestError"
+  10 |
+> 11 | export type FtcProject.ApiError = { readonly "_tag": "FtcProject.ApiError"; readonly "reason": ({ readonly "code": "folder_unavailable" | "invalid_folder_identity" | "association_store_failed" | "activation_unavailable", readonly "root"?: string, readonly "detail"?: string, readonly "recovery": "select_accessible_folder" | "retry" }) | ({ readonly "code": "project_not_found" | "project_changed" | "session_not_found" | "session_mismatch" | "session_access_failed" | "chat_session_conflict" | "chat_store_failed", readonly "projectID": string, readonly "sessionID"?: string, readonly "detail"?: string, readonly "recovery": "reopen_project" | "retry" }) | ({ readonly "code": "invalid_chat" | "chat_not_found" | "invalid_project" | "gate_closed", readonly "projectID"?: string, readonly "recovery": "reopen_project" | "retry" }) | { readonly "_tag": "FtcProject.ExecutionUnavailable", readonly "code": "managed_submit_required" | "execution_disabled" | "membership_unavailable" | "activation_unavailable" | "legacy_execution_disabled", readonly "sessionID"?: string } }
+     |                       ^
+  12 | export const isFtcProject.ApiError = (value: unknown): value is FtcProject.ApiError => typeof value === "object" && value !== null && "_tag" in value && value["_tag"] === "FtcProject.ApiError"
+  13 |
+  14 | export type ConflictError = { readonly "_tag": "ConflictError"; readonly "message": string; readonly "resource"?: string | undefined }
+ reason: "Failed to format types.ts: SyntaxError: '=' expected. (11:23)\n   9 | export const isInvalidRequestError = (value: unknown): value is InvalidRequestError => typeof value === \"object\" && value !== null && \"_tag\" in value && value[\"_tag\"] === \"InvalidRequestError\"\n  10 |\n> 11 | export type FtcProject.ApiError = { readonly \"_tag\": \"FtcProject.ApiError\"; readonly \"reason\": ({ readonly \"code\": \"folder_unavailable\" | \"invalid_folder_identity\" | \"association_store_failed\" | \"activation_unavailable\", readonly \"root\"?: string, readonly \"detail\"?: string, readonly \"recovery\": \"select_accessible_folder\" | \"retry\" }) | ({ readonly \"code\": \"project_not_found\" | \"project_changed\" | \"session_not_found\" | \"session_mismatch\" | \"session_access_failed\" | \"chat_session_conflict\" | \"chat_store_failed\", readonly \"projectID\": string, readonly \"sessionID\"?: string, readonly \"detail\"?: string, readonly \"recovery\": \"reopen_project\" | \"retry\" }) | ({ readonly \"code\": \"invalid_chat\" | \"chat_not_found\" | \"invalid_project\" | \"gate_closed\", readonly \"projectID\"?: string, readonly \"recovery\": \"reopen_project\" | \"retry\" }) | { readonly \"_tag\": \"FtcProject.ExecutionUnavailable\", readonly \"code\": \"managed_submit_required\" | \"execution_disabled\" | \"membership_unavailable\" | \"activation_unavailable\" | \"legacy_execution_disabled\", readonly \"sessionID\"?: string } }\n     |                       ^\n  12 | export const isFtcProject.ApiError = (value: unknown): value is FtcProject.ApiError => typeof value === \"object\" && value !== null && \"_tag\" in value && value[\"_tag\"] === \"FtcProject.ApiError\"\n  13 |\n  14 | export type ConflictError = { readonly \"_tag\": \"ConflictError\"; readonly \"message\": string; readonly \"resource\"?: string | undefined }",
+   _tag: "GenerationError",
+
+      at catch (/Users/dylanxu/coding_tree/packages/httpapi-codegen/src/index.ts:759:29)
+      at ~effect/Utils/internal (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Utils.js:89:16)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:699:84)
+
+Bun v1.3.14 (macOS arm64)
+error: script "generate" exited with code 1

@@ -1,0 +1,30 @@
+bun test v1.3.14 (0d9b296a)
+
+test/contract-identity.test.ts:
+(pass) Core and Server reuse the authoritative Schema and Protocol values [0.88ms]
+(pass) client and Server contracts generate identically [454.87ms]
+(pass) shared DTO schemas construct and decode plain objects [0.59ms]
+
+test/effect.test.ts:
+(pass) sessions.get returns the decoded Effect projection [6.31ms]
+(pass) events.subscribe exposes and decodes the native Effect event stream [5.32ms]
+(pass) events.subscribe terminates on Effect protocol decode failures [4.00ms]
+(pass) session methods retain decoded Effect inputs and outputs [5.72ms]
+(pass) sessions.history retains the typed SessionNotFoundError [2.08ms]
+
+test/import-boundaries.test.ts:
+(pass) public import boundaries > isolates each public entrypoint [39.45ms]
+
+test/promise.test.ts:
+(pass) exposes every standard HTTP API group [0.13ms]
+(pass) sessions.get returns the wire projection [0.33ms]
+(pass) events.subscribe exposes the Promise event stream wire projection [0.48ms]
+(pass) events.subscribe terminates on malformed Promise SSE data [0.20ms]
+(pass) session methods use the public HTTP contract [0.63ms]
+(pass) middleware errors remain declared client errors [0.11ms]
+(pass) sessions.history decodes SessionNotFoundError [0.07ms]
+
+ 16 pass
+ 0 fail
+ 75 expect() calls
+Ran 16 tests across 4 files. [834.00ms]

@@ -28,8 +28,35 @@ export const ChatTable = sqliteTable("ftc_chat", {
   session_id: text().$type<Session.ID>().notNull().unique(),
 })
 
-export function make(db: EffectDrizzleSqlite.EffectSQLiteDatabase): FtcProjects.Repository {
+export interface Lookup extends FtcProjects.Repository {
+  readonly findRoot: (
+    root: Location.Info["directory"],
+  ) => Effect.Effect<FtcProject.ProjectContext | undefined, FtcProject.GateError>
+  readonly findSession: (id: Session.ID) => Effect.Effect<FtcProject.ChatRef | undefined, FtcProject.GateError>
+}
+
+export function make(db: EffectDrizzleSqlite.EffectSQLiteDatabase): Lookup {
   return {
+    findRoot: (root) =>
+      db
+        .select()
+        .from(ProjectAssociationTable)
+        .where(eq(ProjectAssociationTable.canonical_root, root))
+        .get()
+        .pipe(
+          Effect.map((row) => (row ? context(row) : undefined)),
+          Effect.mapError((): FtcProject.GateError => ({ code: "invalid_project", recovery: "retry" })),
+        ),
+    findSession: (id) =>
+      db
+        .select()
+        .from(ChatTable)
+        .where(eq(ChatTable.session_id, id))
+        .get()
+        .pipe(
+          Effect.map((row) => (row ? reference(row) : undefined)),
+          Effect.mapError((): FtcProject.GateError => ({ code: "invalid_chat", recovery: "retry" })),
+        ),
     associate: (folder) =>
       Effect.gen(function* () {
         const [row] = yield* db

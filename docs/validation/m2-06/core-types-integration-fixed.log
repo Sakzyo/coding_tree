@@ -1,0 +1,8 @@
+$ tsgo --noEmit
+test/ftc-integration/m2-06.test.ts(73,49): error TS2345: Argument of type '(_: Location.Ref) => Layer.Layer<never, never, never>' is not assignable to parameter of type '(key: Ref) => Layer<any, any, any>'.
+  Type 'Layer<never, never, never>' is not assignable to type 'Layer<any, any, any>'.
+    Type 'any' is not assignable to type 'never'.
+test/ftc-integration/m2-06.test.ts(79,73): error TS2345: Argument of type 'LayerMap<Ref, any, any>' is not assignable to parameter of type 'LayerMap<Ref, Service | Service | Service | Service | Service | Service | Service | Service | Service | ... 23 more ... | Service, never>'.
+  The types of 'rcMap.lookup(...)' are incompatible between these types.
+    Type 'Effect<Context<any>, any, Scope>' is not assignable to type 'Effect<Context<Service | Service | Service | Service | Service | Service | Service | Service | Service | ... 23 more ... | Service>, never, Scope>'.
+      Type 'any' is not assignable to type 'never'.

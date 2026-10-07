@@ -1,0 +1,26 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-project.test.ts:
+[07:01:30.899] INFO (#210): watcher backend {
+  directory: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/m2-06-host-R4YMbm",
+  platform: "darwin",
+  backend: "fs-events",
+}
+[07:01:30.902] INFO (#324): project copy refresh started {
+  projectID: "global",
+}
+[07:01:30.902] INFO (#324): project copy refresh done {
+  projectID: "global",
+  updated: [],
+  removed: [],
+}
+[07:01:30.912] INFO (#210): booting location services {
+  directory: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/m2-06-host-R4YMbm",
+  workspaceID: undefined,
+}
+(pass) actual standalone and embedded host exposes project commands and refuses managed admission [160.74ms]
+
+ 1 pass
+ 0 fail
+ 16 expect() calls
+Ran 1 test across 1 file. [476.00ms]

@@ -17,6 +17,12 @@ export interface Interface {
   readonly interrupt: (sessionID: SessionSchema.ID) => Effect.Effect<void>
 }
 
+export interface TrackedInterface {
+  readonly wakeWithSettlement: (sessionID: SessionSchema.ID, settled: () => Effect.Effect<void>) => Effect.Effect<void>
+}
+
+export class Tracked extends Context.Service<Tracked, TrackedInterface>()("@opencode/SessionExecutionTracked") {}
+
 /** Routes execution from a Session ID to the runner owned by that Session's Location. */
 export class Service extends Context.Service<Service, Interface>()("@opencode/v2/SessionExecution") {}
 

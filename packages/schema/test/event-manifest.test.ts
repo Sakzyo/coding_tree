@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import { FileSystem, Integration, Permission, Project, Reference, Session, Workspace } from "../src"
 import { EventManifest } from "../src/event-manifest"
+import { FtcProject } from "../src/ftc-project"
 import { IdeEvent } from "../src/ide-event"
 import { SessionEvent } from "../src/session-event"
 import { SessionTodo } from "../src/session-todo"
@@ -9,8 +10,8 @@ import { WorkspaceEvent } from "../src/workspace-event"
 
 describe("public event manifest", () => {
   test("owns the complete public event surface", () => {
-    expect(EventManifest.ServerDefinitions.length).toBe(55)
-    expect(EventManifest.Definitions.length).toBe(85)
+    expect(EventManifest.ServerDefinitions.length).toBe(56)
+    expect(EventManifest.Definitions.length).toBe(86)
     expect(SessionV1.Event.Definitions).toEqual([
       SessionV1.Event.Created,
       SessionV1.Event.Updated,
@@ -23,11 +24,13 @@ describe("public event manifest", () => {
       SessionV1.Event.Diff,
       SessionV1.Event.Error,
     ])
-    expect(EventManifest.Latest.size).toBe(85)
+    expect(EventManifest.Latest.size).toBe(86)
     expect(EventManifest.Durable.size).toBe(32)
   })
 
   test("uses canonical definitions for current public events", () => {
+    expect(EventManifest.Latest.get("ftc.project.owner.changed")).toBe(FtcProject.OwnerChanged)
+    expect(EventManifest.Durable.has("ftc.project.owner.changed")).toBe(false)
     expect(Session.Event).toBe(SessionEvent)
     expect(Session.Event.Definitions).toBe(SessionEvent.Definitions)
     expect(Workspace.Event).toBe(WorkspaceEvent)

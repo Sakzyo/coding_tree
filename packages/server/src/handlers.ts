@@ -16,10 +16,12 @@ import { ReferenceHandler } from "./handlers/reference"
 import { LocationHandler } from "./handlers/location"
 import { IntegrationHandler } from "./handlers/integration"
 import { CredentialHandler } from "./handlers/credential"
+import { FtcProjectHandler } from "./handlers/ftc-project"
 import { ProjectCopyHandler } from "./handlers/project-copy"
 
 export const handlers = Layer.mergeAll(
   HealthHandler,
+  FtcProjectHandler,
   LocationHandler,
   AgentHandler,
   SessionHandler,

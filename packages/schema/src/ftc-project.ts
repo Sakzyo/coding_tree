@@ -1,6 +1,7 @@
 export * as FtcProject from "./ftc-project"
 
 import { Schema } from "effect"
+import { Event } from "./event"
 import { Location } from "./location"
 import { Project } from "./project"
 import { Session } from "./session"
@@ -24,7 +25,12 @@ export const FolderRequest = Schema.Struct({ root: AbsolutePath }).annotate({ id
 
 export interface AssociationError extends Schema.Schema.Type<typeof AssociationError> {}
 export const AssociationError = Schema.Struct({
-  code: Schema.Literals(["folder_unavailable", "invalid_folder_identity", "association_store_failed"]),
+  code: Schema.Literals([
+    "folder_unavailable",
+    "invalid_folder_identity",
+    "association_store_failed",
+    "activation_unavailable",
+  ]),
   root: optional(AbsolutePath),
   detail: optional(Schema.String),
   recovery: Schema.Literals(["select_accessible_folder", "retry"]),
@@ -87,7 +93,7 @@ export type GateResult = typeof GateResult.Type
 
 export interface GateError extends Schema.Schema.Type<typeof GateError> {}
 export const GateError = Schema.Struct({
-  code: Schema.Literals(["invalid_chat", "chat_not_found", "invalid_project", "gate_closed"]),
+  code: Schema.Literals(["invalid_chat", "chat_not_found", "invalid_project", "gate_closed", "execution_disabled"]),
   projectID: optional(Project.ID),
   recovery: Schema.Literals(["reopen_project", "retry"]),
 }).annotate({ identifier: "FtcProject.GateError" })
@@ -106,3 +112,32 @@ export const SubmitResult = Schema.Union([
   Schema.Struct({ kind: Schema.Literal("busy"), active: ChatRef }),
 ]).annotate({ identifier: "FtcProject.SubmitResult" })
 export type SubmitResult = typeof SubmitResult.Type
+
+export class ExecutionUnavailable extends Schema.TaggedErrorClass<ExecutionUnavailable>()(
+  "FtcProjectExecutionUnavailable",
+  {
+    code: Schema.Literals([
+      "managed_submit_required",
+      "execution_disabled",
+      "membership_unavailable",
+      "activation_unavailable",
+      "legacy_execution_disabled",
+    ]),
+    sessionID: optional(Session.ID),
+  },
+) {}
+
+export interface OwnerStatus extends Schema.Schema.Type<typeof OwnerStatus> {}
+export const OwnerStatus = Schema.Struct({
+  projectID: Project.ID,
+  active: optional(ChatRef),
+}).annotate({ identifier: "FtcProject.OwnerStatus" })
+
+// Current, volatile ownership status. No durable claim, token or replay identity.
+export const OwnerChanged = Event.define({ type: "ftc.project.owner.changed", schema: OwnerStatus.fields })
+
+export const ResumeResult = Schema.Union([
+  Schema.Struct({ kind: Schema.Literal("settled") }),
+  Schema.Struct({ kind: Schema.Literal("busy"), active: ChatRef }),
+]).annotate({ identifier: "FtcProject.ResumeResult" })
+export type ResumeResult = typeof ResumeResult.Type

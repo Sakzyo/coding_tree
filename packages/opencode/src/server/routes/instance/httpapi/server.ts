@@ -64,8 +64,8 @@ import { PtyTicket } from "@opencode-ai/core/pty/ticket"
 import { Ripgrep } from "@opencode-ai/core/ripgrep"
 import { SessionProjector } from "@opencode-ai/core/session/projector"
 import { SessionV2 } from "@opencode-ai/core/session"
-import { SessionExecution } from "@opencode-ai/core/session/execution"
-import * as SessionExecutionLocal from "@opencode-ai/core/session/execution/local"
+import { ftcHost } from "@opencode-ai/server/routes"
+import { FtcProjects } from "@opencode-ai/core/ftc/projects"
 import { lazy } from "@/util/lazy"
 import { CorsConfig, isAllowedCorsOrigin, type CorsOptions } from "@opencode-ai/server/cors"
 import { serveUIEffect } from "@/server/shared/ui"
@@ -272,6 +272,14 @@ export function createRoutes(
   corsOptions?: CorsOptions,
 ): Layer.Layer<never, EffectConfig.ConfigError, RouteRequirements> {
   const locationServiceMapV2 = buildLocationServiceMap()
+  // Legacy execution has no authoritative process-wide activation fence yet.
+  const ftc = ftcHost((request) =>
+    Effect.fail({
+      code: "activation_unavailable",
+      root: request.root,
+      recovery: "retry",
+    } satisfies FtcProjects.AssociationError),
+  )
 
   return Layer.mergeAll(
     rootApiRoutes,
@@ -296,9 +304,9 @@ export function createRoutes(
     Layer.provide(locationLayer),
     Layer.provide(PtyEnvironment.layer),
     Layer.provide(
-      AppNodeBuilderV1.build(SessionV2.node, [
+      AppNodeBuilderV1.build(LayerNode.group([SessionV2.node, ftc.runtime, ftc.tracked]), [
         [LocationServiceMap.node, locationServiceMapV2],
-        [SessionExecution.node, SessionExecutionLocal.node],
+        ...ftc.replacements,
       ]),
     ),
     Layer.provide(locationServiceMapV2),

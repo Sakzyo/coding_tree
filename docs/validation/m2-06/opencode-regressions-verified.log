@@ -1,0 +1,74 @@
+bun test v1.3.14 (0d9b296a)
+
+test/server/httpapi-ftc-project.test.ts:
+(pass) actual OpenCode host denies unfenced activation and all managed legacy execution entrances [1222.14ms]
+
+test/session/prompt.test.ts:
+(pass) loop exits immediately when last assistant has stop finish [108.93ms]
+(pass) loop exits for a completed parent turn with nonmonotonic message IDs [137.16ms]
+(pass) loop exits without an LLM request for interrupted orphan tool calls [105.87ms]
+(pass) loop calls LLM and returns assistant message [1018.46ms]
+(pass) loop includes MCP instructions in model system context [583.75ms]
+(pass) legacy prompt emits message events without session.next events [153.21ms]
+(pass) loop surfaces content-filter finishes as session errors [554.40ms]
+(pass) loop stops provider overflow instead of auto-compacting when disabled [548.29ms]
+(skip) prompt emits v2 prompted and synthetic events (v2 projector disabled)
+(pass) static loop returns assistant text through local provider [527.94ms]
+(pass) static loop consumes queued replies across turns [583.07ms]
+(pass) loop continues when finish is tool-calls [555.54ms]
+(pass) loop continues when finish is unknown [556.83ms]
+(pass) glob tool keeps instance context during prompt runs [574.08ms]
+(pass) loop continues when finish is stop but assistant has tool parts [527.15ms]
+(pass) failed subtask preserves metadata on error tool state [586.99ms]
+(pass) subtask child inherits parent session external_directory allow [572.64ms]
+(pass) prompt tools replace previous prompt tool rules [306.68ms]
+(pass) running subtask preserves metadata after tool-call transition [307.97ms]
+(pass) running task tool preserves metadata after tool-call transition [736.55ms]
+(pass) loop sets status to busy then idle [454.55ms]
+(pass) cancel interrupts loop and resolves with an assistant message [883.22ms]
+(pass) cancel records MessageAbortedError on interrupted process [444.56ms]
+(pass) finalizes assistant when cancelled before processor creation completes [230.59ms]
+(pass) cancel finalizes subtask tool state [349.44ms]
+(pass) cancel propagates from slash command subtask to child session [397.17ms]
+(pass) cancel with queued callers resolves all cleanly [1477.89ms]
+(pass) concurrent loop callers get same result [204.55ms]
+(pass) concurrent loop callers all receive same error result [796.31ms]
+(pass) prompt submitted during an active run is included in the next LLM input [427.12ms]
+(pass) assertNotBusy fails with BusyError when loop running [343.66ms]
+(pass) assertNotBusy succeeds when idle [50.47ms]
+(pass) shell rejects with BusyError when loop running [254.96ms]
+(pass) shell captures stdout and stderr in completed tool output [621.56ms]
+(pass) shell completes a fast command on the preferred shell [460.69ms]
+(pass) shell uses configured shell over env shell [151.24ms]
+(pass) shell commands can change directory after startup [147.47ms]
+(pass) shell lists files from the project directory [453.71ms]
+(pass) shell captures stderr from a failing command [458.89ms]
+(pass) shell updates running metadata before process exit [357.81ms]
+(pass) loop waits while shell runs and starts after shell exits [1087.74ms]
+(pass) shell completion resumes queued loop callers [1231.20ms]
+(pass) command ! expansion uses configured shell over env shell [287.66ms]
+(pass) cancel interrupts shell and resolves cleanly [253.60ms]
+(pass) cancel persists aborted shell result when shell ignores TERM [3239.88ms]
+(pass) cancel finalizes interrupted bash tool output through normal truncation [545.59ms]
+(pass) cancel interrupts loop queued behind shell [260.55ms]
+(pass) shell rejects when another shell is already running [214.65ms]
+(pass) interrupt propagates abort signal to read tool via file part (text/plain) [138.52ms]
+(pass) interrupt propagates abort signal to read tool via file part (directory) [173.70ms]
+(pass) does not fail the prompt when a file part is missing [137.08ms]
+(pass) keeps stored part order stable when file resolution is async [140.66ms]
+(pass) handles filenames with # character [211.58ms]
+(pass) does not loop empty assistant turns for a simple reply [252.96ms]
+(pass) records aborted errors when prompt is cancelled mid-stream [260.94ms]
+(pass) applies agent variant only when using agent model [152.32ms]
+(pass) unknown agent throws typed error [47.68ms]
+(pass) unknown agent error includes available agent names [48.50ms]
+(pass) unknown command throws typed error with available names [51.45ms]
+
+1 tests skipped:
+(skip) prompt emits v2 prompted and synthetic events (v2 projector disabled)
+
+ 59 pass
+ 1 skip
+ 0 fail
+ 248 expect() calls
+Ran 60 tests across 2 files. [29.11s]

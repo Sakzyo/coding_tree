@@ -10,6 +10,8 @@ export interface Coordinator<Key, E> {
   readonly run: (key: Key) => Effect.Effect<void, E>
   /** Registers one coalesced follow-up after newly recorded work. */
   readonly wake: (key: Key) => Effect.Effect<void>
+  /** Atomically registers a bounded, runtime-only terminal notification before scheduling advisory work. */
+  readonly wakeWithSettlement: (key: Key, settled: () => Effect.Effect<void>) => Effect.Effect<void>
   /** Stops active execution and waits for its cleanup. */
   readonly interrupt: (key: Key) => Effect.Effect<void>
 }
@@ -19,6 +21,9 @@ type Entry<E> = {
   owner?: Fiber.Fiber<void, never>
   pendingWake: boolean
   stopping: boolean
+  closing: boolean
+  readonly notifications: Array<() => Effect.Effect<void>>
+  readonly freshNotifications: Array<() => Effect.Effect<void>>
   readonly ownership?: { readonly scope: Scope.Closeable; acquired: boolean }
 }
 
@@ -40,12 +45,20 @@ export const make = <Key, E>(options: {
 
     const makeEntry = (
       ownership = options.acquire ? { scope: Scope.makeUnsafe(), acquired: false } : undefined,
+      notifications: Array<() => Effect.Effect<void>> = [],
     ): Entry<E> => ({
       done: Deferred.makeUnsafe<void, E>(),
       pendingWake: false,
       stopping: false,
+      closing: false,
+      notifications,
+      freshNotifications: [],
       ownership,
     })
+
+    // A defective notification must not prevent the remaining exact claims from settling.
+    const notify = (callbacks: Array<() => Effect.Effect<void>>) =>
+      Effect.forEach(callbacks, (callback) => Effect.suspend(callback).pipe(Effect.exit), { discard: true })
 
     const start = (key: Key, entry: Entry<E>, force: boolean, successor = false) => {
       const ready = Deferred.makeUnsafe<void>()
@@ -87,7 +100,7 @@ export const make = <Key, E>(options: {
 
         // A pending successor inherits ownership before old waiters are settled.
         if (!closed && entry.pendingWake) {
-          const successor = makeEntry(entry.ownership)
+          const successor = makeEntry(entry.ownership, entry.notifications)
           active.set(key, successor)
           start(key, successor, false, true)
           Deferred.doneUnsafe(entry.done, exit)
@@ -96,19 +109,31 @@ export const make = <Key, E>(options: {
 
         // Keep the entry visible while asynchronous release runs. New wakes become a
         // fresh chain after release; they cannot resurrect this closed scope.
+        entry.closing = true
         return (entry.ownership ? Scope.close(entry.ownership.scope, exit) : Effect.void).pipe(
           Effect.ensuring(
-            Effect.sync(() => {
-              if (!closed && entry.pendingWake) {
-                const successor = makeEntry()
-                active.set(key, successor)
-                start(key, successor, false, true)
-                Deferred.doneUnsafe(entry.done, exit)
-                return
-              }
-              active.delete(key)
-              Deferred.doneUnsafe(entry.done, exit)
-            }),
+            notify(entry.notifications).pipe(
+              Effect.andThen(
+                Effect.suspend(() => {
+                  if (!closed && entry.pendingWake) {
+                    const successor = makeEntry(undefined, entry.freshNotifications)
+                    // Explicit undefined uses makeEntry's fresh ownership default.
+                    active.set(key, successor)
+                    start(key, successor, false, true)
+                    Deferred.doneUnsafe(entry.done, exit)
+                    return Effect.void
+                  }
+                  return notify(entry.freshNotifications).pipe(
+                    Effect.andThen(
+                      Effect.sync(() => {
+                        active.delete(key)
+                        Deferred.doneUnsafe(entry.done, exit)
+                      }),
+                    ),
+                  )
+                }),
+              ),
+            ),
           ),
         )
       })
@@ -128,19 +153,27 @@ export const make = <Key, E>(options: {
         return restore(Deferred.await(next.done))
       })
 
-    const wake = (key: Key) =>
-      Effect.sync(() => {
-        if (closed) return
-        const entry = active.get(key)
-        if (entry !== undefined) {
-          entry.pendingWake = true
-          return
-        }
+    const schedule = (key: Key, callback?: () => Effect.Effect<void>) =>
+      Effect.uninterruptible(
+        Effect.suspend(() => {
+          if (closed) return callback ? notify([callback]) : Effect.void
+          const entry = active.get(key)
+          if (entry !== undefined) {
+            entry.pendingWake = true
+            if (callback) (entry.closing ? entry.freshNotifications : entry.notifications).push(callback)
+            return Effect.void
+          }
 
-        const next = makeEntry()
-        active.set(key, next)
-        start(key, next, false)
-      })
+          const next = makeEntry()
+          if (callback) next.notifications.push(callback)
+          active.set(key, next)
+          start(key, next, false)
+          return Effect.void
+        }),
+      )
+
+    const wake = (key: Key) => schedule(key)
+    const wakeWithSettlement = (key: Key, callback: () => Effect.Effect<void>) => schedule(key, callback)
 
     const interrupt = (key: Key): Effect.Effect<void> =>
       Effect.suspend(() => {
@@ -151,5 +184,5 @@ export const make = <Key, E>(options: {
         return Fiber.interrupt(entry.owner)
       })
 
-    return { active: Effect.sync(() => new Set(active.keys())), run, wake, interrupt }
+    return { active: Effect.sync(() => new Set(active.keys())), run, wake, wakeWithSettlement, interrupt }
   })

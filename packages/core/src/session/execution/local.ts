@@ -52,12 +52,15 @@ export const make = (input: {
         )
       }),
     })
-    return SessionExecution.Service.of({
-      active: coordinator.active,
-      interrupt: coordinator.interrupt,
-      resume: coordinator.run,
-      wake: coordinator.wake,
-    })
+    return {
+      wakeWithSettlement: coordinator.wakeWithSettlement,
+      ...SessionExecution.Service.of({
+        active: coordinator.active,
+        interrupt: coordinator.interrupt,
+        resume: coordinator.run,
+        wake: coordinator.wake,
+      }),
+    }
   })
 
 export const layerWith = (gate: FtcAgentGate.Port) =>

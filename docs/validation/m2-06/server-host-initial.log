@@ -1,0 +1,39 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-project.test.ts:
+[06:42:12.023] INFO (#179): watcher backend {
+  directory: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/m2-06-host-PgmCTy",
+  platform: "darwin",
+  backend: "fs-events",
+}
+[06:42:12.026] INFO (#293): project copy refresh started {
+  projectID: "global",
+}
+[06:42:12.027] INFO (#293): project copy refresh done {
+  projectID: "global",
+  updated: [],
+  removed: [],
+}
+[06:42:12.054] INFO (#179): booting location services {
+  directory: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/m2-06-host-PgmCTy",
+  workspaceID: undefined,
+}
+27 |       expect(await raw.json()).toMatchObject({ code: "execution_disabled" })
+28 |     }
+29 |     expect((await call("/api/ftc/project/resume", chat)).status).toBe(409)
+30 |     expect((await call("/api/ftc/project/stop", chat)).status).toBe(204)
+31 |     const history = await web.handler(new Request(`http://localhost/api/session/${chat.sessionID}/messages`))
+32 |     expect(history.status).toBe(200)
+                                ^
+error: expect(received).toBe(expected)
+
+Expected: 200
+Received: 404
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/server/test/ftc-project.test.ts:32:28)
+(fail) actual standalone and embedded host exposes project commands and refuses managed admission [367.43ms]
+
+ 0 pass
+ 1 fail
+ 14 expect() calls
+Ran 1 test across 1 file. [1111.00ms]

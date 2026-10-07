@@ -1,0 +1,100 @@
+# M2-06 implementation candidate
+
+Date: 2026-10-07. Available software candidate for independent review; **not full M2-06/module, desktop activation, production execution, or platform acceptance**. Coordinator owns Git, task checklist and ledger. No Git/index mutation, Schema root-barrel edit or migration was performed by this lane.
+
+## Result and remaining gate
+
+Both actual V2 host graphs bind the same disabled M2 factory: standalone/SDK Server routes and OpenCode's independent instance HttpApi. FTC project/chat commands, explicit resume/stop, active owner, volatile owner changes, raw managed admission refusal, and generated Client methods are available. Production managed prompt, admit-only prompt, resume and wake fail before durable admission/provider/tool execution. No setting, JSON ready flag, serialized lease, or ordinary proof object enables them. Generic Bash is still unrestricted and is **not** an approved FTC execution path.
+
+OpenCode create/open of a **new** root returns typed `activation_unavailable`. There is no authoritative process-wide legacy owner fence in this candidate; Location status is not treated as one, and no unrelated legacy run is auto-interrupted. Existing associations can be opened/read; execution remains disabled. This is an unresolved composed software integration requirement, not merely a physical/platform test. A domain/legacy-owner activation fence follow-on is required before M1-11 can credit first-release activation behavior. Standalone/SDK composition has no legacy loop and binds a no-op legacy activation port; controlled fixtures explicitly supply their own activation port.
+
+## Ownership and contracts
+
+- M2 owns filesystem canonicalization, association and membership lookup, legacy refusal, proof records, reservation-to-chain handoff and project owner events in `ftc/projects/*`. It borrows public Session, Project, execution and database ports; queries only its own two existing tables. No SQL schema change.
+- `composition.ts` wires the real M2 gate/lifecycle/admission adapter to the actual M3 local execution coordinator. SessionRunner remains Location-scoped; process-local coordination remains Session-ID keyed. No Session-ID layer, second loop, in-memory model orchestration or durable drain identity was introduced.
+- `SessionRunCoordinator.wakeWithSettlement` atomically registers a bounded runtime callback. Coalesced and interrupted/failed successors retain the original bucket and ownership scope. Wakes after scope closing starts use a fresh successor bucket. Shutdown settles pending callbacks without starting work; missing-session/acquisition failure/no-work and defective callbacks also settle. Notifications run inside finalization, so callback completion alone does not assert active-map deletion.
+- The constructor-bound `SessionV2.layerWithAdmission` guard runs before prompt resolution/admission, including `resume:false`. M2's own admit-only call carries an optional **second runtime argument**: a WeakMap key bound to a captured deeply frozen exact request and frozen full currently held lease. Request identity, Session, chat, delivery path and held lease must match; the key is revoked when admission finishes. It never enters a wire schema. Unmanaged Session behavior remains compatible.
+- Server consumes exact canonical FtcProject records through the existing Core facade because it has no direct Schema package dependency. This producer/boundary decision preserves object identity and dependency direction without package expansion.
+- Canonical `FtcProject.OwnerChanged` is registered only as current volatile `ftc.project.owner.changed`, with project ID and optional active ChatRef. No claim token, durable owner or replay authority is published. The existing event infrastructure carries it.
+- Protocol exposes create/open/read project, create/list/read chats, submit, resume, stop and active through `server.ftcProject`; generated Client name is `ftcProjects`. Error tags use valid generated identifiers `FtcProjectApiError` and `FtcProjectExecutionUnavailable`.
+
+## Legacy boundary
+
+HTTP init, summarize, message/prompt, prompt_async, command and shell refuse associated roots before their work. HTTP abort also refuses managed roots without interrupting unrelated work. Decisions use the stored Session directory, not a caller header.
+
+The actual legacy `SessionPrompt.Service` also guards prompt (including noReply), loop, shell and command. INTERNAL/CLI/ACP callers using those service methods therefore receive typed `FtcProjectExecutionUnavailable`; HTTP maps to its existing declared BadRequest without changing legacy SDK schemas. Legacy read/history APIs remain usable, with no migration or loop bridge.
+
+This covers these entry methods, not a new process-wide fence over already running legacy work or arbitrary unrelated direct tool services. New-root activation consequently remains unavailable. A regression exposed unnecessary host Project/git discovery in the legacy root guard; it now uses only canonical filesystem identity plus the M2 association lookup. The existing queued-shell cancellation regression and full legacy prompt suite pass after that correction.
+
+## Verification and evidence
+
+All tests/typechecks used pinned Bun **1.3.14** at `/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun`, from package directories. No tests were run from repository root. Environment included `OPENCODE_TEST_HOME`, all four XDG roots including STATE, `OPENCODE_DISABLE_MODELS_FETCH=true`, and `OPENCODE_DISABLE_DEFAULT_PLUGINS=true`. Final scripted checks use `/private/tmp/m2-06-freeze/<package>/{home,data,cache,config,state}`; later targeted checks use `/private/tmp/m2-06-final/{home,data,cache,config,state}`. OpenCode's existing test preload replaces these with PID-owned `/tmp/opencode-test-data-<pid>/{home,share,cache,config,state}`.
+
+The exact command arrays, cwd, environment, output paths and actual exits for the freeze run are in [freeze-commands.json](m2-06/freeze-commands.json), executed by [verify.ts](m2-06/verify.ts) from `packages/core`. That artifact intentionally retains the foreign Core errors and a subsequently corrected test-context API spelling; the overriding successful checks below are explicit.
+
+| Check                                                                | Result                                                               | Log                                                                                |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Pre-runtime Session prompt/runner/coordinator baseline               | exit 0; 127 pass / 342 assertions                                    | [baseline-session.log](m2-06/baseline-session.log)                                 |
+| Core composed + tracked + M2-01…05 + M3-02 + affected Session suites | exit 0; 243 pass / 852 assertions                                    | [freeze-core-tests.log](m2-06/freeze-core-tests.log)                               |
+| Focused Schema contracts, hygiene and V1 isolation                   | exit 0; 11 pass / 32 assertions                                      | [freeze-schema-tests.log](m2-06/freeze-schema-tests.log)                           |
+| Actual standalone/embedded Server graph                              | exit 0; 1 pass / 16 assertions                                       | [freeze-server-tests.log](m2-06/freeze-server-tests.log)                           |
+| Actual OpenCode graph + internal legacy methods                      | exit 0; 1 pass / 22 assertions                                       | [opencode-host-verified.log](m2-06/opencode-host-verified.log)                     |
+| Full existing legacy prompt + actual OpenCode host                   | exit 0; 59 pass / 248 assertions, 1 existing projector-disabled skip | [opencode-regressions-verified.log](m2-06/opencode-regressions-verified.log)       |
+| Client full tests including import boundaries                        | exit 0; 16 pass / 75 assertions                                      | [freeze-client-tests.log](m2-06/freeze-client-tests.log)                           |
+| SDK-next generated Client actual embedded graph                      | exit 0; 1 pass / 3 assertions                                        | [freeze-sdk-tests.log](m2-06/freeze-sdk-tests.log)                                 |
+| Client generation through inspected package script                   | exit 0                                                               | [freeze-generate.log](m2-06/freeze-generate.log)                                   |
+| Schema, Protocol, Server, Client, sdk-next types                     | exit 0 each                                                          | `m2-06/freeze-<package>-types.log`                                                 |
+| OpenCode types after test context spelling correction                | exit 0                                                               | [opencode-types-verified.log](m2-06/opencode-types-verified.log)                   |
+| Core types before M12 work entered shared tree                       | exit 0                                                               | [core-types-final.log](m2-06/core-types-final.log)                                 |
+| Latest Core types with concurrent M12 candidate                      | exit 2, only foreign M12-02 test errors                              | [freeze-core-types.log](m2-06/freeze-core-types.log)                               |
+| Scoped Prettier / diff whitespace                                    | exit 0 each                                                          | [format-final.log](m2-06/format-final.log), [diff-check.log](m2-06/diff-check.log) |
+| Scoped oxlint                                                        | exit 0, 0 errors; 3 unchanged warnings                               | [lint-verified.log](m2-06/lint-verified.log)                                       |
+
+Targeted override commands: from `packages/opencode`, `bun typecheck` and `bun test ./test/server/httpapi-ftc-project.test.ts` produced the two verified override logs above (both exit 0). Legacy final command, same cwd/environment: `bun test ./test/server/httpapi-ftc-project.test.ts ./test/session/prompt.test.ts` (exit 0). This command required scoped sandbox approval for existing controlled loopback fixture providers. Initial sandbox run recorded EADDRINUSE, 27 pass / 32 fail / 1 skip in [opencode-regressions.log](m2-06/opencode-regressions.log); approved rerun exposed a genuine queued-shell cancellation timeout, reproduced alone in [opencode-queued-cancel-final.log](m2-06/opencode-queued-cancel-final.log). After canonical-only legacy lookup, the isolated test passed 1/3 in [opencode-queued-cancel-canonical.log](m2-06/opencode-queued-cancel-canonical.log) and full suite passed above. No real remote provider or user application server was started. Existing legacy fixtures do execute controlled local shell/test tools.
+
+The latest Core diagnostics are all `test/ftc/learning-and-progress/m12-02.test.ts`: readonly lookup/lessons assignments, an implicit parameter type, and a union-string overload. No M2 fixture diagnostics remain. Coordinator must rerun settled Core types after that independent lane freezes.
+
+Schema's old exhaustive manifest tests retain the two documented baseline failures. [baseline-schema.log](baseline-schema.log) records expected 55 versus actual 58 and an outdated fixed slice before this task. M2 adds exactly one current event; approved expectations increase by one to 56/86, current Server actual is 59 (same +3 baseline gap), and the fixed slice is unchanged. [freeze-schema-baseline.log](m2-06/freeze-schema-baseline.log) exits 1 with those two failures. Dedicated canonical identity and volatile/non-durable assertions pass; unrelated omissions were not repaired.
+
+Lint's unchanged warnings are existing `Fiber.Fiber<void, never>`, existing Provider.isInstance method reference, and existing legacy Part assertion. New adapter warnings were repaired. Formatter/linter ran against [owned-files.txt](m2-06/owned-files.txt), excluding generated output; generated files were only written by Client's inspected `bun run generate` script.
+
+## Behavioral assertion map and RED/GREEN record
+
+| Contract                                                                                                                                | Evidence                                                                                                              |
+| --------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Duplicate windows/canonical symlink alias share one active chat; another project proceeds; refused draft absent from inbox              | composed duplicate-window test uses real SQLite, filesystem symlink, M2 gate and M3 local coordinator                 |
+| Raw Core managed prompt / admit-only / fabricated JSON proof fails before write; orphan membership fails closed                         | composed Core guard test                                                                                              |
+| Exact retry and conflicting-ID semantics, admit-only release                                                                            | composed exact-retry test plus existing Session prompt tests                                                          |
+| Disabled managed commands cannot admit/run; unknown activation cannot associate                                                         | composed disabled/activation tests, both actual host graphs and generated SDK client                                  |
+| Separate model histories survive database reopen, no active ownership/replay; explicit resume required                                  | composed reopen tests and actual SessionRunnerLLM controlled-port test (3 stream turns, 1 bounded no-I/O tool result) |
+| Coalesced callback bucket, fresh closing successor, failure/interrupt inheritance, shutdown/cancel/no-acquire                           | 7 generic tracked-wake tests plus existing coordinator and M2/M3 ownership races                                      |
+| Owner-event defect cannot leak reservation; old completion cannot unlock newer paused admission; proof revoked while lease remains held | composed deterministic Deferred-controlled race tests                                                                 |
+| Empty inbox and missing Session settle without provider calls                                                                           | actual local execution/runner no-work test, deterministic finalization joins                                          |
+| Legacy read preservation and internal/HTTP refusal                                                                                      | actual OpenCode graph test, 6 execution HTTP entries plus 4 internal methods                                          |
+
+[red-tracked.log](m2-06/red-tracked.log) records four intended missing `wakeWithSettlement` assertions before implementation, not import failures. [green-tracked.log](m2-06/green-tracked.log) records 23 passing tracked/existing coordinator tests. [red-notification.log](m2-06/red-notification.log) records a real leaked reservation after an owner subscriber defect; scoped acquisition/contained notification repair is covered by final integration GREEN.
+
+The broader initial composed suite was assembled incrementally and its earliest failures were fixture dependency/type errors; those are retained in `integration-initial.log` and type logs and are **not** claimed as a task-wide behavioral RED. Likewise the no-work final assertion initially assumed notification meant active-map deletion; both owners are now explicitly joined. All relevant final behavior checks above pass. This report does not retroactively claim a complete before-implementation composed RED.
+
+## Scoped performance
+
+[benchmark.ts](m2-06/benchmark.ts) compares the dispatch local/coordinator source snapshots ([benchmark-base-local.ts](m2-06/benchmark-base-local.ts), [benchmark-base-coordinator.ts](m2-06/benchmark-base-coordinator.ts)) with final local execution. Snapshot imports were mechanically redirected for isolated execution. Baseline source is dispatch product HEAD `6620d1bc1`; the previously recorded M3 baseline is historical and is not substituted here.
+
+Command from `packages/core`: `bun ../../docs/validation/m2-06/benchmark.ts`, same pinned Bun and isolated environment, exit 0. Ten samples after warmup, alternating mode order, 1,000 sequential local lifecycles/sample, half advisory wake+resume joins and half explicit resume; tracked mode adds 500 bounded terminal callbacks. Initial pre-runtime results are [baseline-performance.json](m2-06/baseline-performance.json). Final raw samples are [performance-final.json](m2-06/performance-final.json).
+
+| Mode                                   | Final median ms / 1,000 lifecycles |
+| -------------------------------------- | ---------------------------------: |
+| Dispatch source baseline               |                             25.734 |
+| Current unmanaged                      |                             28.012 |
+| Current controlled managed gate port   |                             30.646 |
+| Current managed plus tracked callbacks |                             30.977 |
+
+Unmanaged overhead versus matched dispatch source is ~2.278 ms/1,000 (~8.9%); tracked overhead over current managed is ~0.331 ms/1,000 (~1.1%). These are process-local microbenchmarks with no real folder lookup/database/model/renderer/robot cost. They do not establish production latency/resource limits or macOS/Windows parity.
+
+## Frozen candidate and unrun gates
+
+An additional fresh-process import probe loaded only the three new M2 modules from `packages/core`, with pinned Bun and five fresh roots under `/private/tmp/m2-06-import-verified`. With `BUN_RUNTIME_TRANSPILER_CACHE_PATH=0`, none of those roots was created (exit 0, [import-only-verified.log](m2-06/import-only-verified.log)). The initial probe without that Bun setting failed solely because Bun created `cache/bun/@t@/*.pile` transpiler files; [import-only.log](m2-06/import-only.log) is retained. This checks application-root bootstrap writes, alongside the type-only borrowed-port source audit; it is not a universal filesystem-I/O proof.
+
+Exact SHA256 for all 33 owned product/test/generated files: [source-sha256.txt](m2-06/source-sha256.txt). Scope inventory: [owned-files.txt](m2-06/owned-files.txt). Concurrent M6/M12 sources, generated migration/schema changes, and coordinator documents are foreign and excluded. No further product edits after this snapshot without renewed checks/hashes.
+
+Unrun/not accepted: authoritative legacy activation fence; actual M9 enforcement/action isolation and restricted tool/Bash boundary; real provider/model execution; first-release desktop activation flow/UI; Windows/case-filesystem behavior; native packaging/signing/offline/proxy proof; USB/controller/robot mutation; full repository or unrelated App/desktop suites. Controlled ports and in-process host handlers are software evidence only. Independent review and the settled Core package gate remain coordinator-owned.

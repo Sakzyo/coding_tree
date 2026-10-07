@@ -1,0 +1,88 @@
+bun test v1.3.14 (0d9b296a)
+
+test/session-tracked-wake.test.ts:
+11 |     const notices: number[] = []
+12 |     let runs = 0
+13 |     const coordinator = yield* SessionRunCoordinator.make<string, never>({
+14 |       drain: () => Effect.sync(() => runs++).pipe(Effect.andThen(Deferred.succeed(started, undefined)), Effect.andThen(Deferred.await(finish))),
+15 |     })
+16 |     expect(typeof coordinator.wakeWithSettlement).toBe("function")
+                                                       ^
+error: expect(received).toBe(expected)
+
+Expected: "function"
+Received: "undefined"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/session-tracked-wake.test.ts:16:51)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+(fail) tracked coalesced wakes settle after the complete ownership chain [16.48ms]
+35 |     let acquisitions = 0
+36 |     const coordinator = yield* SessionRunCoordinator.make<string, never>({
+37 |       acquire: () => Effect.acquireRelease(Effect.sync(() => ++acquisitions), (count) => count === 1 ? Deferred.succeed(closing, undefined).pipe(Effect.andThen(Deferred.await(release))) : Effect.void),
+38 |       drain: () => acquisitions === 1 ? Effect.void : Deferred.succeed(successor, undefined).pipe(Effect.andThen(Deferred.await(finish))),
+39 |     })
+40 |     expect(typeof coordinator.wakeWithSettlement).toBe("function")
+                                                       ^
+error: expect(received).toBe(expected)
+
+Expected: "function"
+Received: "undefined"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/session-tracked-wake.test.ts:40:51)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+(fail) wake during asynchronous scope close owns a fresh callback bucket [1.81ms]
+58 |     let drains = 0
+59 |     const coordinator = yield* SessionRunCoordinator.make<string, string>({
+60 |       acquire: () => Deferred.await(acquire).pipe(Effect.andThen(Effect.fail("blocked"))),
+61 |       drain: () => Effect.sync(() => { drains++ }),
+62 |     })
+63 |     expect(typeof coordinator.wakeWithSettlement).toBe("function")
+                                                       ^
+error: expect(received).toBe(expected)
+
+Expected: "function"
+Received: "undefined"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/session-tracked-wake.test.ts:63:51)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+(fail) failed acquisition and defective callback cannot strand other callbacks [1.38ms]
+77 |     let drains = 0
+78 |     const coordinator = yield* SessionRunCoordinator.make<string, never>({
+79 |       acquire: () => Effect.addFinalizer(() => Deferred.succeed(closing, undefined).pipe(Effect.andThen(Deferred.await(release)))),
+80 |       drain: () => Effect.sync(() => { drains++ }),
+81 |     }).pipe(Effect.provideService(Scope.Scope, scope))
+82 |     expect(typeof coordinator.wakeWithSettlement).toBe("function")
+                                                       ^
+error: expect(received).toBe(expected)
+
+Expected: "function"
+Received: "undefined"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/session-tracked-wake.test.ts:82:51)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+(fail) shutdown settles current and never-started fresh successor plus late registration [0.80ms]
+
+ 0 pass
+ 4 fail
+ 4 expect() calls
+Ran 4 tests across 1 file. [242.00ms]

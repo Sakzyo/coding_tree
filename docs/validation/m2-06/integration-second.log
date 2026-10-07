@@ -1,0 +1,33 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-integration/m2-06.test.ts:
+81 |     expect(project.projectID).toBe(alias.projectID)
+82 |     expect(admitted.kind).toBe("admitted")
+83 |     expect(refused).toEqual({ kind: "busy", active: first })
+84 |     expect(yield* SessionInput.find(f.database.db, id)).toBeUndefined()
+85 |     expect(f.starts.filter((id) => id === first.sessionID || id === second.sessionID)).toHaveLength(1)
+86 |     expect(f.starts).toContain(third.sessionID)
+                          ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "ses_eeaeb41feffdhSJTSmnGhp6qDA"
+Received: [ "ses_eeaeb4208ffeI141anOrY5QPTw" ]
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-integration/m2-06.test.ts:86:22)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:656:13)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) composed duplicate windows cannot bypass gate [97.00ms]
+(pass) composed Core guard refuses raw managed admission and JSON proof before writing [22.31ms]
+(pass) exact retries preserve durable identity and admit-only releases its own reservation [39.70ms]
+(pass) disabled host preserves associations and rejects every managed execution entrance [23.72ms]
+(pass) unknown legacy idle refuses new activation and never associates the root [6.49ms]
+(pass) database reopen retains separate chats and pending inputs without automatic execution [42.65ms]
+
+ 5 pass
+ 1 fail
+ 41 expect() calls
+Ran 6 tests across 1 file. [697.00ms]

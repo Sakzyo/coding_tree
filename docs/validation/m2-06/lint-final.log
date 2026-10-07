@@ -1,0 +1,66 @@
+
+  ! typescript-eslint(no-unnecessary-type-arguments): This is the default value for this type parameter, so it can be omitted.
+    ,-[packages/core/src/session/run-coordinator.ts:21:29]
+ 20 |   readonly done: Deferred.Deferred<void, E>
+ 21 |   owner?: Fiber.Fiber<void, never>
+    :                             ^^^^^
+ 22 |   pendingWake: boolean
+    `----
+
+  ! typescript-eslint(consistent-return): Function expected no return value.
+     ,-[packages/core/src/ftc/projects/execution.ts:100:13]
+  99 |               )
+ 100 | ,->             return yield* new FtcProject.ExecutionUnavailable({
+ 101 | |                 code: "managed_submit_required",
+ 102 | |                 sessionID: session.id,
+ 103 | `->             })
+ 104 |             }),
+     `----
+
+  ! typescript-eslint(consistent-return): Function expected a return value.
+     ,-[packages/core/src/ftc/projects/execution.ts:147:20]
+ 146 |           const requireChat = (chat: FtcProject.ChatRef) =>
+ 147 | ,->         Effect.gen(function* () {
+ 148 | |             const recorded = yield* session.get(chat.sessionID)
+ 149 | |             const member = yield* resolve(recorded)
+ 150 | |             if (
+ 151 | |               member.kind !== "managed" ||
+ 152 | |               member.chat.projectID !== chat.projectID ||
+ 153 | |               member.chat.chatID !== chat.chatID
+ 154 | |             )
+ 155 | |               return yield* new FtcProject.ExecutionUnavailable({
+ 156 | |                 code: "membership_unavailable",
+ 157 | |                 sessionID: chat.sessionID,
+ 158 | |               })
+ 159 | `->         })
+ 160 |           return {
+     `----
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'Context<unknown>' is more narrow than the original type.
+    ,-[packages/opencode/test/server/httpapi-ftc-project.test.ts:17:17]
+ 16 | 
+ 17 | const context = Context.empty() as Context.Context<unknown>
+    :                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 18 | 
+    `----
+
+  ! typescript-eslint(unbound-method): Avoid referencing unbound methods which may cause unintentional scoping of `this`.
+     ,-[packages/opencode/src/session/prompt.ts:666:36]
+ 665 |               .getModel(model.providerID, model.modelID)
+ 666 |               .pipe(Effect.catchIf(Provider.ModelNotFoundError.isInstance, () => Effect.succeed(undefined)))
+     :                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+     :                                                       |                  `-- This reference may be unbound and lose `this` context
+ 667 |           : undefined
+     `----
+  help: If your function does not access `this`, you can annotate it with `this: void`, or consider using an arrow function instead.
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'Part' is more narrow than the original type.
+     ,-[packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts:424:23]
+ 423 |       yield* requireSession(ctx.params.sessionID)
+ 424 |       const payload = ctx.payload as SessionV1.Part
+     :                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 425 |       if (
+     `----
+
+Found 6 warnings and 0 errors.
+Finished in 6.8s on 30 files with 130 rules using 10 threads.

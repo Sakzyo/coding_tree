@@ -1,0 +1,6 @@
+1 | await import("./src/ftc/composition"); await import("./src/ftc/projects/adapters"); await import("./src/ftc/projects/execution"); const fs = await import("node:fs/promises"); const roots = ["OPENCODE_TEST_HOME", "XDG_DATA_HOME", "XDG_CACHE_HOME", "XDG_CONFIG_HOME", "XDG_STATE_HOME"]; for (const key of roots) { if (await fs.stat(process.env[key]).then(() => true, () => false)) throw new Error("Import created " + key); } console.log("M2 module imports created none of the five isolated roots");
+                                                                                                                                                                                                                                                                                                                                                                                                         ^
+error: Import created XDG_CACHE_HOME
+      at /Users/dylanxu/coding_tree/packages/core/[eval]:1:390
+
+Bun v1.3.14 (macOS arm64)

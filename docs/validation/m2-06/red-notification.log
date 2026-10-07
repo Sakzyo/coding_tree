@@ -1,0 +1,30 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-integration/m2-06.test.ts:
+277 |     const f = yield* fixture(tmp.path, { changed: () => Effect.die("subscriber failed") })
+278 |     const project = yield* f.projects.openProject({ root: AbsolutePath.make(tmp.path) })
+279 |     const first = yield* f.projects.createChat(project)
+280 |     const second = yield* f.projects.createChat(project)
+281 |     yield* f.commands.submitPrompt({ chat: first, prompt: Prompt.make({ text: "admit only" }), resume: false }).pipe(Effect.exit)
+282 |     expect((yield* f.commands.active(project)).active).toBeUndefined()
+                                                             ^
+error: expect(received).toBeUndefined()
+
+Received: {
+  projectID: "ftc_cc27aa81-81d8-4b5f-8331-5e395377aa69",
+  chatID: "chat_1151ae89b001fPEDXUcgAPhcRo",
+  sessionID: "ses_eeae5176cffe2k4VxGi2FLKdKl",
+}
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc-integration/m2-06.test.ts:282:56)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) owner event failure cannot leak or release a newer reservation [86.70ms]
+
+ 0 pass
+ 8 filtered out
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [659.00ms]

@@ -1,0 +1,16 @@
+$ tsgo --noEmit
+src/ftc/composition.ts(58,11): error TS7022: 'runtime' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+src/ftc/composition.ts(61,7): error TS7023: 'execution' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
+src/ftc/composition.ts(65,11): error TS7022: 'execution' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+src/ftc/projects/execution.ts(57,11): error TS7022: 'lifecycle' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+src/ftc/projects/execution.ts(60,9): error TS7023: 'wake' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
+src/ftc/projects/execution.ts(60,89): error TS7024: Function implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
+src/ftc/projects/execution.ts(96,9): error TS2322: Type 'Effect<unknown, GateError, unknown>' is not assignable to type 'Effect<{ readonly kind: "acquired"; readonly lease: { readonly projectKey: string & Brand<"AbsolutePath">; readonly chatID: string & Brand<"FtcProject.ChatID">; readonly sessionID: string & Brand<...>; readonly token: string & Brand<...>; }; } | { ...; }, GateError, never>'.
+  Type 'unknown' is not assignable to type '{ readonly kind: "acquired"; readonly lease: { readonly projectKey: string & Brand<"AbsolutePath">; readonly chatID: string & Brand<"FtcProject.ChatID">; readonly sessionID: string & Brand<...>; readonly token: string & Brand<...>; }; } | { ...; }'.
+src/ftc/projects/execution.ts(101,31): error TS18046: 'error' is of type 'unknown'.
+test/ftc/projects-and-chats/m2-04.test.ts(198,32): error TS2554: Expected 2 arguments, but got 1.
+test/ftc/projects-and-chats/m2-04.test.ts(421,42): error TS2554: Expected 2 arguments, but got 1.
+test/ftc/projects-and-chats/m2-05.test.ts(99,42): error TS2554: Expected 2 arguments, but got 1.
+test/ftc/projects-and-chats/m2-05.test.ts(137,42): error TS2554: Expected 2 arguments, but got 1.
+test/ftc/projects-and-chats/m2-05.test.ts(373,42): error TS2554: Expected 2 arguments, but got 1.
+test/ftc/projects-and-chats/m2-05.test.ts(475,42): error TS2554: Expected 2 arguments, but got 1.

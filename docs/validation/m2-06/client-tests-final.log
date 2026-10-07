@@ -1,0 +1,65 @@
+bun test v1.3.14 (0d9b296a)
+
+test/contract-identity.test.ts:
+(pass) Core and Server reuse the authoritative Schema and Protocol values [0.87ms]
+(pass) client and Server contracts generate identically [454.98ms]
+(pass) shared DTO schemas construct and decode plain objects [0.53ms]
+
+test/effect.test.ts:
+(pass) sessions.get returns the decoded Effect projection [6.10ms]
+(pass) events.subscribe exposes and decodes the native Effect event stream [5.61ms]
+(pass) events.subscribe terminates on Effect protocol decode failures [2.83ms]
+(pass) session methods retain decoded Effect inputs and outputs [5.27ms]
+(pass) sessions.history retains the typed SessionNotFoundError [1.97ms]
+
+test/import-boundaries.test.ts:
+(pass) public import boundaries > isolates each public entrypoint [42.96ms]
+
+test/promise.test.ts:
+2 | import { isSessionNotFoundError, isUnauthorizedError, OpenCode } from "../src"
+3 | 
+4 | test("exposes every standard HTTP API group", () => {
+5 |   const client = OpenCode.make({ baseUrl: "http://localhost:3000" })
+6 | 
+7 |   expect(Object.keys(client)).toEqual([
+                                  ^
+error: expect(received).toEqual(expected)
+
+  [
+    "health",
++   "ftcProjects",
+    "location",
+    "agents",
+    "sessions",
+    "messages",
+    "models",
+    "providers",
+    "integrations",
+    "credentials",
+    "permissions",
+    "files",
+    "commands",
+    "skills",
+    "events",
+    "ptys",
+    "questions",
+    "references",
+    "projectCopies",
+  ]
+
+- Expected  - 0
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/client/test/promise.test.ts:7:31)
+(fail) exposes every standard HTTP API group [0.20ms]
+(pass) sessions.get returns the wire projection [0.29ms]
+(pass) events.subscribe exposes the Promise event stream wire projection [0.44ms]
+(pass) events.subscribe terminates on malformed Promise SSE data [0.19ms]
+(pass) session methods use the public HTTP contract [0.59ms]
+(pass) middleware errors remain declared client errors [0.10ms]
+(pass) sessions.history decodes SessionNotFoundError [0.07ms]
+
+ 15 pass
+ 1 fail
+ 71 expect() calls
+Ran 16 tests across 4 files. [840.00ms]

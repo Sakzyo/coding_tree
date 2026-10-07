@@ -1,0 +1,21 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-project-api.test.ts:
+(pass) owner status is current volatile data without persisted claim identity [3.51ms]
+(pass) execution unavailable error and activation refusal preserve stable serializable reasons [0.69ms]
+
+test/ftc-submission.test.ts:
+(pass) submission omits absent options and preserves canonical delivery and prompt attachments [1.49ms]
+(pass) submission result encodes the existing Session admission receipt without flattening it [0.91ms]
+
+test/contract-hygiene.test.ts:
+(pass) contract hygiene > optional properties preserve transformations and omit undefined while encoding [0.29ms]
+(pass) contract hygiene > todo status and priority preserve arbitrary strings [0.05ms]
+(pass) contract hygiene > current ID constructors expose create [0.52ms]
+(pass) contract hygiene > reusable public identifiers are stable and unique [0.06ms]
+(pass) contract hygiene > current source avoids Any and mutable contract wrappers [3.77ms]
+
+ 9 pass
+ 0 fail
+ 27 expect() calls
+Ran 9 tests across 3 files. [142.00ms]

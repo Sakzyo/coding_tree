@@ -1,0 +1,12 @@
+$ tsgo --noEmit
+src/server/routes/instance/httpapi/handlers/session.ts(356,42): error TS2345: Argument of type 'Effect<WithParts, BusyError | ExecutionUnavailable, never>' is not assignable to parameter of type 'Effect<WithParts, BusyError, never>'.
+  Type 'BusyError | ExecutionUnavailable' is not assignable to type 'BusyError'.
+    Type 'ExecutionUnavailable' is not assignable to type 'BusyError'.
+      Types of property '_tag' are incompatible.
+        Type '"FtcProject.ExecutionUnavailable"' is not assignable to type '"SessionBusyError"'.
+src/server/routes/instance/httpapi/handlers/session.ts(440,28): error TS2345: Argument of type '(ctx: { params: { sessionID: string & Brand<"SessionID">; }; payload: { readonly providerID: string & Brand<"ProviderV2.ID">; readonly modelID: string & Brand<"ModelV2.ID">; readonly auto?: boolean | undefined; }; }) => Effect<...>' is not assignable to parameter of type 'HandlerWithName<HttpApiEndpoint<"deleteMessage", "DELETE", "/session/:sessionID/message/:messageID", StringTree<Struct<{ sessionID: brand<String, "SessionID"> & { create: () => string & Brand<"SessionID">; descending: (id?: string | undefined) => string & Brand<...>; }; messageID: brand<...> & { ...; }; }>>, ... 7 m...'.
+  Type 'Effect<boolean, ApiNotFoundError | ExecutionUnavailable, never>' is not assignable to type 'Effect<boolean | HttpServerResponse, ApiNotFoundError | BadRequest | InvalidRequestError | Unauthorized, never>'.
+    Type 'ApiNotFoundError | ExecutionUnavailable' is not assignable to type 'ApiNotFoundError | BadRequest | InvalidRequestError | Unauthorized'.
+      Type 'ExecutionUnavailable' is not assignable to type 'ApiNotFoundError | BadRequest | InvalidRequestError | Unauthorized'.
+        Type 'ExecutionUnavailable' is not assignable to type 'BadRequest | InvalidRequestError | Unauthorized'.
+          Property '[HttpServerRespondable.symbol]' is missing in type 'ExecutionUnavailable' but required in type 'Unauthorized'.

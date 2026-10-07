@@ -3,6 +3,7 @@ export * as EventManifest from "./event-manifest"
 import { Catalog } from "./catalog"
 import { Durable } from "./durable-event-manifest"
 import { Event } from "./event"
+import { FtcProject } from "./ftc-project"
 import { FileSystem } from "./filesystem"
 import { FileSystemWatcher } from "./filesystem-watcher"
 import { InstallationEvent } from "./installation-event"
@@ -44,6 +45,7 @@ const foundationDefinitions = Event.inventory(
 )
 
 const featureDefinitions = Event.inventory(
+  FtcProject.OwnerChanged,
   ...FileSystem.Event.Definitions,
   ...Reference.Event.Definitions,
   ...Permission.Event.Definitions,

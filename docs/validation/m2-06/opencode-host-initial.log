@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+test/server/httpapi-ftc-project.test.ts:
+49 |       ["command", { command: "init", arguments: "", model: "test/test" }],
+50 |       ["shell", { command: "must-not-run", model, agent: "build" }],
+51 |       ["summarize", model],
+52 |       ["init", { ...model, messageID: MessageID.ascending() }],
+53 |     ] as const
+54 |     for (const [route, payload] of calls) expect((await call(`/session/${saved.id}/${route}`, payload)).status).toBe(400)
+                                                                                                                     ^
+error: expect(received).toBe(expected)
+
+Expected: 400
+Received: 204
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/opencode/test/server/httpapi-ftc-project.test.ts:54:113)
+(fail) actual OpenCode host denies unfenced activation and all managed legacy execution entrances [1158.43ms]
+
+ 0 pass
+ 1 fail
+ 10 expect() calls
+Ran 1 test across 1 file. [3.84s]

@@ -1,0 +1,14 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-project.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+SyntaxError: Export named 'OpenCode' not found in module '/Users/dylanxu/coding_tree/packages/sdk-next/src/opencode.ts'.
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [442.00ms]

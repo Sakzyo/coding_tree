@@ -1,0 +1,15 @@
+{"name":"generate","exit":0}
+{"name":"schema-types","exit":0}
+{"name":"protocol-types","exit":0}
+{"name":"client-types","exit":0}
+{"name":"core-types","exit":2}
+{"name":"server-types","exit":0}
+{"name":"sdk-next-types","exit":0}
+{"name":"opencode-types","exit":2}
+{"name":"core-tests","exit":0}
+{"name":"schema-tests","exit":0}
+{"name":"schema-baseline","exit":1}
+{"name":"server-tests","exit":0}
+{"name":"opencode-host","exit":1}
+{"name":"client-tests","exit":0}
+{"name":"sdk-tests","exit":0}

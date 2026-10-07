@@ -1,0 +1,3 @@
+$ tsgo --noEmit
+test/ftc-project.test.ts(12,57): error TS2554: Expected 2 arguments, but got 1.
+test/ftc-project.test.ts(31,31): error TS2554: Expected 2 arguments, but got 1.

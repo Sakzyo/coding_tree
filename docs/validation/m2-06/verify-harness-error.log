@@ -1,0 +1,13 @@
+14 |   const prefix = "/private/tmp/m2-06-freeze/" + pkg
+15 |   const env = { ...environment, OPENCODE_TEST_HOME: prefix + "/home", XDG_DATA_HOME: prefix + "/data", XDG_CACHE_HOME: prefix + "/cache", XDG_CONFIG_HOME: prefix + "/config", XDG_STATE_HOME: prefix + "/state" }
+16 |   await mkdir(prefix, { recursive: true })
+17 |   const cwd = path.join(root, "packages", pkg)
+18 |   const log = path.join(import.meta.dir, "freeze-" + name + ".log")
+19 |   const child = Bun.spawn([bun, ...args], { cwd, env, stdout: Bun.file(log), stderr: "stdout" })
+                         ^
+TypeError: stdio must be an array of 'inherit', 'pipe', 'ignore', Bun.file(pathOrFd), number, or null
+ code: "ERR_INVALID_ARG_TYPE"
+
+      at check (/Users/dylanxu/coding_tree/docs/validation/m2-06/verify.ts:19:21)
+
+Bun v1.3.14 (macOS arm64)

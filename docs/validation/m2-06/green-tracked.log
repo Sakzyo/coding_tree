@@ -1,0 +1,33 @@
+bun test v1.3.14 (0d9b296a)
+
+test/session-tracked-wake.test.ts:
+(pass) tracked coalesced wakes settle after the complete ownership chain [8.64ms]
+(pass) wake during asynchronous scope close owns a fresh callback bucket [1.26ms]
+(pass) failed acquisition and defective callback cannot strand other callbacks [0.77ms]
+(pass) shutdown settles current and never-started fresh successor plus late registration [0.96ms]
+(pass) failure successor inherits callbacks until the new drain settles [0.96ms]
+(pass) interrupt successor inherits callbacks until the new drain settles [1.96ms]
+(pass) cancellation during acquisition settles tracked reservations without draining [0.46ms]
+
+test/session-run-coordinator.test.ts:
+(pass) SessionRunCoordinator > joins concurrent resumes for one key [2.57ms]
+(pass) SessionRunCoordinator > joins a wake-started execution without forcing a successor [0.85ms]
+(pass) SessionRunCoordinator > starts execution when woken while idle [0.51ms]
+(pass) SessionRunCoordinator > snapshots only active executions [1.06ms]
+(pass) SessionRunCoordinator > cleans active executions after failure and defect [0.93ms]
+(pass) SessionRunCoordinator > cleans active executions when its scope closes [0.55ms]
+(pass) SessionRunCoordinator > coalesces wakes received during active execution [0.73ms]
+(pass) SessionRunCoordinator > runs again when woken during the follow-up [0.78ms]
+(pass) SessionRunCoordinator > does nothing when interrupted while idle [0.30ms]
+(pass) SessionRunCoordinator > interrupts active execution and clears its pending wake [0.71ms]
+(pass) SessionRunCoordinator > runs a wake registered during interruption cleanup [0.73ms]
+(pass) SessionRunCoordinator > starts a resume registered during interruption cleanup [0.76ms]
+(pass) SessionRunCoordinator > starts one follow-up when a wake races with failure [0.73ms]
+(pass) SessionRunCoordinator > does not cancel execution when a joined waiter is interrupted [0.53ms]
+(pass) SessionRunCoordinator > runs different keys concurrently [0.60ms]
+(pass) SessionRunCoordinator > trampolines synchronous self-waking execution [99.76ms]
+
+ 23 pass
+ 0 fail
+ 55 expect() calls
+Ran 23 tests across 2 files. [227.00ms]
