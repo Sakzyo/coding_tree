@@ -31,6 +31,44 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Ft
 export const layer = (ports: EnvironmentAdapters.Ports) =>
   Layer.succeed(Service, { inspectEnvironment: (input) => inspectEnvironment(input, ports) })
 
+// Pure snapshot evaluation: never discovers assets, opens stores, or starts sibling modules.
+export function offlineReadiness(input: unknown): FtcEnvironment.Readiness {
+  const decoded = Schema.decodeUnknownOption(FtcEnvironment.OfflineRequest, { onExcessProperty: "error" })(input)
+  if (Option.isNone(decoded))
+    return {
+      state: "failed",
+      steps: [{ id: "offline", state: "failed", cause: "invalid_input", recovery: "review_project" }],
+      missingAssets: [],
+      availableFeatures: [],
+    }
+  const categories = ["tools", "dependencies", "models", "content"] as const
+  const assets = categories.flatMap((category) => decoded.value[category])
+  if (assets.length === 0)
+    return {
+      state: "missing",
+      steps: [{ id: "offline", state: "manual", cause: "requirements_unknown", recovery: "review_project" }],
+      missingAssets: [],
+      availableFeatures: [],
+    }
+  const missing = assets.filter((asset) => !asset.available)
+  return {
+    state: missing.length === 0 ? "ready" : "missing",
+    steps: categories.map((category): FtcEnvironment.ReadinessStep => {
+      const available = decoded.value[category].every((asset) => asset.available)
+      return {
+        id: `offline_${category}`,
+        state: available ? "ready" : "missing",
+        cause: available ? "available" : "asset_missing",
+        recovery: available ? "reuse" : "prepare_offline",
+      }
+    }),
+    missingAssets: missing.map((asset) => asset.id),
+    availableFeatures: [...new Set(assets.flatMap((asset) => asset.features))].filter(
+      (feature) => !missing.some((asset) => asset.features.includes(feature)),
+    ),
+  }
+}
+
 export function inspectEnvironment(
   input: unknown,
   ports: EnvironmentAdapters.Ports,

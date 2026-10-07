@@ -177,9 +177,62 @@ export const ToolchainDescriptor = Schema.Struct({
   versions: ToolchainVersions,
 }).annotate({ identifier: "FtcEnvironment.ToolchainDescriptor" })
 
+export type OfflineFeature = typeof OfflineFeature.Type
+export const OfflineFeature = Schema.Literals([
+  "editing",
+  "building",
+  "learning",
+  "deployment",
+  "robot_network",
+  "inference",
+]).annotate({ identifier: "FtcEnvironment.OfflineFeature" })
+
+// Producer evidence for one required local asset, not a probe or permission to execute a feature.
+export interface OfflineAsset extends Schema.Schema.Type<typeof OfflineAsset> {}
+export const OfflineAsset = Schema.Struct({
+  id: Text,
+  version: Version,
+  sha256: Text.check(Schema.isPattern(/^[a-fA-F0-9]{64}$/)),
+  available: Schema.Boolean,
+  features: Schema.Array(OfflineFeature).check(
+    Schema.isMinLength(1),
+    Schema.makeFilter((value) => new Set(value).size === value.length),
+  ),
+}).annotate({ identifier: "FtcEnvironment.OfflineAsset" })
+
+// Complete caller-selected prerequisites; models/content remain owned by their producers.
+export interface OfflineRequest extends Schema.Schema.Type<typeof OfflineRequest> {}
+export const OfflineRequest = Schema.Struct({
+  tools: Schema.Array(OfflineAsset),
+  dependencies: Schema.Array(OfflineAsset),
+  models: Schema.Array(OfflineAsset),
+  content: Schema.Array(OfflineAsset),
+})
+  .annotate({ identifier: "FtcEnvironment.OfflineRequest" })
+  .check(
+    Schema.makeFilter((value) => {
+      const assets = [...value.tools, ...value.dependencies, ...value.models, ...value.content]
+      return new Set(assets.map((asset) => asset.id)).size === assets.length
+    }),
+  )
+
 export interface ReadinessStep extends Schema.Schema.Type<typeof ReadinessStep> {}
 export const ReadinessStep = Schema.Struct({
-  id: Schema.Literals(["project", "profile", "buildJdk", "editorJdk", "androidSdk", "adb", "gradleWrapper", "build"]),
+  id: Schema.Literals([
+    "project",
+    "profile",
+    "buildJdk",
+    "editorJdk",
+    "androidSdk",
+    "adb",
+    "gradleWrapper",
+    "build",
+    "offline",
+    "offline_tools",
+    "offline_dependencies",
+    "offline_models",
+    "offline_content",
+  ]),
   state: Schema.Literals(["ready", "missing", "incompatible", "failed", "manual", "pending"]),
   cause: Schema.Literals([
     "available",
@@ -199,6 +252,7 @@ export const ReadinessStep = Schema.Struct({
     "download_failed",
     "checksum_mismatch",
     "preparation_failed",
+    "asset_missing",
   ]),
   recovery: Schema.Literals([
     "reuse",
@@ -208,6 +262,7 @@ export const ReadinessStep = Schema.Struct({
     "retry_probe",
     "review_project",
     "verify_build",
+    "prepare_offline",
   ]),
   detail: optional(Text),
   reasons: optional(Schema.Array(Reason)),
@@ -215,11 +270,13 @@ export const ReadinessStep = Schema.Struct({
 
 export interface Readiness extends Schema.Schema.Type<typeof Readiness> {}
 export const Readiness = Schema.Struct({
-  // Missing includes pending verification/manual prerequisites; missingAssets lists absent tools separately.
+  // Missing includes pending verification/manual prerequisites; missingAssets identifies absent required assets.
   state: Schema.Literals(["ready", "missing", "incompatible", "failed"]),
   steps: Schema.Array(ReadinessStep),
   missingAssets: Schema.Array(Text),
   candidateToolchain: optional(ToolchainDescriptor),
+  // Supplied local prerequisites only; never build evidence, model suitability or robot authority.
+  availableFeatures: optional(Schema.Array(OfflineFeature)),
 }).annotate({ identifier: "FtcEnvironment.Readiness" })
 
 export interface PrepareRequest extends Schema.Schema.Type<typeof PrepareRequest> {}

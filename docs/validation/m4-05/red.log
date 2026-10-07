@@ -1,0 +1,21 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/environment-and-compatibility/m4-05.test.ts:
+1 | import { expect, test } from "bun:test"
+2 | import { Environment } from "../../../src/ftc/environment"
+3 | 
+4 | // Removing per-feature dependency evaluation would hide missing cache entries or block editing.
+5 | test("missing cache entry does not disable available local features", () => {
+6 |   expect(Environment.offlineReadiness).toBeFunction()
+                                           ^
+error: expect(received).toBeFunction()
+
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:6:40)
+(fail) missing cache entry does not disable available local features [3.27ms]
+
+ 0 pass
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [181.00ms]

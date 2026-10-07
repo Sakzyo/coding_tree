@@ -1,0 +1,4 @@
+306d40dc56227770efd24a9d7f8d1bba48ed40b84aed70474400076514c09c2c  packages/core/src/ftc/environment.ts
+e1f0712a9bd7f2a7662f9c3d806f307e8401f147b1365303d32487d7fcd4c710  packages/schema/src/ftc-environment.ts
+aeed3c7479fa2427f48b9267fea69cf9f6a83862fa8879dc00d2694ce8e5b3b6  packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts
+179a54cfe97142a49d57cdd8e40bcf7cf4fcb2dfaa38203a5ea00537bf368e80  packages/schema/test/ftc-offline-readiness.test.ts

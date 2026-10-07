@@ -1,0 +1,36 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/environment-and-compatibility/m4-05.test.ts:
+(pass) missing cache entry does not disable available local features [4.69ms]
+(pass) each feature requires all its declared assets across categories [0.18ms]
+(pass) missing tools assets stay visible [0.09ms]
+(pass) missing dependencies assets stay visible [0.06ms]
+(pass) missing models assets stay visible [0.05ms]
+(pass) missing content assets stay visible [0.05ms]
+(pass) an independently prepared editing prerequisite enables only that feature [0.10ms]
+(pass) an independently prepared building prerequisite enables only that feature [0.07ms]
+(pass) an independently prepared learning prerequisite enables only that feature [0.03ms]
+(pass) an independently prepared deployment prerequisite enables only that feature [0.03ms]
+(pass) an independently prepared robot_network prerequisite enables only that feature [0.03ms]
+(pass) an independently prepared inference prerequisite enables only that feature [0.02ms]
+(pass) an empty required inventory makes no feature claim [0.03ms]
+(pass) malformed or duplicate inventory 0 fails closed [0.09ms]
+(pass) malformed or duplicate inventory 1 fails closed [0.04ms]
+(pass) malformed or duplicate inventory 2 fails closed [0.02ms]
+(pass) malformed or duplicate inventory 3 fails closed [0.09ms]
+(pass) malformed or duplicate inventory 4 fails closed [0.02ms]
+(pass) malformed or duplicate inventory 5 fails closed [0.02ms]
+(pass) malformed or duplicate inventory 6 fails closed [0.03ms]
+(pass) malformed or duplicate inventory 7 fails closed [0.01ms]
+(pass) malformed or duplicate inventory 8 fails closed [0.02ms]
+(pass) malformed or duplicate inventory 9 fails closed [0.04ms]
+(pass) malformed or duplicate inventory 10 fails closed [0.04ms]
+(pass) malformed or duplicate inventory 11 fails closed [0.02ms]
+(pass) malformed or duplicate inventory 12 fails closed [0.03ms]
+(pass) malformed or duplicate inventory 13 fails closed [0.02ms]
+(pass) frozen snapshots remain unchanged and separate evaluations do not share state [0.11ms]
+
+ 28 pass
+ 0 fail
+ 108 expect() calls
+Ran 28 tests across 1 file. [56.00ms]

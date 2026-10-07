@@ -1,0 +1,4 @@
+packages/core/src/ftc/environment.ts 58ms (unchanged)
+packages/schema/src/ftc-environment.ts 16ms (unchanged)
+packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts 8ms
+packages/schema/test/ftc-offline-readiness.test.ts 2ms

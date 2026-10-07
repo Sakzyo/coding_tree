@@ -1,0 +1,296 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/environment-and-compatibility/m4-05.test.ts:
+1 | import { expect, test } from "bun:test"
+2 | import { Environment } from "../../../src/ftc/environment"
+3 | 
+4 | // Removing per-feature dependency evaluation would hide missing cache entries or block editing.
+5 | test("missing cache entry does not disable available local features", () => {
+6 |   expect(Environment.offlineReadiness).toBeFunction()
+                                           ^
+error: expect(received).toBeFunction()
+
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:6:40)
+(fail) missing cache entry does not disable available local features [0.66ms]
+30 | const asset = { id: "fixture-asset", version: "1.0.0", sha256: "a".repeat(64), available: true, features: ["editing"] }
+31 | const empty = { tools: [], dependencies: [], models: [], content: [] }
+32 | 
+33 | // Treating one available prerequisite as sufficient would incorrectly enable building.
+34 | test("each feature requires all its declared assets across categories", () => {
+35 |   const result = Environment.offlineReadiness({
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness({
+    tools: [{ ...asset, features: ["editing", "building"] }],
+    dependencies: [{ ...asset, id: "android-dependency", available: !1, features: ["building"] }],
+    models: [{ ...asset, id: "selected-model", available: !1, features: ["inference"] }],
+    content: [{ ...asset, id: "reference", features: ["learning"] }]
+  })', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:35:30)
+(fail) each feature requires all its declared assets across categories [0.36ms]
+48 |   ])
+49 | })
+50 | 
+51 | // Ignoring an inventory category would conceal that category's missing local prerequisite.
+52 | test.each(["tools", "dependencies", "models", "content"])("missing %s assets stay visible", (category) => {
+53 |   const result = Environment.offlineReadiness({ ...empty, [category]: [{ ...asset, available: false }] })
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness({ ...empty, [category]: [{ ...asset, available: !1 }] })', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:53:30)
+(fail) missing tools assets stay visible [1.19ms]
+48 |   ])
+49 | })
+50 | 
+51 | // Ignoring an inventory category would conceal that category's missing local prerequisite.
+52 | test.each(["tools", "dependencies", "models", "content"])("missing %s assets stay visible", (category) => {
+53 |   const result = Environment.offlineReadiness({ ...empty, [category]: [{ ...asset, available: false }] })
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness({ ...empty, [category]: [{ ...asset, available: !1 }] })', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:53:30)
+(fail) missing dependencies assets stay visible [0.02ms]
+48 |   ])
+49 | })
+50 | 
+51 | // Ignoring an inventory category would conceal that category's missing local prerequisite.
+52 | test.each(["tools", "dependencies", "models", "content"])("missing %s assets stay visible", (category) => {
+53 |   const result = Environment.offlineReadiness({ ...empty, [category]: [{ ...asset, available: false }] })
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness({ ...empty, [category]: [{ ...asset, available: !1 }] })', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:53:30)
+(fail) missing models assets stay visible [0.02ms]
+48 |   ])
+49 | })
+50 | 
+51 | // Ignoring an inventory category would conceal that category's missing local prerequisite.
+52 | test.each(["tools", "dependencies", "models", "content"])("missing %s assets stay visible", (category) => {
+53 |   const result = Environment.offlineReadiness({ ...empty, [category]: [{ ...asset, available: false }] })
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness({ ...empty, [category]: [{ ...asset, available: !1 }] })', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:53:30)
+(fail) missing content assets stay visible [0.02ms]
+58 | 
+59 | // Inferring unrequested features from ready tools would broaden the readiness claim.
+60 | test.each(["editing", "building", "learning", "deployment", "robot_network", "inference"])(
+61 |   "an independently prepared %s prerequisite enables only that feature",
+62 |   (feature) => {
+63 |     const result = Environment.offlineReadiness({ ...empty, tools: [{ ...asset, features: [feature] }] })
+                                    ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness({ ...empty, tools: [{ ...asset, features: [feature] }] })', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:63:32)
+(fail) an independently prepared editing prerequisite enables only that feature [0.05ms]
+58 | 
+59 | // Inferring unrequested features from ready tools would broaden the readiness claim.
+60 | test.each(["editing", "building", "learning", "deployment", "robot_network", "inference"])(
+61 |   "an independently prepared %s prerequisite enables only that feature",
+62 |   (feature) => {
+63 |     const result = Environment.offlineReadiness({ ...empty, tools: [{ ...asset, features: [feature] }] })
+                                    ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness({ ...empty, tools: [{ ...asset, features: [feature] }] })', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:63:32)
+(fail) an independently prepared building prerequisite enables only that feature [0.02ms]
+58 | 
+59 | // Inferring unrequested features from ready tools would broaden the readiness claim.
+60 | test.each(["editing", "building", "learning", "deployment", "robot_network", "inference"])(
+61 |   "an independently prepared %s prerequisite enables only that feature",
+62 |   (feature) => {
+63 |     const result = Environment.offlineReadiness({ ...empty, tools: [{ ...asset, features: [feature] }] })
+                                    ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness({ ...empty, tools: [{ ...asset, features: [feature] }] })', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:63:32)
+(fail) an independently prepared learning prerequisite enables only that feature [0.02ms]
+58 | 
+59 | // Inferring unrequested features from ready tools would broaden the readiness claim.
+60 | test.each(["editing", "building", "learning", "deployment", "robot_network", "inference"])(
+61 |   "an independently prepared %s prerequisite enables only that feature",
+62 |   (feature) => {
+63 |     const result = Environment.offlineReadiness({ ...empty, tools: [{ ...asset, features: [feature] }] })
+                                    ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness({ ...empty, tools: [{ ...asset, features: [feature] }] })', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:63:32)
+(fail) an independently prepared deployment prerequisite enables only that feature [0.02ms]
+58 | 
+59 | // Inferring unrequested features from ready tools would broaden the readiness claim.
+60 | test.each(["editing", "building", "learning", "deployment", "robot_network", "inference"])(
+61 |   "an independently prepared %s prerequisite enables only that feature",
+62 |   (feature) => {
+63 |     const result = Environment.offlineReadiness({ ...empty, tools: [{ ...asset, features: [feature] }] })
+                                    ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness({ ...empty, tools: [{ ...asset, features: [feature] }] })', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:63:32)
+(fail) an independently prepared robot_network prerequisite enables only that feature [0.02ms]
+58 | 
+59 | // Inferring unrequested features from ready tools would broaden the readiness claim.
+60 | test.each(["editing", "building", "learning", "deployment", "robot_network", "inference"])(
+61 |   "an independently prepared %s prerequisite enables only that feature",
+62 |   (feature) => {
+63 |     const result = Environment.offlineReadiness({ ...empty, tools: [{ ...asset, features: [feature] }] })
+                                    ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness({ ...empty, tools: [{ ...asset, features: [feature] }] })', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:63:32)
+(fail) an independently prepared inference prerequisite enables only that feature [0.01ms]
+68 |   },
+69 | )
+70 | 
+71 | // Vacuous truth must not turn absent requirement evidence into prepared offline availability.
+72 | test("an empty required inventory makes no feature claim", () => {
+73 |   const result = Environment.offlineReadiness(empty)
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness(empty)', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:73:30)
+(fail) an empty required inventory makes no feature claim [0.03ms]
+94 |   { ...empty, tools: [{ ...asset, features: ["editing", "editing"] }] },
+95 |   { ...empty, tools: [{ ...asset, remote: true }] },
+96 |   { ...empty, tools: [asset, asset] },
+97 |   { ...empty, tools: [asset], dependencies: [asset] },
+98 | ])("malformed or duplicate inventory %# fails closed", (input) => {
+99 |   const result = Environment.offlineReadiness(input)
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness(input)', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:99:30)
+(fail) malformed or duplicate inventory 0 fails closed [0.02ms]
+94 |   { ...empty, tools: [{ ...asset, features: ["editing", "editing"] }] },
+95 |   { ...empty, tools: [{ ...asset, remote: true }] },
+96 |   { ...empty, tools: [asset, asset] },
+97 |   { ...empty, tools: [asset], dependencies: [asset] },
+98 | ])("malformed or duplicate inventory %# fails closed", (input) => {
+99 |   const result = Environment.offlineReadiness(input)
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness(input)', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:99:30)
+(fail) malformed or duplicate inventory 1 fails closed [0.01ms]
+94 |   { ...empty, tools: [{ ...asset, features: ["editing", "editing"] }] },
+95 |   { ...empty, tools: [{ ...asset, remote: true }] },
+96 |   { ...empty, tools: [asset, asset] },
+97 |   { ...empty, tools: [asset], dependencies: [asset] },
+98 | ])("malformed or duplicate inventory %# fails closed", (input) => {
+99 |   const result = Environment.offlineReadiness(input)
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness(input)', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:99:30)
+(fail) malformed or duplicate inventory 2 fails closed [0.02ms]
+94 |   { ...empty, tools: [{ ...asset, features: ["editing", "editing"] }] },
+95 |   { ...empty, tools: [{ ...asset, remote: true }] },
+96 |   { ...empty, tools: [asset, asset] },
+97 |   { ...empty, tools: [asset], dependencies: [asset] },
+98 | ])("malformed or duplicate inventory %# fails closed", (input) => {
+99 |   const result = Environment.offlineReadiness(input)
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness(input)', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:99:30)
+(fail) malformed or duplicate inventory 3 fails closed [0.01ms]
+94 |   { ...empty, tools: [{ ...asset, features: ["editing", "editing"] }] },
+95 |   { ...empty, tools: [{ ...asset, remote: true }] },
+96 |   { ...empty, tools: [asset, asset] },
+97 |   { ...empty, tools: [asset], dependencies: [asset] },
+98 | ])("malformed or duplicate inventory %# fails closed", (input) => {
+99 |   const result = Environment.offlineReadiness(input)
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness(input)', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:99:30)
+(fail) malformed or duplicate inventory 4 fails closed [0.01ms]
+94 |   { ...empty, tools: [{ ...asset, features: ["editing", "editing"] }] },
+95 |   { ...empty, tools: [{ ...asset, remote: true }] },
+96 |   { ...empty, tools: [asset, asset] },
+97 |   { ...empty, tools: [asset], dependencies: [asset] },
+98 | ])("malformed or duplicate inventory %# fails closed", (input) => {
+99 |   const result = Environment.offlineReadiness(input)
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness(input)', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:99:30)
+(fail) malformed or duplicate inventory 5 fails closed [0.01ms]
+94 |   { ...empty, tools: [{ ...asset, features: ["editing", "editing"] }] },
+95 |   { ...empty, tools: [{ ...asset, remote: true }] },
+96 |   { ...empty, tools: [asset, asset] },
+97 |   { ...empty, tools: [asset], dependencies: [asset] },
+98 | ])("malformed or duplicate inventory %# fails closed", (input) => {
+99 |   const result = Environment.offlineReadiness(input)
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness(input)', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:99:30)
+(fail) malformed or duplicate inventory 6 fails closed [0.01ms]
+94 |   { ...empty, tools: [{ ...asset, features: ["editing", "editing"] }] },
+95 |   { ...empty, tools: [{ ...asset, remote: true }] },
+96 |   { ...empty, tools: [asset, asset] },
+97 |   { ...empty, tools: [asset], dependencies: [asset] },
+98 | ])("malformed or duplicate inventory %# fails closed", (input) => {
+99 |   const result = Environment.offlineReadiness(input)
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness(input)', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:99:30)
+(fail) malformed or duplicate inventory 7 fails closed [0.02ms]
+94 |   { ...empty, tools: [{ ...asset, features: ["editing", "editing"] }] },
+95 |   { ...empty, tools: [{ ...asset, remote: true }] },
+96 |   { ...empty, tools: [asset, asset] },
+97 |   { ...empty, tools: [asset], dependencies: [asset] },
+98 | ])("malformed or duplicate inventory %# fails closed", (input) => {
+99 |   const result = Environment.offlineReadiness(input)
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness(input)', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:99:30)
+(fail) malformed or duplicate inventory 8 fails closed [0.01ms]
+94 |   { ...empty, tools: [{ ...asset, features: ["editing", "editing"] }] },
+95 |   { ...empty, tools: [{ ...asset, remote: true }] },
+96 |   { ...empty, tools: [asset, asset] },
+97 |   { ...empty, tools: [asset], dependencies: [asset] },
+98 | ])("malformed or duplicate inventory %# fails closed", (input) => {
+99 |   const result = Environment.offlineReadiness(input)
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness(input)', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:99:30)
+(fail) malformed or duplicate inventory 9 fails closed [0.01ms]
+94 |   { ...empty, tools: [{ ...asset, features: ["editing", "editing"] }] },
+95 |   { ...empty, tools: [{ ...asset, remote: true }] },
+96 |   { ...empty, tools: [asset, asset] },
+97 |   { ...empty, tools: [asset], dependencies: [asset] },
+98 | ])("malformed or duplicate inventory %# fails closed", (input) => {
+99 |   const result = Environment.offlineReadiness(input)
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness(input)', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:99:30)
+(fail) malformed or duplicate inventory 10 fails closed [0.01ms]
+94 |   { ...empty, tools: [{ ...asset, features: ["editing", "editing"] }] },
+95 |   { ...empty, tools: [{ ...asset, remote: true }] },
+96 |   { ...empty, tools: [asset, asset] },
+97 |   { ...empty, tools: [asset], dependencies: [asset] },
+98 | ])("malformed or duplicate inventory %# fails closed", (input) => {
+99 |   const result = Environment.offlineReadiness(input)
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness(input)', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:99:30)
+(fail) malformed or duplicate inventory 11 fails closed [0.01ms]
+94 |   { ...empty, tools: [{ ...asset, features: ["editing", "editing"] }] },
+95 |   { ...empty, tools: [{ ...asset, remote: true }] },
+96 |   { ...empty, tools: [asset, asset] },
+97 |   { ...empty, tools: [asset], dependencies: [asset] },
+98 | ])("malformed or duplicate inventory %# fails closed", (input) => {
+99 |   const result = Environment.offlineReadiness(input)
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness(input)', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:99:30)
+(fail) malformed or duplicate inventory 12 fails closed [0.01ms]
+94 |   { ...empty, tools: [{ ...asset, features: ["editing", "editing"] }] },
+95 |   { ...empty, tools: [{ ...asset, remote: true }] },
+96 |   { ...empty, tools: [asset, asset] },
+97 |   { ...empty, tools: [asset], dependencies: [asset] },
+98 | ])("malformed or duplicate inventory %# fails closed", (input) => {
+99 |   const result = Environment.offlineReadiness(input)
+                                  ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness(input)', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:99:30)
+(fail) malformed or duplicate inventory 13 fails closed [0.01ms]
+113 |     dependencies: Object.freeze([]),
+114 |     models: Object.freeze([]),
+115 |     content: Object.freeze([]),
+116 |   })
+117 |   const before = JSON.stringify(snapshot)
+118 |   expect(Environment.offlineReadiness(snapshot).availableFeatures).toEqual(["editing"])
+                           ^
+TypeError: Environment.offlineReadiness is not a function. (In 'Environment.offlineReadiness(snapshot)', 'Environment.offlineReadiness' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts:118:22)
+(fail) frozen snapshots remain unchanged and separate evaluations do not share state [0.06ms]
+
+ 0 pass
+ 28 fail
+ 1 expect() calls
+Ran 28 tests across 1 file. [61.00ms]
