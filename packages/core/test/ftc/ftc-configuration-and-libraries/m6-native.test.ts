@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test"
-import { Cause, Effect, Exit, Fiber, Result, Scope } from "effect"
+import { Cause, Deferred, Effect, Exit, Fiber, Result, Scope } from "effect"
 import { createHash } from "node:crypto"
 import fs from "node:fs/promises"
 import path from "node:path"
@@ -252,3 +252,83 @@ for (const attack of ["leaf", "ancestor", "listing", "root"] as const) {
     )
   })
 }
+
+test("public Inspection caller and owner cancellation join native retirement and close escaped owners", async () => {
+  const { NativeInspectionFilesystem } = await import("../../../src/ftc/configuration/inspection-filesystem.native")
+  const { ManifestSnapshot } = await import("../../../src/ftc/configuration/manifest-snapshot")
+  const { Inspection } = await import("../../../src/ftc/configuration/inspection")
+  await using fixture = await tmpdir()
+  const large = await fs.open(path.join(fixture.path, "build.gradle"), "w")
+  await large.truncate(256 * 1024 * 1024)
+  await large.close()
+  await fs.mkdir(path.join(fixture.path, "small"))
+  await Effect.runPromise(Effect.scoped(NativeInspectionFilesystem.make().openProject({ root: fixture.path })))
+  const baseline = (await fs.readdir("/dev/fd")).length
+  const completion = Effect.runPromise(
+    Effect.gen(function* () {
+      const scope = yield* Scope.make()
+      const owner = yield* Inspection.make({
+        reader: NativeInspectionFilesystem.make(),
+        manifest: ManifestSnapshot,
+      }).pipe(Scope.provide(scope))
+      for (const closeOwner of [false, true]) {
+        const reading = yield* Effect.forkChild(owner.inspectProject({ root: fixture.path }))
+        // The real native project root plus the active build.gradle descriptor must be held.
+        yield* Effect.promise(async () => {
+          while ((await fs.readdir("/dev/fd")).length < baseline + 2) await Bun.sleep(1)
+        })
+        if (closeOwner) yield* Scope.close(scope, Exit.void)
+        else yield* Fiber.interrupt(reading)
+        const exit = yield* Fiber.await(reading)
+        expect(Exit.isFailure(exit) && Cause.hasInterrupts(exit.cause)).toBe(true)
+        expect((yield* Effect.promise(() => fs.readdir("/dev/fd"))).length).toBe(baseline)
+        if (!closeOwner) {
+          const next = yield* owner.inspectProject({ root: path.join(fixture.path, "small") })
+          expect(next.detectedPathing).toBe("unknown")
+        }
+      }
+      expect(yield* owner.inspectProject({ root: fixture.path }).pipe(Effect.flip)).toEqual({ code: "owner_closed" })
+    }),
+  ).then(() => "completed")
+  // This bounded diagnostic detects a lost notification; it is not a product cancellation SLA.
+  const outcome = await Promise.race([completion, Bun.sleep(1000).then(() => "not-completed-in-diagnostic-window")])
+  expect((await fs.readdir("/dev/fd")).length).toBe(baseline)
+  expect(outcome).toBe("completed")
+})
+
+test("public Inspection overlapping caller cancellation and owner closure both join retirement", async () => {
+  const { NativeInspectionFilesystem } = await import("../../../src/ftc/configuration/inspection-filesystem.native")
+  const { ManifestSnapshot } = await import("../../../src/ftc/configuration/manifest-snapshot")
+  const { Inspection } = await import("../../../src/ftc/configuration/inspection")
+  await using fixture = await tmpdir()
+  const large = await fs.open(path.join(fixture.path, "build.gradle"), "w")
+  await large.truncate(256 * 1024 * 1024)
+  await large.close()
+  await Effect.runPromise(Effect.scoped(NativeInspectionFilesystem.make().openProject({ root: fixture.path })))
+  const baseline = (await fs.readdir("/dev/fd")).length
+  const completion = Effect.runPromise(
+    Effect.gen(function* () {
+      const scope = yield* Scope.make()
+      const owner = yield* Inspection.make({
+        reader: NativeInspectionFilesystem.make(),
+        manifest: ManifestSnapshot,
+      }).pipe(Scope.provide(scope))
+      const reading = yield* Effect.forkChild(owner.inspectProject({ root: fixture.path }))
+      const gate = yield* Deferred.make<void>()
+      const cancel = yield* Effect.forkChild(Deferred.await(gate).pipe(Effect.andThen(Fiber.interrupt(reading))))
+      const closing = yield* Effect.forkChild(Deferred.await(gate).pipe(Effect.andThen(Scope.close(scope, Exit.void))))
+      yield* Effect.promise(async () => {
+        while ((await fs.readdir("/dev/fd")).length < baseline + 2) await Bun.sleep(1)
+      })
+      yield* Deferred.succeed(gate, undefined)
+      yield* Fiber.join(cancel)
+      yield* Fiber.join(closing)
+      const exit = yield* Fiber.await(reading)
+      expect(Exit.isFailure(exit) && Cause.hasInterrupts(exit.cause)).toBe(true)
+      expect(yield* owner.inspectProject({ root: fixture.path }).pipe(Effect.flip)).toEqual({ code: "owner_closed" })
+    }),
+  ).then(() => "completed")
+  const outcome = await Promise.race([completion, Bun.sleep(1000).then(() => "not-completed-in-diagnostic-window")])
+  expect((await fs.readdir("/dev/fd")).length).toBe(baseline)
+  expect(outcome).toBe("completed")
+})

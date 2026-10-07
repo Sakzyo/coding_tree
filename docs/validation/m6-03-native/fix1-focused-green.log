@@ -1,0 +1,10 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-native.test.ts:
+(pass) public Inspection caller and owner cancellation join native retirement and close escaped owners [24.11ms]
+
+ 1 pass
+ 10 filtered out
+ 0 fail
+ 8 expect() calls
+Ran 1 test across 1 file. [195.00ms]

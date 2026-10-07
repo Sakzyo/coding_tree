@@ -1,0 +1,5 @@
+packages/core/src/ftc/configuration/inspection.ts
+packages/core/src/ftc/configuration/inspection-filesystem.native.ts
+packages/core/src/ftc/configuration/inspection-lifecycle.ts
+packages/core/test/ftc/ftc-configuration-and-libraries/m6-native.test.ts
+docs/validation/M6-03-native-implementation.md

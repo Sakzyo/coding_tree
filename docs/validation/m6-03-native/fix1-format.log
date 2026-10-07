@@ -1,0 +1,4 @@
+src/ftc/configuration/inspection.ts 45ms (unchanged)
+src/ftc/configuration/inspection-filesystem.native.ts 10ms (unchanged)
+src/ftc/configuration/inspection-lifecycle.ts 1ms (unchanged)
+test/ftc/ftc-configuration-and-libraries/m6-native.test.ts 15ms

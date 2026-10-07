@@ -4,6 +4,7 @@ import type { NativeInspectionReader } from "@opencode-ai/inspection-reader-nati
 import { FtcConfiguration } from "@opencode-ai/schema/ftc-configuration"
 import { Effect, Fiber } from "effect"
 import type { InspectionFilesystem } from "./inspection-filesystem"
+import { InspectionLifecycle } from "./inspection-lifecycle"
 
 export function make(): InspectionFilesystem.Interface {
   return {
@@ -34,7 +35,7 @@ export function make(): InspectionFilesystem.Interface {
           (): Effect.Effect<A, FtcConfiguration.InspectionError> =>
             closed
               ? Effect.fail({ code: "owner_closed" } satisfies FtcConfiguration.InspectionError)
-              : Effect.acquireUseRelease(Effect.forkIn(body, scope), join, Fiber.interrupt),
+              : Effect.acquireUseRelease(Effect.forkIn(body, scope), InspectionLifecycle.join, Fiber.interrupt),
         )
       const read = <A>(
         relative: string,
@@ -125,13 +126,4 @@ function failure(error: unknown): FtcConfiguration.InspectionError {
         ? code
         : "reader_unavailable",
   }
-}
-
-function join<A, E>(fiber: Fiber.Fiber<A, E>) {
-  return Effect.callback<A, E>((resume) => {
-    // beta.83 iterates a mutable observer list. Defer removal until notification ends,
-    // so the concurrent Scope closer cannot lose its own retirement notification.
-    const remove = fiber.addObserver((exit) => queueMicrotask(() => resume(exit)))
-    return Effect.sync(remove)
-  })
 }

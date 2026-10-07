@@ -5,6 +5,7 @@ import { createHash } from "node:crypto"
 import path from "node:path"
 import { Effect, Fiber, Option, Result, Schema, Scope } from "effect"
 import type { InspectionFilesystem } from "./inspection-filesystem"
+import { InspectionLifecycle } from "./inspection-lifecycle"
 import type { ManifestSnapshot } from "./manifest-snapshot"
 
 export interface Ports {
@@ -270,7 +271,7 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
               unknowns,
             } satisfies FtcConfiguration.InspectionResult
           }).pipe(Effect.scoped, Effect.forkIn(scope)),
-          Fiber.join,
+          InspectionLifecycle.join,
           Fiber.interrupt,
         )
       }),

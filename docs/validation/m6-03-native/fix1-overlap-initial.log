@@ -1,0 +1,10 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-native.test.ts:
+(pass) public Inspection overlapping caller cancellation and owner closure both join retirement [16.70ms]
+
+ 1 pass
+ 11 filtered out
+ 0 fail
+ 4 expect() calls
+Ran 1 test across 1 file. [93.00ms]
