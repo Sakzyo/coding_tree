@@ -1,0 +1,29 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-02.test.ts:
+910 |       Effect.gen(function* () {
+911 |         const opened = yield* java.openDocument({ project: context, path: filename })
+912 |         const result = yield* java
+913 |           .applyEdits({ proposal: proposal(context, opened), authorization: token })
+914 |           .pipe(Effect.result)
+915 |         expect(result._tag).toBe("Failure")
+                                  ^
+error: expect(received).toBe(expected)
+
+Expected: "Failure"
+Received: "Success"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-02.test.ts:915:29)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) authorization revoked during the final disk read is rechecked before writing [23.80ms]
+
+ 0 pass
+ 26 filtered out
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [139.00ms]

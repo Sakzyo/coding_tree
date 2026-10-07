@@ -1,0 +1,5 @@
+Failed to parse oxlint configuration file.
+
+  x The `options.typeAware` option is only supported in the root config, but it was found in /Users/dylanxu/coding_tree/.oxlintrc.json.
+  help: Move `options.typeAware` to the root configuration file.
+

@@ -1,0 +1,74 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-02.test.ts:
+(pass) dirty or externally changed files reject stale edits [196.75ms]
+(pass) saving the current dirty buffer advances only disk revision and preserves BOM and CRLF [135.45ms]
+(pass) save rejects external changes and stale buffer or disk revision without losing either version [20.51ms]
+(pass) authorized clean edits save immutable snapshots and publish confirmed saved events [33.85ms]
+(pass) preflight rejects the whole multifile proposal when a later file is dirty [15.67ms]
+(pass) a conditional-write race preserves the external bytes and the dirty buffer [20.44ms]
+(pass) partial filesystem failure reports committed files and an uncertain failed write without rollback [44.57ms]
+(pass) forged authorization and a trusted grant for the wrong file cannot mutate source [15.87ms]
+(pass) a fresh owner rejects save and proposals carrying the previous document identity [10.20ms]
+(pass) duplicate canonical aliases and unopened/new-file edits are rejected before writing [13.86ms]
+(pass) save and apply independently reject symlink escape after the document opened [12.69ms]
+(pass) authorization revoked after preflight prevents the first mutation [5.30ms]
+(pass) proposal input is captured before the asynchronous trusted authorization boundary [6.42ms]
+(pass) caller cancellation during save preflight releases the read and admits no write [9.15ms]
+(pass) closed owners reject escaped save and edit APIs [5.57ms]
+(pass) observed disk conflict permits explicit merge or save with the returned fresh pair [155.06ms]
+(pass) agent replacements retain an existing BOM without normalizing supplied line endings [7.41ms]
+(pass) missing mutation capabilities fail visibly and never synthesize original bytes [15.79ms]
+(pass) owner disposal interrupts pending trusted authorization and releases its resource [4.56ms]
+(pass) canonical edit facade is the exact Schema contract identity [0.53ms]
+(pass) a later conditional conflict reports earlier commits and preserves the external second file [18.26ms]
+(pass) concurrent proposals at one revision admit exactly one application [18.80ms]
+(pass) an unchanged buffer with externally changed disk rejects edits and publishes the observed revision [14.64ms]
+(pass) save write failures retain the dirty buffer and identify unknown disk outcome [10.06ms]
+(pass) cancellation at a confirmed commit boundary keeps disk and owner snapshot consistent [7.74ms]
+(pass) invalid UTF8 source bytes are rejected without decoding and rewriting them [15.93ms]
+(pass) authorization revoked during the final disk read is rechecked before writing [24.64ms]
+(pass) unpaired Unicode cannot be silently encoded as different source bytes [17.75ms]
+
+test/ftc/java-development/m5-01.test.ts:
+(pass) detaching a view preserves dirty buffer [25.96ms]
+(pass) canonical file aliases share a buffer and concurrent opens share one identity [47.35ms]
+(pass) stale edits cannot replace the buffer, while reverting text keeps revisions monotonic [5.92ms]
+(pass) revisioned events describe exactly the committed document snapshots [14.61ms]
+(pass) rejects traversal or symlink escape: ../Outside.java [6.48ms]
+(pass) rejects traversal or symlink escape: escape/Outside.java [14.87ms]
+(pass) rejects traversal or symlink escape: escaped.java [6.09ms]
+(pass) substituted project context and project ID cannot adopt an authorized document [12.05ms]
+(pass) reopening does not erase a dirty buffer after an external disk edit [3.98ms]
+(pass) retargeting an opened file outside the root rejects subsequent queries and edits [17.04ms]
+(pass) owner disposal rejects escaped services and a fresh owner reads saved bytes [12.55ms]
+(pass) cancelling a file read releases resources without admitting a partial document [10.35ms]
+(pass) facade preserves canonical serializable document contracts [2.10ms]
+(pass) concurrent changes with the same revision admit exactly one update [26.78ms]
+(pass) independent owners and projects cannot leak dirty buffers [52.96ms]
+(pass) one owner rejects two project identities claiming the same canonical file [18.95ms]
+(pass) owner shutdown ends event subscriptions and rejects every escaped command [13.94ms]
+(pass) absolute sibling paths sharing the root prefix remain outside project scope [56.16ms]
+(pass) missing files and invalid revisions fail without replacing owned buffers [4.12ms]
+(pass) disposing the document owner interrupts a pending read and releases its resource [3.53ms]
+
+test/file-mutation.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+EPERM: operation not permitted, mkdir '/Users/dylanxu/.local/state/opencode'
+    path: "/Users/dylanxu/.local/state/opencode",
+ syscall: "mkdir",
+   errno: -1,
+    code: "EPERM"
+
+-------------------------------
+
+
+1 tests failed:
+
+ 48 pass
+ 1 fail
+ 1 error
+ 179 expect() calls
+Ran 49 tests across 3 files. [2.03s]

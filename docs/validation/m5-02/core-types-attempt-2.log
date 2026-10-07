@@ -1,0 +1,3 @@
+$ tsgo --noEmit
+test/ftc/java-development/m5-02.test.ts(367,165): error TS2322: Type 'Effect<never, never, Scope>' is not assignable to type 'Effect<{ readonly projectID: string & Brand<"Project.ID">; readonly canonicalRoot: string & Brand<"AbsolutePath">; readonly paths: readonly (string & Brand<"AbsolutePath">)[]; }, DocumentError, never>'.
+  Type 'Scope' is not assignable to type 'never'.

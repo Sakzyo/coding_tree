@@ -56,7 +56,7 @@ test("document errors omit undefined optional properties and reject invented suc
     }),
   ).toEqual({ code: "owner_closed" })
   expect(() => Schema.decodeUnknownSync(FtcJava.DocumentError)({ code: "success" })).toThrow()
-  expect(() => Schema.decodeUnknownSync(FtcJava.DocumentEvent)({ type: "saved", snapshot })).toThrow()
+  expect(() => Schema.decodeUnknownSync(FtcJava.DocumentEvent)({ type: "invented", snapshot })).toThrow()
 })
 
 test.each(["Main.java", "../Main.java", ""])("snapshot paths reject relative identity %s", (value) => {
@@ -71,3 +71,86 @@ test.each(["/team/Main.java", "C:\\team\\Main.java", "C:/team/Main.java", "\\\\h
     )
   },
 )
+
+test("edit/save contracts share complete document revisions and preserve proposal/result JSON", () => {
+  const revision = { documentID: snapshot.documentID, bufferRevision: 1, diskRevision: 0 }
+  const proposal = Schema.decodeUnknownSync(FtcJava.EditProposal)({
+    projectID: snapshot.projectID,
+    edits: [{ path: snapshot.path, expectedRevision: revision, replacement: "agent" }],
+    explanation: "update",
+  })
+  const save = { projectID: snapshot.projectID, path: snapshot.path, expectedRevision: revision }
+  expect(Schema.encodeSync(FtcJava.SaveRequest)(Schema.decodeUnknownSync(FtcJava.SaveRequest)(save))).toEqual(save)
+  const conflict = {
+    path: snapshot.path,
+    reason: "dirty" as const,
+    current: Schema.decodeUnknownSync(FtcJava.DocumentSnapshot)(snapshot),
+    diskText: "saved",
+    choices: ["save", "merge", "defer"] as const,
+  }
+  const results = [
+    { kind: "applied", proposal, applied: [] },
+    { kind: "conflict", proposal, applied: [], conflicts: [conflict] },
+    {
+      kind: "failed",
+      proposal,
+      applied: [],
+      error: { code: "file_unavailable", outcome: "unknown" },
+      uncertainPaths: [snapshot.path],
+    },
+  ] as const
+  for (const result of results)
+    expect(
+      Schema.encodeSync(FtcJava.EditResult)(
+        Schema.decodeUnknownSync(FtcJava.EditResult)(JSON.parse(JSON.stringify(result))),
+      ),
+    ).toEqual(result)
+  expect(Schema.encodeSync(FtcJava.DocumentError)({ code: "revision_conflict", conflict, outcome: undefined })).toEqual(
+    { code: "revision_conflict", conflict },
+  )
+  for (const type of ["saved", "disk_changed"] as const)
+    expect(Schema.decodeUnknownSync(FtcJava.DocumentEvent)({ type, snapshot }).type).toBe(type)
+  expect(
+    [FtcJava.Revision, FtcJava.SaveRequest, FtcJava.EditProposal, FtcJava.EditConflict, FtcJava.EditResult].map(
+      (contract) => ("identifier" in contract ? contract.identifier : contract.ast.annotations?.identifier),
+    ),
+  ).toEqual([
+    "FtcJava.Revision",
+    "FtcJava.SaveRequest",
+    "FtcJava.EditProposal",
+    "FtcJava.EditConflict",
+    "FtcJava.EditResult",
+  ])
+})
+
+test("proposal and save validation reject empty edits and incomplete or negative revision pairs", () => {
+  const revision = { documentID: snapshot.documentID, bufferRevision: 1, diskRevision: 0 }
+  const proposal = {
+    projectID: snapshot.projectID,
+    edits: [{ path: snapshot.path, expectedRevision: revision, replacement: "agent" }],
+    explanation: "update",
+  }
+  expect(() => Schema.decodeUnknownSync(FtcJava.EditProposal)({ ...proposal, edits: [] })).toThrow()
+  for (const expectedRevision of [
+    { bufferRevision: 1, diskRevision: 0 },
+    { ...revision, diskRevision: -1 },
+    { ...revision, bufferRevision: 0.5 },
+  ]) {
+    expect(() =>
+      Schema.decodeUnknownSync(FtcJava.EditProposal)({
+        ...proposal,
+        edits: [{ ...proposal.edits[0], expectedRevision }],
+      }),
+    ).toThrow()
+    expect(() =>
+      Schema.decodeUnknownSync(FtcJava.SaveRequest)({
+        projectID: snapshot.projectID,
+        path: snapshot.path,
+        expectedRevision,
+      }),
+    ).toThrow()
+  }
+  expect(() =>
+    Schema.decodeUnknownSync(FtcJava.EditResult)({ kind: "conflict", proposal, applied: [], conflicts: [] }),
+  ).toThrow()
+})

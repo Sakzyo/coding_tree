@@ -1,0 +1,26 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-java.test.ts:
+(pass) document snapshots and revisioned events survive JSON without losing buffer or disk identity [3.01ms]
+(pass) document IDs reject foreign prefix document [5.86ms]
+(pass) document IDs reject foreign prefix doc [0.06ms]
+(pass) document IDs reject foreign prefix docs_fixture [0.02ms]
+(pass) document IDs reject foreign prefix document_fixture [0.02ms]
+(pass) generated document IDs validate their emitted prefix and distinguish identities [0.47ms]
+(pass) buffer and saved revisions reject invalid sequence value %s [0.49ms]
+(pass) buffer and saved revisions reject invalid sequence value %s [0.09ms]
+(pass) document errors omit undefined optional properties and reject invented success states [0.54ms]
+(pass) snapshot paths reject relative identity Main.java [0.09ms]
+(pass) snapshot paths reject relative identity ../Main.java [0.04ms]
+(pass) snapshot paths reject relative identity  [0.03ms]
+(pass) snapshot paths preserve platform absolute identity /team/Main.java [0.06ms]
+(pass) snapshot paths preserve platform absolute identity C:\team\Main.java [0.02ms]
+(pass) snapshot paths preserve platform absolute identity C:/team/Main.java [0.02ms]
+(pass) snapshot paths preserve platform absolute identity \\host\team\Main.java [0.02ms]
+(pass) edit/save contracts share complete document revisions and preserve proposal/result JSON [1.88ms]
+(pass) proposal and save validation reject empty edits and incomplete or negative revision pairs [0.46ms]
+
+ 18 pass
+ 0 fail
+ 42 expect() calls
+Ran 18 tests across 1 file. [135.00ms]

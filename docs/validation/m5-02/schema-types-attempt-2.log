@@ -1,0 +1,17 @@
+$ tsgo --noEmit
+test/ftc-java.test.ts(83,71): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '{ projectID: string; path: string; expectedRevision: { documentID: string; bufferRevision: number; diskRevision: number; }; }' is not assignable to parameter of type '{ readonly projectID: string & Brand<"Project.ID">; readonly path: string; readonly expectedRevision: { readonly documentID: string & Brand<"FtcJava.DocumentID">; readonly bufferRevision: number; readonly diskRevision: number; }; }'.
+      Types of property 'projectID' are incompatible.
+        Type 'string' is not assignable to type 'string & Brand<"Project.ID">'.
+          Type 'string' is not assignable to type 'Brand<"Project.ID">'.
+test/ftc-java.test.ts(107,15): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '{ kind: string; proposal: { readonly projectID: string & Brand<"Project.ID">; readonly edits: readonly { readonly path: string; readonly expectedRevision: { readonly documentID: string & Brand<"FtcJava.DocumentID">; readonly bufferRevision: number; readonly diskRevision: number; }; readonly replacement: string; }[];...' is not assignable to parameter of type '{ readonly kind: "applied"; readonly proposal: { readonly projectID: string; readonly edits: readonly { readonly path: string; readonly expectedRevision: { readonly documentID: string; readonly bufferRevision: number; readonly diskRevision: number; }; readonly replacement: string; }[]; readonly explanation: string; ...'.
+      Type '{ kind: string; proposal: { readonly projectID: string & Brand<"Project.ID">; readonly edits: readonly { readonly path: string; readonly expectedRevision: { readonly documentID: string & Brand<"FtcJava.DocumentID">; readonly bufferRevision: number; readonly diskRevision: number; }; readonly replacement: string; }[];...' is not assignable to type '{ readonly kind: "applied"; readonly proposal: { readonly projectID: string; readonly edits: readonly { readonly path: string; readonly expectedRevision: { readonly documentID: string; readonly bufferRevision: number; readonly diskRevision: number; }; readonly replacement: string; }[]; readonly explanation: string; ...'.
+        Type '{ kind: string; proposal: { readonly projectID: string & Brand<"Project.ID">; readonly edits: readonly { readonly path: string; readonly expectedRevision: { readonly documentID: string & Brand<"FtcJava.DocumentID">; readonly bufferRevision: number; readonly diskRevision: number; }; readonly replacement: string; }[];...' is not assignable to type '{ readonly kind: "failed"; readonly proposal: { readonly projectID: string; readonly edits: readonly { readonly path: string; readonly expectedRevision: { readonly documentID: string; readonly bufferRevision: number; readonly diskRevision: number; }; readonly replacement: string; }[]; readonly explanation: string; }...'.
+          Types of property 'kind' are incompatible.
+            Type 'string' is not assignable to type '"failed"'.
+test/ftc-java.test.ts(112,91): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'string' is not assignable to parameter of type '"changed" | "disk_changed" | "opened" | "saved"'.

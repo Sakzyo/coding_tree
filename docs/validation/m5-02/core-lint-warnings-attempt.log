@@ -1,0 +1,102 @@
+
+  ! eslint(no-unused-vars): Variable 'opened' is declared but never used. Unused variables should start with a '_'.
+     ,-[test/ftc/java-development/m5-02.test.ts:252:15]
+ 251 |       Effect.gen(function* () {
+ 252 |         const opened = yield* java.openDocument({ project: context, path: filename })
+     :               ^^^|^^
+     :                  `-- 'opened' is declared here
+ 253 |         const changed = yield* java.changeDocument({ path: filename, expectedRevision: 0, text: "unsaved" })
+     `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'opened' is declared but never used. Unused variables should start with a '_'.
+     ,-[test/ftc/java-development/m5-02.test.ts:520:15]
+ 519 |       Effect.gen(function* () {
+ 520 |         const opened = yield* java.openDocument({ project: context, path: filename })
+     :               ^^^|^^
+     :                  `-- 'opened' is declared here
+ 521 |         const changed = yield* java.changeDocument({ path: filename, expectedRevision: 0, text: "unsaved" })
+     `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'opened' is declared but never used. Unused variables should start with a '_'.
+     ,-[test/ftc/java-development/m5-02.test.ts:859:15]
+ 858 |       Effect.gen(function* () {
+ 859 |         const opened = yield* java.openDocument({ project: context, path: filename })
+     :               ^^^|^^
+     :                  `-- 'opened' is declared here
+ 860 |         const changed = yield* java.changeDocument({ path: filename, expectedRevision: 0, text: "unsaved" })
+     `----
+  help: Consider removing this declaration.
+
+  ! typescript-eslint(consistent-return): Function expected a return value.
+     ,-[src/ftc/java/documents.ts:129:62]
+ 128 |           PubSub.publish(events, Object.freeze({ type, snapshot }))
+ 129 | ,->     const checkScope = Effect.fn("JavaDocuments.checkScope")(function* (
+ 130 | |         projectID: Project.ID,
+ 131 | |         root: string,
+ 132 | |         value: string,
+ 133 | |         canonical: string,
+ 134 | |       ) {
+ 135 | |         const authorized = yield* authorize(projectID)
+ 136 | |         if (authorized.root !== root)
+ 137 | |           return yield* Effect.fail({ code: "project_unauthorized", projectID } satisfies FtcJava.DocumentError)
+ 138 | |         if ((yield* resolve(root, value)) !== canonical)
+ 139 | |           return yield* Effect.fail({ code: "file_unavailable", path: value } satisfies FtcJava.DocumentError)
+ 140 | |         const current = documents.get(canonical)
+ 141 | |         if (!current)
+ 142 | |           return yield* Effect.fail({ code: "document_not_open", path: value } satisfies FtcJava.DocumentError)
+ 143 | |         if (current.root !== root || current.snapshot.projectID !== projectID)
+ 144 | |           return yield* Effect.fail({ code: "project_unauthorized", projectID } satisfies FtcJava.DocumentError)
+ 145 | `->     })
+ 146 |         const readDisk = Effect.fn("JavaDocuments.readDisk")(function* (canonical: string) {
+     `----
+
+  ! typescript-eslint(consistent-return): Function 'conflict' expected no return value.
+     ,-[src/ftc/java/documents.ts:192:7]
+ 191 |           if (!reason) return
+ 192 | ,->       return Object.freeze({
+ 193 | |           path: current.path,
+ 194 | |           reason,
+ 195 | |           current,
+ 196 | |           diskText: disk.text,
+ 197 | |           choices: ["save", "merge", "defer"] as const,
+ 198 | `->       })
+ 199 |         }
+     `----
+
+  ! typescript-eslint(consistent-return): Function expected a return value.
+     ,-[src/ftc/java/documents.ts:233:66]
+ 232 |         })
+ 233 | ,->     const checkChanges = Effect.fn("JavaDocuments.checkChanges")(function* (
+ 234 | |         proposal: FtcJava.EditProposal,
+ 235 | |         authorization: object,
+ 236 | |         root: string,
+ 237 | |         paths: readonly string[],
+ 238 | |       ) {
+ 239 | |         yield* active()
+ 240 | |         if (!ports.codeChanges || !authorization || typeof authorization !== "object")
+ 241 | |           return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
+ 242 | |         const grant = yield* ports.codeChanges.check({ proposal, authorization })
+ 243 | |         if (
+ 244 | |           grant.projectID !== proposal.projectID ||
+ 245 | |           grant.canonicalRoot !== root ||
+ 246 | |           paths.some((value) => !grant.paths.includes(AbsolutePath.make(value)))
+ 247 | |         )
+ 248 | |           return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
+ 249 | |         yield* active()
+ 250 | `->     })
+ 251 |         return {
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[src/ftc/java/documents.ts:496:50]
+ 495 |                   return { kind: "conflict" as const, proposal, applied, conflicts: [result.success.conflict] }
+ 496 |                 applied.push(result.success.saved!)
+     :                              ^^^^^^^^^^|^^^^^^^^^^
+     :                                        `-- This expression already has the type 'Readonly<{ readonly documentID: string & Brand<"FtcJava.DocumentID">; readonly projectID: string & Brand<"Project.ID">; readonly path: string & Brand<"AbsolutePath">; readonly bufferRevision: number; readonly diskRevision: number; readonly text: string; readonly dirty: boolean; }>'
+ 497 |               }
+     `----
+
+Found 7 warnings and 0 errors.
+Finished in 933ms on 3 files with 130 rules using 10 threads.

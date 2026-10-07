@@ -1,0 +1,4 @@
+$ tsgo --noEmit
+src/ftc/java/documents.ts(142,11): error TS18048: 'current' is possibly 'undefined'.
+src/ftc/java/documents.ts(142,36): error TS18048: 'current' is possibly 'undefined'.
+src/ftc/java/documents.ts(241,28): error TS18048: 'ports.codeChanges' is possibly 'undefined'.

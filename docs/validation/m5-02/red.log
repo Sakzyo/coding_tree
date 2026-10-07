@@ -1,0 +1,29 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-02.test.ts:
+41 |   await using tmp = await tmpdir()
+42 |   const context = project(tmp.path)
+43 |   const filename = path.join(tmp.path, "Main.java")
+44 |   await fs.writeFile(filename, "saved")
+45 |   await run(context, (java) => Effect.gen(function* () {
+46 |     expect(typeof java.applyEdits).toBe("function")
+                                        ^
+error: expect(received).toBe(expected)
+
+Expected: "function"
+Received: "undefined"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-02.test.ts:46:36)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-02.test.ts:45:9)
+(fail) dirty or externally changed files reject stale edits [10.45ms]
+
+ 0 pass
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [131.00ms]

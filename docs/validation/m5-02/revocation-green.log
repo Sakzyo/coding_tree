@@ -1,0 +1,10 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-02.test.ts:
+(pass) authorization revoked during the final disk read is rechecked before writing [21.76ms]
+
+ 1 pass
+ 26 filtered out
+ 0 fail
+ 3 expect() calls
+Ran 1 test across 1 file. [138.00ms]
