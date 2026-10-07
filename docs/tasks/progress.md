@@ -484,3 +484,25 @@ The user asked to finish the session when the currently running agents finish th
 Final combined snapshot verification: Core selected module/Session regressions **482 pass / 1682 assertions**, localization parity **6 pass / 1003 assertions**, and Core/Schema/Server/App typechecks all exit 0. [Core regression log](../validation/stop-2026-10-07/core-tests.log), [localization log](../validation/stop-2026-10-07/i18n-parity.log), and package-type logs in `docs/validation/stop-2026-10-07/` preserve evidence. This is available software verification, not production/platform/robot acceptance. Existing unrelated Schema manifest and App native-locale baseline failures were not rerun or silently waived.
 
 No implementation/review worker remains active. No user app/server was restarted, and no real robot operation or actual automatic installation was performed. Source downloads were read-only research; runtime benchmark and tests used controlled task-owned resources. All current product changes are committed; final documentation/validation checkpoint is saved separately. Retain owned evidence/caches and deferred Minor findings; remain stopped until an explicit continuation. M2-04 and M4-05 plus other prerequisite-ready tasks remain for later scheduling, with all host/physical/Windows/M5/M9 release gates preserved.
+
+## Explicit continuation — 2026-10-07
+
+The user requested continuation from this ledger's last endpoint. Reconciled clean `ftc-workspace` at `a232ce6ca`; task checklist counts match **13/94 tasks, 0/12 modules**. This instruction revokes the previous stopping boundary. Preserve the existing feature checkout, authoritative ledger, completed review evidence, owned caches and recorded physical/platform blockers.
+
+The existing full task/interface preflight remains applicable. Current task checks: M2-04 consumes reviewed membership/gate and M3 lifecycle contracts; M4-05 consumes immutable inventories without starting M7/M11; M5-01 introduces its own document contracts without editor/host wiring. Their product files are disjoint; root barrels, host wiring, Git index, commits and checklist updates remain coordinator-owned.
+
+| Task | Prerequisites | Exclusive implementation paths | Status |
+| --- | --- | --- | --- |
+| M2-04 | reviewed M2-02/03 | projects.ts, ftc-project.ts, m2-04 test/evidence; no Session/host/gate edits without explicit assignment | IN_PROGRESS |
+| M4-05 | reviewed M4-01/02 | environment.ts, ftc-environment.ts, m4-05 test/evidence | IN_PROGRESS |
+| M5-01 | fixture-ready | ftc-java.ts, java.ts, java/documents.ts, m5-01 test/evidence; no editor/build/host edits | IN_PROGRESS |
+
+Meaningful RED→GREEN, affected covering tests and package-local types are required per task, followed by independent specification/quality review. No production or physical acceptance is inferred from fixture tests.
+
+- Dispatched `/root/m2_04`, `/root/m4_05` and `/root/m5_01` with their exact briefs against starting base `a232ce6ca`. The M2 reservation-to-execution lifecycle seam is being reconciled against reviewed M3-02 before dependent coding. Counts remain **13/94 tasks, 0/12 modules**.
+
+- Ruling: M2-04 exposes a narrow submitter facet: reserve an exact claim, use canonical admit-only Session admission, then transfer that reservation to an injected handoff port under interruption masking. Explicit resume:false releases its unused claim. Handoff success transfers responsibility; it is not terminal settlement. A failed handoff must leave no accepted reservation or scheduled wake — the existing advisory wake cannot itself establish lifecycle completion — an incorrect adapter could strand admitted work, so actual host transfer/settlement remains M2-05/06 work and is not credited here. Durable admission already committed before later failure is never deleted as compensation.
+- Ruling: M4-05 inventory producers explicitly map each required asset to the six scoped local features; offlineReadiness reports only those selected requirements, with empty inventory remaining requirements_unknown. It consumes immutable records without probes or sibling startup — asset availability cannot prove a current build, robot authorization or model capability — an incorrect producer mapping could overstate availability and must be validated at later composition.
+- Ruling: M5-01 consumes an explicit authorized project-resolution port and realpath/readText filesystem boundary. Changes select an already-open absolute canonical path; dirty buffers and owner scope survive view disposal, without adding a view registry or saving behavior — task signatures omit project identity on change and already require project-scoped identities — an ambiguous canonical mapping would need correction before editor composition.
+
+- Current prerequisite scan finds no missing task IDs; M3-03 and M6-01 exact briefs are prepared for later free slots, not dispatched. Existing blocked evaluations (M5-03, M8-04, M9-07) remain open and are not repeated merely because they are dependency-ready.
