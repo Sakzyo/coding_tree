@@ -1,0 +1,11 @@
+$ tsgo --noEmit
+test/ftc-java.test.ts(20,102): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '{ type: string; snapshot: { documentID: string; projectID: string; path: string; bufferRevision: number; diskRevision: number; text: string; dirty: boolean; }; }' is not assignable to parameter of type '{ readonly type: "changed" | "opened"; readonly snapshot: { readonly documentID: string & Brand<"FtcJava.DocumentID">; readonly projectID: string & Brand<"Project.ID">; ... 4 more ...; readonly dirty: boolean; }; }'.
+      Types of property 'type' are incompatible.
+        Type 'string' is not assignable to type '"changed" | "opened"'.
+test/ftc-java.test.ts(68,104): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'string & Brand<"AbsolutePath">'.
+      Type 'string' is not assignable to type 'string & Brand<"AbsolutePath">'.
+        Type 'string' is not assignable to type 'Brand<"AbsolutePath">'.

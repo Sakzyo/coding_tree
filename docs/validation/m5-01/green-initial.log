@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-01.test.ts:
+(pass) detaching a view preserves dirty buffer [76.60ms]
+(pass) canonical file aliases share a buffer and concurrent opens share one identity [16.61ms]
+(pass) stale edits cannot replace the buffer, while reverting text keeps revisions monotonic [11.46ms]
+(fail) revisioned events describe exactly the committed document snapshots [5000.00ms]
+  ^ this test timed out after 5000ms.
+(pass) rejects traversal or symlink escape: ../Outside.java [4.55ms]
+(pass) rejects traversal or symlink escape: escape/Outside.java [1.10ms]
+(pass) rejects traversal or symlink escape: escaped.java [0.76ms]
+(pass) substituted project context and project ID cannot adopt an authorized document [1.87ms]
+(pass) reopening does not erase a dirty buffer after an external disk edit [1.34ms]
+(pass) retargeting an opened file outside the root rejects subsequent queries and edits [1.53ms]
+(pass) owner disposal rejects escaped services and a fresh owner reads saved bytes [1.06ms]
+(pass) cancelling a file read releases resources without admitting a partial document [1.10ms]
+(pass) facade preserves canonical serializable document contracts [1.00ms]
+
+ 12 pass
+ 1 fail
+ 56 expect() calls
+Ran 13 tests across 1 file. [5.19s]

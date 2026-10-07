@@ -1,0 +1,11 @@
+
+  ! typescript-eslint(no-misused-spread): Using the spread operator on class instances will lose their class prototype.
+    ,-[packages/core/src/ftc/java/documents.ts:97:23]
+ 96 |           ...input.project,
+ 97 |           location: { ...input.project.location, project: { ...input.project.location.project } },
+    :                       ^^^^^^^^^^^^^^^^^^^^^^^^^
+ 98 |         })
+    `----
+
+Found 1 warning and 0 errors.
+Finished in 762ms on 6 files with 130 rules using 10 threads.

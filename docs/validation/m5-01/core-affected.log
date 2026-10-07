@@ -1,0 +1,44 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-01.test.ts:
+(pass) detaching a view preserves dirty buffer [50.82ms]
+(pass) canonical file aliases share a buffer and concurrent opens share one identity [32.31ms]
+(pass) stale edits cannot replace the buffer, while reverting text keeps revisions monotonic [27.31ms]
+(pass) revisioned events describe exactly the committed document snapshots [18.04ms]
+(pass) rejects traversal or symlink escape: ../Outside.java [14.47ms]
+(pass) rejects traversal or symlink escape: escape/Outside.java [43.16ms]
+(pass) rejects traversal or symlink escape: escaped.java [3.32ms]
+(pass) substituted project context and project ID cannot adopt an authorized document [4.31ms]
+(pass) reopening does not erase a dirty buffer after an external disk edit [4.28ms]
+(pass) retargeting an opened file outside the root rejects subsequent queries and edits [6.85ms]
+(pass) owner disposal rejects escaped services and a fresh owner reads saved bytes [7.62ms]
+(pass) cancelling a file read releases resources without admitting a partial document [4.15ms]
+(pass) facade preserves canonical serializable document contracts [2.40ms]
+(pass) concurrent changes with the same revision admit exactly one update [87.41ms]
+(pass) independent owners and projects cannot leak dirty buffers [6.46ms]
+(pass) one owner rejects two project identities claiming the same canonical file [4.11ms]
+(pass) owner shutdown ends event subscriptions and rejects every escaped command [4.82ms]
+
+test/file-mutation.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+EPERM: operation not permitted, mkdir '/Users/dylanxu/.local/state/opencode'
+    path: "/Users/dylanxu/.local/state/opencode",
+ syscall: "mkdir",
+   errno: -1,
+    code: "EPERM"
+
+-------------------------------
+
+
+test/effect/keyed-mutex.test.ts:
+(pass) KeyedMutex > serializes effects with the same key [1.30ms]
+(pass) KeyedMutex > allows different keys to proceed independently [1.19ms]
+(pass) KeyedMutex > removes an interrupted waiter without dropping the holder lock [8.70ms]
+
+ 20 pass
+ 1 fail
+ 1 error
+ 66 expect() calls
+Ran 21 tests across 3 files. [938.00ms]

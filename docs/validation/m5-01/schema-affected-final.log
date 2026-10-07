@@ -1,0 +1,31 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-java.test.ts:
+(pass) document snapshots and revisioned events survive JSON without losing buffer or disk identity [3.10ms]
+(pass) document IDs reject foreign prefix document [0.17ms]
+(pass) document IDs reject foreign prefix doc [0.03ms]
+(pass) document IDs reject foreign prefix docs_fixture [8.19ms]
+(pass) document IDs reject foreign prefix document_fixture [0.19ms]
+(pass) generated document IDs validate their emitted prefix and distinguish identities [0.76ms]
+(pass) buffer and saved revisions reject invalid sequence value %s [1.17ms]
+(pass) buffer and saved revisions reject invalid sequence value %s [0.18ms]
+(pass) document errors omit undefined optional properties and reject invented success states [1.10ms]
+(pass) snapshot paths reject relative identity Main.java [0.13ms]
+(pass) snapshot paths reject relative identity ../Main.java [0.07ms]
+(pass) snapshot paths reject relative identity  [0.04ms]
+(pass) snapshot paths preserve platform absolute identity /team/Main.java [0.08ms]
+(pass) snapshot paths preserve platform absolute identity C:\team\Main.java [0.03ms]
+(pass) snapshot paths preserve platform absolute identity C:/team/Main.java [0.02ms]
+(pass) snapshot paths preserve platform absolute identity \\host\team\Main.java [0.03ms]
+
+test/contract-hygiene.test.ts:
+(pass) contract hygiene > optional properties preserve transformations and omit undefined while encoding [0.48ms]
+(pass) contract hygiene > todo status and priority preserve arbitrary strings [0.08ms]
+(pass) contract hygiene > current ID constructors expose create [0.18ms]
+(pass) contract hygiene > reusable public identifiers are stable and unique [0.09ms]
+(pass) contract hygiene > current source avoids Any and mutable contract wrappers [3.46ms]
+
+ 21 pass
+ 0 fail
+ 36 expect() calls
+Ran 21 tests across 2 files. [126.00ms]

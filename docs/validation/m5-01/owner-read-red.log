@@ -1,0 +1,32 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-01.test.ts:
+506 |       }).pipe(Scope.provide(scope))
+507 |       const pending = yield* java.openDocument({ project: context, path: "Main.java" }).pipe(Effect.forkChild)
+508 |       yield* Deferred.await(started)
+509 |       expect(active.size).toBe(1)
+510 |       yield* Scope.close(scope, Exit.succeed(undefined))
+511 |       expect(active.size).toBe(0)
+                                ^
+error: expect(received).toBe(expected)
+
+Expected: 0
+Received: 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-01.test.ts:511:27)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at doneUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Deferred.js:657:20)
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:625:24)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) disposing the document owner interrupts a pending read and releases its resource [9.21ms]
+
+ 0 pass
+ 19 filtered out
+ 1 fail
+ 2 expect() calls
+Ran 1 test across 1 file. [71.00ms]

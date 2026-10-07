@@ -1,0 +1,28 @@
+$ tsgo --noEmit
+test/ftc/java-development/m5-01.test.ts(101,35): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'string & Brand<"AbsolutePath">'.
+      Type 'string' is not assignable to type 'Brand<"AbsolutePath">'.
+test/ftc/java-development/m5-01.test.ts(294,9): error TS2322: Type 'Effect<string, { code: "file_unavailable"; path: string; }, Scope>' is not assignable to type 'Effect<string, { code: "file_unavailable"; path: string; }, never>'.
+  Type 'Scope' is not assignable to type 'never'.
+test/ftc/projects-and-chats/m2-04.test.ts(45,13): error TS2322: Type 'Prompt' is not assignable to type '{ readonly text: string; readonly files?: readonly { readonly uri: string; readonly mime: string; readonly name?: string | undefined; readonly description?: string | undefined; readonly source?: { readonly start: number; readonly end: number; readonly text: string; } | undefined; }[] | undefined; readonly agents?: r...'.
+  Types of property 'files' are incompatible.
+    Type 'readonly { readonly uri: string; readonly name?: string | undefined; readonly description?: string | undefined; readonly source?: { readonly start: number; readonly end: number; readonly text: string; } | undefined; }[] | undefined' is not assignable to type 'readonly { readonly uri: string; readonly mime: string; readonly name?: string | undefined; readonly description?: string | undefined; readonly source?: { readonly start: number; readonly end: number; readonly text: string; } | undefined; }[] | undefined'.
+      Type 'readonly { readonly uri: string; readonly name?: string | undefined; readonly description?: string | undefined; readonly source?: { readonly start: number; readonly end: number; readonly text: string; } | undefined; }[]' is not assignable to type 'readonly { readonly uri: string; readonly mime: string; readonly name?: string | undefined; readonly description?: string | undefined; readonly source?: { readonly start: number; readonly end: number; readonly text: string; } | undefined; }[]'.
+        Property 'mime' is missing in type '{ readonly uri: string; readonly name?: string | undefined; readonly description?: string | undefined; readonly source?: { readonly start: number; readonly end: number; readonly text: string; } | undefined; }' but required in type '{ readonly uri: string; readonly mime: string; readonly name?: string | undefined; readonly description?: string | undefined; readonly source?: { readonly start: number; readonly end: number; readonly text: string; } | undefined; }'.
+test/ftc/projects-and-chats/m2-04.test.ts(75,34): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Type '"busy"' is not assignable to type '"admitted"'.
+test/ftc/projects-and-chats/m2-04.test.ts(96,108): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '"busy"' is not assignable to parameter of type '"admitted"'.
+test/ftc/projects-and-chats/m2-04.test.ts(114,121): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '"busy"' is not assignable to parameter of type '"admitted"'.
+test/ftc/projects-and-chats/m2-04.test.ts(142,117): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'GateError' is not assignable to parameter of type 'NotFoundError | PromptConflictError'.
+test/ftc/projects-and-chats/m2-04.test.ts(161,29): error TS2345: Argument of type 'void' is not assignable to parameter of type 'Exit<unknown, unknown>'.
+test/ftc/projects-and-chats/m2-04.test.ts(186,121): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '"busy"' is not assignable to parameter of type '"admitted"'.

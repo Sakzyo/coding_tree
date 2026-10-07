@@ -1,0 +1,38 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-java.test.ts:
+22 |   expect(FtcJava.DocumentEvent).toBe(DocumentEvent)
+23 |   expect(
+24 |     [FtcJava.DocumentID, FtcJava.DocumentSnapshot, FtcJava.DocumentEvent, FtcJava.DocumentError].map(
+25 |       (contract) => contract.ast.annotations?.identifier,
+26 |     ),
+27 |   ).toEqual(["FtcJava.DocumentID", "FtcJava.DocumentSnapshot", "FtcJava.DocumentEvent", "FtcJava.DocumentError"])
+         ^
+error: expect(received).toEqual(expected)
+
+  [
+-   "FtcJava.DocumentID",
++   undefined,
+    "FtcJava.DocumentSnapshot",
+    "FtcJava.DocumentEvent",
+    "FtcJava.DocumentError",
+  ]
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/schema/test/ftc-java.test.ts:27:5)
+(fail) document snapshots and revisioned events survive JSON without losing buffer or disk identity [1.89ms]
+(pass) document IDs reject foreign prefix document [1.81ms]
+(pass) document IDs reject foreign prefix doc [0.04ms]
+(pass) document IDs reject foreign prefix docs_fixture [0.01ms]
+(pass) document IDs reject foreign prefix document_fixture [0.01ms]
+(pass) generated document IDs validate their emitted prefix and distinguish identities [0.33ms]
+(pass) buffer and saved revisions reject invalid sequence value %s [0.15ms]
+(pass) buffer and saved revisions reject invalid sequence value %s [0.05ms]
+(pass) document errors omit undefined optional properties and reject invented success states [0.25ms]
+
+ 8 pass
+ 1 fail
+ 19 expect() calls
+Ran 9 tests across 1 file. [64.00ms]

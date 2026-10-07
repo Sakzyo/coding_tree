@@ -1,0 +1,48 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-01.test.ts:
+(pass) detaching a view preserves dirty buffer [63.16ms]
+(pass) canonical file aliases share a buffer and concurrent opens share one identity [30.56ms]
+(pass) stale edits cannot replace the buffer, while reverting text keeps revisions monotonic [23.77ms]
+(pass) revisioned events describe exactly the committed document snapshots [7.39ms]
+(pass) rejects traversal or symlink escape: ../Outside.java [3.12ms]
+(pass) rejects traversal or symlink escape: escape/Outside.java [10.86ms]
+(pass) rejects traversal or symlink escape: escaped.java [4.65ms]
+(pass) substituted project context and project ID cannot adopt an authorized document [3.49ms]
+(pass) reopening does not erase a dirty buffer after an external disk edit [4.90ms]
+(pass) retargeting an opened file outside the root rejects subsequent queries and edits [11.64ms]
+(pass) owner disposal rejects escaped services and a fresh owner reads saved bytes [5.30ms]
+(pass) cancelling a file read releases resources without admitting a partial document [83.18ms]
+(pass) facade preserves canonical serializable document contracts [1.44ms]
+(pass) concurrent changes with the same revision admit exactly one update [3.77ms]
+(pass) independent owners and projects cannot leak dirty buffers [8.28ms]
+(pass) one owner rejects two project identities claiming the same canonical file [11.07ms]
+(pass) owner shutdown ends event subscriptions and rejects every escaped command [3.93ms]
+(pass) absolute sibling paths sharing the root prefix remain outside project scope [2.86ms]
+(pass) missing files and invalid revisions fail without replacing owned buffers [39.02ms]
+(pass) disposing the document owner interrupts a pending read and releases its resource [2.69ms]
+
+test/file-mutation.test.ts:
+(pass) FileMutation > writes an existing internal file and returns a stable result [15.85ms]
+(pass) FileMutation > writes a prospective internal file and creates parent directories [4.60ms]
+(pass) FileMutation > preserves exactly one BOM for text writes and normalizes created text [6.33ms]
+(pass) FileMutation > rejects create when a prospective target appears after resolution [18.44ms]
+(pass) FileMutation > creates when an existing target disappears after resolution [3.07ms]
+(pass) FileMutation > removes an existing internal file [5.92ms]
+(pass) FileMutation > writes an explicitly resolved external target [3.48ms]
+(pass) FileMutation > removes an explicitly resolved external target [2.67ms]
+(pass) FileMutation > reports a missing target as not removed without checking existence first [5.78ms]
+(pass) FileMutation > serializes concurrent writes to the same canonical target [4.12ms]
+(pass) FileMutation > allows only one concurrent conditional write based on the same bytes [4.27ms]
+(pass) FileMutation > rejects a conditional write when target content is already stale [3.22ms]
+(pass) FileMutation > allows distinct canonical targets to proceed independently [7.22ms]
+
+test/effect/keyed-mutex.test.ts:
+(pass) KeyedMutex > serializes effects with the same key [1.75ms]
+(pass) KeyedMutex > allows different keys to proceed independently [0.74ms]
+(pass) KeyedMutex > removes an interrupted waiter without dropping the holder lock [0.86ms]
+
+ 36 pass
+ 0 fail
+ 100 expect() calls
+Ran 36 tests across 3 files. [1045.00ms]

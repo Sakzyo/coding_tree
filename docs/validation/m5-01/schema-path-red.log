@@ -1,0 +1,87 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-java.test.ts:
+(pass) document snapshots and revisioned events survive JSON without losing buffer or disk identity [3.76ms]
+(pass) document IDs reject foreign prefix document [0.17ms]
+(pass) document IDs reject foreign prefix doc [0.02ms]
+(pass) document IDs reject foreign prefix docs_fixture
+(pass) document IDs reject foreign prefix document_fixture [0.01ms]
+(pass) generated document IDs validate their emitted prefix and distinguish identities [0.27ms]
+(pass) buffer and saved revisions reject invalid sequence value %s [0.12ms]
+(pass) buffer and saved revisions reject invalid sequence value %s [0.04ms]
+(pass) document errors omit undefined optional properties and reject invented success states [0.23ms]
+57 |   expect(() => Schema.decodeUnknownSync(FtcJava.DocumentError)({ code: "success" })).toThrow()
+58 |   expect(() => Schema.decodeUnknownSync(FtcJava.DocumentEvent)({ type: "saved", snapshot })).toThrow()
+59 | })
+60 | 
+61 | test.each(["Main.java", "../Main.java", ""])("snapshot paths reject relative identity %s", (value) => {
+62 |   expect(() => Schema.decodeUnknownSync(FtcJava.DocumentSnapshot)({ ...snapshot, path: value })).toThrow()
+                                                                                                      ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  documentID: "doc_fixture",
+  projectID: "fixture-project",
+  path: "Main.java",
+  bufferRevision: 1,
+  diskRevision: 0,
+  text: "unsaved",
+  dirty: true,
+}
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/schema/test/ftc-java.test.ts:62:98)
+(fail) snapshot paths reject relative identity Main.java [0.15ms]
+57 |   expect(() => Schema.decodeUnknownSync(FtcJava.DocumentError)({ code: "success" })).toThrow()
+58 |   expect(() => Schema.decodeUnknownSync(FtcJava.DocumentEvent)({ type: "saved", snapshot })).toThrow()
+59 | })
+60 | 
+61 | test.each(["Main.java", "../Main.java", ""])("snapshot paths reject relative identity %s", (value) => {
+62 |   expect(() => Schema.decodeUnknownSync(FtcJava.DocumentSnapshot)({ ...snapshot, path: value })).toThrow()
+                                                                                                      ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  documentID: "doc_fixture",
+  projectID: "fixture-project",
+  path: "../Main.java",
+  bufferRevision: 1,
+  diskRevision: 0,
+  text: "unsaved",
+  dirty: true,
+}
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/schema/test/ftc-java.test.ts:62:98)
+(fail) snapshot paths reject relative identity ../Main.java [0.04ms]
+57 |   expect(() => Schema.decodeUnknownSync(FtcJava.DocumentError)({ code: "success" })).toThrow()
+58 |   expect(() => Schema.decodeUnknownSync(FtcJava.DocumentEvent)({ type: "saved", snapshot })).toThrow()
+59 | })
+60 | 
+61 | test.each(["Main.java", "../Main.java", ""])("snapshot paths reject relative identity %s", (value) => {
+62 |   expect(() => Schema.decodeUnknownSync(FtcJava.DocumentSnapshot)({ ...snapshot, path: value })).toThrow()
+                                                                                                      ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: {
+  documentID: "doc_fixture",
+  projectID: "fixture-project",
+  path: "",
+  bufferRevision: 1,
+  diskRevision: 0,
+  text: "unsaved",
+  dirty: true,
+}
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/schema/test/ftc-java.test.ts:62:98)
+(fail) snapshot paths reject relative identity  [0.04ms]
+(pass) snapshot paths preserve platform absolute identity /team/Main.java [0.02ms]
+(pass) snapshot paths preserve platform absolute identity C:\team\Main.java
+(pass) snapshot paths preserve platform absolute identity C:/team/Main.java
+(pass) snapshot paths preserve platform absolute identity \\host\team\Main.java
+
+ 13 pass
+ 3 fail
+ 26 expect() calls
+Ran 16 tests across 1 file. [87.00ms]

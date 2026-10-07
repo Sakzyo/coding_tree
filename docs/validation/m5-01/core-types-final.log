@@ -1,0 +1,8 @@
+$ tsgo --noEmit
+src/ftc/configuration/manifest.ts(79,29): error TS2345: Argument of type 'PubSub<ManifestEvent>' is not assignable to parameter of type 'PubSub<{ type: string; root: string & Brand<"AbsolutePath">; previousRevision: string | null; result: { readonly revision: string; readonly manifest: { readonly schemaVersion: 1; readonly hardware: readonly { ...; }[]; readonly managedPathing: "neither" | ... 1 more ... | "road-runner"; }; } | { ...; }; }>'.
+  The types of '[TypeId]._A' are incompatible between these types.
+    Type 'Invariant<ManifestEvent>' is not assignable to type 'Invariant<{ type: string; root: string & Brand<"AbsolutePath">; previousRevision: string | null; result: { readonly revision: string; readonly manifest: { readonly schemaVersion: 1; readonly hardware: readonly { ...; }[]; readonly managedPathing: "neither" | ... 1 more ... | "road-runner"; }; } | { ...; }; }>'.
+      Types of parameters '_' and '_' are incompatible.
+        Type '{ type: string; root: string & Brand<"AbsolutePath">; previousRevision: string | null; result: { readonly revision: string; readonly manifest: { readonly schemaVersion: 1; readonly hardware: readonly { readonly id: string; readonly devices: readonly { ...; }[]; }[]; readonly managedPathing: "neither" | ... 1 more .....' is not assignable to type 'ManifestEvent'.
+          Types of property 'type' are incompatible.
+            Type 'string' is not assignable to type '"external_changed" | "updated"'.

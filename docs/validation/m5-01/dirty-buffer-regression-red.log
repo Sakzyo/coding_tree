@@ -1,0 +1,32 @@
+Behavioral regression mutation: reopening returns captured saved text instead of owned current buffer.
+cwd: /Users/dylanxu/coding_tree/packages/core
+command: bun test ./test/ftc/java-development/m5-01.test.ts -t "detaching a view preserves dirty buffer"
+mutated-source-sha256: 2b538923e65dab2069e06404d6c2604658e8682b6c4c160ad01c0ef2f68c42c4
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-01.test.ts:
+49 |           yield* java.changeDocument({ path: opened.path, expectedRevision: opened.bufferRevision, text: "unsaved" })
+50 |         }),
+51 |       )
+52 |       const reopened = yield* java.openDocument({ project: context, path: "Main.java" })
+53 |       const diskText = yield* filesystem.readText(filename)
+54 |       expect(reopened.text).toBe("unsaved")
+                                 ^
+error: expect(received).toBe(expected)
+
+Expected: "unsaved"
+Received: "saved"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-01.test.ts:54:29)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) detaching a view preserves dirty buffer [8.48ms]
+
+ 0 pass
+ 16 filtered out
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [73.00ms]
+exit: 1
