@@ -3,7 +3,7 @@
 Date: 2026-10-07
 Planning baseline: `d7aca195c`
 
-**Implementation progress: 0 / 12 modules complete; 13 / 94 tasks complete.**
+**Implementation progress: 0 / 12 modules complete; 14 / 94 tasks complete.**
 
 These checkboxes track future development, not completion of this planning document. The existing OpenCode foundation is reused, but its presence does not prove that the FTC tasks are done. Both inputs describe unimplemented or unevaluated product work, so every implementation box starts unchecked.
 
@@ -14,7 +14,7 @@ These checkboxes track future development, not completion of this planning docum
 - [ ] **M1 — [Desktop workspace](desktop-workspace.md)** — 0 / 14 tasks.
 - [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 3 / 6 tasks.
 - [ ] **M3 — [Agent and context](agent-and-context.md)** — 2 / 7 tasks.
-- [ ] **M4 — [Environment and compatibility](environment-and-compatibility.md)** — 4 / 7 tasks.
+- [ ] **M4 — [Environment and compatibility](environment-and-compatibility.md)** — 5 / 7 tasks.
 - [ ] **M5 — [Java development](java-development.md)** — 0 / 8 tasks.
 - [ ] **M6 — [FTC configuration and libraries](ftc-configuration-and-libraries.md)** — 0 / 6 tasks.
 - [ ] **M7 — [AI access and local inference](ai-access-and-local-inference.md)** — 0 / 8 tasks.
@@ -494,7 +494,7 @@ The existing full task/interface preflight remains applicable. Current task chec
 | Task | Prerequisites | Exclusive implementation paths | Status |
 | --- | --- | --- | --- |
 | M2-04 | reviewed M2-02/03 | projects.ts, ftc-project.ts, m2-04 test/evidence; no Session/host/gate edits without explicit assignment | IN_PROGRESS |
-| M4-05 | reviewed M4-01/02 | environment.ts, ftc-environment.ts, m4-05 test/evidence | IN_PROGRESS |
+| M4-05 | reviewed M4-01/02 | environment.ts, ftc-environment.ts, m4-05 test/evidence | DONE |
 | M5-01 | fixture-ready | ftc-java.ts, java.ts, java/documents.ts, m5-01 test/evidence; no editor/build/host edits | IN_PROGRESS |
 
 Meaningful RED→GREEN, affected covering tests and package-local types are required per task, followed by independent specification/quality review. No production or physical acceptance is inferred from fixture tests.
@@ -506,3 +506,15 @@ Meaningful RED→GREEN, affected covering tests and package-local types are requ
 - Ruling: M5-01 consumes an explicit authorized project-resolution port and realpath/readText filesystem boundary. Changes select an already-open absolute canonical path; dirty buffers and owner scope survive view disposal, without adding a view registry or saving behavior — task signatures omit project identity on change and already require project-scoped identities — an ambiguous canonical mapping would need correction before editor composition.
 
 - Current prerequisite scan finds no missing task IDs; M3-03 and M6-01 exact briefs are prepared for later free slots, not dispatched. Existing blocked evaluations (M5-03, M8-04, M9-07) remain open and are not repeated merely because they are dependency-ready.
+
+- M4-05 stable candidate committed `af062679b`; all four tested source hashes matched. Fresh `/root/m4_05_review` independently reviews the complete one-task range from `13e5ed38d`. Focused **28 pass / 108 assertions**, covering M4 **221 pass / 752 assertions**, Schema **8 pass / 17 assertions**, Schema types/lint/format pass. Core types have recorded foreign M2/M5 unfinished diagnostics and will be settled before completion. Task remains unchecked; counts **13/94, 0/12 modules**.
+
+- Upcoming contract check: M3-03 consumes Java EditProposal/EditResult; those canonical producer-owned records belong to M5-02 and are not introduced by M5-01 document ownership. M5-02 brief is prepared, and M3-03 dispatch will wait for those contracts rather than duplicate them. M6-01 is disjoint and remains ready.
+
+- M4-05 independent review approves specification/quality with no findings. Production-inventory completeness and platform/robot readiness remain assigned integration gates; absent boundary-suite coverage remains explicitly unrun. Coordinator is completing the settled Core typecheck before marking the task.
+- Next disjoint task M6-01 starts at `af062679b`, fixture-ready with no implementation prerequisites. Exclusive paths: ftc-configuration.ts, configuration.ts, configuration/manifest.ts, focused M6 tests/evidence; no Java/agent/proposal/robot/host changes. Shared file-mutation helpers are consumed through public APIs, not modified; root barrel/Git/ledger remain coordinator-owned.
+
+- M4-05 **DONE** at `af062679b`: independent spec/quality review approves with no findings; four hashes matched and coordinator-settled Core typecheck exits 0. Focused **28/108**, covering **221/752**, Schema **8/17**, other scoped checks remain passing. Checked exactly task plus five substeps; counts **14/94 tasks, 0/12 modules**, M4 **5/7**. Real offline/platform acceptance remains unrun.
+- M2-04 stable candidate committed `960ef135c`; all four source hashes matched. Fresh `/root/m2_04_review` independently reviews complete range from `af062679b`. Final focused **14 pass / 77 assertions**, affected covering **121 pass / 422 assertions**, Schema **7/19**, Core/Schema types and scoped checks pass. Counts remain **14/94**, task unchecked pending review.
+- Ruling: M6-01 owns a narrow atomic conditional manifest adapter instead of expanding shared FileMutation. Publish complete staged bytes atomically, compare expected bytes under module serialization immediately before commit and revalidate canonical paths; initial creation must be exclusive — the existing helper writes in place and cannot fulfill atomic replacement — external writers do not participate in a filesystem compare-and-swap, so the last-check/rename race remains an explicit limitation rather than an invented guarantee. Detection of observed external changes, newer versions and cleanup remain required.
+- Dispatched `/root/m6_01` with its exact prepared brief and this boundary decision. M5-01 remains in final verification; M2-04 in review.

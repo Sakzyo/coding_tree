@@ -55,7 +55,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 - [x] [M4-02 — Inspect tools and imported project requirements](#m4-02)
 - [x] [M4-03 — Guide setup through readiness checks](#m4-03)
 - [x] [M4-04 — Download and prepare one missing prerequisite](#m4-04)
-- [ ] [M4-05 — Report prepared offline availability](#m4-05)
+- [x] [M4-05 — Report prepared offline availability](#m4-05)
 - [ ] [M4-06 — Expose setup API and compose build verification](#m4-06)
 - [ ] [M4-07 — Evaluate clean-host setup and publish supported profiles](#m4-07)
 
@@ -163,16 +163,18 @@ Verified 2026-10-07, reviewed repair `06036d945`; [implementation evidence](../v
 
 **Interfaces:** Produces `offlineReadiness({ tools, dependencies, models, content }): Readiness`; consumes immutable asset inventories with IDs/version/checksum and availability.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts`, add `missing cache entry does not disable available local features`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/environment-and-compatibility/m4-05.test.ts`, add `missing cache entry does not disable available local features`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(result.missingAssets).toContain('gradle-dependency-fixture'); expect(availableFeatures).toContain('editing')
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/environment-and-compatibility/m4-05.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Check cached Gradle/Android dependencies, tool binaries, selected model and lesson/reference assets independently. Do not infer offline readiness from a working internet build or start M7/M11 to query their stores.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/environment-and-compatibility/m4-05.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): report prepared offline availability`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/environment-and-compatibility/m4-05.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Check cached Gradle/Android dependencies, tool binaries, selected model and lesson/reference assets independently. Do not infer offline readiness from a working internet build or start M7/M11 to query their stores.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/environment-and-compatibility/m4-05.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): report prepared offline availability`.
+
+Verified 2026-10-07 at `af062679b`: [implementation evidence](../validation/M4-05-implementation.md), [independent review](../validation/M4-05-review.md), [settled Core types](../validation/m4-05/core-types-settled.log). Actual offline/product/platform acceptance remains separate.
 
 <a id="m4-06"></a>
 
