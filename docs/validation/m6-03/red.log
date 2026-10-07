@@ -1,0 +1,147 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:
+46 |   }
+47 |   await files(directory.path, beforeFiles)
+48 |   await run((filesystem) => Effect.gen(function* () {
+49 |     const owner = yield* Inspection.make({ filesystem, manifest: manifest(directory.path, beforeFiles["ftc-project.json"]) })
+50 |     const result = yield* owner.inspectProject({ root: directory.path })
+51 |     expect(result.conflicts.length).toBeGreaterThan(0)
+     ^
+error: expect(received).toBeGreaterThan(expected)
+
+Expected: > 0
+Received: 0
+
+      at toBeGreaterThan (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:51:37
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:910:23)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2597:69
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2667:12
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2678:23
+      at /Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:47:9
+      at processTicksAndRejections (unknown:7:39)
+(fail) ambiguous imports stay untouched [26.30ms]
+68 |   const text = 'dependencies {\n implementation("com.pedropathing:ftc:2.1.2") // comment\n /* implementation("com.acmerobotics.roadrunner:core:1.0.1") */\n}\n'
+69 |   await files(directory.path, { "build.dependencies.gradle": gradle, "TeamCode/build.gradle.kts": text, [java]: "// import com.acmerobotics.roadrunner.Action;\nimport com.pedropathing.geometry.Pose;\n" })
+70 |   await run((filesystem) => Effect.gen(function* () {
+71 |     const owner = yield* Inspection.make({ filesystem, manifest: manifest(directory.path) })
+72 |     const result = yield* owner.inspectProject({ root: directory.path })
+73 |     expect(result.detectedPathing).toBe("pedro")
+                                        ^
+error: expect(received).toBe(expected)
+
+Expected: "pedro"
+Received: "unknown"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:73:36)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:70:9)
+(fail) static Kotlin coordinates and Java imports ignore comments and preserve evidence [13.25ms]
+84 |   await run((filesystem) => Effect.gen(function* () {
+85 |     const owner = yield* Inspection.make({ filesystem, manifest: manifest(directory.path) })
+86 |     const result = yield* owner.inspectProject({ root: directory.path })
+87 |     expect(result.detectedPathing).toBe("unknown")
+88 |     expect(result.sdkVersion).toBeUndefined()
+89 |     expect(result.unknowns.map((item) => item.reason)).toContain("unsupported_gradle")
+                                                            ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "unsupported_gradle"
+Received: []
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:89:56)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:84:9)
+(fail) missing inputs and unsupported Gradle cannot establish neither [7.96ms]
+ 96 |   await using directory = await tmpdir()
+ 97 |   await files(directory.path, { "build.dependencies.gradle": gradle, "TeamCode/build.gradle": "dependencies {\n}\n", [java]: "import com.qualcomm.robotcore.hardware.DcMotor;\n" })
+ 98 |   await run((filesystem) => Effect.gen(function* () {
+ 99 |     const owner = yield* Inspection.make({ filesystem, manifest: manifest(directory.path) })
+100 |     const result = yield* owner.inspectProject({ root: directory.path })
+101 |     expect(result.detectedPathing).toBe("neither")
+                                         ^
+error: expect(received).toBe(expected)
+
+Expected: "neither"
+Received: "unknown"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:101:36)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:98:9)
+(fail) supported complete layout can observe neither without a managed selection [6.26ms]
+error
+{
+  dependencies: [],
+  detectedPathing: "unknown",
+  conflicts: [],
+  sourceRevisions: [],
+  unknowns: [],
+}
+(fail) external source symlinks are rejected before reading foreign files [4.26ms]
+124 |       changed = true
+125 |       return Effect.promise(() => fs.writeFile(name, gradle.replace("11.1.0", "11.2.0")))
+126 |     })) }, manifest: manifest(directory.path) })
+127 |     const result = yield* owner.inspectProject({ root: directory.path })
+128 |     expect(result.sdkVersion).toBeUndefined()
+129 |     expect(result.sourceRevisions.find((item) => item.path === "build.dependencies.gradle")?.state).toBe("changed")
+                                                                                                          ^
+error: expect(received).toBe(expected)
+
+Expected: "changed"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:129:101)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:120:9)
+(fail) changed bytes remain explicit and cannot supply a version [2.04ms]
+140 |   await files(root, { "build.dependencies.gradle": gradle })
+141 |   await run((filesystem) => Effect.gen(function* () {
+142 |     const input = { root: alias }
+143 |     const owner = yield* Inspection.make({ filesystem: { ...filesystem, realPath: (name) => filesystem.realPath(name).pipe(Effect.tap(() => Effect.sync(() => { input.root = "/unrelated" }))) }, manifest: manifest(root) })
+144 |     const result = yield* owner.inspectProject(input)
+145 |     expect(result.sdkVersion).toBe("11.1.0")
+                                    ^
+error: expect(received).toBe(expected)
+
+Expected: "11.1.0"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:145:31)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:141:9)
+(fail) canonical root and captured input survive caller mutation [5.32ms]
+(fail) scope disposal interrupts blocked reads and rejects escaped APIs [1500.00ms]
+  ^ this test timed out after 1500ms.
+
+ 0 pass
+ 8 fail
+ 9 expect() calls
+Ran 8 tests across 1 file. [1.96s]

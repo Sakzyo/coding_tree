@@ -1,0 +1,118 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:
+(pass) ambiguous imports stay untouched [307.83ms]
+(pass) static Kotlin coordinates and Java imports ignore comments and preserve evidence [189.36ms]
+(pass) missing inputs and unsupported Gradle cannot establish neither [34.10ms]
+(pass) supported complete layout can observe neither without a managed selection [98.47ms]
+(pass) external source symlinks are rejected before reading foreign files [5.17ms]
+(pass) changed bytes remain explicit and cannot supply a version [74.81ms]
+(pass) canonical root and captured input survive caller mutation [17.86ms]
+(pass) scope disposal interrupts blocked reads and rejects escaped APIs [10.32ms]
+(pass) unsupported dependency source cannot establish absence or parse embedded code customDependencyLoader()
+ [24.97ms]
+(pass) unsupported dependency source cannot establish absence or parse embedded code if (enabled) {
+ dependencies {
+ implementation 'com.pedropathing:core:2.1.2'
+ }
+}
+ [16.32ms]
+(pass) unsupported dependency source cannot establish absence or parse embedded code val sample = """
+dependencies {
+ implementation "com.pedropathing:core:2.1.2"
+}
+"""
+ [10.65ms]
+(pass) manifest retargeting during the public port read rejects foreign scope [11.20ms]
+(pass) root alias retargeting cannot cross into another project [5.41ms]
+(pass) SDK disagreement stays unknown while a matching managed selection is consistent [17.19ms]
+(pass) managed selection is captured before a later filesystem boundary [10.31ms]
+(pass) additional Gradle loaders prevent a conclusive absence after literal declarations [13.62ms]
+
+test/ftc/ftc-configuration-and-libraries/m6-01.test.ts:
+(pass) stale manifest update preserves external bytes [19.46ms]
+(pass) absent read proposes initialization without writing, explicit initialization survives reopen [16.23ms]
+(pass) concurrent initializer cannot replace external bytes at exclusive publication [16.13ms]
+(pass) external edit during staging is detected before replacement and staging is removed [7.61ms]
+(pass) cancellation after staging preserves the manifest and removes only its staging [6.17ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[],"managedPathing":"neither","credentials":"secret"} [4.55ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[{"id":"hub","approvals":[],"devices":[]}],"managedPathing":"neither"} [1.44ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[{"id":"hub","devices":[{"category":"motor","port":0,"type":"fixture","name":"drive","machinePaths":["/private"]}]}],"managedPathing":"neither"} [1.37ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":0,"hardware":[],"managedPathing":"neither"} [2.36ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[],"managedPathing":["pedro","road-runner"]} [1.49ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[{"id":"hub","devices":[{"category":"motor","port":-1,"type":"fixture","name":"drive"}]}],"managedPathing":"neither"} [1.53ms]
+(pass) unsupported or invalid external content is never replaced {"bytes":"{\"schemaVersion\":2,\"hardware\":[],\"managedPathing\":\"neither\",\"future\":true}","code":"unsupported_schema_version"} [14.03ms]
+(pass) unsupported or invalid external content is never replaced {"bytes":"{\"schemaVersion\":1,\"hardware\":[],\"managedPathing\":\"neither\",\"chats\":[]}","code":"invalid_manifest"} [4.08ms]
+(pass) unsupported or invalid external content is never replaced {"bytes":"malformed json","code":"invalid_manifest"} [2.91ms]
+(pass) revision events report commits and observed external bytes, without unchanged-read duplicates [15.77ms]
+(pass) manifest symlink cannot write outside the project [4.87ms]
+(pass) scope closure rejects retained commands and ends event consumers [2.42ms]
+(pass) canonical facade and serializable manifest preserve shared hardware fields [1.69ms]
+(pass) concurrent updates serialize and only one expected revision can publish [16.70ms]
+(pass) canonical root alias retargeted during staging cannot publish to either project [13.38ms]
+(pass) cancellation during the final filesystem check does not publish staged content [58.96ms]
+(pass) an unchanged manifest update emits no revision event [38.42ms]
+(pass) root relocation cannot make scoped cleanup remove a foreign directory symlink [22.97ms]
+(pass) root relocation cannot make scoped cleanup remove a foreign directory replacement [13.52ms]
+
+test/ftc/ftc-configuration-and-libraries/m6-02.test.ts:
+(pass) form and chat enforce the same port and name rules [17.13ms]
+(pass) rejects missing_name at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Motor",
+  name: "",
+} [14.79ms]
+(pass) rejects missing_name at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Motor",
+} [5.91ms]
+(pass) rejects missing_name at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Motor",
+  name: " \t ",
+} [34.16ms]
+(pass) rejects invalid_category at the offending field: {
+  category: "other",
+  port: 0,
+  type: "fixture.Motor",
+  name: "drive",
+} [3.62ms]
+(pass) rejects invalid_type at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Servo",
+  name: "drive",
+} [3.39ms]
+(pass) rejects invalid_hardware at the offending field: {
+  category: "motor",
+  port: -1,
+  type: "fixture.Motor",
+  name: "drive",
+} [3.02ms]
+(pass) rejects invalid_hardware at the offending field: {
+  category: "motor",
+  port: 0.5,
+  type: "fixture.Motor",
+  name: "drive",
+} [11.93ms]
+(pass) rejects hub or occupancy conflict invalid_hub [9.90ms]
+(pass) rejects hub or occupancy conflict duplicate_hub [43.62ms]
+(pass) rejects hub or occupancy conflict occupied_port [12.70ms]
+(pass) preserves identifiers and pathing while accepting distinct category ports and exact names [35.49ms]
+(pass) uses the supplied SDK catalog snapshot and rejects ambiguous or malformed catalogs [13.65ms]
+(pass) stale hardware command preserves external bytes [14.37ms]
+(pass) hardware update requires existing manifest [4.29ms]
+(pass) rejects malformed expected revision before persistence [16.14ms]
+(pass) hub rules remain project-local and an empty replacement removes only hardware [32.54ms]
+(pass) copies admitted hardware before asynchronous manifest read [28.55ms]
+(pass) hardware command retains owner revision protection during staging [9.83ms]
+(pass) captures command envelope root before asynchronous manifest read [29.95ms]
+(pass) captures command envelope revision before asynchronous manifest read [6.34ms]
+
+ 61 pass
+ 0 fail
+ 196 expect() calls
+Ran 61 tests across 3 files. [2.31s]

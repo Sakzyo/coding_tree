@@ -1,0 +1,16 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:
+(pass) ambiguous imports stay untouched [125.27ms]
+(pass) static Kotlin coordinates and Java imports ignore comments and preserve evidence [19.80ms]
+(pass) missing inputs and unsupported Gradle cannot establish neither [6.21ms]
+(pass) supported complete layout can observe neither without a managed selection [21.84ms]
+(pass) external source symlinks are rejected before reading foreign files [8.27ms]
+(pass) changed bytes remain explicit and cannot supply a version [9.38ms]
+(pass) canonical root and captured input survive caller mutation [62.65ms]
+(pass) scope disposal interrupts blocked reads and rejects escaped APIs [4.72ms]
+
+ 8 pass
+ 0 fail
+ 34 expect() calls
+Ran 8 tests across 1 file. [1065.00ms]

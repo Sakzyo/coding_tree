@@ -1,0 +1,366 @@
+export * as Inspection from "./inspection"
+
+import { FtcConfiguration } from "@opencode-ai/schema/ftc-configuration"
+import { createHash } from "node:crypto"
+import path from "node:path"
+import { Effect, Fiber, Option, Schema, Scope } from "effect"
+import { FSUtil } from "../../fs-util"
+import type { ManifestRepository } from "./manifest"
+
+export interface Ports {
+  readonly filesystem: Pick<FSUtil.Interface, "realPath" | "readFile" | "readDirectory" | "stat">
+  readonly manifest: Pick<ManifestRepository.Interface, "readManifest">
+}
+
+export interface Interface {
+  readonly inspectProject: (input: {
+    readonly root: string
+  }) => Effect.Effect<FtcConfiguration.InspectionResult, FtcConfiguration.InspectionError>
+}
+
+export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope> =>
+  Effect.gen(function* () {
+    const scope = yield* Effect.scope
+    const fs = { ...ports.filesystem }
+    const readManifest = ports.manifest.readManifest
+    let closed = false
+    yield* Effect.addFinalizer(() =>
+      Effect.sync(() => {
+        closed = true
+      }),
+    )
+    const active = () =>
+      Effect.suspend(() =>
+        closed ? Effect.fail({ code: "owner_closed" } satisfies FtcConfiguration.InspectionError) : Effect.void,
+      )
+    return {
+      inspectProject: Effect.fn("Inspection.inspectProject")(function* (input) {
+        const requested = input.root
+        yield* active()
+        return yield* Effect.acquireUseRelease(
+          Effect.gen(function* () {
+            if (typeof requested !== "string" || !path.isAbsolute(requested) || requested.includes("\0"))
+              return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
+            const root = yield* fs
+              .realPath(requested)
+              .pipe(Effect.mapError(() => ({ code: "file_unavailable" }) satisfies FtcConfiguration.InspectionError))
+            const identity = yield* fs
+              .stat(root)
+              .pipe(Effect.mapError(() => ({ code: "file_unavailable" }) satisfies FtcConfiguration.InspectionError))
+            if (identity.type !== "Directory" || Option.isNone(identity.ino))
+              return yield* Effect.fail({ code: "file_unavailable" } satisfies FtcConfiguration.InspectionError)
+            const inode = identity.ino.value
+            const checkRoot = Effect.fn("Inspection.checkRoot")(function* () {
+              yield* active()
+              const canonical = yield* fs
+                .realPath(requested)
+                .pipe(
+                  Effect.mapError(() => ({ code: "path_outside_project" }) satisfies FtcConfiguration.InspectionError),
+                )
+              const current = yield* fs
+                .stat(root)
+                .pipe(
+                  Effect.mapError(() => ({ code: "path_outside_project" }) satisfies FtcConfiguration.InspectionError),
+                )
+              if (
+                canonical !== root ||
+                current.dev !== identity.dev ||
+                Option.isNone(current.ino) ||
+                current.ino.value !== inode
+              )
+                return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
+              return yield* Effect.void
+            })
+            const sources: FtcConfiguration.InspectionSourceRevision[] = []
+            const unknowns: FtcConfiguration.InspectionUnknown[] = []
+            const dependencies: FtcConfiguration.InspectionDependency[] = []
+            const conflicts: FtcConfiguration.InspectionConflict[] = []
+            const target = Effect.fn("Inspection.target")(function* (relative: string) {
+              yield* checkRoot()
+              const filename = path.join(root, relative)
+              const canonical = yield* fs.realPath(filename).pipe(
+                Effect.catchReason("PlatformError", "NotFound", () => Effect.succeed(undefined)),
+                Effect.mapError(
+                  () => ({ code: "file_unavailable", path: relative }) satisfies FtcConfiguration.InspectionError,
+                ),
+              )
+              if (canonical !== undefined && canonical !== filename)
+                return yield* Effect.fail({
+                  code: "path_outside_project",
+                  path: relative,
+                } satisfies FtcConfiguration.InspectionError)
+              return canonical
+            })
+            const read = Effect.fn("Inspection.read")(function* (relative: string) {
+              const canonical = yield* target(relative)
+              if (canonical === undefined) {
+                sources.push({ path: relative, state: "missing" })
+                return undefined
+              }
+              const bytes = yield* fs.readFile(canonical).pipe(
+                Effect.map((value) => new Uint8Array(value)),
+                Effect.catch(() => Effect.succeed(undefined)),
+              )
+              yield* target(relative)
+              if (!bytes) {
+                sources.push({ path: relative, state: "unavailable" })
+                unknowns.push({ path: relative, reason: "file_unavailable" })
+                return undefined
+              }
+              const revision = digest(bytes)
+              const latest = yield* fs.readFile(canonical).pipe(
+                Effect.map((value) => digest(value)),
+                Effect.catch(() => Effect.succeed(undefined)),
+              )
+              if ((yield* target(relative)) !== canonical)
+                return yield* Effect.fail({
+                  code: "path_outside_project",
+                  path: relative,
+                } satisfies FtcConfiguration.InspectionError)
+              if (latest !== revision) {
+                sources.push({ path: relative, state: "changed", revision })
+                unknowns.push({ path: relative, reason: "changed_input" })
+                return undefined
+              }
+              sources.push({ path: relative, state: "read", revision })
+              return bytes
+            })
+            const gradlePaths = [
+              "build.gradle",
+              "build.gradle.kts",
+              "build.dependencies.gradle",
+              "build.dependencies.gradle.kts",
+              "TeamCode/build.gradle",
+              "TeamCode/build.gradle.kts",
+            ]
+            yield* Effect.forEach(
+              gradlePaths,
+              (relative) =>
+                read(relative).pipe(
+                  Effect.map((bytes) => {
+                    if (!bytes) return
+                    const parsed = parseGradle(relative, new TextDecoder().decode(bytes))
+                    dependencies.push(...parsed.dependencies)
+                    unknowns.push(...parsed.unknowns)
+                  }),
+                ),
+              { discard: true },
+            )
+            if (!sources.some((source) => source.path.startsWith("TeamCode/build.gradle") && source.state === "read"))
+              unknowns.push({ path: "TeamCode", reason: "missing_input" })
+            const javaRoot = "TeamCode/src/main/java"
+            const visit = Effect.fn("Inspection.visit")(function* (
+              relative: string,
+            ): Effect.fn.Return<void, FtcConfiguration.InspectionError> {
+              const canonical = yield* target(relative)
+              if (canonical === undefined) {
+                unknowns.push({ path: relative, reason: "missing_input" })
+                return yield* Effect.void
+              }
+              const info = yield* fs
+                .stat(canonical)
+                .pipe(
+                  Effect.mapError(
+                    () => ({ code: "file_unavailable", path: relative }) satisfies FtcConfiguration.InspectionError,
+                  ),
+                )
+              if (info.type === "Directory") {
+                const names = yield* fs
+                  .readDirectory(canonical)
+                  .pipe(
+                    Effect.mapError(
+                      () => ({ code: "file_unavailable", path: relative }) satisfies FtcConfiguration.InspectionError,
+                    ),
+                  )
+                if ((yield* target(relative)) !== canonical)
+                  return yield* Effect.fail({
+                    code: "path_outside_project",
+                    path: relative,
+                  } satisfies FtcConfiguration.InspectionError)
+                yield* Effect.forEach(
+                  names.sort(),
+                  (name) => {
+                    if (!name || path.basename(name) !== name || name === "." || name === ".." || name.includes("\0"))
+                      return Effect.fail({
+                        code: "path_outside_project",
+                        path: relative,
+                      } satisfies FtcConfiguration.InspectionError)
+                    return visit(`${relative}/${name}`)
+                  },
+                  { discard: true },
+                )
+                return yield* Effect.void
+              }
+              if (!relative.endsWith(".java")) return yield* Effect.void
+              const bytes = yield* read(relative)
+              if (!bytes) return yield* Effect.void
+              const text = maskLiterals(stripComments(new TextDecoder().decode(bytes)))
+              Array.from(text.matchAll(/^\s*import\s+(?:static\s+)?([\w.]+(?:\.\*)?)\s*;/gm)).forEach((match) => {
+                dependencies.push({ path: relative, kind: "java_import", import: match[1] })
+              })
+              return yield* Effect.void
+            })
+            yield* visit(javaRoot)
+            const manifestBytes = yield* read("ftc-project.json")
+            const manifestResult = yield* readManifest({ root }).pipe(Effect.result)
+            const managed =
+              manifestResult._tag === "Success" && "revision" in manifestResult.success
+                ? Schema.decodeUnknownOption(FtcConfiguration.ManifestSnapshot)(manifestResult.success)
+                : Option.none()
+            const managedPathing =
+              Option.isSome(managed) && manifestBytes && managed.value.revision === digest(manifestBytes)
+                ? managed.value.manifest.managedPathing
+                : undefined
+            if (managedPathing === undefined)
+              unknowns.push({
+                path: "ftc-project.json",
+                reason:
+                  manifestResult._tag === "Failure" && manifestResult.failure.code === "invalid_manifest"
+                    ? "invalid_manifest"
+                    : manifestResult._tag === "Failure" && manifestResult.failure.code === "unsupported_schema_version"
+                      ? "unsupported_schema_version"
+                      : manifestResult._tag === "Failure"
+                        ? "file_unavailable"
+                        : manifestBytes
+                          ? "changed_input"
+                          : "manifest_missing",
+              })
+            yield* target("ftc-project.json")
+            if (manifestResult._tag === "Failure" && manifestResult.failure.code === "path_outside_project")
+              return yield* Effect.fail({
+                code: "path_outside_project",
+                path: "ftc-project.json",
+              } satisfies FtcConfiguration.InspectionError)
+            const pedro = dependencies.filter(
+              (item) => item.group === "com.pedropathing" || item.import?.startsWith("com.pedropathing."),
+            )
+            const runner = dependencies.filter(
+              (item) =>
+                item.group === "com.acmerobotics.roadrunner" || item.import?.startsWith("com.acmerobotics.roadrunner."),
+            )
+            const sdk = dependencies.filter(
+              (item) =>
+                item.group === "org.firstinspires.ftc" &&
+                [
+                  "RobotCore",
+                  "FtcCommon",
+                  "Hardware",
+                  "Vision",
+                  "Inspection",
+                  "Blocks",
+                  "RobotServer",
+                  "OnBotJava",
+                ].includes(item.artifact ?? ""),
+            )
+            const versions = Array.from(new Set(sdk.flatMap((item) => (item.version ? [item.version] : []))))
+            if (versions.length > 1) {
+              conflicts.push({ code: "sdk_version_conflict", paths: sdk.map((item) => item.path) })
+              unknowns.push({ path: "build.dependencies.gradle", reason: "sdk_version_conflict" })
+            }
+            if (sdk.length === 0) unknowns.push({ path: "build.dependencies.gradle", reason: "missing_input" })
+            // Absent managed selection is separate from incomplete dependency evidence.
+            const incomplete = unknowns.some((item) => item.path !== "ftc-project.json")
+            const detectedPathing =
+              pedro.length && runner.length
+                ? "both"
+                : pedro.length
+                  ? "pedro"
+                  : runner.length
+                    ? "road-runner"
+                    : incomplete
+                      ? "unknown"
+                      : "neither"
+            if (detectedPathing === "both")
+              conflicts.push({
+                code: "both_pathing",
+                paths: Array.from(new Set([...pedro, ...runner].map((item) => item.path))),
+              })
+            if (
+              managedPathing !== undefined &&
+              ((pedro.length && managedPathing !== "pedro") ||
+                (runner.length && managedPathing !== "road-runner") ||
+                (detectedPathing === "neither" && managedPathing !== "neither"))
+            )
+              conflicts.push({
+                code: "manifest_mismatch",
+                paths: ["ftc-project.json", ...Array.from(new Set([...pedro, ...runner].map((item) => item.path)))],
+              })
+            return {
+              sdkVersion:
+                versions.length === 1 && sdk.every((item) => item.version !== undefined) ? versions[0] : undefined,
+              managedPathing,
+              dependencies,
+              detectedPathing,
+              conflicts,
+              sourceRevisions: sources,
+              unknowns,
+            } satisfies FtcConfiguration.InspectionResult
+          }).pipe(Effect.forkIn(scope)),
+          Fiber.join,
+          Fiber.interrupt,
+        )
+      }),
+    }
+  })
+
+function digest(bytes: Uint8Array) {
+  return createHash("sha256").update(bytes).digest("hex")
+}
+
+// Preserve literals while removing comments; quoted text is never scanned as code.
+function stripComments(text: string) {
+  return text.replace(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\/\/[^\n]*|\/\*[\s\S]*?\*\//g, (value) =>
+    value.startsWith("/") ? value.replace(/[^\n]/g, " ") : value,
+  )
+}
+
+function parseGradle(filename: string, text: string) {
+  const dependencies: FtcConfiguration.InspectionDependency[] = []
+  const unknowns: FtcConfiguration.InspectionUnknown[] = []
+  const clean = stripComments(text)
+  if (
+    /"""|'''/.test(clean) ||
+    Array.from(clean.matchAll(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g)).some((match) => /[\r\n]/.test(match[0]))
+  )
+    return { dependencies, unknowns: [{ path: filename, reason: "unsupported_gradle" as const }] }
+  if (!/^\s*dependencies\s*\{\s*$/m.test(clean)) unknowns.push({ path: filename, reason: "unsupported_gradle" })
+  let depth = 0
+  let dependencyDepth: number | undefined
+  clean.split(/\r?\n/).forEach((line) => {
+    const code = line.trim()
+    if (/^dependencies\s*\{\s*$/.test(code) && depth === 0) dependencyDepth = 1
+    if (dependencyDepth === undefined && code && code !== "}")
+      unknowns.push({ path: filename, reason: "unsupported_gradle" })
+    if (dependencyDepth !== undefined && depth >= dependencyDepth && code && code !== "}") {
+      const declaration =
+        /^(?:implementation|api|compileOnly|runtimeOnly|compile|testImplementation|androidTestImplementation)\s*(?:\(\s*(["'])(.*?)\1\s*\)|\s+(["'])(.*?)\3)\s*;?$/.exec(
+          code,
+        )
+      if (depth === dependencyDepth && declaration) {
+        const coordinate = (declaration[2] ?? declaration[4]).split(":")
+        if (coordinate.length === 3 && /^[\w.-]+$/.test(coordinate[0]) && /^[\w.-]+$/.test(coordinate[1])) {
+          const literal = /^\d[\w.-]*$/.test(coordinate[2])
+          dependencies.push({
+            path: filename,
+            kind: "gradle",
+            group: coordinate[0],
+            artifact: coordinate[1],
+            ...(literal ? { version: coordinate[2] } : { reason: "dynamic_version" as const }),
+          })
+          if (!literal) unknowns.push({ path: filename, reason: "dynamic_version" })
+        } else unknowns.push({ path: filename, reason: "unsupported_gradle" })
+      } else unknowns.push({ path: filename, reason: "unsupported_gradle" })
+    }
+    const structural = code.replace(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g, "")
+    depth += (structural.match(/\{/g)?.length ?? 0) - (structural.match(/\}/g)?.length ?? 0)
+    if (dependencyDepth !== undefined && depth < dependencyDepth) dependencyDepth = undefined
+    if (/\bdependencies\b/.test(structural) && (depth !== 1 || !/^dependencies\s*\{\s*$/.test(structural)))
+      unknowns.push({ path: filename, reason: "unsupported_gradle" })
+  })
+  if (depth !== 0) unknowns.push({ path: filename, reason: "unsupported_gradle" })
+  return { dependencies, unknowns }
+}
+
+function maskLiterals(text: string) {
+  return text.replace(/"""[\s\S]*?"""|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g, (value) => value.replace(/[^\n]/g, " "))
+}

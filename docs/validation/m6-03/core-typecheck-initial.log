@@ -1,0 +1,5 @@
+$ tsgo --noEmit
+src/ftc/configuration/inspection.ts(47,138): error TS2339: Property 'value' does not exist on type 'Option<number>'.
+  Property 'value' does not exist on type 'None<number>'.
+test/ftc/ftc-configuration-and-libraries/m6-03.test.ts(161,62): error TS2339: Property 'cause' does not exist on type 'Exit<InspectionResult, InspectionError>'.
+  Property 'cause' does not exist on type 'Success<InspectionResult, InspectionError>'.

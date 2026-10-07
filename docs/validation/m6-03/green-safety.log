@@ -1,0 +1,31 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:
+(pass) ambiguous imports stay untouched [29.09ms]
+(pass) static Kotlin coordinates and Java imports ignore comments and preserve evidence [8.07ms]
+(pass) missing inputs and unsupported Gradle cannot establish neither [5.26ms]
+(pass) supported complete layout can observe neither without a managed selection [6.53ms]
+(pass) external source symlinks are rejected before reading foreign files [2.11ms]
+(pass) changed bytes remain explicit and cannot supply a version [2.77ms]
+(pass) canonical root and captured input survive caller mutation [2.88ms]
+(pass) scope disposal interrupts blocked reads and rejects escaped APIs [3.74ms]
+(pass) unsupported dependency source cannot establish absence or parse embedded code customDependencyLoader()
+ [6.17ms]
+(pass) unsupported dependency source cannot establish absence or parse embedded code if (enabled) {
+ dependencies {
+ implementation 'com.pedropathing:core:2.1.2'
+ }
+}
+ [5.47ms]
+(pass) unsupported dependency source cannot establish absence or parse embedded code val sample = """
+dependencies {
+ implementation "com.pedropathing:core:2.1.2"
+}
+"""
+ [7.44ms]
+(pass) manifest retargeting during the public port read rejects foreign scope [3.51ms]
+
+ 12 pass
+ 0 fail
+ 47 expect() calls
+Ran 12 tests across 1 file. [297.00ms]

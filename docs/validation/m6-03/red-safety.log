@@ -1,0 +1,141 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:
+(pass) ambiguous imports stay untouched [27.99ms]
+(pass) static Kotlin coordinates and Java imports ignore comments and preserve evidence [9.47ms]
+(pass) missing inputs and unsupported Gradle cannot establish neither [3.18ms]
+(pass) supported complete layout can observe neither without a managed selection [6.73ms]
+(pass) external source symlinks are rejected before reading foreign files [2.39ms]
+(pass) changed bytes remain explicit and cannot supply a version [4.66ms]
+(pass) canonical root and captured input survive caller mutation [3.36ms]
+(pass) scope disposal interrupts blocked reads and rejects escaped APIs [2.22ms]
+171 |   await using directory = await tmpdir()
+172 |   await files(directory.path, { "build.dependencies.gradle": gradle, "TeamCode/build.gradle.kts": text, [java]: 'class Paths { String example = """\nimport com.acmerobotics.roadrunner.Action;\n"""; }\n' })
+173 |   await run((filesystem) => Effect.gen(function* () {
+174 |     const owner = yield* Inspection.make({ filesystem, manifest: manifest(directory.path) })
+175 |     const result = yield* owner.inspectProject({ root: directory.path })
+176 |     expect(result.detectedPathing).toBe("unknown")
+                                         ^
+error: expect(received).toBe(expected)
+
+Expected: "unknown"
+Received: "road-runner"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:176:36)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Effect.js:8151:9)
+      at <anonymous> (node:fs:247:13)
+(fail) unsupported dependency source cannot establish absence or parse embedded code customDependencyLoader()
+ [6.32ms]
+171 |   await using directory = await tmpdir()
+172 |   await files(directory.path, { "build.dependencies.gradle": gradle, "TeamCode/build.gradle.kts": text, [java]: 'class Paths { String example = """\nimport com.acmerobotics.roadrunner.Action;\n"""; }\n' })
+173 |   await run((filesystem) => Effect.gen(function* () {
+174 |     const owner = yield* Inspection.make({ filesystem, manifest: manifest(directory.path) })
+175 |     const result = yield* owner.inspectProject({ root: directory.path })
+176 |     expect(result.detectedPathing).toBe("unknown")
+      ^
+error: expect(received).toBe(expected)
+
+Expected: "unknown"
+Received: "road-runner"
+
+      at toBe (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:176:36
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:910:23)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Effect.js:8151:9
+      at node:fs:247:13
+      at processTicksAndRejections (unknown:7:39)
+(fail) unsupported dependency source cannot establish absence or parse embedded code if (enabled) {
+ dependencies {
+ implementation 'com.pedropathing:core:2.1.2'
+ }
+}
+ [6.54ms]
+171 |   await using directory = await tmpdir()
+172 |   await files(directory.path, { "build.dependencies.gradle": gradle, "TeamCode/build.gradle.kts": text, [java]: 'class Paths { String example = """\nimport com.acmerobotics.roadrunner.Action;\n"""; }\n' })
+173 |   await run((filesystem) => Effect.gen(function* () {
+174 |     const owner = yield* Inspection.make({ filesystem, manifest: manifest(directory.path) })
+175 |     const result = yield* owner.inspectProject({ root: directory.path })
+176 |     expect(result.detectedPathing).toBe("unknown")
+                                         ^
+error: expect(received).toBe(expected)
+
+Expected: "unknown"
+Received: "both"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:176:36)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Effect.js:8151:9)
+      at <anonymous> (node:fs:247:13)
+(fail) unsupported dependency source cannot establish absence or parse embedded code val sample = """
+dependencies {
+ implementation "com.pedropathing:core:2.1.2"
+}
+"""
+ [6.23ms]
+error
+{
+  sdkVersion: undefined,
+  managedPathing: "neither",
+  dependencies: [],
+  detectedPathing: "unknown",
+  conflicts: [],
+  sourceRevisions: [
+    {
+      path: "build.gradle",
+      state: "missing",
+    }, {
+      path: "build.gradle.kts",
+      state: "missing",
+    }, {
+      path: "build.dependencies.gradle",
+      state: "missing",
+    }, {
+      path: "build.dependencies.gradle.kts",
+      state: "missing",
+    }, {
+      path: "TeamCode/build.gradle",
+      state: "missing",
+    }, {
+      path: "TeamCode/build.gradle.kts",
+      state: "missing",
+    }, {
+      path: "ftc-project.json",
+      state: "read",
+      revision: "21cef7b42140e06d155797150f863becc9be6a63b49342544a9efeccbda87f6a",
+    }
+  ],
+  unknowns: [
+    {
+      path: "TeamCode",
+      reason: "missing_input",
+    }, {
+      path: "TeamCode/src/main/java",
+      reason: "missing_input",
+    }, {
+      path: "build.dependencies.gradle",
+      reason: "missing_input",
+    }
+  ],
+}
+(fail) manifest retargeting during the public port read rejects foreign scope [3.68ms]
+
+ 8 pass
+ 4 fail
+ 40 expect() calls
+Ran 12 tests across 1 file. [298.00ms]

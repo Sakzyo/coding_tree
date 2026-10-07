@@ -1,0 +1,55 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:
+(pass) ambiguous imports stay untouched [28.14ms]
+(pass) static Kotlin coordinates and Java imports ignore comments and preserve evidence [7.50ms]
+(pass) missing inputs and unsupported Gradle cannot establish neither [4.43ms]
+(pass) supported complete layout can observe neither without a managed selection [6.92ms]
+(pass) external source symlinks are rejected before reading foreign files [2.09ms]
+(pass) changed bytes remain explicit and cannot supply a version [2.57ms]
+(pass) canonical root and captured input survive caller mutation [3.10ms]
+(pass) scope disposal interrupts blocked reads and rejects escaped APIs [2.06ms]
+(pass) unsupported dependency source cannot establish absence or parse embedded code customDependencyLoader()
+ [7.90ms]
+(pass) unsupported dependency source cannot establish absence or parse embedded code if (enabled) {
+ dependencies {
+ implementation 'com.pedropathing:core:2.1.2'
+ }
+}
+ [5.30ms]
+(pass) unsupported dependency source cannot establish absence or parse embedded code val sample = """
+dependencies {
+ implementation "com.pedropathing:core:2.1.2"
+}
+"""
+ [7.33ms]
+(pass) manifest retargeting during the public port read rejects foreign scope [3.35ms]
+(pass) root alias retargeting cannot cross into another project [2.21ms]
+(pass) SDK disagreement stays unknown while a matching managed selection is consistent [6.43ms]
+353 |       if (delivered) shared.managedPathing = "road-runner"
+354 |     }))) }, manifest: { readManifest: () => Effect.sync(() => {
+355 |       delivered = true
+356 |       return { revision: createHash("sha256").update(text).digest("hex"), manifest: shared }
+357 |     }) } })
+358 |     expect((yield* owner.inspectProject({ root: directory.path })).managedPathing).toBe("pedro")
+                                                                                         ^
+error: expect(received).toBe(expected)
+
+Expected: "pedro"
+Received: "road-runner"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:358:84)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Effect.js:8151:9)
+      at <anonymous> (node:fs:363:13)
+(fail) managed selection is captured before a later filesystem boundary [3.03ms]
+
+ 14 pass
+ 1 fail
+ 53 expect() calls
+Ran 15 tests across 1 file. [303.00ms]

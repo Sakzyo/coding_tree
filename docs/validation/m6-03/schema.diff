@@ -1,0 +1,69 @@
+diff --git a/packages/schema/src/ftc-configuration.ts b/packages/schema/src/ftc-configuration.ts
+index be430cef7..b276d00a1 100644
+--- a/packages/schema/src/ftc-configuration.ts
++++ b/packages/schema/src/ftc-configuration.ts
+@@ -132,3 +132,64 @@ export const HardwareError = Schema.Struct({
+   ]),
+   field: Schema.Array(Schema.Union([Schema.String, NonNegativeInt])),
+ }).annotate({ identifier: "FtcConfiguration.HardwareError" })
++
++export type InspectionReason = typeof InspectionReason.Type
++export const InspectionReason = Schema.Literals([
++  "dynamic_version",
++  "unsupported_gradle",
++  "unsupported_source",
++  "missing_input",
++  "file_unavailable",
++  "changed_input",
++  "manifest_missing",
++  "invalid_manifest",
++  "unsupported_schema_version",
++  "sdk_version_conflict",
++]).annotate({ identifier: "FtcConfiguration.InspectionReason" })
++
++export interface InspectionDependency extends Schema.Schema.Type<typeof InspectionDependency> {}
++export const InspectionDependency = Schema.Struct({
++  path: Text,
++  kind: Schema.Literals(["gradle", "java_import"]),
++  group: optional(Text),
++  artifact: optional(Text),
++  version: optional(Text),
++  import: optional(Text),
++  reason: optional(InspectionReason),
++}).annotate({ identifier: "FtcConfiguration.InspectionDependency" })
++
++export interface InspectionUnknown extends Schema.Schema.Type<typeof InspectionUnknown> {}
++export const InspectionUnknown = Schema.Struct({ path: Text, reason: InspectionReason }).annotate({
++  identifier: "FtcConfiguration.InspectionUnknown",
++})
++
++export interface InspectionSourceRevision extends Schema.Schema.Type<typeof InspectionSourceRevision> {}
++export const InspectionSourceRevision = Schema.Struct({
++  // Project-relative observations, not an atomic whole-project snapshot.
++  path: Text,
++  state: Schema.Literals(["read", "missing", "unavailable", "changed"]),
++  revision: optional(Revision),
++}).annotate({ identifier: "FtcConfiguration.InspectionSourceRevision" })
++
++export interface InspectionConflict extends Schema.Schema.Type<typeof InspectionConflict> {}
++export const InspectionConflict = Schema.Struct({
++  code: Schema.Literals(["both_pathing", "manifest_mismatch", "sdk_version_conflict"]),
++  paths: Schema.Array(Text),
++}).annotate({ identifier: "FtcConfiguration.InspectionConflict" })
++
++export interface InspectionResult extends Schema.Schema.Type<typeof InspectionResult> {}
++export const InspectionResult = Schema.Struct({
++  sdkVersion: optional(Text),
++  managedPathing: optional(Manifest.fields.managedPathing),
++  dependencies: Schema.Array(InspectionDependency),
++  detectedPathing: Schema.Literals(["pedro", "road-runner", "both", "neither", "unknown"]),
++  conflicts: Schema.Array(InspectionConflict),
++  sourceRevisions: Schema.Array(InspectionSourceRevision),
++  unknowns: Schema.Array(InspectionUnknown),
++}).annotate({ identifier: "FtcConfiguration.InspectionResult" })
++
++export interface InspectionError extends Schema.Schema.Type<typeof InspectionError> {}
++export const InspectionError = Schema.Struct({
++  code: Schema.Literals(["owner_closed", "path_outside_project", "file_unavailable"]),
++  path: optional(Text),
++}).annotate({ identifier: "FtcConfiguration.InspectionError" })

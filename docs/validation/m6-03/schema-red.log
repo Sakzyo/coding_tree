@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-inspection.test.ts:
+454 |  *
+455 |  * @category encoding
+456 |  * @since 4.0.0
+457 |  */
+458 | export function encodeUnknownEffect(schema, options) {
+459 |   const parser = run(SchemaAST.flip(schema.ast));
+                                          ^
+TypeError: undefined is not an object (evaluating 'schema.ast')
+      at encodeUnknownEffect (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/SchemaParser.js:459:37)
+      at encodeUnknownEffect (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Schema.js:945:31)
+      at encodeUnknownSync (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Schema.js:1183:18)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/schema/test/ftc-inspection.test.ts:7:17)
+(fail) inspection records serialize unknown versions without invented values [3.41ms]
+(pass) inspection contracts reject malformed evidence and language-dependent reasons [0.22ms]
+
+ 1 pass
+ 1 fail
+ 2 expect() calls
+Ran 2 tests across 1 file. [97.00ms]
