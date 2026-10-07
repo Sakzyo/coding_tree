@@ -34,6 +34,7 @@ export const Exercise = Schema.Struct({
   prompt: Text,
   requiresExplanation: Schema.Literal(true),
   requiresProjectApplication: Schema.Literal(true),
+  requiresPhysicalValidation: optional(Schema.Boolean),
   explanationCriteria: Text,
   projectApplicationCriteria: Text,
 }).annotate({ identifier: "FtcKnowledge.Exercise" })
@@ -45,6 +46,7 @@ export const Lesson = Schema.Struct({
   topic: Text,
   title: Text,
   body: Text,
+  skippable: optional(Schema.Boolean),
   exercises: Schema.Array(Exercise).check(Schema.isMinLength(1)),
 }).annotate({ identifier: "FtcKnowledge.Lesson" })
 
@@ -54,6 +56,13 @@ export const ContentDocument = Schema.Struct({
   version: Text,
   language: Language,
   body: Text,
+  entryPoints: optional(
+    Schema.Struct({
+      "java-beginner": Text,
+      "ftc-beginner": Text,
+      experienced: Text,
+    }),
+  ),
   lessons: optional(Schema.Array(Lesson).check(Schema.isMinLength(1))),
 }).annotate({ identifier: "FtcKnowledge.ContentDocument" })
 

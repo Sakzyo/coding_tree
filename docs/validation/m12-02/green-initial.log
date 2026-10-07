@@ -1,0 +1,19 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/learning-and-progress/m12-02.test.ts:
+(pass) skip records a skip without claiming exercise completion [23.84ms]
+(pass) entry java-beginner uses its supplied start [8.25ms]
+(pass) entry ftc-beginner uses its supplied start [6.70ms]
+(pass) entry experienced uses its supplied start [6.64ms]
+(pass) attempt outcomes never advance and no selection defaults without persisting [8.62ms]
+(pass) skip requires explicit policy; %s rejects without writes [4.61ms]
+(pass) skip requires explicit policy; %s rejects without writes [4.54ms]
+
+test/ftc/ftc-knowledge/course-metadata.test.ts:
+(pass) paired synthetic course metadata validates and translation structure includes all policy [4.48ms]
+(pass) entry references must exist even when both languages share the same invalid policy [0.53ms]
+
+ 9 pass
+ 0 fail
+ 56 expect() calls
+Ran 9 tests across 2 files. [149.00ms]

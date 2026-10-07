@@ -1,0 +1,107 @@
+{
+  "added": 11,
+  "removed": 0,
+  "addedRecords": [
+    {
+      "name": "ftc_learning_entry",
+      "entityType": "tables"
+    },
+    {
+      "name": "ftc_learning_skip",
+      "entityType": "tables"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "course_id",
+      "entityType": "columns",
+      "table": "ftc_learning_entry"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "course_version",
+      "entityType": "columns",
+      "table": "ftc_learning_entry"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "entry_level",
+      "entityType": "columns",
+      "table": "ftc_learning_entry"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "course_id",
+      "entityType": "columns",
+      "table": "ftc_learning_skip"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "course_version",
+      "entityType": "columns",
+      "table": "ftc_learning_skip"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "lesson_id",
+      "entityType": "columns",
+      "table": "ftc_learning_skip"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "lesson_version",
+      "entityType": "columns",
+      "table": "ftc_learning_skip"
+    },
+    {
+      "columns": [
+        "course_id",
+        "course_version"
+      ],
+      "nameExplicit": false,
+      "name": "ftc_learning_entry_pk",
+      "entityType": "pks",
+      "table": "ftc_learning_entry"
+    },
+    {
+      "columns": [
+        "course_id",
+        "course_version",
+        "lesson_id",
+        "lesson_version"
+      ],
+      "nameExplicit": false,
+      "name": "ftc_learning_skip_pk",
+      "entityType": "pks",
+      "table": "ftc_learning_skip"
+    }
+  ],
+  "removedRecords": []
+}

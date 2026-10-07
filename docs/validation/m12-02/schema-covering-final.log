@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-learning.test.ts:
+(pass) attempt IDs require the exact generated prefix and records round-trip as serializable values [2.87ms]
+(pass) evidence requires labelled provenance and nonnegative timestamp, with no completion assertion [0.34ms]
+(pass) learning errors omit undefined properties and public identifiers remain stable and unique [0.15ms]
+(pass) navigation contracts keep exact entry levels, omitted personal metadata and result bindings [0.29ms]
+
+test/ftc-course-metadata.test.ts:
+(pass) optional course policy preserves true, false and unknown without defaults [0.81ms]
+
+test/contract-hygiene.test.ts:
+(pass) contract hygiene > optional properties preserve transformations and omit undefined while encoding [0.18ms]
+(pass) contract hygiene > todo status and priority preserve arbitrary strings [0.03ms]
+(pass) contract hygiene > current ID constructors expose create [0.08ms]
+(pass) contract hygiene > reusable public identifiers are stable and unique [0.04ms]
+(pass) contract hygiene > current source avoids Any and mutable contract wrappers [0.96ms]
+
+ 10 pass
+ 0 fail
+ 39 expect() calls
+Ran 10 tests across 3 files. [63.00ms]

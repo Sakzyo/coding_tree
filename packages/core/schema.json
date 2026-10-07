@@ -1,9 +1,9 @@
 {
   "version": "7",
   "dialect": "sqlite",
-  "id": "b310966e-4f7f-45fa-aa53-ea72cb0a1459",
+  "id": "e32a46b3-2e3a-43da-b2c5-b8b645a80fa4",
   "prevIds": [
-    "445bccd6-3162-4ce2-aa5e-ac75c867625a"
+    "b310966e-4f7f-45fa-aa53-ea72cb0a1459"
   ],
   "ddl": [
     {
@@ -40,6 +40,14 @@
     },
     {
       "name": "ftc_learning_attempt",
+      "entityType": "tables"
+    },
+    {
+      "name": "ftc_learning_entry",
+      "entityType": "tables"
+    },
+    {
+      "name": "ftc_learning_skip",
       "entityType": "tables"
     },
     {
@@ -643,6 +651,76 @@
       "name": "explanation",
       "entityType": "columns",
       "table": "ftc_learning_attempt"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "course_id",
+      "entityType": "columns",
+      "table": "ftc_learning_entry"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "course_version",
+      "entityType": "columns",
+      "table": "ftc_learning_entry"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "entry_level",
+      "entityType": "columns",
+      "table": "ftc_learning_entry"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "course_id",
+      "entityType": "columns",
+      "table": "ftc_learning_skip"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "course_version",
+      "entityType": "columns",
+      "table": "ftc_learning_skip"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "lesson_id",
+      "entityType": "columns",
+      "table": "ftc_learning_skip"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "lesson_version",
+      "entityType": "columns",
+      "table": "ftc_learning_skip"
     },
     {
       "type": "integer",
@@ -1895,6 +1973,28 @@
       "name": "ftc_learning_attempt_pk",
       "entityType": "pks",
       "table": "ftc_learning_attempt"
+    },
+    {
+      "columns": [
+        "course_id",
+        "course_version"
+      ],
+      "nameExplicit": false,
+      "name": "ftc_learning_entry_pk",
+      "entityType": "pks",
+      "table": "ftc_learning_entry"
+    },
+    {
+      "columns": [
+        "course_id",
+        "course_version",
+        "lesson_id",
+        "lesson_version"
+      ],
+      "nameExplicit": false,
+      "name": "ftc_learning_skip_pk",
+      "entityType": "pks",
+      "table": "ftc_learning_skip"
     },
     {
       "columns": [

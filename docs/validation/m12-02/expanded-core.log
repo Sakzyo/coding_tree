@@ -1,0 +1,28 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/learning-and-progress/m12-02.test.ts:
+(pass) skip records a skip without claiming exercise completion [72.97ms]
+(pass) entry java-beginner uses its supplied start [17.01ms]
+(pass) entry ftc-beginner uses its supplied start [7.98ms]
+(pass) entry experienced uses its supplied start [52.12ms]
+(pass) attempt outcomes never advance and no selection defaults without persisting [36.17ms]
+(pass) skip requires explicit policy; %s rejects without writes [9.02ms]
+(pass) skip requires explicit policy; %s rejects without writes [5.03ms]
+(pass) reopen, concurrent exact skips, reselection and version upgrades preserve history [63.99ms]
+(pass) missing content not_found remains unavailable and writes nothing [22.45ms]
+(pass) missing content incompatible remains unavailable and writes nothing [25.38ms]
+(pass) missing content missing_translation remains unavailable and writes nothing [6.24ms]
+(pass) missing content not_local remains unavailable and writes nothing [6.09ms]
+(pass) missing content no_match remains unavailable and writes nothing [8.87ms]
+(pass) missing capability and missing metadata are explicit while bare lessons preserve attempt-only progress [9.42ms]
+(pass) invalid and mixed course snapshots fail before either personal write [29.39ms]
+(pass) malformed stored navigation and attempts cannot be concealed by new writes [9.66ms]
+(pass) read-only failures and cancellation leave personal navigation unchanged and borrowed DB usable [19.37ms]
+(pass) ingress and content are captured before delayed lookup boundaries [15.96ms]
+(pass) new facade contracts use the exact canonical Schema identities [1.44ms]
+(pass) actual generated navigation migration preserves a populated predecessor and reopens [61.95ms]
+
+ 20 pass
+ 0 fail
+ 157 expect() calls
+Ran 20 tests across 1 file. [577.00ms]

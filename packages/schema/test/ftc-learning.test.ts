@@ -84,3 +84,42 @@ test("learning errors omit undefined properties and public identifiers remain st
   ])
   expect(new Set(identifiers).size).toBe(identifiers.length)
 })
+
+test("navigation contracts keep exact entry levels, omitted personal metadata and result bindings", () => {
+  expect(Schema.is(FtcLearning.EntryLevel)("java-beginner")).toBe(true)
+  expect(Schema.is(FtcLearning.EntryLevel)("ftc-beginner")).toBe(true)
+  expect(Schema.is(FtcLearning.EntryLevel)("experienced")).toBe(true)
+  expect(Schema.is(FtcLearning.EntryLevel)("advanced")).toBe(false)
+  const progress = { courseID: "synthetic", lessons: [], attempts: [] }
+  expect(
+    Schema.encodeSync(FtcLearning.Progress)({ ...progress, courseVersion: undefined, entryLevel: undefined }),
+  ).toEqual(progress)
+  const outcome = { kind: "no_next" as const, courseID: "synthetic", courseVersion: "1.0.0", language: "zh" as const }
+  expect(Schema.decodeUnknownSync(FtcLearning.LessonResult)(JSON.parse(JSON.stringify(outcome)))).toEqual(outcome)
+  expect(Schema.is(FtcLearning.LessonResult)({ ...outcome, courseVersion: undefined })).toBe(false)
+  expect(
+    Schema.decodeUnknownSync(FtcLearning.LessonResult)({
+      kind: "unavailable",
+      courseID: "synthetic",
+      language: "zh",
+      reason: "missing_translation",
+    }),
+  ).toMatchObject({ reason: "missing_translation" })
+  const identifiers = [
+    FtcLearning.EntryLevel,
+    FtcLearning.SelectEntryRequest,
+    FtcLearning.SkipLessonRequest,
+    FtcLearning.NextLessonRequest,
+    FtcLearning.UnavailableReason,
+    FtcLearning.LessonResult,
+  ].map((schema) => schema.ast.annotations?.identifier)
+  expect(identifiers).toEqual([
+    "FtcLearning.EntryLevel",
+    "FtcLearning.SelectEntryRequest",
+    "FtcLearning.SkipLessonRequest",
+    "FtcLearning.NextLessonRequest",
+    "FtcLearning.UnavailableReason",
+    "FtcLearning.LessonResult",
+  ])
+  expect(new Set(identifiers).size).toBe(identifiers.length)
+})

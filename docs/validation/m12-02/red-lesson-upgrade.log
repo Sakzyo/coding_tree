@@ -1,0 +1,15 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/learning-and-progress/m12-02.test.ts:
+error
+{
+  code: "invalid_stored_navigation",
+  recovery: "retry",
+}
+(fail) a lesson-only upgrade ignores historical skips while retaining course-bound entry and old attempts [35.45ms]
+
+ 0 pass
+ 24 filtered out
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [110.00ms]

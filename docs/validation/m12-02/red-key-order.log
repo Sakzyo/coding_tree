@@ -1,0 +1,36 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/learning-and-progress/m12-02.test.ts:
+(pass) skip records a skip without claiming exercise completion [25.28ms]
+(pass) entry java-beginner uses its supplied start [6.96ms]
+(pass) entry ftc-beginner uses its supplied start [5.36ms]
+(pass) entry experienced uses its supplied start [5.94ms]
+(pass) attempt outcomes never advance and no selection defaults without persisting [8.66ms]
+(pass) skip requires explicit policy; %s rejects without writes [4.70ms]
+(pass) skip requires explicit policy; %s rejects without writes [4.07ms]
+(pass) reopen, concurrent exact skips, reselection and version upgrades preserve history [28.30ms]
+(pass) missing content not_found remains unavailable and writes nothing [4.76ms]
+(pass) missing content incompatible remains unavailable and writes nothing [3.66ms]
+(pass) missing content missing_translation remains unavailable and writes nothing [3.35ms]
+(pass) missing content not_local remains unavailable and writes nothing [8.77ms]
+(pass) missing content no_match remains unavailable and writes nothing [7.32ms]
+(pass) missing capability and missing metadata are explicit while bare lessons preserve attempt-only progress [19.47ms]
+(pass) invalid and mixed course snapshots fail before either personal write [45.19ms]
+(pass) malformed stored navigation and attempts cannot be concealed by new writes [8.28ms]
+(pass) read-only failures and cancellation leave personal navigation unchanged and borrowed DB usable [15.83ms]
+(pass) ingress and content are captured before delayed lookup boundaries [11.62ms]
+(pass) new facade contracts use the exact canonical Schema identities [0.24ms]
+(pass) actual generated navigation migration preserves a populated predecessor and reopens [34.50ms]
+(pass) missing query binding compares values independently of object key order [3.27ms]
+(pass) invalid navigation commands reject before writing either table [5.56ms]
+(pass) current course snapshot survives mutable port objects across a later await [6.09ms]
+
+test/ftc/ftc-knowledge/course-metadata.test.ts:
+(pass) paired synthetic course metadata validates and translation structure includes all policy [7.77ms]
+(pass) entry references must exist even when both languages share the same invalid policy [0.55ms]
+(pass) equivalent entry maps do not depend on JSON key order [0.60ms]
+
+ 26 pass
+ 0 fail
+ 180 expect() calls
+Ran 26 tests across 2 files. [363.00ms]

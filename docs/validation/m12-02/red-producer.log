@@ -1,0 +1,36 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-knowledge/course-metadata.test.ts:
+15 |     topic: "synthetic", sdkRange: "11.1.0", source: "https://example.com/synthetic", license: "fixture", localPath: files[index].localPath,
+16 |     digest: Hash.sha256(Buffer.from(files[index].bytes)), provenance: "synthetic" as const, codeTokens: [] })) }, files }
+17 | }
+18 | 
+19 | test("paired synthetic course metadata validates and translation structure includes all policy", () => {
+20 |   expect(validatePack(pack()).kind).toBe("valid")
+                                         ^
+error: expect(received).toBe(expected)
+
+Expected: "valid"
+Received: "invalid"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/course-metadata.test.ts:20:37)
+(fail) paired synthetic course metadata validates and translation structure includes all policy [5.85ms]
+34 | test("entry references must exist even when both languages share the same invalid policy", () => {
+35 |   const snapshot = pack()
+36 |   const files = snapshot.files.map((file) => ({ ...file, bytes: Array.from(Buffer.from(Buffer.from(file.bytes).toString().replaceAll('"experienced":"lesson"', '"experienced":"absent"'))) }))
+37 |   const result = validatePack({ ...snapshot, files, manifest: { ...snapshot.manifest, records: snapshot.manifest.records.map((record, index) => ({ ...record, digest: Hash.sha256(Buffer.from(files[index].bytes)) })) } })
+38 |   expect(result.kind).toBe("invalid")
+39 |   if (result.kind === "invalid") expect(result.errors.map((error) => error.reason)).toContain("invalid_record")
+                                                                                         ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "invalid_record"
+Received: [ "malformed_content", "malformed_content" ]
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-knowledge/course-metadata.test.ts:39:85)
+(fail) entry references must exist even when both languages share the same invalid policy [0.70ms]
+
+ 0 pass
+ 2 fail
+ 3 expect() calls
+Ran 2 tests across 1 file. [65.00ms]

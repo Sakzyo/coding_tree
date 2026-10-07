@@ -1,0 +1,15 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-learning.test.ts:
+(pass) attempt IDs require the exact generated prefix and records round-trip as serializable values [3.66ms]
+(pass) evidence requires labelled provenance and nonnegative timestamp, with no completion assertion [0.39ms]
+(pass) learning errors omit undefined properties and public identifiers remain stable and unique [0.18ms]
+(pass) navigation contracts keep exact entry levels, omitted personal metadata and result bindings [0.32ms]
+
+test/ftc-course-metadata.test.ts:
+(pass) optional course policy preserves true, false and unknown without defaults [1.27ms]
+
+ 5 pass
+ 0 fail
+ 29 expect() calls
+Ran 5 tests across 2 files. [60.00ms]

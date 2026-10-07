@@ -23,6 +23,88 @@ export const AttemptTable = sqliteTable(
   (table) => [primaryKey({ columns: [table.course_id, table.lesson_id, table.lesson_version, table.attempt_id] })],
 )
 
+export const EntryTable = sqliteTable(
+  "ftc_learning_entry",
+  {
+    course_id: text().notNull(),
+    course_version: text().notNull(),
+    entry_level: text().$type<FtcLearning.EntryLevel>().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.course_id, table.course_version] })],
+)
+
+export const SkipTable = sqliteTable(
+  "ftc_learning_skip",
+  {
+    course_id: text().notNull(),
+    course_version: text().notNull(),
+    lesson_id: text().notNull(),
+    lesson_version: text().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.course_id, table.course_version, table.lesson_id, table.lesson_version] })],
+)
+
+const Text = Schema.String.check(Schema.isMinLength(1), Schema.isTrimmed())
+const EntryRow = Schema.Struct({ course_id: Text, course_version: Text, entry_level: FtcLearning.EntryLevel })
+const SkipRow = Schema.Struct({ course_id: Text, course_version: Text, lesson_id: Text, lesson_version: Text })
+
+// Read and mutate one coherent personal snapshot. Validation in consume rolls back invalid writes.
+export function navigation<A>(
+  db: EffectDrizzleSqlite.EffectSQLiteDatabase,
+  course: { courseID: string; courseVersion: string },
+  consume: (state: {
+    entryLevel?: FtcLearning.EntryLevel
+    skips: readonly (typeof SkipRow.Type)[]
+    attempts: readonly FtcLearning.Attempt[]
+  }) => Effect.Effect<A, FtcLearning.LearningError>,
+  change?: { entryLevel: FtcLearning.EntryLevel } | { lessonID: string; lessonVersion: string },
+) {
+  return db
+    .transaction((tx) =>
+      Effect.gen(function* () {
+        const entries = yield* tx.select().from(EntryTable).where(eq(EntryTable.course_id, course.courseID)).all()
+        const skips = yield* tx.select().from(SkipTable).where(eq(SkipTable.course_id, course.courseID)).all()
+        const decodedEntries = yield* Schema.decodeUnknownEffect(Schema.Array(EntryRow))(entries).pipe(
+          Effect.mapError((): FtcLearning.LearningError => ({ code: "invalid_stored_navigation", recovery: "retry" })),
+        )
+        const decodedSkips = yield* Schema.decodeUnknownEffect(Schema.Array(SkipRow))(skips).pipe(
+          Effect.mapError((): FtcLearning.LearningError => ({ code: "invalid_stored_navigation", recovery: "retry" })),
+        )
+        const state = {
+          entryLevel: decodedEntries.find((row) => row.course_version === course.courseVersion)?.entry_level,
+          skips: decodedSkips.filter((row) => row.course_version === course.courseVersion),
+          attempts: yield* make(tx).list(course.courseID),
+        }
+        // Validate existing state before an upsert could conceal malformed stored data.
+        const current = yield* consume(state)
+        if (!change) return current
+        if ("entryLevel" in change) {
+          yield* tx
+            .insert(EntryTable)
+            .values({
+              course_id: course.courseID,
+              course_version: course.courseVersion,
+              entry_level: change.entryLevel,
+            })
+            .onConflictDoUpdate({
+              target: [EntryTable.course_id, EntryTable.course_version],
+              set: { entry_level: change.entryLevel },
+            })
+          return yield* consume({ ...state, entryLevel: change.entryLevel })
+        }
+        const row = {
+          course_id: course.courseID,
+          course_version: course.courseVersion,
+          lesson_id: change.lessonID,
+          lesson_version: change.lessonVersion,
+        }
+        yield* tx.insert(SkipTable).values(row).onConflictDoNothing()
+        return yield* consume({ ...state, skips: [...state.skips, row] })
+      }),
+    )
+    .pipe(Effect.mapError(storeError))
+}
+
 // Module-owned repository; only learning.ts consumes it. No cross-module table access or ownership FK.
 export function make(db: EffectDrizzleSqlite.EffectSQLiteDatabase) {
   const get = (attempt: FtcLearning.Attempt) =>

@@ -1,0 +1,95 @@
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/learning-and-progress/m12-02.test.ts:285:16]
+ 283 |         await using tmp = await tmpdir()
+ 284 | ,->     const port = lookup()
+ 285 | |->     port.course!.lookup = (requested) => Effect.succeed({ kind: "missing", reason, requested })
+     : `---               ^
+     : `---- This expression already has the type '{ binding: () => Effect<{ courseVersion: string; sdkVersion: string; }, never, never>; lookup: (query: ContentQuery) => Effect<{ readonly kind: "found"; readonly records: readonly { readonly id: string; ... 13 more ...; readonly document?: { ...; } | undefined; }[]; } | { ...; }, never, never>; }'
+ 286 |         await run(
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/learning-and-progress/m12-02.test.ts:330:48]
+ 329 |     {
+ 330 |       port: { ...good, course: { ...good.course!, binding: () => Effect.fail("unavailable") } },
+     :                                     ^^^^^|^^^^^^
+     :                                          `-- This expression already has the type '{ binding: () => Effect<{ courseVersion: string; sdkVersion: string; }, never, never>; lookup: (query: ContentQuery) => Effect<{ readonly kind: "found"; readonly records: readonly { readonly id: string; ... 13 more ...; readonly document?: { ...; } | undefined; }[]; } | { ...; }, never, never>; }'
+ 331 |       code: "course_lookup_failed",
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/learning-and-progress/m12-02.test.ts:336:33]
+ 335 |         ...good,
+ 336 |         course: { ...good.course!, binding: () => Effect.succeed({ courseVersion: "latest", sdkVersion: "11.1.0" }) },
+     :                      ^^^^^|^^^^^^
+     :                           `-- This expression already has the type '{ binding: () => Effect<{ courseVersion: string; sdkVersion: string; }, never, never>; lookup: (query: ContentQuery) => Effect<{ readonly kind: "found"; readonly records: readonly { readonly id: string; ... 13 more ...; readonly document?: { ...; } | undefined; }[]; } | { ...; }, never, never>; }'
+ 337 |       },
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/learning-and-progress/m12-02.test.ts:344:25]
+ 343 |         course: {
+ 344 |           ...good.course!,
+     :              ^^^^^|^^^^^^
+     :                   `-- This expression already has the type '{ binding: () => Effect<{ courseVersion: string; sdkVersion: string; }, never, never>; lookup: (query: ContentQuery) => Effect<{ readonly kind: "found"; readonly records: readonly { readonly id: string; ... 13 more ...; readonly document?: { ...; } | undefined; }[]; } | { ...; }, never, never>; }'
+ 345 |           binding: () => Effect.succeed({ courseVersion: "1.0.0", sdkVersion: "11.1.0", library: "Road Runner" }),
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/learning-and-progress/m12-02.test.ts:351:48]
+ 350 |     {
+ 351 |       port: { ...good, course: { ...good.course!, lookup: () => Effect.fail("unavailable") } },
+     :                                     ^^^^^|^^^^^^
+     :                                          `-- This expression already has the type '{ binding: () => Effect<{ courseVersion: string; sdkVersion: string; }, never, never>; lookup: (query: ContentQuery) => Effect<{ readonly kind: "found"; readonly records: readonly { readonly id: string; ... 13 more ...; readonly document?: { ...; } | undefined; }[]; } | { ...; }, never, never>; }'
+ 352 |       code: "course_lookup_failed",
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/learning-and-progress/m12-02.test.ts:375:25]
+ 374 |         course: {
+ 375 |           ...good.course!,
+     :              ^^^^^|^^^^^^
+     :                   `-- This expression already has the type '{ binding: () => Effect<{ courseVersion: string; sdkVersion: string; }, never, never>; lookup: (query: ContentQuery) => Effect<{ readonly kind: "found"; readonly records: readonly { readonly id: string; ... 13 more ...; readonly document?: { ...; } | undefined; }[]; } | { ...; }, never, never>; }'
+ 376 |           lookup: (query: FtcKnowledge.ContentQuery) => Effect.succeed(content(change(document(query.language)))),
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/learning-and-progress/m12-02.test.ts:385:25]
+ 384 |         course: {
+ 385 |           ...good.course!,
+     :              ^^^^^|^^^^^^
+     :                   `-- This expression already has the type '{ binding: () => Effect<{ courseVersion: string; sdkVersion: string; }, never, never>; lookup: (query: ContentQuery) => Effect<{ readonly kind: "found"; readonly records: readonly { readonly id: string; ... 13 more ...; readonly document?: { ...; } | undefined; }[]; } | { ...; }, never, never>; }'
+ 386 |           lookup: (query) => {
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/learning-and-progress/m12-02.test.ts:457:14]
+ 455 |       const released = Deferred.makeUnsafe<void>()
+ 456 | ,->   const port = lookup()
+ 457 | |->   port.course!.lookup = () =>
+     : `---             ^
+     : `---- This expression already has the type '{ binding: () => Effect<{ courseVersion: string; sdkVersion: string; }, never, never>; lookup: (query: ContentQuery) => Effect<{ readonly kind: "found"; readonly records: readonly { readonly id: string; ... 13 more ...; readonly document?: { ...; } | undefined; }[]; } | { ...; }, never, never>; }'
+ 458 |         Effect.scoped(
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/learning-and-progress/m12-02.test.ts:487:14]
+ 485 |       const supplied = document()
+ 486 | ,->   const port = lookup()
+ 487 | |->   port.course!.lookup = () => Effect.succeed(content(supplied))
+     : `---             ^
+     : `---- This expression already has the type '{ binding: () => Effect<{ courseVersion: string; sdkVersion: string; }, never, never>; lookup: (query: ContentQuery) => Effect<{ readonly kind: "found"; readonly records: readonly { readonly id: string; ... 13 more ...; readonly document?: { ...; } | undefined; }[]; } | { ...; }, never, never>; }'
+ 488 |       port.lessons = () =>
+     `----
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'SelectEntryRequest' is more narrow than the original type.
+     ,-[packages/core/test/ftc/learning-and-progress/m12-02.test.ts:607:22]
+ 606 |       const badLevel = yield* service
+ 607 |         .selectEntry({ courseID, entryLevel: "advanced" } as unknown as FtcLearning.SelectEntryRequest)
+     :                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 608 |         .pipe(Effect.result)
+     `----
+
+Found 10 warnings and 0 errors.
+Finished in 605ms on 9 files with 130 rules using 10 threads.

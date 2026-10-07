@@ -265,6 +265,11 @@ function validateContent(
     document.value.language !== record.language
   )
     return ["identity_mismatch"]
+  if (
+    document.value.entryPoints &&
+    Object.values(document.value.entryPoints).some((id) => !document.value.lessons?.some((lesson) => lesson.id === id))
+  )
+    return ["invalid_record"]
   // These exact literals are the package's protected API/device/domain-code surface.
   const lessons = document.value.lessons ?? []
   if (lessons.some((lesson) => !concreteVersion(lesson.version))) return ["invalid_record"]
@@ -298,12 +303,19 @@ function decodeDocument(file: FtcKnowledge.ContentFile) {
 }
 
 function lessonIdentifiers(document: FtcKnowledge.ContentDocument) {
-  return document.lessons?.map((lesson) => ({
-    id: lesson.id,
-    version: lesson.version,
-    topic: lesson.topic,
-    exercises: lesson.exercises.map((exercise) => exercise.id),
-  }))
+  return {
+    entryPoints: document.entryPoints,
+    lessons: document.lessons?.map((lesson) => ({
+      id: lesson.id,
+      version: lesson.version,
+      topic: lesson.topic,
+      skippable: lesson.skippable,
+      exercises: lesson.exercises.map((exercise) => ({
+        id: exercise.id,
+        requiresPhysicalValidation: exercise.requiresPhysicalValidation,
+      })),
+    })),
+  }
 }
 
 function protectedLiterals(body: string) {

@@ -1,0 +1,20 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-course-metadata.test.ts:
+2214 | /** @internal */
+2215 | export const runSyncWith = context => {
+2216 |   const runSyncExit = runSyncExitWith(context);
+2217 |   return effect => {
+2218 |     const exit = runSyncExit(effect);
+2219 |     if (exit._tag === "Failure") throw causeSquash(exit.cause);
+                                                                    ^
+SchemaError: Unexpected key with value {"java-beginner":"synthetic-lesson","ftc-beginner":"synthetic-lesson","experienced":"synthetic-lesson"}
+  at ["entryPoints"]
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2219:62)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/schema/test/ftc-course-metadata.test.ts:15:10)
+(fail) optional course policy preserves true, false and unknown without defaults [3.67ms]
+
+ 0 pass
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [55.00ms]

@@ -1,0 +1,106 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/learning-and-progress/m12-02.test.ts:
+error
+{
+  code: "invalid_lessons",
+  courseID: "synthetic-course",
+  recovery: "refresh_lessons",
+}
+(fail) skip records a skip without claiming exercise completion [24.66ms]
+73 | })
+74 | 
+75 | test.each([ ["java-beginner", "lesson-a"], ["ftc-beginner", "lesson-b"], ["experienced", "lesson-c"] ] as const)("entry %s uses its supplied start", async (entryLevel, lessonID) => {
+76 |   await using tmp = await tmpdir()
+77 |   await run(path.join(tmp.path, "personal.sqlite"), (service, db) => Effect.gen(function* () {
+78 |     const progress = yield* service.selectEntry({ courseID, entryLevel })
+                                         ^
+TypeError: service.selectEntry is not a function. (In 'service.selectEntry({ courseID, entryLevel })', 'service.selectEntry' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/learning-and-progress/m12-02.test.ts:78:37)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/learning-and-progress/m12-02.test.ts:77:9)
+(fail) entry java-beginner uses its supplied start [5.48ms]
+73 | })
+74 | 
+75 | test.each([ ["java-beginner", "lesson-a"], ["ftc-beginner", "lesson-b"], ["experienced", "lesson-c"] ] as const)("entry %s uses its supplied start", async (entryLevel, lessonID) => {
+76 |   await using tmp = await tmpdir()
+77 |   await run(path.join(tmp.path, "personal.sqlite"), (service, db) => Effect.gen(function* () {
+78 |     const progress = yield* service.selectEntry({ courseID, entryLevel })
+                                         ^
+TypeError: service.selectEntry is not a function. (In 'service.selectEntry({ courseID, entryLevel })', 'service.selectEntry' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/learning-and-progress/m12-02.test.ts:78:37)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/learning-and-progress/m12-02.test.ts:77:9)
+(fail) entry ftc-beginner uses its supplied start [3.86ms]
+73 | })
+74 | 
+75 | test.each([ ["java-beginner", "lesson-a"], ["ftc-beginner", "lesson-b"], ["experienced", "lesson-c"] ] as const)("entry %s uses its supplied start", async (entryLevel, lessonID) => {
+76 |   await using tmp = await tmpdir()
+77 |   await run(path.join(tmp.path, "personal.sqlite"), (service, db) => Effect.gen(function* () {
+78 |     const progress = yield* service.selectEntry({ courseID, entryLevel })
+                                         ^
+TypeError: service.selectEntry is not a function. (In 'service.selectEntry({ courseID, entryLevel })', 'service.selectEntry' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/learning-and-progress/m12-02.test.ts:78:37)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/learning-and-progress/m12-02.test.ts:77:9)
+(fail) entry experienced uses its supplied start [4.24ms]
+error
+{
+  code: "invalid_lessons",
+  courseID: "synthetic-course",
+  recovery: "refresh_lessons",
+}
+(fail) attempt outcomes never advance and no selection defaults without persisting [5.55ms]
+104 | })
+105 | 
+106 | test.each([false, undefined])("skip requires explicit policy; %s rejects without writes", async (skippable) => {
+107 |   await using tmp = await tmpdir()
+108 |   await run(path.join(tmp.path, "personal.sqlite"), (service, db) => Effect.gen(function* () {
+109 |     const result = yield* service.skipLesson({ courseID, lessonID: "lesson-a" }).pipe(Effect.result)
+                                        ^
+TypeError: service.skipLesson is not a function. (In 'service.skipLesson({ courseID, lessonID: "lesson-a" })', 'service.skipLesson' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/learning-and-progress/m12-02.test.ts:109:35)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/learning-and-progress/m12-02.test.ts:108:9)
+(fail) skip requires explicit policy; %s rejects without writes [4.40ms]
+104 | })
+105 | 
+106 | test.each([false, undefined])("skip requires explicit policy; %s rejects without writes", async (skippable) => {
+107 |   await using tmp = await tmpdir()
+108 |   await run(path.join(tmp.path, "personal.sqlite"), (service, db) => Effect.gen(function* () {
+109 |     const result = yield* service.skipLesson({ courseID, lessonID: "lesson-a" }).pipe(Effect.result)
+                                        ^
+TypeError: service.skipLesson is not a function. (In 'service.skipLesson({ courseID, lessonID: "lesson-a" })', 'service.skipLesson' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/learning-and-progress/m12-02.test.ts:109:35)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/learning-and-progress/m12-02.test.ts:108:9)
+(fail) skip requires explicit policy; %s rejects without writes [3.29ms]
+
+ 0 pass
+ 7 fail
+Ran 7 tests across 1 file. [162.00ms]
