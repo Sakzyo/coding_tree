@@ -1,0 +1,2 @@
+a3314351e2896328caabca1370225213fc12965575e97a8a8b703383f4b4cbd5  packages/core/src/ftc/agent.ts
+a82e191265e415ad01b8637399a189c9d7c3f6d4d7be8a72e6c5f05872e78a4d  packages/core/test/ftc/agent-and-context/m3-03.test.ts

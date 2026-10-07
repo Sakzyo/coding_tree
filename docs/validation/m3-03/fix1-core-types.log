@@ -1,0 +1,13 @@
+$ tsgo --noEmit
+src/ftc/configuration/inspection.ts(47,138): error TS2339: Property 'value' does not exist on type 'Option<number>'.
+  Property 'value' does not exist on type 'None<number>'.
+test/ftc-integration/m2-06.test.ts(53,73): error TS2345: Argument of type 'LayerMap<unknown, Service, never>' is not assignable to parameter of type 'LayerMap<Ref, Service | Service | Service | Service | Service | Service | Service | Service | Service | ... 23 more ... | Service, never>'.
+  The types of 'rcMap.lookup(...)' are incompatible between these types.
+    Type 'Effect<Context<Service>, never, Scope>' is not assignable to type 'Effect<Context<Service | Service | Service | Service | Service | Service | Service | Service | Service | ... 23 more ... | Service>, never, Scope>'.
+      Type 'Context<Service>' is not assignable to type 'Context<Service | Service | Service | Service | Service | Service | Service | Service | Service | ... 23 more ... | Service>'.
+        Type 'Service | Service | Service | Service | Service | Service | Service | Service | Service | ... 23 more ... | Service' is not assignable to type 'Service'.
+          Type 'import("/Users/dylanxu/coding_tree/packages/core/src/agent").Service' is not assignable to type 'import("/Users/dylanxu/coding_tree/packages/core/src/session/runner/index").Service'.
+            Types of property 'Service' are incompatible.
+              Property 'run' is missing in type 'import("/Users/dylanxu/coding_tree/packages/core/src/agent").Interface' but required in type 'import("/Users/dylanxu/coding_tree/packages/core/src/session/runner/index").Interface'.
+test/ftc/ftc-configuration-and-libraries/m6-03.test.ts(161,62): error TS2339: Property 'cause' does not exist on type 'Exit<InspectionResult, InspectionError>'.
+  Property 'cause' does not exist on type 'Success<InspectionResult, InspectionError>'.

@@ -1,0 +1,28 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-01.test.ts:
+(pass) admission precedes wake and exact retry reconciles [567.18ms]
+
+test/ftc/agent-and-context/m3-02.test.ts:
+(pass) resume wake and prompt cannot overlap different chats in one project [8.80ms]
+(pass) same Session joins and coalesced wakes retain one lease across drains [3.00ms]
+(pass) tool and approval waits retain ownership through interruption cleanup and successor [4.33ms]
+(pass) failed drain transfers ownership to its pending successor [8.63ms]
+(pass) managed membership rejection never falls back to legacy execution [1.60ms]
+(pass) unmanaged Sessions retain legacy execution with no gate claim [0.92ms]
+(pass) acquisition failure or cancellation cleans ownership without starting a runner [1.52ms]
+(pass) scope disposal awaits runner cleanup before exact lease release [0.94ms]
+(pass) real Session prompt admits before local wake and a busy chat never reaches its Location runner [69.13ms]
+(pass) wake during terminal release acquires a fresh claim and stale release cannot unlock it [5.48ms]
+(pass) Location construction failure releases its acquired claim and missing Session never resolves membership [3.25ms]
+(pass) resume during successful asynchronous release joins the settling execution [3.01ms]
+(pass) Location initialization and its interruption cleanup remain inside the gate claim [10.80ms]
+(pass) scope disposal releases an acquired claim despite a pending wake [3.33ms]
+(pass) scope disposal ignores wakes during delayed runner cleanup [2.75ms]
+(pass) scope disposal cancels delayed acquisition without launching its pending successor [1.90ms]
+(pass) scope disposal awaits delayed release and suppresses wakes before and during shutdown [1.70ms]
+
+ 18 pass
+ 0 fail
+ 116 expect() calls
+Ran 18 tests across 2 files. [3.75s]

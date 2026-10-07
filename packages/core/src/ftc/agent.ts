@@ -63,6 +63,7 @@ export const layer = (ports: Ports) => Layer.effect(Service, make(ports))
 
 export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope> =>
   Effect.gen(function* () {
+    const operations = yield* Scope.make()
     const applications = yield* Scope.make()
     const plans = new Map<FtcAgent.PlanID, { readonly plan: FtcAgent.CodePlan; readonly grant: Grant }>()
     const authorizations = new WeakMap<
@@ -79,11 +80,16 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
       Effect.sync(() => {
         closed = true
         plans.clear()
-      }).pipe(Effect.andThen(Scope.close(applications, Exit.void))),
+      }).pipe(Effect.andThen(Scope.close(operations, Exit.void)), Effect.andThen(Scope.close(applications, Exit.void))),
     )
     const active = () =>
       Effect.suspend(() =>
         closed ? Effect.fail({ code: "owner_closed" } satisfies FtcJava.DocumentError) : Effect.void,
+      )
+    // Each public operation owns its complete port waits; disposal awaits their release.
+    const owned = <A, E>(effect: Effect.Effect<A, E>) =>
+      active().pipe(
+        Effect.andThen(Effect.acquireUseRelease(Effect.forkIn(effect, operations), Fiber.join, Fiber.interrupt)),
       )
     const policy = Effect.fn("FtcAgent.policy")(function* (sessionID: SessionID, proposal: FtcJava.EditProposal) {
       yield* active()
@@ -120,21 +126,25 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
         const sessionID = input.sessionID
         const mode = input.mode
         const proposal = immutableProposal(input.proposal)
-        yield* active()
-        const grant = yield* policy(sessionID, proposal)
-        if (grant.mode !== mode)
-          return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
-        if (mode === "direct") return yield* apply(sessionID, proposal, mode, grant)
-        const plan = Object.freeze({
-          planID: FtcAgent.PlanID.create(),
-          projectID: proposal.projectID,
-          sessionID,
-          proposal,
-          explanation: proposal.explanation,
-          expectedRevisions: Object.freeze(proposal.edits.map((edit) => edit.expectedRevision)),
-        } satisfies FtcAgent.CodePlan)
-        plans.set(plan.planID, { plan, grant })
-        return plan
+        return yield* owned(
+          Effect.gen(function* () {
+            yield* active()
+            const grant = yield* policy(sessionID, proposal)
+            if (grant.mode !== mode)
+              return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
+            if (mode === "direct") return yield* apply(sessionID, proposal, mode, grant)
+            const plan = Object.freeze({
+              planID: FtcAgent.PlanID.create(),
+              projectID: proposal.projectID,
+              sessionID,
+              proposal,
+              explanation: proposal.explanation,
+              expectedRevisions: Object.freeze(proposal.edits.map((edit) => edit.expectedRevision)),
+            } satisfies FtcAgent.CodePlan)
+            plans.set(plan.planID, { plan, grant })
+            return plan
+          }),
+        )
       }),
       approveCodePlan: Effect.fn("FtcAgent.approveCodePlan")(function* (input) {
         const planID = input.planID
@@ -144,25 +154,29 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
         if (!Schema.is(Schema.Array(FtcJava.Revision))(input.expectedRevisions))
           return yield* Effect.fail({ code: "invalid_document_input" } satisfies FtcJava.DocumentError)
         const expected = input.expectedRevisions.map((revision) => ({ ...revision }))
-        yield* active()
-        const pending = plans.get(planID)
-        if (!pending) return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
-        if (!(yield* ports.approvals.check({ trustedUserEvent, plan: pending.plan })))
-          return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
-        yield* active()
-        if (plans.get(pending.plan.planID) !== pending)
-          return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
-        // A trusted attempt consumes the plan before any asynchronous application. No replay on failure.
-        plans.delete(pending.plan.planID)
-        if (
-          expected.length !== pending.plan.expectedRevisions.length ||
-          expected.some((revision, index) => !sameRevision(revision, pending.plan.expectedRevisions[index]))
+        return yield* owned(
+          Effect.gen(function* () {
+            yield* active()
+            const pending = plans.get(planID)
+            if (!pending) return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
+            if (!(yield* ports.approvals.check({ trustedUserEvent, plan: pending.plan })))
+              return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
+            yield* active()
+            if (plans.get(pending.plan.planID) !== pending)
+              return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
+            // A trusted attempt consumes the plan before any asynchronous application. No replay on failure.
+            plans.delete(pending.plan.planID)
+            if (
+              expected.length !== pending.plan.expectedRevisions.length ||
+              expected.some((revision, index) => !sameRevision(revision, pending.plan.expectedRevisions[index]))
+            )
+              return yield* Effect.fail({ code: "revision_conflict" } satisfies FtcJava.DocumentError)
+            const grant = yield* policy(pending.plan.sessionID, pending.plan.proposal)
+            if (grant.mode !== "plan-first" || !sameGrant(grant, pending.grant))
+              return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
+            return yield* apply(pending.plan.sessionID, pending.plan.proposal, "plan-first", grant)
+          }),
         )
-          return yield* Effect.fail({ code: "revision_conflict" } satisfies FtcJava.DocumentError)
-        const grant = yield* policy(pending.plan.sessionID, pending.plan.proposal)
-        if (grant.mode !== "plan-first" || !sameGrant(grant, pending.grant))
-          return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
-        return yield* apply(pending.plan.sessionID, pending.plan.proposal, "plan-first", grant)
       }),
       codeChanges: {
         check: Effect.fn("FtcAgent.checkChanges")(function* (input) {
@@ -170,18 +184,22 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
           if (!Schema.is(FtcJava.EditProposal)(input.proposal))
             return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
           const proposal = immutableProposal(input.proposal)
-          yield* active()
-          const authorization = authorizations.get(token)
-          if (!authorization || !sameProposal(proposal, authorization.proposal))
-            return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
-          const grant = yield* policy(authorization.sessionID, authorization.proposal)
-          if (
-            authorizations.get(token) !== authorization ||
-            grant.mode !== authorization.mode ||
-            !sameGrant(grant, authorization.grant)
+          return yield* owned(
+            Effect.gen(function* () {
+              yield* active()
+              const authorization = authorizations.get(token)
+              if (!authorization || !sameProposal(proposal, authorization.proposal))
+                return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
+              const grant = yield* policy(authorization.sessionID, authorization.proposal)
+              if (
+                authorizations.get(token) !== authorization ||
+                grant.mode !== authorization.mode ||
+                !sameGrant(grant, authorization.grant)
+              )
+                return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
+              return authorization.grant
+            }),
           )
-            return yield* Effect.fail({ code: "edit_unauthorized" } satisfies FtcJava.DocumentError)
-          return authorization.grant
         }),
       },
     }

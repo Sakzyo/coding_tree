@@ -481,3 +481,100 @@ test("owner disposal revokes pending plans and active capabilities", () =>
       expect((yield* approve(f.agent, plan, f.event(plan)).pipe(Effect.flip)).code).toBe("owner_closed")
     }),
   ))
+
+test.each(["proposal-policy", "approval-event", "approval-policy", "authorization-policy"])(
+  "owner disposal releases the pending %s resource without caller interruption",
+  (boundary) =>
+    run(
+      Effect.gen(function* () {
+        const owner = yield* Scope.make()
+        const f = yield* fixture().pipe(Scope.provide(owner))
+        const entered = yield* Deferred.make<void>()
+        const resource = { acquired: 0, released: 0 }
+        const waiting = Effect.acquireUseRelease(
+          Effect.sync(() => resource.acquired++),
+          () => Deferred.succeed(entered, undefined).pipe(Effect.andThen(Effect.never)),
+          () =>
+            Effect.sync(() => {
+              resource.released++
+            }),
+        )
+        const plan = boundary.startsWith("approval") ? yield* pendingPlan(f.agent) : undefined
+        if (boundary === "approval-event") f.state.beforeApproval = waiting
+        if (boundary === "proposal-policy" || boundary === "approval-policy") f.state.beforePolicy = waiting
+        const direct =
+          boundary === "authorization-policy"
+            ? yield* Effect.gen(function* () {
+                const applying = yield* Deferred.make<void>()
+                f.state.mode = "direct"
+                f.state.beforeApply = Deferred.succeed(applying, undefined).pipe(Effect.andThen(Effect.never))
+                yield* f.agent.proposeCodeChange({ sessionID, mode: "direct", proposal }).pipe(Effect.forkChild)
+                yield* Deferred.await(applying)
+                f.state.beforePolicy = waiting
+                return f.state.applications[0]
+              })
+            : undefined
+        const operation = direct
+          ? f.agent.codeChanges.check(direct)
+          : plan
+            ? approve(f.agent, plan, f.event(plan))
+            : f.agent.proposeCodeChange({ sessionID, mode: "plan-first", proposal })
+        const caller = yield* operation.pipe(Effect.forkChild)
+        yield* Deferred.await(entered)
+        expect(resource.acquired).toBe(1)
+        yield* Scope.close(owner, Exit.void)
+        expect(resource.released).toBe(1)
+        expect(Exit.isFailure(yield* Fiber.await(caller))).toBe(true)
+        expect(f.state.applications).toHaveLength(direct ? 1 : 0)
+      }),
+    ),
+)
+
+test("owner disposal waits for asynchronous policy release before returning", () =>
+  run(
+    Effect.gen(function* () {
+      const owner = yield* Scope.make()
+      const f = yield* fixture().pipe(Scope.provide(owner))
+      const entered = yield* Deferred.make<void>()
+      const cleaning = yield* Deferred.make<void>()
+      const release = yield* Deferred.make<void>()
+      const state = { released: false, closed: false }
+      f.state.beforePolicy = Effect.acquireUseRelease(
+        Effect.void,
+        () => Deferred.succeed(entered, undefined).pipe(Effect.andThen(Effect.never)),
+        () =>
+          Deferred.succeed(cleaning, undefined).pipe(
+            Effect.andThen(Deferred.await(release)),
+            Effect.andThen(
+              Effect.sync(() => {
+                state.released = true
+              }),
+            ),
+          ),
+      )
+      const caller = yield* f.agent
+        .proposeCodeChange({ sessionID, mode: "plan-first", proposal })
+        .pipe(Effect.forkChild)
+      yield* Deferred.await(entered)
+      const closing = yield* Scope.close(owner, Exit.void).pipe(
+        Effect.tap(() =>
+          Effect.sync(() => {
+            state.closed = true
+          }),
+        ),
+        Effect.forkChild,
+      )
+      yield* Deferred.await(cleaning)
+      expect(state.released).toBe(false)
+      expect(state.closed).toBe(false)
+      expect((yield* f.agent.proposeCodeChange({ sessionID, mode: "direct", proposal }).pipe(Effect.flip)).code).toBe(
+        "owner_closed",
+      )
+      yield* Deferred.succeed(release, undefined)
+      yield* Fiber.join(closing)
+      expect(state.released).toBe(true)
+      expect(state.closed).toBe(true)
+      expect(Exit.isFailure(yield* Fiber.await(caller))).toBe(true)
+      expect(f.state.applications).toHaveLength(0)
+    }),
+  ))
