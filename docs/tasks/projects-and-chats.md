@@ -53,7 +53,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 - [x] [M2-02 — Persist separate chat-to-Session membership](#m2-02)
 - [x] [M2-03 — Acquire one atomic project execution lease](#m2-03)
 - [x] [M2-04 — Submit without admitting a busy chat's draft](#m2-04)
-- [ ] [M2-05 — Release ownership after settled stop or completion](#m2-05)
+- [x] [M2-05 — Release ownership after settled stop or completion](#m2-05)
 - [ ] [M2-06 — Expose project API and compose the execution gate](#m2-06)
 
 ## Execution tasks
@@ -156,16 +156,18 @@ Verified 2026-10-07 at `960ef135c`: [implementation evidence](../validation/M2-0
 
 **Interfaces:** Consumes execution-settled notifications carrying lease identity. Produces `stopRun({ chat }): void` and lease-aware completion handling; stopping calls Session interruption.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/projects-and-chats/m2-05.test.ts`, add `stop retains ownership until cleanup settles`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/projects-and-chats/m2-05.test.ts`, add `stop retains ownership until cleanup settles`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(duringCleanup.kind).toBe('busy'); expect(afterCleanup.kind).toBe('acquired'); expect(afterOldCallback.token).toBe(newLease.token)
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/projects-and-chats/m2-05.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Hold the gate during tool/approval waits and interruption cleanup. Handle admission-versus-drain-completion races; stale callbacks cannot unlock a new run. Idle stop is a no-op.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/projects-and-chats/m2-05.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): release ownership after settled stop or completion`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/projects-and-chats/m2-05.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Hold the gate during tool/approval waits and interruption cleanup. Handle admission-versus-drain-completion races; stale callbacks cannot unlock a new run. Idle stop is a no-op.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/projects-and-chats/m2-05.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): release ownership after settled stop or completion`.
+
+Verified 2026-10-07 at `e2fe3f44c`: [implementation evidence](../validation/M2-05-implementation.md), [independent review](../validation/M2-05-review.md). Production/platform/composed gates remain separate.
 
 <a id="m2-06"></a>
 

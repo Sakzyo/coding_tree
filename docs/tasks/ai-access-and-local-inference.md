@@ -52,7 +52,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 ## Task checklist
 
-- [ ] [M7-01 — Select model profiles from available resources](#m7-01)
+- [x] [M7-01 — Select model profiles from available resources](#m7-01)
 - [ ] [M7-02 — Protect provider credentials in the desktop host](#m7-02)
 - [ ] [M7-03 — Adapt online provider streaming and failures](#m7-03)
 - [ ] [M7-04 — Enforce verified local-only inference](#m7-04)
@@ -73,16 +73,18 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 **Interfaces:** Produces `recommendModels({ hostResources, concurrentWork, catalog }): { eligible, excluded }`; consumes RAM/GPU/backend/disk facts and explicit working-context requirements.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts`, add `insufficient resources exclude model with a reason`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/ai-access-and-local-inference/m7-01.test.ts`, add `insufficient resources exclude model with a reason`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(result.eligible).toEqual([]); expect(result.excluded[0].reason).toBe('insufficient_memory')
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/ai-access-and-local-inference/m7-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Validate curated catalog metadata and account for desktop/JDT/Gradle/concurrent-project headroom. Use synthetic unit-test values; pin actual models and minimum hardware only after M7-08 measurements. Return trade-offs for UI before download.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/ai-access-and-local-inference/m7-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): select model profiles from available resources`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/ai-access-and-local-inference/m7-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Validate curated catalog metadata and account for desktop/JDT/Gradle/concurrent-project headroom. Use synthetic unit-test values; pin actual models and minimum hardware only after M7-08 measurements. Return trade-offs for UI before download.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/ai-access-and-local-inference/m7-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): select model profiles from available resources`.
+
+Verified 2026-10-07 at `1dd9f1ba3`: [implementation evidence](../validation/M7-01-implementation.md), [independent review](../validation/M7-01-review.md). Production profile support/minimum hardware remains M7-08 measured evidence.
 
 <a id="m7-02"></a>
 

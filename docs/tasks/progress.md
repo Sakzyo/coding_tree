@@ -3,7 +3,7 @@
 Date: 2026-10-07
 Planning baseline: `d7aca195c`
 
-**Implementation progress: 0 / 12 modules complete; 16 / 94 tasks complete.**
+**Implementation progress: 0 / 12 modules complete; 19 / 94 tasks complete.**
 
 These checkboxes track future development, not completion of this planning document. The existing OpenCode foundation is reused, but its presence does not prove that the FTC tasks are done. Both inputs describe unimplemented or unevaluated product work, so every implementation box starts unchecked.
 
@@ -12,12 +12,12 @@ These checkboxes track future development, not completion of this planning docum
 ## Module checklist
 
 - [ ] **M1 — [Desktop workspace](desktop-workspace.md)** — 0 / 14 tasks.
-- [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 4 / 6 tasks.
+- [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 5 / 6 tasks.
 - [ ] **M3 — [Agent and context](agent-and-context.md)** — 2 / 7 tasks.
 - [ ] **M4 — [Environment and compatibility](environment-and-compatibility.md)** — 5 / 7 tasks.
 - [ ] **M5 — [Java development](java-development.md)** — 1 / 8 tasks.
-- [ ] **M6 — [FTC configuration and libraries](ftc-configuration-and-libraries.md)** — 0 / 6 tasks.
-- [ ] **M7 — [AI access and local inference](ai-access-and-local-inference.md)** — 0 / 8 tasks.
+- [ ] **M6 — [FTC configuration and libraries](ftc-configuration-and-libraries.md)** — 1 / 6 tasks.
+- [ ] **M7 — [AI access and local inference](ai-access-and-local-inference.md)** — 1 / 8 tasks.
 - [ ] **M8 — [Controller connections](controller-connections.md)** — 1 / 6 tasks.
 - [ ] **M9 — [Robot approvals and operations](robot-approvals-and-operations.md)** — 0 / 9 tasks.
 - [ ] **M10 — [Diagnostics and dashboard](diagnostics-and-dashboard.md)** — 0 / 6 tasks.
@@ -541,3 +541,22 @@ Meaningful RED→GREEN, affected covering tests and package-local types are requ
 - M5-01 **DONE** at `9bcb23ce6`: independent spec/quality approves; no Critical/Important findings, one chronology Minor retained above. Five current task-owned hashes and committed barrel hash match evidence; coordinator-settled Core types exit 0. Focused **20/69**, affected **36/100**, Schema **21/36**, scoped checks pass. Checked exactly task plus five substeps. Counts **16/94 tasks, 0/12 modules**, M5 **1/8**. No actual editor/production/Windows acceptance credited.
 - M2-05 stable candidate committed `e2fe3f44c`; three hashes matched. Fresh `/root/m2_05_review` receives full one-task range from `ef8a75a4b`. Focused **15/59**, affected **136/484**, Core types/scoped checks pass. Actual admission-to-coordinator mapping remains a composed M2-06 gate.
 - M6-01 stable candidate committed `f3de7a3c7`; all seven source/test/barrel/probe hashes matched. Fresh `/root/m6_01_review` receives full range from `e2fe3f44c`. Core **24/67**, Schema **5/7**, both types and scoped checks pass. Existing FileMutation unchanged; final check/rename/no-follow races and orphan cleanup limits are explicit. Task remains unchecked pending independent review.
+
+- M2-05 **DONE** at `e2fe3f44c`: independent spec/quality review approves without findings; three hashes matched. Focused **15/59**, affected **136/484**, Core types/lint/format pass. Checked task plus five substeps; M2 **5/6**. Actual admission-to-coordinator terminal mapping remains M2-06 work; fixture callbacks do not enable production execution.
+- M6-01 **DONE** at `f3de7a3c7`: independent spec/quality review approves within the recorded adapter boundary, no Critical/Important findings. Seven hashes matched at commit; Core **24/67**, Schema **5/7**, types/lint/format pass. Checked task plus five substeps; M6 **1/6**. Counts **18/94 tasks, 0/12 modules**. Host owner sharing, Windows and noncooperating filesystem race guarantees remain unverified.
+- M6-01 Minor (deferred): scope-disposal coverage does not include an already subscribed event consumer or an in-flight/queued update. The task review found no blocking source defect; carry coverage observation to final whole-branch triage.
+- Next M5-02 starts at current source checkpoint `bd45c7cb8`; reviewed M5-01 prerequisite and canonical document contracts are ready. Exclusive Java facade/documents, producer-owned ftc-java.ts edit/save schemas, m5-02 tests/evidence. Trusted authorization is supplied through a narrow code-owner port, not tool JSON; M3 policy and actual robot/host changes are outside this lane.
+
+- M7-01 stable candidate committed `1dd9f1ba3`; all six source/data/test/barrel hashes matched. Fresh `/root/m7_01_review` receives complete one-task range from `bd45c7cb8`. Core **48/90**, Schema/root **9/18**, both types/lint/format pass. Shipped production catalog remains empty pending M7-08; task stays unchecked until review.
+- M5-02 dispatch uses current checkpoint `1dd9f1ba3` (the earlier `bd45c7cb8` source note was preparation). M12-01 independent personal-progress persistence is under prerequisite/ownership preflight; no migration writer is active, and any generated artifacts will be serialized through coordinator.
+
+- Dispatched `/root/m5_02` against `1dd9f1ba3`. New independent M12-01 is fixture-ready: exclusive ftc-learning.ts, learning.ts, learning/sql.ts, m12-01 tests/evidence. It consumes injected lesson lookup and owns personal local rows without granting completion or executing exercises. Root alone generates schema/migration/registry/snapshot artifacts from stable M12 SQL and serializes the Schema barrel. No competing migration owner is active.
+
+- M7-01 **DONE** at `1dd9f1ba3`: independent spec/quality approves with no Critical/Important findings; six hashes matched. Core **48/90**, Schema/root **9/18**, types/lint/format pass. Checked task plus five substeps; M7 **1/8**. Counts **19/94 tasks, 0/12 modules**. Production catalog remains empty until M7-08 measurements.
+- M7-01 Minor (deferred): add permanent shared RAM/GPU sum and extreme GPU/disk negative-headroom cases; reviewer's six focused probes confirmed current behavior. Carry coverage suggestion to final whole-branch triage.
+- Ruling: M5-02 save/edit revisions include document identity plus buffer/disk versions to reject prior-owner approvals. Trusted code-owner verification binds full immutable proposal and authorized canonical paths; M3 retains plan identity, so no duplicate proposal-ID registry is added. Observed disk changes advance the saved baseline/revision while preserving buffer and returning save/merge/defer choices — unchanged forever-stale baselines would make recovery choices inert — incorrect adoption of external bytes could permit an overwrite, so explicit latest-revision save and byte/scope rechecks remain required. New-file edits remain a producer-owned extension needed before M6-04 template composition, outside current opened-file save scope.
+- Ruling: M12-01 derives personal progress from one owned attempt table and current canonical lesson versions, with statuses not_started/recorded only. Exact historical retries reconcile identical key/payload; new unknown-version attempts reject. Labelled owner/student provenance is recorded data, never awarded competence — persistence must not fabricate physical completion — later M12-04/05 must verify evidence and award outcomes. Language is not a storage identity and prior attempts remain visible.
+- Root generated M12 migration `20261007052343_ftc-learning-progress` using the inspected Core script, exit 0. Snapshot delta adds only ftc_learning_attempt DDL with no prior DDL removed; root export FtcLearning is serialized after M7-01 commit. Worker's real SQLite focus **14/41**, Schema **8/23**, migration regressions **18/39**, Schema types and drift check pass; current Core type errors are recorded foreign M5 work, so M12 remains in progress.
+
+- Ruling: M12-01 takes caller-owned EffectSQLiteDatabase through type-only infrastructure injection, preserving its private repository — import-only RED proved the Database/Global runtime import created app-state directories — an adapter must keep the borrowed connection alive for the Location scope and M12 must not dispose it. Corrected import-only subprocess and covering **35/91** pass; fresh Core/Schema types and migration drift are green. Candidate awaits independent review.
+- Next disjoint M6-02 consumes reviewed M6-01 and owns configuration.ts, ftc-configuration.ts and m6-02 tests/evidence only. Device/SDK rules come from immutable versioned supplied catalogs; identifiers and non-hardware manifest fields remain intact, with no real robot or Java/host work.

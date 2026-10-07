@@ -48,7 +48,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 ## Task checklist
 
-- [ ] [M6-01 — Read and update a shareable manifest by revision](#m6-01)
+- [x] [M6-01 — Read and update a shareable manifest by revision](#m6-01)
 - [ ] [M6-02 — Validate shared hardware commands](#m6-02)
 - [ ] [M6-03 — Inspect imported SDK and pathing dependencies](#m6-03)
 - [ ] [M6-04 — Propose new-project and managed-library changes](#m6-04)
@@ -67,16 +67,18 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 **Interfaces:** Produces `readManifest({ root }): ManifestSnapshot` and `updateManifest({ root, expectedRevision, change }): ManifestSnapshot`; absent manifests return an explicit initialization proposal.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/ftc-configuration-and-libraries/m6-01.test.ts`, add `stale manifest update preserves external bytes`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/ftc-configuration-and-libraries/m6-01.test.ts`, add `stale manifest update preserves external bytes`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(stale.code).toBe('revision_conflict'); expect(afterBytes).toBe(externalBytes); expect(secretFields).toEqual([])
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/ftc-configuration-and-libraries/m6-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Validate schema version and allowed shared fields; reject unsupported newer versions without replacing them. Use atomic file replacement, revisioned events and external-file detection. Treat any database projection as rebuildable, not another authority.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/ftc-configuration-and-libraries/m6-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): read and update a shareable manifest by revision`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/ftc-configuration-and-libraries/m6-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Validate schema version and allowed shared fields; reject unsupported newer versions without replacing them. Use atomic file replacement, revisioned events and external-file detection. Treat any database projection as rebuildable, not another authority.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/ftc-configuration-and-libraries/m6-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): read and update a shareable manifest by revision`.
+
+Verified 2026-10-07 at `f3de7a3c7`: [implementation evidence](../validation/M6-01-implementation.md), [independent review](../validation/M6-01-review.md). Production/platform/composed gates remain separate.
 
 <a id="m6-02"></a>
 
