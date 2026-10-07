@@ -3,7 +3,7 @@
 Date: 2026-10-07
 Planning baseline: `d7aca195c`
 
-**Implementation progress: 0 / 12 modules complete; 15 / 94 tasks complete.**
+**Implementation progress: 0 / 12 modules complete; 16 / 94 tasks complete.**
 
 These checkboxes track future development, not completion of this planning document. The existing OpenCode foundation is reused, but its presence does not prove that the FTC tasks are done. Both inputs describe unimplemented or unevaluated product work, so every implementation box starts unchecked.
 
@@ -15,7 +15,7 @@ These checkboxes track future development, not completion of this planning docum
 - [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 4 / 6 tasks.
 - [ ] **M3 — [Agent and context](agent-and-context.md)** — 2 / 7 tasks.
 - [ ] **M4 — [Environment and compatibility](environment-and-compatibility.md)** — 5 / 7 tasks.
-- [ ] **M5 — [Java development](java-development.md)** — 0 / 8 tasks.
+- [ ] **M5 — [Java development](java-development.md)** — 1 / 8 tasks.
 - [ ] **M6 — [FTC configuration and libraries](ftc-configuration-and-libraries.md)** — 0 / 6 tasks.
 - [ ] **M7 — [AI access and local inference](ai-access-and-local-inference.md)** — 0 / 8 tasks.
 - [ ] **M8 — [Controller connections](controller-connections.md)** — 1 / 6 tasks.
@@ -532,3 +532,12 @@ Meaningful RED→GREEN, affected covering tests and package-local types are requ
 - M6-01 discovered and reproduced scoped-temp cleanup following a retargeted project root into an unrelated directory. Ruling: use same-module staging acquireRelease with observed canonical/device/inode identity checks, and skip cleanup when identity has changed, leaving bounded owned orphan staging — preserving unrelated files takes priority over cleanup after root retargeting — remaining check/remove race is explicitly not an atomic no-follow guarantee. Shared FileMutation stays unchanged; real filesystem RED and subsequent checks are required.
 
 - Next disjoint M7-01 is fixture-ready, base `9bcb23ce6`: exclusive ftc-inference.ts, inference/catalog.ts, models.json, m7-01 tests/evidence. Production profiles/minimum hardware remain unpromoted until M7-08 measurements. Root Schema exports/Git/ledger remain serialized. M2-05 owns projects/lifecycle; M6-01 owns manifest/filesystem adapter; M5-01 awaits settled combined types after its clean review.
+
+- Dispatched `/root/m7_01` against `ef8a75a4b` with the exact catalog brief. Ruling: model selection uses explicit byte-valued host facts, one profile per evaluated platform/backend/context, and caller-supplied desktop/JDT/Gradle/concurrent-project reservations. Shared GPU memory counts against RAM; dedicated GPU has a separate budget. Deterministic exclusions/headroom express tradeoffs without guessed quality/speed/rankings — M7-08 owns actual measurements — an incorrect reservation budget would misstate eligibility, so production catalogs remain empty and synthetic provenance cannot establish support.
+- M6-01 is resolving the final cancellation/cleanup regression under systematic-debugging before freeze. M5-01 remains review-approved but unchecked until the combined Core type gate settles; the earlier root typecheck attempt has explicit foreign M6 inference failures and is preserved in m5-01/core-types-settlement-attempt.log. No failing gate is waived.
+
+- M6-01 isolated its cancellation anomaly with a task-owned FSUtil/Effect finalizer probe, without modifying shared adapters or globals. Cleanup now uses a joined uninterruptible child with canonical/device/inode checks; focused **24 pass / 67 assertions** include cancellation, symlink retarget and same-path replacement preserving unrelated bytes. Evidence refresh and independent review remain pending; no completion credited.
+
+- M5-01 **DONE** at `9bcb23ce6`: independent spec/quality approves; no Critical/Important findings, one chronology Minor retained above. Five current task-owned hashes and committed barrel hash match evidence; coordinator-settled Core types exit 0. Focused **20/69**, affected **36/100**, Schema **21/36**, scoped checks pass. Checked exactly task plus five substeps. Counts **16/94 tasks, 0/12 modules**, M5 **1/8**. No actual editor/production/Windows acceptance credited.
+- M2-05 stable candidate committed `e2fe3f44c`; three hashes matched. Fresh `/root/m2_05_review` receives full one-task range from `ef8a75a4b`. Focused **15/59**, affected **136/484**, Core types/scoped checks pass. Actual admission-to-coordinator mapping remains a composed M2-06 gate.
+- M6-01 stable candidate committed `f3de7a3c7`; all seven source/test/barrel/probe hashes matched. Fresh `/root/m6_01_review` receives full range from `e2fe3f44c`. Core **24/67**, Schema **5/7**, both types and scoped checks pass. Existing FileMutation unchanged; final check/rename/no-follow races and orphan cleanup limits are explicit. Task remains unchecked pending independent review.

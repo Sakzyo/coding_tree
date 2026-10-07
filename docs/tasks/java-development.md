@@ -51,7 +51,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 ## Task checklist
 
-- [ ] [M5-01 — Own documents independently of editor views](#m5-01)
+- [x] [M5-01 — Own documents independently of editor views](#m5-01)
 - [ ] [M5-02 — Save and apply edits with conflict checks](#m5-02)
 - [ ] [M5-03 — Evaluate FTC-aware Java import before building the full editor](#m5-03)
 - [ ] [M5-04 — Adapt scoped language-service requests](#m5-04)
@@ -72,16 +72,18 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 **Interfaces:** Produces `openDocument({ project, path }): DocumentSnapshot`, `changeDocument({ path, expectedRevision, text }): DocumentSnapshot`, `readDocument({ projectID, path }): DocumentSnapshot`.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/java-development/m5-01.test.ts`, add `detaching a view preserves dirty buffer`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/java-development/m5-01.test.ts`, add `detaching a view preserves dirty buffer`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(reopened.text).toBe('unsaved'); expect(reopened.dirty).toBe(true); expect(diskText).toBe('saved')
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/java-development/m5-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Use project-scoped canonical file identities; preserve dirty buffers separately from saved revisions and publish revisioned document events. Reject paths outside the authorized project scope, including symlink escapes.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/java-development/m5-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): own documents independently of editor views`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/java-development/m5-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Use project-scoped canonical file identities; preserve dirty buffers separately from saved revisions and publish revisioned document events. Reject paths outside the authorized project scope, including symlink escapes.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/java-development/m5-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): own documents independently of editor views`.
+
+Verified 2026-10-07 at `9bcb23ce6`: [implementation evidence](../validation/M5-01-implementation.md), [independent review](../validation/M5-01-review.md), [settled Core types](../validation/m5-01/core-types-settled.log). Actual editor/production/Windows acceptance remains separate.
 
 <a id="m5-02"></a>
 
