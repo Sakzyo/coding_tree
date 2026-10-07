@@ -1,0 +1,1 @@
+$ tsgo --ignoreConfig --noEmit --target esnext --module preserve --moduleResolution bundler --strict --skipLibCheck index.ts script/build.ts test/reader.test.ts

@@ -3,13 +3,13 @@ export * as Inspection from "./inspection"
 import { FtcConfiguration } from "@opencode-ai/schema/ftc-configuration"
 import { createHash } from "node:crypto"
 import path from "node:path"
-import { Effect, Fiber, Option, Schema, Scope } from "effect"
+import { Effect, Fiber, Option, Result, Schema, Scope } from "effect"
 import type { InspectionFilesystem } from "./inspection-filesystem"
-import type { ManifestRepository } from "./manifest"
+import type { ManifestSnapshot } from "./manifest-snapshot"
 
 export interface Ports {
   readonly reader: InspectionFilesystem.Interface
-  readonly manifest: Pick<ManifestRepository.Interface, "readManifest">
+  readonly manifest: ManifestSnapshot.Producer
 }
 
 export interface Interface {
@@ -22,7 +22,7 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
   Effect.gen(function* () {
     const scope = yield* Effect.scope
     const openProject = ports.reader?.openProject
-    const readManifest = ports.manifest.readManifest
+    const decodeRead = ports.manifest.decodeRead
     let closed = false
     yield* Effect.addFinalizer(() =>
       Effect.sync(() => {
@@ -172,7 +172,11 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
             })
             yield* visit(javaRoot)
             const manifestBytes = yield* read("ftc-project.json")
-            const manifestResult = yield* readManifest({ root }).pipe(Effect.result)
+            const manifestSource = sources.find((source) => source.path === "ftc-project.json")
+            const manifestResult =
+              manifestSource?.state === "read" || manifestSource?.state === "missing"
+                ? decodeRead(manifestBytes)
+                : Result.fail({ code: "file_unavailable" } satisfies FtcConfiguration.ManifestError)
             const managed =
               manifestResult._tag === "Success" && "revision" in manifestResult.success
                 ? Schema.decodeUnknownOption(FtcConfiguration.ManifestSnapshot)(manifestResult.success)

@@ -325,6 +325,7 @@
         "@opencode-ai/effect-drizzle-sqlite": "workspace:*",
         "@opencode-ai/effect-sqlite-node": "workspace:*",
         "@opencode-ai/llm": "workspace:*",
+        "@opencode-ai/inspection-reader-native": "workspace:*",
         "@opencode-ai/plugin": "workspace:*",
         "@opencode-ai/schema": "workspace:*",
         "@openrouter/ai-sdk-provider": "2.9.0",
@@ -539,6 +540,14 @@
         "@tsconfig/bun": "catalog:",
         "@types/bun": "catalog:",
         "@typescript/native-preview": "catalog:",
+      },
+    },
+    "packages/inspection-reader-native": {
+      "name": "@opencode-ai/inspection-reader-native",
+      "version": "0.0.0",
+      "devDependencies": {
+        "@types/bun": "catalog:",
+        "@types/node": "catalog:",
       },
     },
     "packages/llm": {
@@ -1969,6 +1978,8 @@
     "@opencode-ai/http-recorder": ["@opencode-ai/http-recorder@workspace:packages/http-recorder"],
 
     "@opencode-ai/httpapi-codegen": ["@opencode-ai/httpapi-codegen@workspace:packages/httpapi-codegen"],
+
+    "@opencode-ai/inspection-reader-native": ["@opencode-ai/inspection-reader-native@workspace:packages/inspection-reader-native"],
 
     "@opencode-ai/llm": ["@opencode-ai/llm@workspace:packages/llm"],
 

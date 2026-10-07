@@ -1,9 +1,9 @@
 import { expect, test } from "bun:test"
-import { Cause, Deferred, Effect, Exit, Fiber, Scope } from "effect"
-import { FtcConfiguration } from "@opencode-ai/schema/ftc-configuration"
+import { Cause, Deferred, Effect, Exit, Fiber, Result, Scope } from "effect"
 import { createHash } from "node:crypto"
 import fs from "node:fs/promises"
 import path from "node:path"
+import { ManifestSnapshot } from "../../../src/ftc/configuration/manifest-snapshot"
 import { Inspection } from "../../../src/ftc/configuration/inspection"
 import type { InspectionFilesystem } from "../../../src/ftc/configuration/inspection-filesystem"
 import { tmpdir } from "../../fixture/tmpdir"
@@ -46,23 +46,8 @@ function reader(values: Record<string, string>, override: Partial<InspectionFile
   }
 }
 
-function manifest(selection: FtcConfiguration.Manifest["managedPathing"] = "neither", present = false) {
-  const value = { ...initial, managedPathing: selection }
-  const text = JSON.stringify(value)
-  return {
-    readManifest: (input: { root: string }) =>
-      Effect.sync(() => {
-        expect(input.root).toBe(root)
-        return present
-          ? { revision: createHash("sha256").update(text).digest("hex"), manifest: value }
-          : {
-              kind: "initialization_proposal" as const,
-              filename: "ftc-project.json" as const,
-              expectedRevision: null,
-              manifest: initial,
-            }
-      }),
-  }
+function manifest() {
+  return { decodeRead: ManifestSnapshot.decodeRead }
 }
 
 function run<A, E>(body: Effect.Effect<A, E, Scope.Scope>) {
@@ -81,7 +66,7 @@ test("ambiguous imports stay untouched", async () => {
   const values = { ...beforeFiles }
   await run(
     Effect.gen(function* () {
-      const owner = yield* Inspection.make({ reader: reader(values), manifest: manifest("neither", true) })
+      const owner = yield* Inspection.make({ reader: reader(values), manifest: manifest() })
       const result = yield* owner.inspectProject({ root })
       expect(result.conflicts.length).toBeGreaterThan(0)
       expect(result.detectedPathing).toBe("both")
@@ -305,7 +290,7 @@ test("SDK disagreement is unknown and matching managed selection is consistent",
           [java]: "import com.pedropathing.geometry.Pose;\n",
           "ftc-project.json": JSON.stringify({ ...initial, managedPathing: "pedro" }),
         }),
-        manifest: manifest("pedro", true),
+        manifest: manifest(),
       })
       const result = yield* owner.inspectProject({ root })
       expect(result.sdkVersion).toBeUndefined()
@@ -382,16 +367,10 @@ test("unsupported protected binding fails visibly without manifest or source rea
       const owner = yield* Inspection.make({
         reader: { openProject: () => Effect.fail({ code: "unsupported_reader" }) },
         manifest: {
-          readManifest: () =>
-            Effect.sync(() => {
-              manifestRead = true
-              return {
-                kind: "initialization_proposal",
-                filename: "ftc-project.json",
-                expectedRevision: null,
-                manifest: initial,
-              } as const
-            }),
+          decodeRead: (bytes) => {
+            manifestRead = true
+            return ManifestSnapshot.decodeRead(bytes)
+          },
         },
       })
       expect((yield* owner.inspectProject({ root }).pipe(Effect.flip)).code).toBe("unsupported_reader")
@@ -417,11 +396,10 @@ test("managed snapshot selection is captured before later reader verification", 
           },
         ),
         manifest: {
-          readManifest: () =>
-            Effect.sync(() => {
-              delivered = true
-              return { revision: createHash("sha256").update(text).digest("hex"), manifest: shared }
-            }),
+          decodeRead: () => {
+            delivered = true
+            return Result.succeed({ revision: createHash("sha256").update(text).digest("hex"), manifest: shared })
+          },
         },
       })
       expect((yield* owner.inspectProject({ root })).managedPathing).toBe("pedro")

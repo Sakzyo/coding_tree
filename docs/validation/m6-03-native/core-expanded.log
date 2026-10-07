@@ -1,0 +1,28 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-native.test.ts:
+(pass) pure manifest producer decodes and hashes one copied byte snapshot [10.96ms]
+(pass) real Effect adapter owns and retires resources with its Scope [9.93ms]
+(fail) native caller and owner interruption retire real asynchronous reads before releasing descriptors [5000.00ms]
+  ^ this test timed out after 5000ms.
+(pass) Inspection decodes the protected manifest bytes even when its pathname changes at production [11.95ms]
+(pass) unavailable native manifest never reaches missing-file producer; actual absence does [3.53ms]
+122 |   const { ManifestSnapshot } = await import("../../../src/ftc/configuration/manifest-snapshot")
+123 |   const json = JSON.stringify({ schemaVersion: 1, hardware: [{ id: "hub", name: "NAME", devices: [] }], managedPathing: "neither" })
+124 |   const bytes = new TextEncoder().encode(json)
+125 |   bytes[json.indexOf("NAME")] = 255
+126 |   const result = ManifestSnapshot.decodeRead(bytes)
+127 |   expect(Result.isSuccess(result)).toBe(true)
+                                         ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-native.test.ts:127:36)
+(fail) shared manifest producer retains exact byte hashing and existing UTF-8 replacement semantics [1.35ms]
+
+ 4 pass
+ 2 fail
+ 22 expect() calls
+Ran 6 tests across 1 file. [5.23s]

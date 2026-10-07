@@ -1,0 +1,52 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:
+(pass) ambiguous imports stay untouched [15.83ms]
+(pass) static Kotlin coordinates and Java imports ignore comments and preserve evidence [1.73ms]
+(pass) unsupported source cannot establish absence or parse embedded code dependencies {
+ implementation(libs.pathing)
+ if (enabled) {
+ implementation 'com.pedropathing:core:2.1.2'
+ }
+}
+ [0.61ms]
+(pass) unsupported source cannot establish absence or parse embedded code customDependencyLoader()
+ [0.64ms]
+(pass) unsupported source cannot establish absence or parse embedded code if (enabled) {
+ dependencies {
+ implementation 'com.pedropathing:core:2.1.2'
+ }
+}
+ [0.47ms]
+(pass) unsupported source cannot establish absence or parse embedded code val sample = """
+dependencies {
+ implementation "com.pedropathing:core:2.1.2"
+}
+"""
+ [0.46ms]
+(pass) unsupported source cannot establish absence or parse embedded code dependencies {
+}
+loadTeamDependencies()
+ [0.39ms]
+(pass) complete supported layout can observe neither independently of managed selection [0.52ms]
+(pass) changed observed bytes cannot supply a version [0.35ms]
+(pass) reader scope closes on success and input is captured before asynchronous admission [0.44ms]
+(pass) scope disposal interrupts reads, releases project reader and rejects escaped API [5.53ms]
+(pass) reader verification failure is surfaced before any relative read [0.19ms]
+(pass) SDK disagreement is unknown and matching managed selection is consistent [0.69ms]
+(pass) unsupported Groovy / literal content is never dependency evidence [0.31ms]
+(pass) unsupported Groovy $/ literal content is never dependency evidence [0.24ms]
+(pass) generic pathname file retarget fallback is rejected before consuming foreign data [3.03ms]
+(pass) generic pathname ancestor retarget fallback is rejected before consuming foreign data [0.68ms]
+(pass) unsupported protected binding fails visibly without manifest or source reads [0.18ms]
+(pass) managed snapshot selection is captured before later reader verification [0.37ms]
+(pass) reader listing cannot make the module request a parent path [0.25ms]
+
+test/ftc/ftc-configuration-and-libraries/m6-native.test.ts:
+(pass) pure manifest producer decodes and hashes one copied byte snapshot [1.21ms]
+(pass) real Effect adapter owns and retires resources with its Scope [6.50ms]
+
+ 22 pass
+ 0 fail
+ 99 expect() calls
+Ran 22 tests across 2 files. [220.00ms]

@@ -1,0 +1,14 @@
+bun test v1.3.14 (0d9b296a)
+
+test/reader.test.ts:
+(pass) real native held resources reject foreign leaf and ancestor authority [17.04ms]
+(pass) root aliases and replacement never redirect held content; repeated listing has fresh offset [10.02ms]
+(pass) bad components, leaf links, special entries and file mutation fail visibly [14.37ms]
+(pass) concurrent cancellation joins native retirement and closed handles resist descriptor reuse [19.34ms]
+(pass) real files and directories cross bounded batch boundaries without truncation [16.48ms]
+(pass) backup native finalizers release abandoned opaque handles [13.18ms]
+
+ 6 pass
+ 0 fail
+ 299 expect() calls
+Ran 6 tests across 1 file. [183.00ms]

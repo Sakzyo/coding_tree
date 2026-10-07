@@ -1,0 +1,23 @@
+bun test v1.3.14 (0d9b296a)
+
+test/reader.test.ts:
+28 |     await rejects(native.open(root, "nested", "directory").promise, "path_outside_project")
+29 |     await native.close(file)
+30 |     await native.close(dir)
+31 |     await rejects(native.read(file).promise, "owner_closed")
+32 |     expect(() => Reflect.apply(native.read, undefined, [{}])).toThrow()
+33 |     expect(() => Reflect.apply(native.read, undefined, [])).toThrow()
+                                                                 ^
+error: expect(received).toThrow()
+
+Received function did not throw
+Received value: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/inspection-reader-native/test/reader.test.ts:33:61)
+(fail) real native held resources reject foreign leaf and ancestor authority [16.88ms]
+
+ 0 pass
+ 5 filtered out
+ 1 fail
+ 8 expect() calls
+Ran 1 test across 1 file. [115.00ms]

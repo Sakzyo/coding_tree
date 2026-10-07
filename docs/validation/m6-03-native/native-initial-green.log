@@ -1,0 +1,9 @@
+bun test v1.3.14 (0d9b296a)
+
+test/reader.test.ts:
+(pass) real native held resources reject foreign leaf and ancestor authority [1959.56ms]
+
+ 1 pass
+ 0 fail
+ 7 expect() calls
+Ran 1 test across 1 file. [1.97s]

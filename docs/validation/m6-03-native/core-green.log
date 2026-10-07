@@ -1,0 +1,143 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-01.test.ts:
+(pass) stale manifest update preserves external bytes [38.38ms]
+(pass) absent read proposes initialization without writing, explicit initialization survives reopen [28.21ms]
+(pass) concurrent initializer cannot replace external bytes at exclusive publication [38.54ms]
+(pass) external edit during staging is detected before replacement and staging is removed [14.49ms]
+(pass) cancellation after staging preserves the manifest and removes only its staging [20.03ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[],"managedPathing":"neither","credentials":"secret"} [2.94ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[{"id":"hub","approvals":[],"devices":[]}],"managedPathing":"neither"} [2.57ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[{"id":"hub","devices":[{"category":"motor","port":0,"type":"fixture","name":"drive","machinePaths":["/private"]}]}],"managedPathing":"neither"} [8.70ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":0,"hardware":[],"managedPathing":"neither"} [4.91ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[],"managedPathing":["pedro","road-runner"]} [3.88ms]
+(pass) invalid shared manifest is rejected without creating a file {"schemaVersion":1,"hardware":[{"id":"hub","devices":[{"category":"motor","port":-1,"type":"fixture","name":"drive"}]}],"managedPathing":"neither"} [2.71ms]
+(pass) unsupported or invalid external content is never replaced {"bytes":"{\"schemaVersion\":2,\"hardware\":[],\"managedPathing\":\"neither\",\"future\":true}","code":"unsupported_schema_version"} [45.07ms]
+(pass) unsupported or invalid external content is never replaced {"bytes":"{\"schemaVersion\":1,\"hardware\":[],\"managedPathing\":\"neither\",\"chats\":[]}","code":"invalid_manifest"} [23.44ms]
+(pass) unsupported or invalid external content is never replaced {"bytes":"malformed json","code":"invalid_manifest"} [11.18ms]
+(pass) revision events report commits and observed external bytes, without unchanged-read duplicates [72.63ms]
+(pass) manifest symlink cannot write outside the project [21.29ms]
+(pass) scope closure rejects retained commands and ends event consumers [4.59ms]
+(pass) canonical facade and serializable manifest preserve shared hardware fields [1.59ms]
+(pass) concurrent updates serialize and only one expected revision can publish [57.54ms]
+(pass) canonical root alias retargeted during staging cannot publish to either project [29.02ms]
+(pass) cancellation during the final filesystem check does not publish staged content [26.53ms]
+(pass) an unchanged manifest update emits no revision event [79.77ms]
+(pass) root relocation cannot make scoped cleanup remove a foreign directory symlink [28.13ms]
+(pass) root relocation cannot make scoped cleanup remove a foreign directory replacement [29.79ms]
+
+test/ftc/ftc-configuration-and-libraries/m6-02.test.ts:
+(pass) form and chat enforce the same port and name rules [27.46ms]
+(pass) rejects missing_name at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Motor",
+  name: "",
+} [8.87ms]
+(pass) rejects missing_name at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Motor",
+} [15.82ms]
+(pass) rejects missing_name at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Motor",
+  name: " \t ",
+} [9.58ms]
+(pass) rejects invalid_category at the offending field: {
+  category: "other",
+  port: 0,
+  type: "fixture.Motor",
+  name: "drive",
+} [7.76ms]
+(pass) rejects invalid_type at the offending field: {
+  category: "motor",
+  port: 0,
+  type: "fixture.Servo",
+  name: "drive",
+} [6.21ms]
+(pass) rejects invalid_hardware at the offending field: {
+  category: "motor",
+  port: -1,
+  type: "fixture.Motor",
+  name: "drive",
+} [9.36ms]
+(pass) rejects invalid_hardware at the offending field: {
+  category: "motor",
+  port: 0.5,
+  type: "fixture.Motor",
+  name: "drive",
+} [8.75ms]
+(pass) rejects hub or occupancy conflict invalid_hub [11.33ms]
+(pass) rejects hub or occupancy conflict duplicate_hub [14.24ms]
+(pass) rejects hub or occupancy conflict occupied_port [9.54ms]
+(pass) preserves identifiers and pathing while accepting distinct category ports and exact names [24.04ms]
+(pass) uses the supplied SDK catalog snapshot and rejects ambiguous or malformed catalogs [16.50ms]
+(pass) stale hardware command preserves external bytes [4.74ms]
+(pass) hardware update requires existing manifest [2.82ms]
+(pass) rejects malformed expected revision before persistence [2.13ms]
+(pass) hub rules remain project-local and an empty replacement removes only hardware [58.89ms]
+(pass) copies admitted hardware before asynchronous manifest read [13.49ms]
+(pass) hardware command retains owner revision protection during staging [66.94ms]
+(pass) captures command envelope root before asynchronous manifest read [12.88ms]
+(pass) captures command envelope revision before asynchronous manifest read [4.69ms]
+
+test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:
+(pass) ambiguous imports stay untouched [51.49ms]
+(pass) static Kotlin coordinates and Java imports ignore comments and preserve evidence [1.80ms]
+(pass) unsupported source cannot establish absence or parse embedded code dependencies {
+ implementation(libs.pathing)
+ if (enabled) {
+ implementation 'com.pedropathing:core:2.1.2'
+ }
+}
+ [1.44ms]
+(pass) unsupported source cannot establish absence or parse embedded code customDependencyLoader()
+ [0.98ms]
+(pass) unsupported source cannot establish absence or parse embedded code if (enabled) {
+ dependencies {
+ implementation 'com.pedropathing:core:2.1.2'
+ }
+}
+ [0.82ms]
+(pass) unsupported source cannot establish absence or parse embedded code val sample = """
+dependencies {
+ implementation "com.pedropathing:core:2.1.2"
+}
+"""
+ [0.85ms]
+(pass) unsupported source cannot establish absence or parse embedded code dependencies {
+}
+loadTeamDependencies()
+ [1.07ms]
+(pass) complete supported layout can observe neither independently of managed selection [1.56ms]
+(pass) changed observed bytes cannot supply a version [10.13ms]
+(pass) reader scope closes on success and input is captured before asynchronous admission [5.25ms]
+(pass) scope disposal interrupts reads, releases project reader and rejects escaped API [15.87ms]
+(pass) reader verification failure is surfaced before any relative read [0.74ms]
+(pass) SDK disagreement is unknown and matching managed selection is consistent [1.94ms]
+(pass) unsupported Groovy / literal content is never dependency evidence [0.39ms]
+(pass) unsupported Groovy $/ literal content is never dependency evidence [0.18ms]
+(pass) generic pathname file retarget fallback is rejected before consuming foreign data [2.10ms]
+(pass) generic pathname ancestor retarget fallback is rejected before consuming foreign data [1.25ms]
+(pass) unsupported protected binding fails visibly without manifest or source reads [0.46ms]
+(pass) managed snapshot selection is captured before later reader verification [0.98ms]
+(pass) reader listing cannot make the module request a parent path [1.04ms]
+
+test/ftc/ftc-configuration-and-libraries/m6-native.test.ts:
+(pass) pure manifest producer decodes and hashes one copied byte snapshot [0.99ms]
+(pass) real Effect adapter owns and retires resources with its Scope [10.06ms]
+(pass) native caller and owner interruption retire real asynchronous reads before releasing descriptors [19.84ms]
+(pass) Inspection decodes the protected manifest bytes even when its pathname changes at production [90.63ms]
+(pass) unavailable native manifest never reaches missing-file producer; actual absence does [51.66ms]
+(pass) shared manifest producer retains exact byte hashing and existing UTF-8 replacement semantics [0.57ms]
+(pass) public Inspection rejects real native leaf retarget before foreign content consumption [11.92ms]
+(pass) public Inspection rejects real native ancestor retarget before foreign content consumption [6.67ms]
+(pass) public Inspection rejects real native listing retarget before foreign content consumption [9.08ms]
+(pass) public Inspection rejects real native root retarget before foreign content consumption [5.77ms]
+
+ 75 pass
+ 0 fail
+ 267 expect() calls
+Ran 75 tests across 4 files. [1.60s]

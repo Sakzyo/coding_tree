@@ -1,0 +1,14 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-native.test.ts:
+(pass) pure manifest producer decodes and hashes one copied byte snapshot [9.12ms]
+(pass) real Effect adapter owns and retires resources with its Scope [7.27ms]
+(pass) native caller and owner interruption retire real asynchronous reads before releasing descriptors [6.30ms]
+(pass) Inspection decodes the protected manifest bytes even when its pathname changes at production [8.11ms]
+(pass) unavailable native manifest never reaches missing-file producer; actual absence does [3.11ms]
+(pass) shared manifest producer retains exact byte hashing and existing UTF-8 replacement semantics [0.30ms]
+
+ 6 pass
+ 0 fail
+ 28 expect() calls
+Ran 6 tests across 1 file. [207.00ms]

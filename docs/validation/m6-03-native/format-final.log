@@ -1,0 +1,5 @@
+index.ts 24ms
+script/build.ts 9ms (unchanged)
+test/reader.test.ts 15ms
+../core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts 19ms (unchanged)
+../core/src/ftc/configuration/inspection-filesystem.native.ts 6ms (unchanged)

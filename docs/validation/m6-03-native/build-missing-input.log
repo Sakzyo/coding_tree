@@ -1,0 +1,11 @@
+1 | import { createHash } from "node:crypto"
+2 | import { mkdir } from "node:fs/promises"
+3 | import path from "node:path"
+4 | 
+5 | const headers = process.argv[2]
+6 | if (!headers || !path.isAbsolute(headers)) throw new Error("Pass an explicit absolute Node 26.10.0 header directory")
+                                                         ^
+error: Pass an explicit absolute Node 26.10.0 header directory
+      at /Users/dylanxu/coding_tree/packages/inspection-reader-native/script/build.ts:6:54
+
+Bun v1.3.14 (macOS arm64)

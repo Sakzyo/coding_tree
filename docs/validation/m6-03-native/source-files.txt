@@ -1,0 +1,16 @@
+packages/inspection-reader-native/.gitignore
+packages/inspection-reader-native/package.json
+packages/inspection-reader-native/index.ts
+packages/inspection-reader-native/src/reader.c
+packages/inspection-reader-native/script/build.ts
+packages/inspection-reader-native/README.md
+packages/inspection-reader-native/test/reader.test.ts
+packages/core/package.json
+packages/core/src/ftc/configuration/inspection-filesystem.ts
+packages/core/src/ftc/configuration/inspection-filesystem.native.ts
+packages/core/src/ftc/configuration/manifest-snapshot.ts
+packages/core/src/ftc/configuration/manifest.ts
+packages/core/src/ftc/configuration/inspection.ts
+packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts
+packages/core/test/ftc/ftc-configuration-and-libraries/m6-native.test.ts
+bun.lock

@@ -1,0 +1,15 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-native.test.ts:
+admitted 160 168
+observed false
+interrupted false
+observed true
+(fail) native caller and owner interruption retire real asynchronous reads before releasing descriptors [5000.01ms]
+  ^ this test timed out after 5000ms.
+
+ 0 pass
+ 5 filtered out
+ 1 fail
+ 3 expect() calls
+Ran 1 test across 1 file. [5.10s]

@@ -1,0 +1,2 @@
+{"deferred":false,"outcome":"not-completed-in-diagnostic-window","trace":["asynchronous-resource-retired"]}
+{"deferred":true,"outcome":"completed","trace":["asynchronous-resource-retired","scope-closed"]}

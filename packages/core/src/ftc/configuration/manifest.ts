@@ -4,9 +4,10 @@ import { FtcConfiguration } from "@opencode-ai/schema/ftc-configuration"
 import { AbsolutePath } from "@opencode-ai/schema/schema"
 import { createHash } from "node:crypto"
 import path from "node:path"
-import { Effect, Fiber, Option, PubSub, Result, Schema, Scope, Stream } from "effect"
+import { Effect, Fiber, Option, PubSub, Schema, Scope, Stream } from "effect"
 import { KeyedMutex } from "../../effect/keyed-mutex"
 import { FSUtil } from "../../fs-util"
+import { ManifestSnapshot } from "./manifest-snapshot"
 
 export type Filesystem = Pick<
   FSUtil.Interface,
@@ -101,10 +102,7 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
         return yield* locks.withLock(root)(
           Effect.gen(function* () {
             const bytes = yield* current(requested, root)
-            const result =
-              bytes === undefined
-                ? proposal()
-                : { revision: digest(bytes), manifest: yield* Effect.fromResult(decodeBytes(bytes)) }
+            const result = yield* Effect.fromResult(ManifestSnapshot.decodeRead(bytes))
             yield* active()
             yield* record(root, result)
             return result
@@ -117,14 +115,14 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
         if (expected !== null && !Schema.is(FtcConfiguration.Revision)(expected))
           return yield* Effect.fail({ code: "invalid_manifest" } satisfies FtcConfiguration.ManifestError)
         // Decode before yielding so caller mutation cannot change the staged proposal.
-        const manifest = yield* Effect.fromResult(decodeManifest(input.change))
+        const manifest = yield* Effect.fromResult(ManifestSnapshot.decodeManifest(input.change))
         const content = new TextEncoder().encode(`${JSON.stringify(manifest, null, 2)}\n`)
         const root = yield* canonical(requested)
         return yield* locks.withLock(root)(
           Effect.scoped(
             Effect.gen(function* () {
               const before = yield* current(requested, root)
-              if (before !== undefined) yield* Effect.fromResult(decodeBytes(before))
+              if (before !== undefined) yield* Effect.fromResult(ManifestSnapshot.decodeBytes(before))
               const revision = before === undefined ? null : digest(before)
               if (revision !== expected)
                 return yield* Effect.fail({
@@ -226,37 +224,4 @@ function acquireStaging(fs: Filesystem, root: string) {
         ),
       ).pipe(Effect.flatMap(Fiber.join)),
   ).pipe(Effect.map((staging) => staging.directory))
-}
-
-function proposal(): FtcConfiguration.InitializationProposal {
-  return {
-    kind: "initialization_proposal",
-    filename: "ftc-project.json",
-    expectedRevision: null,
-    manifest: { schemaVersion: 1, hardware: [], managedPathing: "neither" },
-  }
-}
-
-function decodeManifest(value: unknown): Result.Result<FtcConfiguration.Manifest, FtcConfiguration.ManifestError> {
-  if (
-    typeof value === "object" &&
-    value !== null &&
-    "schemaVersion" in value &&
-    typeof value.schemaVersion === "number" &&
-    value.schemaVersion > 1
-  )
-    return Result.fail({ code: "unsupported_schema_version" } satisfies FtcConfiguration.ManifestError)
-  const decoded = Schema.decodeUnknownOption(FtcConfiguration.Manifest, { onExcessProperty: "error" })(value)
-  return Option.isSome(decoded)
-    ? Result.succeed(decoded.value)
-    : Result.fail({ code: "invalid_manifest" } satisfies FtcConfiguration.ManifestError)
-}
-
-function decodeBytes(bytes: Uint8Array): Result.Result<FtcConfiguration.Manifest, FtcConfiguration.ManifestError> {
-  const json = Schema.decodeUnknownOption(Schema.UnknownFromJsonString)(
-    new TextDecoder("utf-8", { fatal: false }).decode(bytes),
-  )
-  return Option.isSome(json)
-    ? decodeManifest(json.value)
-    : Result.fail({ code: "invalid_manifest" } satisfies FtcConfiguration.ManifestError)
 }

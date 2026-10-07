@@ -1,0 +1,11 @@
+index.ts 25ms
+package.json 7ms
+script/build.ts 8ms
+test/reader.test.ts 18ms
+../core/src/ftc/configuration/inspection-filesystem.native.ts 6ms
+../core/src/ftc/configuration/inspection-filesystem.ts 1ms (unchanged)
+../core/src/ftc/configuration/inspection.ts 14ms
+../core/src/ftc/configuration/manifest.ts 10ms
+../core/src/ftc/configuration/manifest-snapshot.ts 2ms
+../core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts 15ms (unchanged)
+../core/test/ftc/ftc-configuration-and-libraries/m6-native.test.ts 10ms

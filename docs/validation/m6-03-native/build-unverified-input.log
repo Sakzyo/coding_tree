@@ -1,0 +1,11 @@
+17 |   if (
+18 |     createHash("sha256")
+19 |       .update(await Bun.file(path.join(headers, name)).bytes())
+20 |       .digest("hex") !== hash
+21 |   )
+22 |     throw new Error(`Unverified header: ${name}`)
+                   ^
+error: Unverified header: node_api.h
+      at /Users/dylanxu/coding_tree/packages/inspection-reader-native/script/build.ts:22:15
+
+Bun v1.3.14 (macOS arm64)

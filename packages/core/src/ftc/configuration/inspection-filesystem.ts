@@ -18,7 +18,7 @@ export interface Project {
 }
 
 export interface Interface {
-  // Required trusted capability; no generic pathname fallback or native adapter is supplied.
+  // Required trusted capability; the native adapter is an explicit infrastructure composition.
   // Acquisition owns resources in Scope. Missing inputs return undefined; unsafe/unsupported
   // reads and listings fail before consuming foreign bytes or directory entries.
   readonly openProject: (input: {
