@@ -1,0 +1,11 @@
+{
+  "source": "packages/inspection-reader-native/src/reader.c",
+  "sourceSHA256": "6d4c172dc1b98b9a1be678fb6bf3828ca6c2e5ac7dfe376827bc3a2a32e6f71f",
+  "artifact": "/Users/dylanxu/coding_tree/packages/inspection-reader-native/dist/reader.node",
+  "artifactSHA256": "1a718b6b78547bdd56b61a9d568222131cd0ea445c617c096d21831b48fae803",
+  "sourceFiles": 17,
+  "verifiedPlatform": "macOS 26.5.2 build 25F84 arm64 Bun 1.3.14",
+  "reviewedCandidate": "78e1c576e",
+  "reviewedRepair": "92d24fa56",
+  "compiledArtifactTracked": false
+}

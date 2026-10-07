@@ -124,6 +124,8 @@ expect(result.conflicts.length).toBeGreaterThan(0); expect(afterFiles).toEqual(b
 - [ ] **4. Verify:** Re-run `bun test ./test/ftc/ftc-configuration-and-libraries/m6-03.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
 - [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): inspect imported sdk and pathing dependencies`.
 
+Available macOS work reviewed 2026-10-07: parser/consumer repair `2c2bfc627`, protected Node-API reader/same-byte producer `78e1c576e`, public owner-cancellation repair `92d24fa56`; [native evidence](../validation/M6-03-native-implementation.md), [native review](../validation/M6-03-native-review.md). **M6-03 stays unchecked:** Windows native software is unimplemented; actual host distribution/CI header sourcing/platform/release gates remain open. Verified local combination is macOS 26.5.2 build 25F84 arm64 Bun 1.3.14 only. Stopped after this task as requested.
+
 <a id="m6-04"></a>
 
 ### M6-04 — Propose new-project and managed-library changes
