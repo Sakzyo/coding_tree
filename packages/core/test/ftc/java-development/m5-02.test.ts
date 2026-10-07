@@ -985,3 +985,93 @@ test("unpaired Unicode cannot be silently encoded as different source bytes", as
     }),
   )
 })
+
+test.each([0, 1])(
+  "revocation during final scope resolution stops file %s before its conditional write",
+  async (blocked) => {
+    await using tmp = await tmpdir()
+    const context = project(tmp.path)
+    const filenames = [path.join(tmp.path, "One.java"), path.join(tmp.path, "Two.java")]
+    await Promise.all(filenames.map((filename) => fs.writeFile(filename, "saved")))
+    const writes: string[] = []
+    let reads = 0
+    let finalScopes = 0
+    let revoked = false
+    await run(
+      context,
+      (java) =>
+        Effect.gen(function* () {
+          const opened = yield* Effect.forEach(filenames, (filename) =>
+            java.openDocument({ project: context, path: filename }),
+          )
+          const requested = {
+            projectID: context.projectID,
+            edits: opened.map((snapshot) => ({
+              path: snapshot.path,
+              expectedRevision: revision(snapshot),
+              replacement: "agent",
+            })),
+            explanation: "Update sources",
+          }
+          const result = yield* java.applyEdits({ proposal: requested, authorization: token }).pipe(Effect.result)
+          expect(revoked).toBe(true)
+          expect(writes).toEqual(filenames.slice(0, blocked))
+          if (blocked === 0) {
+            expect(result._tag).toBe("Failure")
+            if (result._tag === "Failure") expect(result.failure.code).toBe("edit_unauthorized")
+          }
+          if (blocked === 1) {
+            expect(result._tag).toBe("Success")
+            if (result._tag === "Success") {
+              expect(result.success.kind).toBe("failed")
+              expect(result.success.applied.map((snapshot) => snapshot.path)).toEqual([opened[0].path])
+              if (result.success.kind === "failed") {
+                expect(result.success.error.code).toBe("edit_unauthorized")
+                expect(result.success.uncertainPaths).toEqual([])
+              }
+            }
+          }
+          expect(yield* filesystem.readText(filenames[blocked])).toBe("saved")
+          expect(yield* java.readDocument({ projectID: context.projectID, path: filenames[blocked] })).toEqual(
+            opened[blocked],
+          )
+        }),
+      {
+        filesystem: {
+          ...filesystem,
+          readBytes: (filename) =>
+            filesystem.readBytes(filename).pipe(
+              Effect.tap(() =>
+                Effect.sync(() => {
+                  if (filename === filenames[blocked]) reads++
+                }),
+              ),
+            ),
+          realpath: (filename) =>
+            filesystem.realpath(filename).pipe(
+              Effect.tap(() =>
+                Effect.sync(() => {
+                  // Observe validates scope once after its disk read; the next root resolution is the final scope check.
+                  if (filename === context.canonicalRoot && reads === 3 && ++finalScopes === 2) revoked = true
+                }),
+              ),
+            ),
+          writeIfUnchanged: (input) =>
+            Effect.sync(() => writes.push(input.path)).pipe(Effect.andThen(filesystem.writeIfUnchanged(input))),
+        },
+        codeChanges: {
+          check: () =>
+            Effect.suspend(() =>
+              revoked
+                ? Effect.fail({ code: "edit_unauthorized" })
+                : Effect.succeed({
+                    projectID: context.projectID,
+                    canonicalRoot: context.canonicalRoot,
+                    paths: filenames.map((filename) => AbsolutePath.make(filename)),
+                  }),
+            ),
+        },
+      },
+    )
+  },
+)

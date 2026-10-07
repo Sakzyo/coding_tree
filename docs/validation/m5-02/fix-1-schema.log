@@ -1,0 +1,33 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-java.test.ts:
+(pass) document snapshots and revisioned events survive JSON without losing buffer or disk identity [21.68ms]
+(pass) document IDs reject foreign prefix document [2.08ms]
+(pass) document IDs reject foreign prefix doc [0.09ms]
+(pass) document IDs reject foreign prefix docs_fixture [0.03ms]
+(pass) document IDs reject foreign prefix document_fixture [0.04ms]
+(pass) generated document IDs validate their emitted prefix and distinguish identities [1.25ms]
+(pass) buffer and saved revisions reject invalid sequence value %s [0.43ms]
+(pass) buffer and saved revisions reject invalid sequence value %s [0.14ms]
+(pass) document errors omit undefined optional properties and reject invented success states [0.77ms]
+(pass) snapshot paths reject relative identity Main.java [0.09ms]
+(pass) snapshot paths reject relative identity ../Main.java [0.06ms]
+(pass) snapshot paths reject relative identity  [0.17ms]
+(pass) snapshot paths preserve platform absolute identity /team/Main.java [0.21ms]
+(pass) snapshot paths preserve platform absolute identity C:\team\Main.java [1.16ms]
+(pass) snapshot paths preserve platform absolute identity C:/team/Main.java [0.07ms]
+(pass) snapshot paths preserve platform absolute identity \\host\team\Main.java [0.03ms]
+(pass) edit/save contracts share complete document revisions and preserve proposal/result JSON [5.68ms]
+(pass) proposal and save validation reject empty edits and incomplete or negative revision pairs [1.00ms]
+
+test/contract-hygiene.test.ts:
+(pass) contract hygiene > optional properties preserve transformations and omit undefined while encoding [1.00ms]
+(pass) contract hygiene > todo status and priority preserve arbitrary strings [0.09ms]
+(pass) contract hygiene > current ID constructors expose create [86.40ms]
+(pass) contract hygiene > reusable public identifiers are stable and unique [0.17ms]
+(pass) contract hygiene > current source avoids Any and mutable contract wrappers [10.25ms]
+
+ 23 pass
+ 0 fail
+ 52 expect() calls
+Ran 23 tests across 2 files. [916.00ms]

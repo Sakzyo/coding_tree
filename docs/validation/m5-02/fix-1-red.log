@@ -1,0 +1,59 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-02.test.ts:
+1013 |             })),
+1014 |             explanation: "Update sources",
+1015 |           }
+1016 |           const result = yield* java.applyEdits({ proposal: requested, authorization: token }).pipe(Effect.result)
+1017 |           expect(revoked).toBe(true)
+1018 |           expect(writes).toEqual(filenames.slice(0, blocked))
+                                ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-svsZwy/One.java",
++ ]
+
+- Expected  - 1
++ Received  + 3
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-02.test.ts:1018:26)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) revocation during final scope resolution stops file %s before its conditional write [28.46ms]
+1013 |             })),
+1014 |             explanation: "Update sources",
+1015 |           }
+1016 |           const result = yield* java.applyEdits({ proposal: requested, authorization: token }).pipe(Effect.result)
+1017 |           expect(revoked).toBe(true)
+1018 |           expect(writes).toEqual(filenames.slice(0, blocked))
+                                ^
+error: expect(received).toEqual(expected)
+
+  [
+    "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-PiBSUd/One.java",
++   "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-PiBSUd/Two.java",
+  ]
+
+- Expected  - 0
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-02.test.ts:1018:26)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) revocation during final scope resolution stops file %s before its conditional write [5.60ms]
+
+ 0 pass
+ 28 filtered out
+ 2 fail
+ 4 expect() calls
+Ran 2 tests across 1 file. [144.00ms]

@@ -74,3 +74,39 @@ d88d6d719d8c32cf090e37cbb6fe757b1f1cf31c64b6b3d63b76ababdb059a13  packages/schem
 a506c72aa3c5c37fde381c895c5313ed67e38a9ec7f9984948958426fa8f2387  packages/core/test/ftc/java-development/m5-02.test.ts
 2879422b2d5f66283e8b59b50024b2944c7955b41137b43f3310b28b5c1c9a23  packages/schema/test/ftc-java.test.ts
 ```
+
+## Fix round 1 — Important I1, final authority ordering
+
+Review baseline: `23eed3535`. Read the full independent report `docs/validation/M5-02-review.md`, including the real-file probe showing `{result: applied, checks: 3, revoked: true, writes: 1, disk: agent}`. Root cause: the final `checkChanges` preceded `checkScope`, whose project/root/target resolution awaits allowed revocation after the last authority check. This is a Core admission defect, separate from the production filesystem atomicity gate.
+
+The fix only reorders that final boundary: finish `checkScope` first, then revalidate the trusted full-proposal grant against project/root/all canonical paths, then enter conditional commit. The conditional adapter's commit-time placement and byte checks remain intact. No new-file semantics, host adapters, approval policy, Schema contracts, shared files or deferred Minor M1 coverage were changed. Source change is limited to `packages/core/src/ftc/java/documents.ts`; the regression addition is limited to `packages/core/test/ftc/java-development/m5-02.test.ts`.
+
+TDD regression `revocation during final scope resolution stops file %s before its conditional write` runs twice against the real owner, real canonical root/target resolutions, real temporary files and real conditional filesystem writes. Its controlled realpath port revokes authority during the final root resolution after the mutation's disk read and its post-read scope validation. It asserts revocation occurred, the affected conditional writer was never invoked, disk/buffer are preserved, and trusted authorization rejects the operation. First-file case asserts zero conditional writes and `edit_unauthorized` on the error channel. Second-file case asserts only the first confirmed write, a `failed` result carrying that first snapshot, `edit_unauthorized`, no uncertain write path, and unchanged second-file bytes/snapshot.
+
+Same pinned Bun and task-owned environment as above. No Git/index/ledger/checklist/subagent actions. Commands, working directories, exit/counts:
+
+| Working directory | Command | Exit / evidence |
+| --- | --- | --- |
+| `packages/core` | `bun test ./test/ftc/java-development/m5-02.test.ts --test-name-pattern 'revocation during final scope'` before production edit | **1; 0 pass, 2 fail, 4 assertions**, `m5-02/fix-1-red.log`; both failures prove the revoked target still reached conditional write |
+| `packages/core` | same scoped command after ordering fix | **0; 2 pass, 15 assertions**, `m5-02/fix-1-green.log` |
+| `packages/core` | `bun test ./test/ftc/java-development/m5-02.test.ts` | **0; 30 pass, 125 assertions**, `m5-02/fix-1-focused.log` |
+| `packages/core` | `bun test ./test/ftc/java-development ./test/file-mutation.test.ts` | **0; 63 pass, 219 assertions**, `m5-02/fix-1-affected.log` |
+| `packages/schema` | `bun test ./test/ftc-java.test.ts ./test/contract-hygiene.test.ts` | **0; 23 pass, 52 assertions**, `m5-02/fix-1-schema.log` |
+| `packages/core` | `bun typecheck` | **0**, `m5-02/fix-1-core-types.log` |
+| `packages/schema` | `bun typecheck` | **0**, `m5-02/fix-1-schema-types.log` |
+| `packages/core` | same scoped `bunx --no-install oxlint --config ../../.oxlintrc.json` command above | **0; 0 warnings/errors**, `m5-02/fix-1-core-lint.log` |
+| `packages/schema` | same scoped lint command above | **0; 0 warnings/errors**, `m5-02/fix-1-schema-lint.log` |
+| repo | same five-path `bunx --no-install prettier --check` command above | **0**, `m5-02/fix-1-format.log` |
+| repo | same five-path `git diff --check -- ...` command above | **0**, `m5-02/fix-1-diff-check.log` |
+
+Retained `fix-1-core-types-attempt.log` documents one new regression assertion comparing a branded canonical path to an unbranded fixture filename. The expectation now uses the opened canonical snapshot path; production behavior and substantive assertions remain unchanged. Core tests/types/lint/format were refreshed after that correction. No failing gate is waived.
+
+Candidate frozen after these checks. Existing evidence limits and unrun production/editor/Windows/create gates remain unchanged. This fix addresses I1; independent re-review is still required before task completion. The preceding initial SHA256 block is historical; `m5-02/source-sha256-before-fix-1.txt` preserves it. The current `m5-02/source-sha256.txt` and following block supersede it:
+
+```
+c4e6c2704a24b39bcb95c49d0e085f90ebd287499808c25d56397547d7ec830b  packages/core/src/ftc/java.ts
+b33fbbd4711417f7dcf2c38a490de64802f059ce277ec12e30d96a47e88dfce7  packages/core/src/ftc/java/documents.ts
+d88d6d719d8c32cf090e37cbb6fe757b1f1cf31c64b6b3d63b76ababdb059a13  packages/schema/src/ftc-java.ts
+a17c5c86f805ddbe19bf7a84d2ef60995ef922245cc89307c4ab98d283312af4  packages/core/test/ftc/java-development/m5-02.test.ts
+2879422b2d5f66283e8b59b50024b2944c7955b41137b43f3310b28b5c1c9a23  packages/schema/test/ftc-java.test.ts
+```

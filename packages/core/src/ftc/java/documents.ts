@@ -463,8 +463,8 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
                   const disk = yield* observe(paths[index])
                   const detail = conflict(disk, edit.expectedRevision, true)
                   if (detail) return { conflict: detail }
-                  yield* checkChanges(proposal, authorization, authorized.root, paths)
                   yield* checkScope(proposal.projectID, authorized.root, edit.path, paths[index])
+                  yield* checkChanges(proposal, authorization, authorized.root, paths)
                   const saved = yield* commit(paths[index], edit.replacement, disk.bytes)
                   if (saved) return { saved }
                   const latest = yield* observe(paths[index])

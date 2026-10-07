@@ -1,0 +1,5 @@
+$ tsgo --noEmit
+test/ftc/java-development/m5-02.test.ts(1027,88): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Type 'string' is not assignable to type 'string & Brand<"AbsolutePath">'.
+      Type 'string' is not assignable to type 'Brand<"AbsolutePath">'.
