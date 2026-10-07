@@ -1,0 +1,48 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/learning-and-progress/m12-02.test.ts:
+742 |       yield* service.selectEntry({ courseID, entryLevel: "ftc-beginner" }).pipe(Effect.result),
+743 |       yield* service.skipLesson({ courseID, lessonID: "lesson-a" }).pipe(Effect.result),
+744 |       yield* service.nextLesson(next).pipe(Effect.result),
+745 |       yield* service.progress({ courseID }).pipe(Effect.result),
+746 |     ]
+747 |     expect(results.map((result) => Result.isSuccess(result) ? "success" : result.failure.code)).toEqual(["success", "success", "success", "success"])
+      ^
+error: expect(received).toEqual(expected)
+
+  [
+-   "success",
+-   "success",
+-   "success",
+-   "success",
++   "invalid_course",
++   "invalid_course",
++   "invalid_course",
++   "invalid_course",
+  ]
+
+- Expected  - 4
++ Received  + 4
+
+      at toEqual (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/core/test/ftc/learning-and-progress/m12-02.test.ts:747:97
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:910:23)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2597:69
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2667:12
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2678:23
+      at /Users/dylanxu/coding_tree/packages/core/test/ftc/learning-and-progress/m12-02.test.ts:740:9
+(fail) explicit library binding permits SDK-wide courses through every navigation command [22.15ms]
+(pass) explicit library binding permits matching library-specific courses through every navigation command [10.30ms]
+(pass) explicit library binding rejects different library through every navigation command without writes [5.27ms]
+(pass) explicit library binding rejects incompatible library version through every navigation command without writes [5.19ms]
+(pass) explicit library binding rejects invalid library range through every navigation command without writes [4.98ms]
+(pass) explicit library binding rejects missing library range through every navigation command without writes [3.67ms]
+(pass) explicit library binding rejects missing library identity through every navigation command without writes [4.57ms]
+
+ 6 pass
+ 25 filtered out
+ 1 fail
+ 57 expect() calls
+Ran 7 tests across 1 file. [136.00ms]

@@ -153,10 +153,12 @@ export const layer = (lookup: LessonLookup, db: EffectDrizzleSqlite.EffectSQLite
     if (
       !semver.validRange(record.sdkRange) ||
       !semver.satisfies(binding.sdkVersion, record.sdkRange) ||
-      record.library !== binding.library ||
-      (record.libraryRange === undefined) !== (binding.libraryVersion === undefined) ||
+      (record.library === undefined) !== (record.libraryRange === undefined) ||
       (record.libraryRange !== undefined &&
-        (!semver.validRange(record.libraryRange) || !semver.satisfies(binding.libraryVersion!, record.libraryRange)))
+        (record.library !== binding.library ||
+          binding.libraryVersion === undefined ||
+          !semver.validRange(record.libraryRange) ||
+          !semver.satisfies(binding.libraryVersion, record.libraryRange)))
     )
       return yield* Effect.fail({
         code: "invalid_course",

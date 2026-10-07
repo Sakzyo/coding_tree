@@ -1,0 +1,6 @@
+check	cwd	exit	command
+fix1-core-covering	/Users/dylanxu/coding_tree/packages/core	0	bun test ./test/ftc/learning-and-progress/m12-01.test.ts ./test/ftc/learning-and-progress/m12-02.test.ts ./test/ftc/ftc-knowledge 
+fix1-core-typecheck	/Users/dylanxu/coding_tree/packages/core	0	bun typecheck 
+fix1-lint	/Users/dylanxu/coding_tree	0	/Users/dylanxu/coding_tree/node_modules/.bin/oxlint packages/core/src/ftc/learning.ts packages/core/test/ftc/learning-and-progress/m12-02.test.ts 
+fix1-format	/Users/dylanxu/coding_tree	0	/Users/dylanxu/coding_tree/node_modules/.bin/prettier --check packages/core/src/ftc/learning.ts packages/core/test/ftc/learning-and-progress/m12-02.test.ts 
+fix1-diff-check	/Users/dylanxu/coding_tree	0	git diff --check -- packages/core/src/ftc/learning.ts packages/core/test/ftc/learning-and-progress/m12-02.test.ts 

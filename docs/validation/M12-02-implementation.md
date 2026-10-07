@@ -89,3 +89,37 @@ Worker changed only the nine source/test files listed in `source-sha256.txt` and
 Self-review verified dependency direction and no sibling runtime import in M12; reviewed SQL primary keys, decode-before-write transaction flow, skip/attempt separation, exact historical retry order, current content binding and unavailable-versus-no-next distinction. Schema decoding canonicalizes field order; key-order characterizations confirm equivalent objects are not rejected by structural comparisons. Existing M12-01 behavior is covered without changing its test file.
 
 Limits: isolated synthetic software acceptance only. No classroom competence, production course policy, physical observation/robot action, Windows/native UI/Location composition, exercise evaluator, prerequisite graph, build/deployment authority or later M12 behaviors are claimed. No user database/application/server was opened or restarted.
+
+## Fix round 1 — I1 library applicability (base `181f495ee`)
+
+Status: **I1 addressed; candidate frozen for scoped independent re-review.** Read `docs/validation/M12-02-review.md` and reproduced its SDK-wide-content rejection before changing implementation. This section supersedes the initial implementation's applicability acceptance claim only; earlier history and evidence remain intact.
+
+M11 permits SDK-wide content under a library-qualified query. The repair first checks that a returned record's `library` and `libraryRange` are either both present or both omitted. Library identity, explicit binding version and range compatibility are enforced only for records declaring library-specific applicability. SDK-wide records therefore remain valid under an explicit project library binding. Concrete course/SDK binding, SDK compatibility, record/document version/language, local-only lookup, snapshot reconciliation, personal state and evidence behavior remain intact. Only the applicability conditional in `packages/core/src/ftc/learning.ts` and new regressions in `packages/core/test/ftc/learning-and-progress/m12-02.test.ts` changed.
+
+Meaningful RED→GREEN:
+
+- Before implementation, appended seven focused cases exercising **all four** affected commands (`selectEntry`, `skipLesson`, `nextLesson`, metadata-aware `progress`) against canonical synthetic results and actual disposable owned SQLite tables. The generic SDK-wide case observed four `invalid_course` results where four successes were required. Matching library-specific and five rejection cases already passed. `fix1-red.log`: exit **1**, **6 pass / 1 fail**, 57 assertions; no harness/dependency failure.
+- Changed only the applicability conditional. `fix1-green.log`: exit **0**, **7 pass / 0 fail**, 64 assertions. Positive cases cover SDK-wide and matching library-specific records; negative cases cover different library, incompatible version, invalid range, missing range, and missing library identity. Negative cases verify both personal tables and the attempt table remain empty. Positive cases verify course/version/language binding, entry/skip status, and no manufactured attempt.
+- Both focused invocations ran from `/Users/dylanxu/coding_tree/packages/core` with the exact command `bun test ./test/ftc/learning-and-progress/m12-02.test.ts -t 'explicit library binding'`. Environment: pinned Bun 1.3.14 directory prepended to `PATH`, `OPENCODE_TEST_HOME=/private/tmp/m12-02-fix1-home`, `XDG_DATA_HOME=/private/tmp/m12-02-fix1-data`, `XDG_CONFIG_HOME=/private/tmp/m12-02-fix1-config`, `XDG_CACHE_HOME=/private/tmp/m12-02-fix1-cache`, `XDG_STATE_HOME=/private/tmp/m12-02-fix1-state`.
+- The first covering typecheck found a test-only generic narrowing issue from applying `Result.isSuccess/isFailure` to heterogeneous command results. Retained output: `fix1-core-typecheck-initial.log`. Replaced those predicates with discriminating `success`/`failure` property checks; no production changes or casts were needed. Final checks below supersede that failure.
+
+Final covering checks use the same isolated roots and pinned Bun. Exact commands/cwds/exits are in `docs/validation/m12-02/fix1-verification.tsv`; reproducible driver is `fix1-verify.sh`:
+
+| Command | Cwd | Exit / result | Evidence |
+| --- | --- | --- | --- |
+| `bun test ./test/ftc/learning-and-progress/m12-01.test.ts ./test/ftc/learning-and-progress/m12-02.test.ts ./test/ftc/ftc-knowledge` | `packages/core` | **0; 141 pass, 0 fail; 708 assertions, 6 files** | `fix1-core-covering.log` |
+| `bun typecheck` | `packages/core` | **0; clean** | `fix1-core-typecheck.log` |
+| Scoped `oxlint` on the two changed source/test files | repository root | **0; 0 warnings, 0 errors** | `fix1-lint.log` |
+| Scoped `prettier --check` on those two files | repository root | **0; clean** | `fix1-format.log` |
+| Scoped `git diff --check` on those two files | repository root | **0; clean** | `fix1-diff-check.log` |
+
+The covering selection includes existing M11 query applicability (`m11-02.test.ts`), producer metadata (`course-metadata.test.ts`), M11 validation/content, M12-01 and all M12-02 regressions, including actual migration/reopen and import-no-I/O coverage. Schema, SQL and generated artifacts were not changed, so standalone Schema typechecks/tests and generator consistency checks were not redundantly rerun. No foreign lane diagnostics appeared in final Core typecheck.
+
+Self-review: a record with neither library field takes only the SDK applicability branch; a partial pair fails before any write; a complete pair requires the matching bound library and a satisfying explicit version. Verified the repair adds no new API/default, modifies no content policy or persistence schema, and cannot convert missing content into navigation exhaustion. No open fix-round concerns beyond the pre-existing named production/native/physical acceptance gates.
+
+Frozen repair SHA-256 (`fix1-source-sha256.txt`):
+
+- `packages/core/src/ftc/learning.ts`: `33d6c3d3d8f6ae7a769355fb95f33ef99f3f1382a05dcb38fae2b4878f171884`
+- `packages/core/test/ftc/learning-and-progress/m12-02.test.ts`: `e482c9d700d7615b313eadd6caf436fd2755a0407ec1b55551b6a17d811b7fca`
+
+This repair leaves prior initial-freeze artifacts historical; `fix1-report-freeze.sha256` identifies the appended report, repair manifest and verification ledger. Root retains commit/staging/ledger authority; this worker performed no Git/index/ledger or other source mutations.

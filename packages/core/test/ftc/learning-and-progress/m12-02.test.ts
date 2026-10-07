@@ -717,3 +717,113 @@ test("a lesson-only upgrade ignores historical skips while retaining course-boun
     lookup("1.0.0", (doc) => ({ ...doc, lessons: doc.lessons!.map((lesson) => ({ ...lesson, version: "2.0.0" })) })),
   )
 })
+
+function libraryLookup(applicability: { library?: string; libraryRange?: string }): LessonLookup {
+  return {
+    lessons: lookup().lessons,
+    course: {
+      binding: () =>
+        Effect.succeed({
+          courseVersion: "1.0.0",
+          sdkVersion: "11.1.0",
+          library: "Road Runner",
+          libraryVersion: "1.0.0",
+        }),
+      lookup: (query) => {
+        expect(query).toEqual({
+          id: courseID,
+          sdkVersion: "11.1.0",
+          library: "Road Runner",
+          libraryVersion: "1.0.0",
+          language: query.language,
+          localOnly: true,
+        })
+        const result = content(document(query.language))
+        return Effect.succeed(
+          result.kind === "found"
+            ? { ...result, records: result.records.map((record) => ({ ...record, ...applicability })) }
+            : result,
+        )
+      },
+    },
+  }
+}
+
+test.each([
+  { name: "SDK-wide", applicability: {} },
+  { name: "matching library-specific", applicability: { library: "Road Runner", libraryRange: "^1.0.0" } },
+])("explicit library binding permits $name courses through every navigation command", async ({ applicability }) => {
+  await using tmp = await tmpdir()
+  await run(
+    path.join(tmp.path, "personal.sqlite"),
+    (service, db) =>
+      Effect.gen(function* () {
+        const results = [
+          yield* service.selectEntry({ courseID, entryLevel: "ftc-beginner" }).pipe(Effect.result),
+          yield* service.skipLesson({ courseID, lessonID: "lesson-a" }).pipe(Effect.result),
+          yield* service.nextLesson(next).pipe(Effect.result),
+          yield* service.progress({ courseID }).pipe(Effect.result),
+        ]
+        expect(results.map((result) => ("success" in result ? "success" : result.failure.code))).toEqual([
+          "success",
+          "success",
+          "success",
+          "success",
+        ])
+        expect(results[0]).toMatchObject({ success: { courseID, courseVersion: "1.0.0", entryLevel: "ftc-beginner" } })
+        expect(results[1]).toMatchObject({
+          success: {
+            lessons: [
+              { lessonID: "lesson-a", status: "skipped" },
+              { lessonID: "lesson-b", status: "not_started" },
+              { lessonID: "lesson-c", status: "not_started" },
+            ],
+            attempts: [],
+          },
+        })
+        expect(results[2]).toMatchObject({
+          success: { kind: "lesson", courseID, courseVersion: "1.0.0", language: "zh", lesson: { id: "lesson-b" } },
+        })
+        expect(results[3]).toEqual(results[1])
+        expect(yield* db.all(sql`SELECT * FROM ftc_learning_entry`)).toHaveLength(1)
+        expect(yield* db.all(sql`SELECT * FROM ftc_learning_skip`)).toHaveLength(1)
+        expect(yield* db.all(sql`SELECT * FROM ftc_learning_attempt`)).toEqual([])
+      }),
+    libraryLookup(applicability),
+  )
+})
+
+test.each([
+  { name: "different library", applicability: { library: "PedroPathing", libraryRange: "^1.0.0" } },
+  { name: "incompatible library version", applicability: { library: "Road Runner", libraryRange: "^2.0.0" } },
+  { name: "invalid library range", applicability: { library: "Road Runner", libraryRange: "invalid" } },
+  { name: "missing library range", applicability: { library: "Road Runner" } },
+  { name: "missing library identity", applicability: { libraryRange: "^1.0.0" } },
+])(
+  "explicit library binding rejects $name through every navigation command without writes",
+  async ({ applicability }) => {
+    await using tmp = await tmpdir()
+    await run(
+      path.join(tmp.path, "personal.sqlite"),
+      (service, db) =>
+        Effect.gen(function* () {
+          const results = [
+            yield* service.selectEntry({ courseID, entryLevel: "ftc-beginner" }).pipe(Effect.result),
+            yield* service.skipLesson({ courseID, lessonID: "lesson-a" }).pipe(Effect.result),
+            yield* service.nextLesson(next).pipe(Effect.result),
+            yield* service.progress({ courseID }).pipe(Effect.result),
+          ]
+          expect(results.map((result) => "failure" in result && result.failure.code)).toEqual([
+            "invalid_course",
+            "invalid_course",
+            "invalid_course",
+            "invalid_course",
+          ])
+          expect(yield* db.all(sql`SELECT * FROM ftc_learning_entry`)).toEqual([])
+          expect(yield* db.all(sql`SELECT * FROM ftc_learning_skip`)).toEqual([])
+          expect(yield* db.all(sql`SELECT * FROM ftc_learning_attempt`)).toEqual([])
+        }),
+      libraryLookup(applicability),
+    )
+  },
+)

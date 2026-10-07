@@ -1,0 +1,2 @@
+33d6c3d3d8f6ae7a769355fb95f33ef99f3f1382a05dcb38fae2b4878f171884  packages/core/src/ftc/learning.ts
+e482c9d700d7615b313eadd6caf436fd2755a0407ec1b55551b6a17d811b7fca  packages/core/test/ftc/learning-and-progress/m12-02.test.ts

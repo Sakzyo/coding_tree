@@ -1,0 +1,16 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/learning-and-progress/m12-02.test.ts:
+(pass) explicit library binding permits SDK-wide courses through every navigation command [22.39ms]
+(pass) explicit library binding permits matching library-specific courses through every navigation command [7.50ms]
+(pass) explicit library binding rejects different library through every navigation command without writes [4.95ms]
+(pass) explicit library binding rejects incompatible library version through every navigation command without writes [4.72ms]
+(pass) explicit library binding rejects invalid library range through every navigation command without writes [5.47ms]
+(pass) explicit library binding rejects missing library range through every navigation command without writes [4.48ms]
+(pass) explicit library binding rejects missing library identity through every navigation command without writes [3.42ms]
+
+ 7 pass
+ 25 filtered out
+ 0 fail
+ 64 expect() calls
+Ran 7 tests across 1 file. [128.00ms]
