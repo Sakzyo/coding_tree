@@ -1,0 +1,15 @@
+PASS ordinary protected read and actual repeatable list
+PASS leaf retarget before open consumes no bytes
+PASS leaf retarget after open reads original held object
+PASS ancestor retarget before file open or directory listing consumes neither
+PASS ancestor retarget after directory open lists only held own names
+PASS manifest is a copied held-root buffer, decoder and revision use same bytes
+PASS parent, absolute, and NUL relative paths fail before consumption
+PASS nonregular file is rejected before reading
+PASS missing input opens no resource and consumes no bytes
+PASS root replacement cannot redirect held-root reads or names
+PASS root absolute ancestor symlink is rejected before acquisition
+PASS exception cleanup releases temporary descriptors
+PASS repeated directory acquisition and listing do not leak OS descriptors
+PASS closed root rejects and final owned descriptor count is zero
+{"runtime":"Node v26.10.0","platform":"darwin","arch":"arm64","checks":14,"counters":{"held":0,"reads":5,"entries":255}}

@@ -46,7 +46,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 ## Task checklist
 
 - [x] [M12-01 — Persist personal progress with project-linked attempts](#m12-01)
-- [ ] [M12-02 — Select entry level and skip familiar lessons](#m12-02)
+- [x] [M12-02 — Select entry level and skip familiar lessons](#m12-02)
 - [ ] [M12-03 — Choose a track and return exercise requests](#m12-03)
 - [ ] [M12-04 — Validate submitted evidence and retain provenance](#m12-04)
 - [ ] [M12-05 — Evaluate both complete-robot capstones](#m12-05)
@@ -88,16 +88,18 @@ Verified 2026-10-07 at `8a0b5881b`: [implementation evidence](../validation/M12-
 
 **Interfaces:** Produces `selectEntry({ courseID, entryLevel }): Progress`, `skipLesson({ courseID, lessonID }): Progress`, and `nextLesson({ courseID, language }): LessonResult`.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/learning-and-progress/m12-02.test.ts`, add `skip records a skip without claiming exercise completion`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/learning-and-progress/m12-02.test.ts`, add `skip records a skip without claiming exercise completion`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(lesson.state).toBe('skipped'); expect(physicalExercise.complete).toBe(false); expect(next.language).toBe('zh')
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/learning-and-progress/m12-02.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Use supplied M11 lesson metadata for appropriate starts and skippable material. Keep explanation/application/physical prerequisites explicit; contextual teaching and structured course views use the same content IDs.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/learning-and-progress/m12-02.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): select entry level and skip familiar lessons`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/learning-and-progress/m12-02.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Use supplied M11 lesson metadata for appropriate starts and skippable material. Keep explanation/application/physical prerequisites explicit; contextual teaching and structured course views use the same content IDs.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/learning-and-progress/m12-02.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): select entry level and skip familiar lessons`.
+
+Verified 2026-10-07: candidate `181f495ee`, scoped I1 repair `088310368`; [implementation evidence](../validation/M12-02-implementation.md), [independent review](../validation/M12-02-review.md). Synthetic navigation/metadata contracts only; actual production course policy, UI/platform/classroom/physical gates remain separate.
 
 <a id="m12-03"></a>
 

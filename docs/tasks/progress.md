@@ -3,7 +3,7 @@
 Date: 2026-10-07
 Planning baseline: `d7aca195c`
 
-**Implementation progress: 0 / 12 modules complete; 23 / 94 tasks complete.**
+**Implementation progress: 0 / 12 modules complete; 24 / 94 tasks complete.**
 
 These checkboxes track future development, not completion of this planning document. The existing OpenCode foundation is reused, but its presence does not prove that the FTC tasks are done. Both inputs describe unimplemented or unevaluated product work, so every implementation box starts unchecked.
 
@@ -22,7 +22,7 @@ These checkboxes track future development, not completion of this planning docum
 - [ ] **M9 — [Robot approvals and operations](robot-approvals-and-operations.md)** — 0 / 9 tasks.
 - [ ] **M10 — [Diagnostics and dashboard](diagnostics-and-dashboard.md)** — 0 / 6 tasks.
 - [ ] **M11 — [FTC knowledge](ftc-knowledge.md)** — 3 / 10 tasks.
-- [ ] **M12 — [Learning and personal progress](learning-and-progress.md)** — 1 / 7 tasks.
+- [ ] **M12 — [Learning and personal progress](learning-and-progress.md)** — 2 / 7 tasks.
 
 Check a module only after its task checklist, substeps, module completion gate and assigned acceptance evidence pass. Update its count here after each task. Task completion is a count of checked entries in the module's **Task checklist**, not a count of all substep boxes. Counts are maintained here manually; do not mark a module complete just because its isolated suite passed.
 
@@ -602,3 +602,10 @@ Meaningful RED→GREEN, affected covering tests and package-local types are requ
 
 - Ruling: M6-03 I2 cannot be repaired with generic pathname checks/open alone. Inspected public Effect open lacks no-follow/ancestor-relative operations; local macOS directory-fd suffix probe failed (`m6-03/fix1-fd-probe.log`). Adopt a required trusted scoped relative project-reader port for files and directory listings, removing the unsafe FSUtil fallback. Keep the agreed no foreign read requirement: full M6-03 stays **BLOCKED/unchecked** until a real protected reader adapter is implemented/evaluated. Controlled reader fixtures establish parser/port behavior only, never native filesystem isolation. A same-domain native-primitive follow-on must precede actual import/production composition; no FFI/subprocess dependency is assigned in this repair. Wrong future reader binding could expose foreign data, so no generic fallback may be promoted.
 - Dispatched fresh `/root/m12_02` from `e798d3162` with the accepted preflight/brief, M12 SQL/navigation and bounded canonical M11 producer metadata ownership. Root alone owns generated migrations; no other migration writer is active. Explicit course binding/query captures courseVersion plus SDK/library applicability from caller-owned ports and retains the requested language/local content requirement. Public canonical metadata belongs to M11; personal entry/skips belong to M12.
+
+- M6-03 fix round **1/5** committed `2c2bfc627`; independent scoped re-review approves the safe repair subset: I1 addressed, I2 unsafe fallback removed, no new breakage. All five hashes match; M6 **65/244**, Schema **13/19**, both types and scoped checks pass. **Full task stays BLOCKED and unchecked** pending real protected reader and same-byte manifest binding; counts unchanged.
+- M6 native preflight verifies **14 probe-only checks in pinned Bun 1.3.14 and Node 26.10.0 on macOS arm64** through a C Node-API addon: openat/all-component no-follow, actual held-descriptor listing, leaf/ancestor/root retarget and descriptor cleanup. No product binding, real Effect cancellation, packaging or Windows support is credited. Native FFI is not adopted; the primary Bun documentation labels it unsuitable for production. Probe/source evidence is in `m6-reader-preflight/`; a packaged native adapter and a pure same-byte manifest producer remain to implement.
+- M2-06 available candidate committed `7dd70f8ae`, isolated range from `2c2bfc627`; all 33 frozen source/test/generated hashes match. Independent review requires I1 lost post-stop wake during fresh callback cleanup and I2 missing authoritative legacy activation fence. Original `/root/m2_06` owns fix round **1/5** for the deterministic callback race and read-only precise fence preflight; full task remains unchecked. Core **243/852**, legacy **59/248** plus one existing skip, actual hosts/Client/SDK and other package types pass. Source-only review package includes all 33 hunks; enormous unchanged-baseline Schema failure dumps remain archived separately.
+- M2-06 Minor (deferred): three pre-existing lint warnings and unrelated host test startup information remain classified; whole-task behavioral RED provenance is incomplete and accurately reported. These are not silently represented as pristine full-task TDD.
+- M12-02 initial candidate `181f495ee` required I1: generic SDK-wide course records were rejected under an explicit library binding despite the existing M11 applicability contract. Repair `088310368` is independently approved; I1 addressed with no new Critical/Important breakage. Generic four-command RED→GREEN and matching/incompatible/malformed library cases pass; affected Core/M11 **141/708**, unchanged Schema **10/39**, Core types/lint/format/diff clean. Both repair hashes match.
+- M12-02 **DONE**, M12 **2/7**; checked task plus five substeps. Root-generated navigation migration adds exactly two owned tables (**11 DDL additions, 0 removals**) and predecessor/repeat/reopen evidence passes. Counts **24/94 tasks, 0/12 modules**. Entry/skip remain navigation with no competence award; valid old lesson-version skips are retained/ignored, course-bound entry remains until course version changes. Production curriculum policy, actual content/UI/classroom/Windows/physical gates remain unverified.
