@@ -1,0 +1,25 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-inspection.test.ts:
+(pass) inspection records serialize unknown versions without invented values [6.26ms]
+(pass) inspection contracts reject malformed evidence and language-dependent reasons [0.33ms]
+
+test/ftc-configuration.test.ts:
+(pass) canonical manifest decoder rejects additional personal fields {"schemaVersion":1,"hardware":[{"id":"hub-a","devices":[{"category":"motor","port":0,"type":"catalog-type","name":"drive"}]}],"managedPathing":"neither","credentials":"secret"} [0.17ms]
+(pass) canonical manifest decoder rejects additional personal fields {"schemaVersion":1,"hardware":[{"id":"hub-a","devices":[{"category":"motor","port":0,"type":"catalog-type","name":"drive"}],"chat":"personal"}],"managedPathing":"neither"} [0.14ms]
+(pass) canonical manifest decoder rejects additional personal fields {"schemaVersion":1,"hardware":[{"id":"hub-a","devices":[{"category":"motor","port":0,"type":"catalog-type","name":"drive","approval":true}]}],"managedPathing":"neither"} [0.13ms]
+(pass) hardware and proposals serialize without machine-local fields or undefined error keys [0.82ms]
+(pass) public contract identifiers are unique and domain-qualified [0.14ms]
+
+test/ftc-hardware.test.ts:
+(pass) catalog rejects ambiguous or machine-local producer data {"sdkVersion":"fixture-sdk-1","revision":"fixture-catalog-1","hubs":[{"id":"hub-a","categories":[{"category":"motor","ports":[0],"types":["fixture.Motor"]}]},{"id":"hub-a","categories":[{"category":"motor","ports":[0],"types":["fixture.Motor"]}]}]} [0.43ms]
+(pass) catalog rejects ambiguous or machine-local producer data {"sdkVersion":"fixture-sdk-1","revision":"fixture-catalog-1","hubs":[{"id":"hub-a","categories":[{"category":"motor","ports":[0],"types":["fixture.Motor"]},{"category":"motor","ports":[0],"types":["fixture.Motor"]}]}]} [0.17ms]
+(pass) catalog rejects ambiguous or machine-local producer data {"sdkVersion":"fixture-sdk-1","revision":"fixture-catalog-1","hubs":[{"id":"hub-a","categories":[{"category":"motor","ports":[0,0],"types":["fixture.Motor"]}]}]} [0.11ms]
+(pass) catalog rejects ambiguous or machine-local producer data {"sdkVersion":"fixture-sdk-1","revision":"fixture-catalog-1","hubs":[{"id":"hub-a","categories":[{"category":"motor","ports":[0],"types":["fixture.Motor","fixture.Motor"]}]}]} [0.09ms]
+(pass) catalog rejects ambiguous or machine-local producer data {"sdkVersion":"fixture-sdk-1","revision":"fixture-catalog-1","hubs":[{"id":"hub-a","categories":[{"category":"motor","ports":[0],"types":["fixture.Motor"]}]}],"machinePath":"/private/fixture"} [0.03ms]
+(pass) hardware contracts preserve exact serializable identifiers and error fields [2.81ms]
+
+ 13 pass
+ 0 fail
+ 19 expect() calls
+Ran 13 tests across 3 files. [118.00ms]

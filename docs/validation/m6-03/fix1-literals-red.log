@@ -1,0 +1,113 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:
+(pass) ambiguous imports stay untouched [30.40ms]
+(pass) static Kotlin coordinates and Java imports ignore comments and preserve evidence [10.04ms]
+(pass) missing inputs and unsupported Gradle cannot establish neither [3.43ms]
+(pass) supported complete layout can observe neither without a managed selection [6.92ms]
+(pass) external source symlinks are rejected before reading foreign files [2.44ms]
+(pass) changed bytes remain explicit and cannot supply a version [4.70ms]
+(pass) canonical root and captured input survive caller mutation [3.78ms]
+(pass) scope disposal interrupts blocked reads and rejects escaped APIs [2.20ms]
+(pass) unsupported dependency source cannot establish absence or parse embedded code customDependencyLoader()
+ [6.27ms]
+(pass) unsupported dependency source cannot establish absence or parse embedded code if (enabled) {
+ dependencies {
+ implementation 'com.pedropathing:core:2.1.2'
+ }
+}
+ [8.19ms]
+(pass) unsupported dependency source cannot establish absence or parse embedded code val sample = """
+dependencies {
+ implementation "com.pedropathing:core:2.1.2"
+}
+"""
+ [5.55ms]
+(pass) manifest retargeting during the public port read rejects foreign scope [3.31ms]
+(pass) root alias retargeting cannot cross into another project [2.23ms]
+(pass) SDK disagreement stays unknown while a matching managed selection is consistent [9.05ms]
+(pass) managed selection is captured before a later filesystem boundary [2.79ms]
+(pass) additional Gradle loaders prevent a conclusive absence after literal declarations [5.66ms]
+420 |     "TeamCode/build.gradle": `def example = ${delimiter}\ndependencies {\n implementation 'com.pedropathing:core:2.1.2'\n implementation 'org.firstinspires.ftc:RobotCore:11.1.0'\n}\n${end}\n`,
+421 |   })
+422 |   await run((filesystem) => Effect.gen(function* () {
+423 |     const owner = yield* Inspection.make({ filesystem, manifest: manifest(directory.path) })
+424 |     const result = yield* owner.inspectProject({ root: directory.path })
+425 |     expect(result.dependencies).toEqual([])
+                                      ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   {
++     "artifact": "core",
++     "group": "com.pedropathing",
++     "kind": "gradle",
++     "path": "TeamCode/build.gradle",
++     "version": "2.1.2",
++   },
++   {
++     "artifact": "RobotCore",
++     "group": "org.firstinspires.ftc",
++     "kind": "gradle",
++     "path": "TeamCode/build.gradle",
++     "version": "11.1.0",
++   },
++ ]
+
+- Expected  - 1
++ Received  + 16
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:425:33)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Effect.js:8149:9)
+(fail) unsupported Groovy / literal content is never dependency evidence [6.99ms]
+420 |     "TeamCode/build.gradle": `def example = ${delimiter}\ndependencies {\n implementation 'com.pedropathing:core:2.1.2'\n implementation 'org.firstinspires.ftc:RobotCore:11.1.0'\n}\n${end}\n`,
+421 |   })
+422 |   await run((filesystem) => Effect.gen(function* () {
+423 |     const owner = yield* Inspection.make({ filesystem, manifest: manifest(directory.path) })
+424 |     const result = yield* owner.inspectProject({ root: directory.path })
+425 |     expect(result.dependencies).toEqual([])
+                                      ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   {
++     "artifact": "core",
++     "group": "com.pedropathing",
++     "kind": "gradle",
++     "path": "TeamCode/build.gradle",
++     "version": "2.1.2",
++   },
++   {
++     "artifact": "RobotCore",
++     "group": "org.firstinspires.ftc",
++     "kind": "gradle",
++     "path": "TeamCode/build.gradle",
++     "version": "11.1.0",
++   },
++ ]
+
+- Expected  - 1
++ Received  + 16
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:425:33)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Effect.js:8149:9)
+(fail) unsupported Groovy $/ literal content is never dependency evidence [2.64ms]
+
+ 16 pass
+ 2 fail
+ 59 expect() calls
+Ran 18 tests across 1 file. [336.00ms]

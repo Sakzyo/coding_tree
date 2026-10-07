@@ -190,6 +190,12 @@ export const InspectionResult = Schema.Struct({
 
 export interface InspectionError extends Schema.Schema.Type<typeof InspectionError> {}
 export const InspectionError = Schema.Struct({
-  code: Schema.Literals(["owner_closed", "path_outside_project", "file_unavailable"]),
+  code: Schema.Literals([
+    "owner_closed",
+    "path_outside_project",
+    "file_unavailable",
+    "reader_unavailable",
+    "unsupported_reader",
+  ]),
   path: optional(Text),
 }).annotate({ identifier: "FtcConfiguration.InspectionError" })

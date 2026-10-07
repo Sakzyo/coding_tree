@@ -4,11 +4,11 @@ import { FtcConfiguration } from "@opencode-ai/schema/ftc-configuration"
 import { createHash } from "node:crypto"
 import path from "node:path"
 import { Effect, Fiber, Option, Schema, Scope } from "effect"
-import { FSUtil } from "../../fs-util"
+import type { InspectionFilesystem } from "./inspection-filesystem"
 import type { ManifestRepository } from "./manifest"
 
 export interface Ports {
-  readonly filesystem: Pick<FSUtil.Interface, "realPath" | "readFile" | "readDirectory" | "stat">
+  readonly reader: InspectionFilesystem.Interface
   readonly manifest: Pick<ManifestRepository.Interface, "readManifest">
 }
 
@@ -21,7 +21,7 @@ export interface Interface {
 export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope> =>
   Effect.gen(function* () {
     const scope = yield* Effect.scope
-    const fs = { ...ports.filesystem }
+    const openProject = ports.reader?.openProject
     const readManifest = ports.manifest.readManifest
     let closed = false
     yield* Effect.addFinalizer(() =>
@@ -41,82 +41,60 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
           Effect.gen(function* () {
             if (typeof requested !== "string" || !path.isAbsolute(requested) || requested.includes("\0"))
               return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
-            const root = yield* fs
-              .realPath(requested)
-              .pipe(Effect.mapError(() => ({ code: "file_unavailable" }) satisfies FtcConfiguration.InspectionError))
-            const identity = yield* fs
-              .stat(root)
-              .pipe(Effect.mapError(() => ({ code: "file_unavailable" }) satisfies FtcConfiguration.InspectionError))
-            if (identity.type !== "Directory" || Option.isNone(identity.ino))
-              return yield* Effect.fail({ code: "file_unavailable" } satisfies FtcConfiguration.InspectionError)
-            const inode = identity.ino.value
+            if (typeof openProject !== "function")
+              return yield* Effect.fail({ code: "reader_unavailable" } satisfies FtcConfiguration.InspectionError)
+            const admitted = yield* openProject({ root: requested })
+            const project = { ...admitted }
+            const root = project.canonicalRoot
+            const identity = project.identity
+            if (
+              typeof root !== "string" ||
+              !path.isAbsolute(root) ||
+              root.includes("\0") ||
+              typeof identity !== "string" ||
+              !identity
+            )
+              return yield* Effect.fail({ code: "reader_unavailable" } satisfies FtcConfiguration.InspectionError)
             const checkRoot = Effect.fn("Inspection.checkRoot")(function* () {
               yield* active()
-              const canonical = yield* fs
-                .realPath(requested)
-                .pipe(
-                  Effect.mapError(() => ({ code: "path_outside_project" }) satisfies FtcConfiguration.InspectionError),
-                )
-              const current = yield* fs
-                .stat(root)
-                .pipe(
-                  Effect.mapError(() => ({ code: "path_outside_project" }) satisfies FtcConfiguration.InspectionError),
-                )
-              if (
-                canonical !== root ||
-                current.dev !== identity.dev ||
-                Option.isNone(current.ino) ||
-                current.ino.value !== inode
-              )
-                return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
-              return yield* Effect.void
+              return yield* project.verify()
             })
+            yield* checkRoot()
             const sources: FtcConfiguration.InspectionSourceRevision[] = []
             const unknowns: FtcConfiguration.InspectionUnknown[] = []
             const dependencies: FtcConfiguration.InspectionDependency[] = []
             const conflicts: FtcConfiguration.InspectionConflict[] = []
-            const target = Effect.fn("Inspection.target")(function* (relative: string) {
+            const read = Effect.fn("Inspection.read")(function* (relative: string) {
               yield* checkRoot()
-              const filename = path.join(root, relative)
-              const canonical = yield* fs.realPath(filename).pipe(
-                Effect.catchReason("PlatformError", "NotFound", () => Effect.succeed(undefined)),
-                Effect.mapError(
-                  () => ({ code: "file_unavailable", path: relative }) satisfies FtcConfiguration.InspectionError,
+              const bytes = yield* project.readFile(relative).pipe(
+                Effect.map((value) => (value === undefined ? undefined : new Uint8Array(value))),
+                Effect.catchIf(
+                  (error) => error.code === "file_unavailable",
+                  () => {
+                    unknowns.push({ path: relative, reason: "file_unavailable" })
+                    return Effect.succeed(undefined)
+                  },
                 ),
               )
-              if (canonical !== undefined && canonical !== filename)
-                return yield* Effect.fail({
-                  code: "path_outside_project",
+              yield* checkRoot()
+              if (bytes === undefined) {
+                sources.push({
                   path: relative,
-                } satisfies FtcConfiguration.InspectionError)
-              return canonical
-            })
-            const read = Effect.fn("Inspection.read")(function* (relative: string) {
-              const canonical = yield* target(relative)
-              if (canonical === undefined) {
-                sources.push({ path: relative, state: "missing" })
-                return undefined
-              }
-              const bytes = yield* fs.readFile(canonical).pipe(
-                Effect.map((value) => new Uint8Array(value)),
-                Effect.catch(() => Effect.succeed(undefined)),
-              )
-              yield* target(relative)
-              if (!bytes) {
-                sources.push({ path: relative, state: "unavailable" })
-                unknowns.push({ path: relative, reason: "file_unavailable" })
+                  state: unknowns.some((item) => item.path === relative && item.reason === "file_unavailable")
+                    ? "unavailable"
+                    : "missing",
+                })
                 return undefined
               }
               const revision = digest(bytes)
-              const latest = yield* fs.readFile(canonical).pipe(
-                Effect.map((value) => digest(value)),
-                Effect.catch(() => Effect.succeed(undefined)),
+              const latest = yield* project.readFile(relative).pipe(
+                Effect.map((value) => (value === undefined ? undefined : digest(value))),
+                Effect.catchIf(
+                  (error) => error.code === "file_unavailable",
+                  () => Effect.succeed(undefined),
+                ),
               )
-              if ((yield* target(relative)) !== canonical)
-                return yield* Effect.fail({
-                  code: "path_outside_project",
-                  path: relative,
-                } satisfies FtcConfiguration.InspectionError)
+              yield* checkRoot()
               if (latest !== revision) {
                 sources.push({ path: relative, state: "changed", revision })
                 unknowns.push({ path: relative, reason: "changed_input" })
@@ -152,52 +130,44 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
             const visit = Effect.fn("Inspection.visit")(function* (
               relative: string,
             ): Effect.fn.Return<void, FtcConfiguration.InspectionError> {
-              const canonical = yield* target(relative)
-              if (canonical === undefined) {
+              yield* checkRoot()
+              const entries = yield* project
+                .readDirectory(relative)
+                .pipe(Effect.map((value) => value?.map((entry) => ({ ...entry }))))
+              yield* checkRoot()
+              if (entries === undefined) {
                 unknowns.push({ path: relative, reason: "missing_input" })
                 return yield* Effect.void
               }
-              const info = yield* fs
-                .stat(canonical)
-                .pipe(
-                  Effect.mapError(
-                    () => ({ code: "file_unavailable", path: relative }) satisfies FtcConfiguration.InspectionError,
-                  ),
-                )
-              if (info.type === "Directory") {
-                const names = yield* fs
-                  .readDirectory(canonical)
-                  .pipe(
-                    Effect.mapError(
-                      () => ({ code: "file_unavailable", path: relative }) satisfies FtcConfiguration.InspectionError,
-                    ),
-                  )
-                if ((yield* target(relative)) !== canonical)
-                  return yield* Effect.fail({
-                    code: "path_outside_project",
-                    path: relative,
-                  } satisfies FtcConfiguration.InspectionError)
-                yield* Effect.forEach(
-                  names.sort(),
-                  (name) => {
-                    if (!name || path.basename(name) !== name || name === "." || name === ".." || name.includes("\0"))
-                      return Effect.fail({
+              yield* Effect.forEach(
+                entries,
+                (entry) =>
+                  Effect.gen(function* () {
+                    if (
+                      !entry.name ||
+                      path.basename(entry.name) !== entry.name ||
+                      entry.name === "." ||
+                      entry.name === ".." ||
+                      entry.name.includes("\0") ||
+                      entry.name.includes("\\")
+                    )
+                      return yield* Effect.fail({
                         code: "path_outside_project",
                         path: relative,
                       } satisfies FtcConfiguration.InspectionError)
-                    return visit(`${relative}/${name}`)
-                  },
-                  { discard: true },
-                )
-                return yield* Effect.void
-              }
-              if (!relative.endsWith(".java")) return yield* Effect.void
-              const bytes = yield* read(relative)
-              if (!bytes) return yield* Effect.void
-              const text = maskLiterals(stripComments(new TextDecoder().decode(bytes)))
-              Array.from(text.matchAll(/^\s*import\s+(?:static\s+)?([\w.]+(?:\.\*)?)\s*;/gm)).forEach((match) => {
-                dependencies.push({ path: relative, kind: "java_import", import: match[1] })
-              })
+                    const child = `${relative}/${entry.name}`
+                    if (entry.type === "directory") return yield* visit(child)
+                    if (entry.type !== "file" || !entry.name.endsWith(".java")) return yield* Effect.void
+                    const bytes = yield* read(child)
+                    if (bytes === undefined) return yield* Effect.void
+                    const text = maskLiterals(stripComments(new TextDecoder().decode(bytes)))
+                    Array.from(text.matchAll(/^\s*import\s+(?:static\s+)?([\w.]+(?:\.\*)?)\s*;/gm)).forEach((match) => {
+                      dependencies.push({ path: child, kind: "java_import", import: match[1] })
+                    })
+                    return yield* Effect.void
+                  }),
+                { discard: true },
+              )
               return yield* Effect.void
             })
             yield* visit(javaRoot)
@@ -225,7 +195,7 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
                           ? "changed_input"
                           : "manifest_missing",
               })
-            yield* target("ftc-project.json")
+            yield* checkRoot()
             if (manifestResult._tag === "Failure" && manifestResult.failure.code === "path_outside_project")
               return yield* Effect.fail({
                 code: "path_outside_project",
@@ -295,7 +265,7 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
               sourceRevisions: sources,
               unknowns,
             } satisfies FtcConfiguration.InspectionResult
-          }).pipe(Effect.forkIn(scope)),
+          }).pipe(Effect.scoped, Effect.forkIn(scope)),
           Fiber.join,
           Fiber.interrupt,
         )
@@ -320,6 +290,8 @@ function parseGradle(filename: string, text: string) {
   const clean = stripComments(text)
   if (
     /"""|'''/.test(clean) ||
+    // Slashy/dollar-slashy literals and division are outside this declaration subset.
+    maskLiterals(clean).includes("/") ||
     Array.from(clean.matchAll(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g)).some((match) => /[\r\n]/.test(match[0]))
   )
     return { dependencies, unknowns: [{ path: filename, reason: "unsupported_gradle" as const }] }

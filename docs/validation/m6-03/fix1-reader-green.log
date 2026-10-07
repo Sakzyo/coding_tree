@@ -1,0 +1,46 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:
+(pass) ambiguous imports stay untouched [7.08ms]
+(pass) static Kotlin coordinates and Java imports ignore comments and preserve evidence [0.80ms]
+(pass) unsupported source cannot establish absence or parse embedded code dependencies {
+ implementation(libs.pathing)
+ if (enabled) {
+ implementation 'com.pedropathing:core:2.1.2'
+ }
+}
+ [0.52ms]
+(pass) unsupported source cannot establish absence or parse embedded code customDependencyLoader()
+ [0.41ms]
+(pass) unsupported source cannot establish absence or parse embedded code if (enabled) {
+ dependencies {
+ implementation 'com.pedropathing:core:2.1.2'
+ }
+}
+ [0.39ms]
+(pass) unsupported source cannot establish absence or parse embedded code val sample = """
+dependencies {
+ implementation "com.pedropathing:core:2.1.2"
+}
+"""
+ [0.33ms]
+(pass) unsupported source cannot establish absence or parse embedded code dependencies {
+}
+loadTeamDependencies()
+ [0.35ms]
+(pass) complete supported layout can observe neither independently of managed selection [0.39ms]
+(pass) changed observed bytes cannot supply a version [0.26ms]
+(pass) reader scope closes on success and input is captured before asynchronous admission [0.33ms]
+(pass) scope disposal interrupts reads, releases project reader and rejects escaped API [1.70ms]
+(pass) reader verification failure is surfaced before any relative read [0.19ms]
+(pass) SDK disagreement is unknown and matching managed selection is consistent [0.48ms]
+(pass) unsupported Groovy / literal content is never dependency evidence [0.23ms]
+(pass) unsupported Groovy $/ literal content is never dependency evidence [0.14ms]
+(pass) generic pathname file retarget fallback is rejected before consuming foreign data [1.14ms]
+(pass) generic pathname ancestor retarget fallback is rejected before consuming foreign data [0.75ms]
+(pass) unsupported protected binding fails visibly without manifest or source reads [0.20ms]
+
+ 18 pass
+ 0 fail
+ 98 expect() calls
+Ran 18 tests across 1 file. [65.00ms]

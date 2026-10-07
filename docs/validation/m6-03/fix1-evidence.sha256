@@ -1,0 +1,15 @@
+535a03ffbcd0763ea9a4483b47bf7c69db96d68e1ef93efebf4eef8af6269beb  docs/validation/m6-03/fix1-core-green.log
+ae47736bb2a9401aa9743893f2f64b9a605e65a99d78cd991a8021e0f7722d87  docs/validation/m6-03/fix1-core-typecheck.log
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  docs/validation/m6-03/fix1-diff-check.log
+a6eefe0773b7f83ab235404338c161d8c7a00b21098919bb284051339b9dfc32  docs/validation/m6-03/fix1-fd-probe.log
+17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20  docs/validation/m6-03/fix1-format-check.log
+628f955fe3d46d659cef33f5d5dba7956e3c2ab85dabef6c14c3381ac27a6c40  docs/validation/m6-03/fix1-format.log
+5ef5de4ea2baf4dd21f836076f7fca3f16900045b6da464fec918cc7a9a8ff78  docs/validation/m6-03/fix1-lint.log
+6884c52d49f879257a6ba3e2f79ba5e3978d408f08d36075cf6f050fae4453a6  docs/validation/m6-03/fix1-literals-green.log
+2182ecc2814e702ba8728131fb2d6bc8404784c4728c4f01aacadf454f27ad0a  docs/validation/m6-03/fix1-literals-red.log
+b24fdb3f225378c435d187cc7ec07261c23191c09924a12c3afb919082cf4c47  docs/validation/m6-03/fix1-reader-green.log
+95e2f05dc1ab85af7e407dd4080765a0d230ae53502e159b630ee8d49cbe16df  docs/validation/m6-03/fix1-reader-red.log
+15fdb7b0241e5ee541de8e580b92d07ade79c40d01df914de1f3ecbdf4c50011  docs/validation/m6-03/fix1-report-format.log
+2097edb56794d77370f8e652cb7af5863021dd72f5de6c69b944783b50c93140  docs/validation/m6-03/fix1-retarget-red.log
+b8234ab44fb486c3b974206cdf6c38457798c8981551f9b8fce5e167c19c1414  docs/validation/m6-03/fix1-schema-green.log
+ae47736bb2a9401aa9743893f2f64b9a605e65a99d78cd991a8021e0f7722d87  docs/validation/m6-03/fix1-schema-typecheck.log

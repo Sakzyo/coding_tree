@@ -1,0 +1,5 @@
+a98ce985290f1d5eb26e74bd1c7e8ab60f5046a689580a11bb8fd9fb22505eb1  packages/core/src/ftc/configuration/inspection.ts
+6b4785ff4c3d72c62a57b1df3fd6fa637eee93cd153b2a48d4ec01a7f2672741  packages/core/src/ftc/configuration/inspection-filesystem.ts
+1940fc8a123213368bce4392dca08b3f49c56df88d02f911c3fe1efcda691b53  packages/schema/src/ftc-configuration.ts
+f0261f0c9de89f3960b936dc24e64d24fdd26f3335936fcba1911d38bc646f5a  packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts
+0996eafac7dd68232e08e54aac1ea35cdb60469d0ee53229691de9c7151522d0  packages/schema/test/ftc-inspection.test.ts

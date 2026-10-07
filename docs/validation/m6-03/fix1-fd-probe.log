@@ -1,0 +1,16 @@
+ 97 |   link: asyncWrap(fs.link, "link"),
+ 98 |   lstat: asyncWrap(fs.lstat, "lstat"),
+ 99 |   mkdir: asyncWrap(fs.mkdir, "mkdir"),
+100 |   mkdtemp: asyncWrap(fs.mkdtemp, "mkdtemp"),
+101 |   statfs: asyncWrap(fs.statfs, "statfs"),
+102 |     return new private_symbols.FileHandle(await fs.open(path, flags, mode), flags);
+                                                             ^
+ENOENT: no such file or directory, open '/dev/fd/4/sample'
+    path: "/dev/fd/4/sample",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (node:fs/promises:102:56)
+
+Bun v1.3.14 (macOS arm64)

@@ -1,0 +1,284 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:
+40 |         return yield* Effect.acquireUseRelease(
+41 |           Effect.gen(function* () {
+42 |             if (typeof requested !== "string" || !path.isAbsolute(requested) || requested.includes("\0"))
+43 |               return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
+44 |             const root = yield* fs
+45 |               .realPath(requested)
+                    ^
+TypeError: fs.realPath is not a function. (In 'fs.realPath(requested)', 'fs.realPath' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/configuration/inspection.ts:45:16)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) ambiguous imports stay untouched [3.51ms]
+40 |         return yield* Effect.acquireUseRelease(
+41 |           Effect.gen(function* () {
+42 |             if (typeof requested !== "string" || !path.isAbsolute(requested) || requested.includes("\0"))
+43 |               return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
+44 |             const root = yield* fs
+45 |               .realPath(requested)
+                    ^
+TypeError: fs.realPath is not a function. (In 'fs.realPath(requested)', 'fs.realPath' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/configuration/inspection.ts:45:16)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) static Kotlin coordinates and Java imports ignore comments and preserve evidence [0.25ms]
+40 |         return yield* Effect.acquireUseRelease(
+41 |           Effect.gen(function* () {
+42 |             if (typeof requested !== "string" || !path.isAbsolute(requested) || requested.includes("\0"))
+43 |               return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
+44 |             const root = yield* fs
+45 |               .realPath(requested)
+                    ^
+TypeError: fs.realPath is not a function. (In 'fs.realPath(requested)', 'fs.realPath' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/configuration/inspection.ts:45:16)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) unsupported source cannot establish absence or parse embedded code dependencies {
+ implementation(libs.pathing)
+ if (enabled) {
+ implementation 'com.pedropathing:core:2.1.2'
+ }
+}
+ [0.21ms]
+40 |         return yield* Effect.acquireUseRelease(
+41 |           Effect.gen(function* () {
+42 |             if (typeof requested !== "string" || !path.isAbsolute(requested) || requested.includes("\0"))
+43 |               return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
+44 |             const root = yield* fs
+45 |               .realPath(requested)
+                    ^
+TypeError: fs.realPath is not a function. (In 'fs.realPath(requested)', 'fs.realPath' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/configuration/inspection.ts:45:16)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) unsupported source cannot establish absence or parse embedded code customDependencyLoader()
+ [0.11ms]
+40 |         return yield* Effect.acquireUseRelease(
+41 |           Effect.gen(function* () {
+42 |             if (typeof requested !== "string" || !path.isAbsolute(requested) || requested.includes("\0"))
+43 |               return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
+44 |             const root = yield* fs
+45 |               .realPath(requested)
+                    ^
+TypeError: fs.realPath is not a function. (In 'fs.realPath(requested)', 'fs.realPath' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/configuration/inspection.ts:45:16)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) unsupported source cannot establish absence or parse embedded code if (enabled) {
+ dependencies {
+ implementation 'com.pedropathing:core:2.1.2'
+ }
+}
+ [0.14ms]
+40 |         return yield* Effect.acquireUseRelease(
+41 |           Effect.gen(function* () {
+42 |             if (typeof requested !== "string" || !path.isAbsolute(requested) || requested.includes("\0"))
+43 |               return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
+44 |             const root = yield* fs
+45 |               .realPath(requested)
+                    ^
+TypeError: fs.realPath is not a function. (In 'fs.realPath(requested)', 'fs.realPath' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/configuration/inspection.ts:45:16)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) unsupported source cannot establish absence or parse embedded code val sample = """
+dependencies {
+ implementation "com.pedropathing:core:2.1.2"
+}
+"""
+ [0.15ms]
+40 |         return yield* Effect.acquireUseRelease(
+41 |           Effect.gen(function* () {
+42 |             if (typeof requested !== "string" || !path.isAbsolute(requested) || requested.includes("\0"))
+43 |               return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
+44 |             const root = yield* fs
+45 |               .realPath(requested)
+                    ^
+TypeError: fs.realPath is not a function. (In 'fs.realPath(requested)', 'fs.realPath' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/configuration/inspection.ts:45:16)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) unsupported source cannot establish absence or parse embedded code dependencies {
+}
+loadTeamDependencies()
+ [0.10ms]
+40 |         return yield* Effect.acquireUseRelease(
+41 |           Effect.gen(function* () {
+42 |             if (typeof requested !== "string" || !path.isAbsolute(requested) || requested.includes("\0"))
+43 |               return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
+44 |             const root = yield* fs
+45 |               .realPath(requested)
+                    ^
+TypeError: fs.realPath is not a function. (In 'fs.realPath(requested)', 'fs.realPath' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/configuration/inspection.ts:45:16)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) complete supported layout can observe neither independently of managed selection [0.15ms]
+40 |         return yield* Effect.acquireUseRelease(
+41 |           Effect.gen(function* () {
+42 |             if (typeof requested !== "string" || !path.isAbsolute(requested) || requested.includes("\0"))
+43 |               return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
+44 |             const root = yield* fs
+45 |               .realPath(requested)
+                    ^
+TypeError: fs.realPath is not a function. (In 'fs.realPath(requested)', 'fs.realPath' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/configuration/inspection.ts:45:16)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) changed observed bytes cannot supply a version [0.18ms]
+40 |         return yield* Effect.acquireUseRelease(
+41 |           Effect.gen(function* () {
+42 |             if (typeof requested !== "string" || !path.isAbsolute(requested) || requested.includes("\0"))
+43 |               return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
+44 |             const root = yield* fs
+45 |               .realPath(requested)
+                    ^
+TypeError: fs.realPath is not a function. (In 'fs.realPath(requested)', 'fs.realPath' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/configuration/inspection.ts:45:16)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) reader scope closes on success and input is captured before asynchronous admission [0.14ms]
+(fail) scope disposal interrupts reads, releases project reader and rejects escaped API [1500.00ms]
+  ^ this test timed out after 1500ms.
+40 |         return yield* Effect.acquireUseRelease(
+41 |           Effect.gen(function* () {
+42 |             if (typeof requested !== "string" || !path.isAbsolute(requested) || requested.includes("\0"))
+43 |               return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
+44 |             const root = yield* fs
+45 |               .realPath(requested)
+                    ^
+TypeError: fs.realPath is not a function. (In 'fs.realPath(requested)', 'fs.realPath' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/configuration/inspection.ts:45:16)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) reader verification failure is surfaced before any relative read [0.89ms]
+40 |         return yield* Effect.acquireUseRelease(
+41 |           Effect.gen(function* () {
+42 |             if (typeof requested !== "string" || !path.isAbsolute(requested) || requested.includes("\0"))
+43 |               return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
+44 |             const root = yield* fs
+45 |               .realPath(requested)
+                    ^
+TypeError: fs.realPath is not a function. (In 'fs.realPath(requested)', 'fs.realPath' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/configuration/inspection.ts:45:16)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) SDK disagreement is unknown and matching managed selection is consistent [0.26ms]
+40 |         return yield* Effect.acquireUseRelease(
+41 |           Effect.gen(function* () {
+42 |             if (typeof requested !== "string" || !path.isAbsolute(requested) || requested.includes("\0"))
+43 |               return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
+44 |             const root = yield* fs
+45 |               .realPath(requested)
+                    ^
+TypeError: fs.realPath is not a function. (In 'fs.realPath(requested)', 'fs.realPath' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/configuration/inspection.ts:45:16)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) unsupported Groovy / literal content is never dependency evidence [0.18ms]
+40 |         return yield* Effect.acquireUseRelease(
+41 |           Effect.gen(function* () {
+42 |             if (typeof requested !== "string" || !path.isAbsolute(requested) || requested.includes("\0"))
+43 |               return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
+44 |             const root = yield* fs
+45 |               .realPath(requested)
+                    ^
+TypeError: fs.realPath is not a function. (In 'fs.realPath(requested)', 'fs.realPath' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/configuration/inspection.ts:45:16)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) unsupported Groovy $/ literal content is never dependency evidence [0.11ms]
+40 |         return yield* Effect.acquireUseRelease(
+41 |           Effect.gen(function* () {
+42 |             if (typeof requested !== "string" || !path.isAbsolute(requested) || requested.includes("\0"))
+43 |               return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
+44 |             const root = yield* fs
+45 |               .realPath(requested)
+                    ^
+TypeError: fs.realPath is not a function. (In 'fs.realPath(requested)', 'fs.realPath' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/configuration/inspection.ts:45:16)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) generic pathname file retarget fallback is rejected before consuming foreign data [1.93ms]
+40 |         return yield* Effect.acquireUseRelease(
+41 |           Effect.gen(function* () {
+42 |             if (typeof requested !== "string" || !path.isAbsolute(requested) || requested.includes("\0"))
+43 |               return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
+44 |             const root = yield* fs
+45 |               .realPath(requested)
+                    ^
+TypeError: fs.realPath is not a function. (In 'fs.realPath(requested)', 'fs.realPath' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/configuration/inspection.ts:45:16)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) generic pathname ancestor retarget fallback is rejected before consuming foreign data [1.12ms]
+40 |         return yield* Effect.acquireUseRelease(
+41 |           Effect.gen(function* () {
+42 |             if (typeof requested !== "string" || !path.isAbsolute(requested) || requested.includes("\0"))
+43 |               return yield* Effect.fail({ code: "path_outside_project" } satisfies FtcConfiguration.InspectionError)
+44 |             const root = yield* fs
+45 |               .realPath(requested)
+                    ^
+TypeError: fs.realPath is not a function. (In 'fs.realPath(requested)', 'fs.realPath' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/configuration/inspection.ts:45:16)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) unsupported protected binding fails visibly without manifest or source reads [0.29ms]
+
+ 0 pass
+ 18 fail
+Ran 18 tests across 1 file. [1.56s]

@@ -1,0 +1,77 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:
+(pass) ambiguous imports stay untouched [30.21ms]
+(pass) static Kotlin coordinates and Java imports ignore comments and preserve evidence [11.99ms]
+(pass) missing inputs and unsupported Gradle cannot establish neither [3.96ms]
+(pass) supported complete layout can observe neither without a managed selection [7.35ms]
+(pass) external source symlinks are rejected before reading foreign files [2.34ms]
+(pass) changed bytes remain explicit and cannot supply a version [5.13ms]
+(pass) canonical root and captured input survive caller mutation [3.33ms]
+(pass) scope disposal interrupts blocked reads and rejects escaped APIs [1.99ms]
+(pass) unsupported dependency source cannot establish absence or parse embedded code customDependencyLoader()
+ [6.01ms]
+(pass) unsupported dependency source cannot establish absence or parse embedded code if (enabled) {
+ dependencies {
+ implementation 'com.pedropathing:core:2.1.2'
+ }
+}
+ [7.35ms]
+(pass) unsupported dependency source cannot establish absence or parse embedded code val sample = """
+dependencies {
+ implementation "com.pedropathing:core:2.1.2"
+}
+"""
+ [5.58ms]
+(pass) manifest retargeting during the public port read rejects foreign scope [3.24ms]
+(pass) root alias retargeting cannot cross into another project [2.29ms]
+(pass) SDK disagreement stays unknown while a matching managed selection is consistent [8.41ms]
+(pass) managed selection is captured before a later filesystem boundary [2.68ms]
+(pass) additional Gradle loaders prevent a conclusive absence after literal declarations [7.64ms]
+(pass) unsupported Groovy / literal content is never dependency evidence [2.74ms]
+(pass) unsupported Groovy $/ literal content is never dependency evidence [2.22ms]
+459 |       readDirectory: (name) => filesystem.readDirectory(name).pipe(Effect.tap((names) => Effect.sync(() => {
+460 |         if (names.includes(`${sentinel}.java`)) consumed = true
+461 |       }))),
+462 |     }, manifest: manifest(directory.path) })
+463 |     const result = yield* owner.inspectProject({ root: directory.path }).pipe(Effect.result)
+464 |     expect(consumed).toBe(false)
+                           ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:464:22)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) file retargeting never consumes foreign data [2.83ms]
+459 |       readDirectory: (name) => filesystem.readDirectory(name).pipe(Effect.tap((names) => Effect.sync(() => {
+460 |         if (names.includes(`${sentinel}.java`)) consumed = true
+461 |       }))),
+462 |     }, manifest: manifest(directory.path) })
+463 |     const result = yield* owner.inspectProject({ root: directory.path }).pipe(Effect.result)
+464 |     expect(consumed).toBe(false)
+                           ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:464:22)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) ancestor retargeting never consumes foreign data [4.90ms]
+
+ 18 pass
+ 2 fail
+ 69 expect() calls
+Ran 20 tests across 1 file. [339.00ms]

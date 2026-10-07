@@ -1,0 +1,37 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:
+(pass) ambiguous imports stay untouched [30.76ms]
+(pass) static Kotlin coordinates and Java imports ignore comments and preserve evidence [7.76ms]
+(pass) missing inputs and unsupported Gradle cannot establish neither [5.91ms]
+(pass) supported complete layout can observe neither without a managed selection [6.52ms]
+(pass) external source symlinks are rejected before reading foreign files [2.10ms]
+(pass) changed bytes remain explicit and cannot supply a version [2.79ms]
+(pass) canonical root and captured input survive caller mutation [5.21ms]
+(pass) scope disposal interrupts blocked reads and rejects escaped APIs [2.16ms]
+(pass) unsupported dependency source cannot establish absence or parse embedded code customDependencyLoader()
+ [6.26ms]
+(pass) unsupported dependency source cannot establish absence or parse embedded code if (enabled) {
+ dependencies {
+ implementation 'com.pedropathing:core:2.1.2'
+ }
+}
+ [5.50ms]
+(pass) unsupported dependency source cannot establish absence or parse embedded code val sample = """
+dependencies {
+ implementation "com.pedropathing:core:2.1.2"
+}
+"""
+ [7.75ms]
+(pass) manifest retargeting during the public port read rejects foreign scope [3.40ms]
+(pass) root alias retargeting cannot cross into another project [2.17ms]
+(pass) SDK disagreement stays unknown while a matching managed selection is consistent [6.63ms]
+(pass) managed selection is captured before a later filesystem boundary [2.89ms]
+(pass) additional Gradle loaders prevent a conclusive absence after literal declarations [7.82ms]
+(pass) unsupported Groovy / literal content is never dependency evidence [2.80ms]
+(pass) unsupported Groovy $/ literal content is never dependency evidence [2.22ms]
+
+ 18 pass
+ 0 fail
+ 67 expect() calls
+Ran 18 tests across 1 file. [353.00ms]
