@@ -5,6 +5,8 @@ import path from "node:path"
 import { FtcProject } from "@opencode-ai/schema/ftc-project"
 import { Location } from "@opencode-ai/schema/location"
 import { Session } from "@opencode-ai/schema/session"
+import { SessionInput } from "@opencode-ai/schema/session-input"
+import type { SessionV2 } from "../session"
 
 export {
   ProjectContext,
@@ -14,7 +16,62 @@ export {
   ChatRef,
   ProjectRequest,
   ChatError,
+  SubmitPrompt,
+  SubmitResult,
 } from "@opencode-ai/schema/ftc-project"
+
+export interface Submission {
+  readonly gate: {
+    readonly acquire: (
+      chat: FtcProject.ChatRef,
+    ) => Effect.Effect<FtcProject.GateResult, FtcProject.GateError | FtcProject.ChatError>
+    readonly release: (lease: FtcProject.GateLease) => Effect.Effect<void>
+  }
+  readonly admission: Pick<SessionV2.Interface, "prompt">
+  /** Success accepts exact-token responsibility before wake. Failure leaves no accepted claim or scheduled wake.
+   * This bounded registration must not await model execution or terminal settlement. The adapter releases only after
+   * execution has acquired a distinct claim or terminal settlement, never on wake return. */
+  readonly handoff: (input: {
+    readonly chat: FtcProject.ChatRef
+    readonly receipt: SessionInput.Admitted
+    readonly lease: FtcProject.GateLease
+  }) => Effect.Effect<void, FtcProject.GateError>
+}
+
+export const submitter = (input: Submission) => ({
+  submitPrompt: Effect.fn("FtcProjects.submitPrompt")((request: FtcProject.SubmitPrompt) =>
+    Effect.scoped(
+      Effect.uninterruptibleMask((restore) =>
+        Effect.gen(function* () {
+          const chat = Object.freeze({ ...request.chat })
+          const ownership = { accepted: false }
+          const reserved = yield* Effect.acquireRelease(
+            restore(input.gate.acquire(chat)),
+            (result) =>
+              result.kind === "acquired" && !ownership.accepted ? input.gate.release(result.lease) : Effect.void,
+            { interruptible: true },
+          )
+          if (reserved.kind === "busy") return reserved
+          const receipt = yield* restore(
+            input.admission.prompt({
+              sessionID: chat.sessionID,
+              prompt: request.prompt,
+              id: request.id,
+              delivery: request.delivery,
+              resume: false,
+            }),
+          )
+          if (request.resume !== false) {
+            // Accept exact-token ownership before interruption can observe success. Wake is not settlement.
+            yield* input.handoff({ chat, receipt, lease: reserved.lease })
+            ownership.accepted = true
+          }
+          return { kind: "admitted", receipt } as const
+        }),
+      ),
+    ),
+  ),
+})
 
 /** Resolves symlink/case aliases, inspects directory access, and supplies existing host identity without file edits. */
 export interface FolderIdentity {

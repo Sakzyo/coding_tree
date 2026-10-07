@@ -1,0 +1,50 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-04.test.ts:
+69 |       const initial = yield* f.gate.acquire(first)
+70 |       if (initial.kind !== "acquired") throw new Error("expected initial execution claim")
+71 |       const admitted = yield* submitter.submitPrompt({ chat: first, prompt: { text: "first" } })
+72 |       expect(admitted).toEqual({ kind: "admitted", receipt: f.receipts[0] })
+73 |       const rejected = yield* submitter.submitPrompt({ chat: f.chats[1], prompt: { text: "draft" } })
+74 |       expect(rejected).toEqual({ kind: "busy", active: first })
+                            ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "active": {
+-     "chatID": "chat_0",
+-     "projectID": "prj_a",
+-     "sessionID": "ses_0",
++   "kind": "admitted",
++   "receipt": {
++     "admittedSeq": 1,
++     "delivery": "steer",
++     "id": "msg_114ac4790001mpqHaXIR83reor",
++     "prompt": {
++       "text": "draft",
++     },
++     "sessionID": "ses_1",
++     "timeCreated": {
++       "epochMilliseconds": 0,
++       "partsUtc": undefined,
++     },
+    },
+-   "kind": "busy",
+  }
+
+- Expected  - 5
++ Received  + 13
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/projects-and-chats/m2-04.test.ts:74:24)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+(fail) busy submission does not call admission [8.17ms]
+
+ 0 pass
+ 1 fail
+ 2 expect() calls
+Ran 1 test across 1 file. [72.00ms]

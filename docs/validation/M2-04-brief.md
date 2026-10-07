@@ -37,6 +37,10 @@ Report: docs/validation/M2-04-implementation.md, exact source file SHA256 values
 
 ## Exact task excerpt
 
+### Coordinator lifecycle ruling before implementation
+
+M2-04 exposes `FtcProjects.submitter({ gate, admission, handoff })` as a separate submission facet. Existing project-only layers remain unchanged. Each call reserves its own gate token before calling the canonical Session prompt admission with `resume:false`; original prompt, message ID and delivery semantics remain Session-owned. Explicit `resume:false` releases the unused reservation and skips handoff. Otherwise a masked, transactional `handoff({chat,receipt,lease})` accepts responsibility for that exact token before scheduling advisory wake. Handoff success is ownership acceptance, never execution completion. Failure means the adapter left no accepted reservation or scheduled wake; submission releases its own token. Durable input may already exist after later failure/cancellation and is never deleted as compensation. M2-05/06 own the actual host adapter and execution settlement wiring. No second loop or private Session state.
+
 ### M2-04 — Submit without admitting a busy chat's draft
 
 **Prerequisites:** [M2-02](projects-and-chats.md#m2-02), [M2-03](projects-and-chats.md#m2-03).

@@ -1,0 +1,4 @@
+3c3824a072b12188e998062a3b7dfa6950cf9a46e87c46dfa90fa3aed4f00b36  packages/core/src/ftc/projects.ts
+429cb3aea055471a1815191f40a50ef0506d4297a4876c0da32cd01678ce7f80  packages/schema/src/ftc-project.ts
+7bd7bddf46991be41b353c26911e844f8d2f8957a9851349e437c83591a2ff6c  packages/core/test/ftc/projects-and-chats/m2-04.test.ts
+3172568b0d2d57a691560dbe0f424cf2aa7dd5ecc4eac84912a488e5be64d04e  packages/schema/test/ftc-submission.test.ts

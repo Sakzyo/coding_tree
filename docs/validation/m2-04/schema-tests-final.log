@@ -1,0 +1,17 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-submission.test.ts:
+(pass) submission omits absent options and preserves canonical delivery and prompt attachments [14.20ms]
+(pass) submission result encodes the existing Session admission receipt without flattening it [0.66ms]
+
+test/contract-hygiene.test.ts:
+(pass) contract hygiene > optional properties preserve transformations and omit undefined while encoding [0.42ms]
+(pass) contract hygiene > todo status and priority preserve arbitrary strings [0.07ms]
+(pass) contract hygiene > current ID constructors expose create [0.38ms]
+(pass) contract hygiene > reusable public identifiers are stable and unique [0.05ms]
+(pass) contract hygiene > current source avoids Any and mutable contract wrappers [4.53ms]
+
+ 7 pass
+ 0 fail
+ 19 expect() calls
+Ran 7 tests across 2 files. [103.00ms]

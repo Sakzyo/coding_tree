@@ -4,6 +4,9 @@ import { Schema } from "effect"
 import { Location } from "./location"
 import { Project } from "./project"
 import { Session } from "./session"
+import { PromptInput } from "./prompt-input"
+import { SessionInput } from "./session-input"
+import { SessionMessage } from "./session-message"
 import { ascending } from "./identifier"
 import { AbsolutePath, optional, statics } from "./schema"
 
@@ -88,3 +91,18 @@ export const GateError = Schema.Struct({
   projectID: optional(Project.ID),
   recovery: Schema.Literals(["reopen_project", "retry"]),
 }).annotate({ identifier: "FtcProject.GateError" })
+
+export interface SubmitPrompt extends Schema.Schema.Type<typeof SubmitPrompt> {}
+export const SubmitPrompt = Schema.Struct({
+  chat: ChatRef,
+  prompt: PromptInput.Prompt,
+  id: optional(SessionMessage.ID),
+  delivery: optional(SessionInput.Delivery),
+  resume: optional(Schema.Boolean),
+}).annotate({ identifier: "FtcProject.SubmitPrompt" })
+
+export const SubmitResult = Schema.Union([
+  Schema.Struct({ kind: Schema.Literal("admitted"), receipt: SessionInput.Admitted }),
+  Schema.Struct({ kind: Schema.Literal("busy"), active: ChatRef }),
+]).annotate({ identifier: "FtcProject.SubmitResult" })
+export type SubmitResult = typeof SubmitResult.Type

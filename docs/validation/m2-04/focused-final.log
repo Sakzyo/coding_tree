@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-04.test.ts:
+(pass) busy submission does not call admission [4.59ms]
+(pass) successful submission retains ownership until explicit adapter settlement [7.10ms]
+(pass) admit-only releases its unused claim without handing off or admitting a busy draft [2.50ms]
+(pass) failed same-chat admission releases only its own claim [2.37ms]
+(pass) handoff failure releases reservation but retains the already admitted receipt [1.29ms]
+(pass) cancellation during admission releases its own claim while preserving concurrent same-chat ownership [9.63ms]
+(pass) same-chat steer and queue retain distinct tokens and canonical admission options [0.48ms]
+(pass) cancellation during masked handoff retains the accepted token for adapter settlement [2.63ms]
+(pass) admission defect releases only the unused reservation [0.41ms]
+(pass) handoff defect releases only the unused reservation [0.17ms]
+(pass) concurrent different-chat submissions durably admit exactly one owner [0.36ms]
+(pass) rejected membership and cancelled acquisition never call admission [0.44ms]
+(pass) real Session admission preserves retry and conflict identity while busy drafts create no inbox row [45.94ms]
+(pass) reservation bridges old execution settlement until new admission handoff [0.71ms]
+
+ 14 pass
+ 0 fail
+ 77 expect() calls
+Ran 14 tests across 1 file. [495.00ms]

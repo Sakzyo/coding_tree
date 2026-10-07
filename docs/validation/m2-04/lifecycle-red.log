@@ -1,0 +1,185 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-04.test.ts:
+70 |       const initial = yield* f.gate.acquire(first)
+71 |       if (initial.kind !== "acquired") throw new Error("expected initial execution claim")
+72 |       const admitted = yield* submitter.submitPrompt({ chat: first, prompt: { text: "first" } })
+73 |       expect(admitted).toEqual({ kind: "admitted", receipt: f.receipts[0] })
+74 |       const rejected = yield* submitter.submitPrompt({ chat: f.chats[1], prompt: { text: "draft" } })
+75 |       expect(rejected).toEqual({ kind: "busy", active: first })
+     ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "active": {
+-     "chatID": "chat_0",
+-     "projectID": "prj_a",
+-     "sessionID": "ses_0",
++   "kind": "admitted",
++   "receipt": {
++     "admittedSeq": 1,
++     "delivery": "steer",
++     "id": "msg_114acea4d0022PgMVUI8bRUveF",
++     "prompt": {
++       "text": "draft",
++     },
++     "sessionID": "ses_1",
++     "timeCreated": {
++       "epochMilliseconds": 0,
++       "partsUtc": undefined,
++     },
+    },
+-   "kind": "busy",
+  }
+
+- Expected  - 5
++ Received  + 13
+
+      at toEqual (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/core/test/ftc/projects-and-chats/m2-04.test.ts:75:24
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:910:23)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2597:69
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2667:12
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2678:23
+(fail) busy submission does not call admission [6.15ms]
+90 |   run(
+91 |     Effect.gen(function* () {
+92 |       const f = yield* fixture()
+93 |       const submitter = FtcProjects.submitter(f)
+94 |       yield* submitter.submitPrompt({ chat: f.chats[0], prompt: { text: "first" } })
+95 |       expect(yield* f.gate.activeChat(f.projects[0])).toEqual(f.chats[0])
+                                                           ^
+error: expect(received).toEqual(expected)
+
+- {
+-   "chatID": "chat_0",
+-   "projectID": "prj_a",
+-   "sessionID": "ses_0",
+- }
++ undefined
+
+- Expected  - 5
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/projects-and-chats/m2-04.test.ts:95:55)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+(fail) successful submission retains ownership until explicit adapter settlement [0.74ms]
+109 |       const submitter = FtcProjects.submitter(f)
+110 |       yield* submitter.submitPrompt({ chat: f.chats[0], prompt: { text: "stored" }, resume: false })
+111 |       expect(f.accepted).toHaveLength(0)
+112 |       expect(yield* f.gate.activeChat(f.projects[0])).toBeUndefined()
+113 |       yield* submitter.submitPrompt({ chat: f.chats[1], prompt: { text: "run" } })
+114 |       expect((yield* submitter.submitPrompt({ chat: f.chats[0], prompt: { text: "draft" }, resume: false })).kind).toBe("busy")
+                                                                                                                         ^
+error: expect(received).toBe(expected)
+
+Expected: "busy"
+Received: "admitted"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/projects-and-chats/m2-04.test.ts:114:116)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+(fail) admit-only releases its unused claim without handing off or admitting a busy draft [0.75ms]
+125 |       const f = yield* fixture()
+126 |       yield* FtcProjects.submitter(f).submitPrompt({ chat: f.chats[0], prompt: { text: "active" } })
+127 |       const failure = new SessionV2.NotFoundError({ sessionID: f.chats[0].sessionID })
+128 |       const failing = FtcProjects.submitter({ ...f, admission: { prompt: () => Effect.fail(failure) } })
+129 |       expect(yield* failing.submitPrompt({ chat: f.chats[0], prompt: { text: "fail" } }).pipe(Effect.flip)).toBe(failure)
+130 |       expect(yield* f.gate.activeChat(f.projects[0])).toEqual(f.chats[0])
+                                                            ^
+error: expect(received).toEqual(expected)
+
+- {
+-   "chatID": "chat_0",
+-   "projectID": "prj_a",
+-   "sessionID": "ses_0",
+- }
++ undefined
+
+- Expected  - 5
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/projects-and-chats/m2-04.test.ts:130:55)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+(fail) failed same-chat admission releases only its own claim [4.11ms]
+error
+{
+  kind: "admitted",
+  receipt: {
+    id: "msg_114acea570019cI3NSWYF6bIZo",
+    admittedSeq: 0,
+    sessionID: "ses_0",
+    prompt: {
+      text: "durable",
+    },
+    delivery: "steer",
+    timeCreated: DateTime.Utc(1970-01-01T00:00:00.000Z),
+  },
+}
+(fail) handoff failure releases reservation but retains the already admitted receipt [0.79ms]
+1040 | /** @internal */
+1041 | export const exitFilterSuccess = self => self._tag === "Success" ? Result.succeed(self) : Result.fail(self);
+1042 | /** @internal */
+1043 | export const exitFilterValue = self => self._tag === "Success" ? Result.succeed(self.value) : Result.fail(self);
+1044 | /** @internal */
+1045 | export const exitIsFailure = self => self._tag === "Failure";
+                                            ^
+TypeError: undefined is not an object (evaluating 'self._tag')
+      at exitIsFailure (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1045:38)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/projects-and-chats/m2-04.test.ts:161:19)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at doneUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Deferred.js:657:20)
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:625:24)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) cancellation during admission releases its own claim while preserving concurrent same-chat ownership [0.84ms]
+181 |         },
+182 |       })
+183 |       const running = yield* pending.submitPrompt({ chat: f.chats[0], prompt: { text: "steer" } }).pipe(Effect.forkChild)
+184 |       yield* Deferred.await(entered)
+185 |       yield* f.gate.release(old.lease)
+186 |       expect((yield* FtcProjects.submitter(f).submitPrompt({ chat: f.chats[1], prompt: { text: "draft" } })).kind).toBe("busy")
+                                                                                                                         ^
+error: expect(received).toBe(expected)
+
+Expected: "busy"
+Received: "admitted"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/projects-and-chats/m2-04.test.ts:186:116)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at doneUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Deferred.js:657:20)
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:625:24)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) reservation bridges old execution settlement until new admission handoff [0.75ms]
+
+ 0 pass
+ 7 fail
+ 9 expect() calls
+Ran 7 tests across 1 file. [209.00ms]

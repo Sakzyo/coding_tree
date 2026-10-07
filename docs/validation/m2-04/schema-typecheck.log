@@ -1,0 +1,12 @@
+$ tsgo --noEmit
+test/ftc-submission.test.ts(20,72): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '{ kind: "admitted"; receipt: { admittedSeq: number; id: string; sessionID: string; prompt: { text: string; }; delivery: string; timeCreated: number; }; }' is not assignable to parameter of type '{ readonly kind: "admitted"; readonly receipt: { readonly admittedSeq: number; readonly id: string; readonly sessionID: string; readonly prompt: { readonly text: string; readonly files?: readonly { readonly uri: string; readonly mime: string; readonly name?: string | undefined; readonly description?: string | undefi...'.
+      The types of 'receipt.delivery' are incompatible between these types.
+        Type 'string' is not assignable to type '"queue" | "steer"'.
+test/ftc-submission.test.ts(23,101): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '{ kind: "busy"; active: { projectID: string; chatID: string; sessionID: string; }; }' is not assignable to parameter of type '{ readonly kind: "admitted"; readonly receipt: { readonly admittedSeq: number; readonly id: string & Brand<"Session.Message.ID">; readonly sessionID: string & Brand<"SessionID">; readonly prompt: { ...; }; readonly delivery: "queue" | "steer"; readonly timeCreated: Utc; readonly promotedSeq?: number | undefined; }; ...'.
+      The types of 'active.projectID' are incompatible between these types.
+        Type 'string' is not assignable to type 'string & Brand<"Project.ID">'.
+          Type 'string' is not assignable to type 'Brand<"Project.ID">'.

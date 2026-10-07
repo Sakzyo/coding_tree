@@ -1,0 +1,35 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-04.test.ts:
+(pass) busy submission does not call admission [7.17ms]
+(pass) successful submission retains ownership until explicit adapter settlement [4.68ms]
+(pass) admit-only releases its unused claim without handing off or admitting a busy draft [0.89ms]
+(pass) failed same-chat admission releases only its own claim [0.72ms]
+(pass) handoff failure releases reservation but retains the already admitted receipt [0.26ms]
+1040 | /** @internal */
+1041 | export const exitFilterSuccess = self => self._tag === "Success" ? Result.succeed(self) : Result.fail(self);
+1042 | /** @internal */
+1043 | export const exitFilterValue = self => self._tag === "Success" ? Result.succeed(self.value) : Result.fail(self);
+1044 | /** @internal */
+1045 | export const exitIsFailure = self => self._tag === "Failure";
+                                            ^
+TypeError: undefined is not an object (evaluating 'self._tag')
+      at exitIsFailure (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1045:38)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/projects-and-chats/m2-04.test.ts:161:19)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at doneUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Deferred.js:657:20)
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:625:24)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) cancellation during admission releases its own claim while preserving concurrent same-chat ownership [0.81ms]
+(pass) reservation bridges old execution settlement until new admission handoff [0.45ms]
+
+ 6 pass
+ 1 fail
+ 31 expect() calls
+Ran 7 tests across 1 file. [180.00ms]
