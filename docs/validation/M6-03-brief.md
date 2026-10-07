@@ -130,8 +130,6 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 ## Exact task excerpt
 
-# Task 3
-
 ### M6-03 — Inspect imported SDK and pathing dependencies
 
 **Prerequisites:** [M6-01](ftc-configuration-and-libraries.md#m6-01).
