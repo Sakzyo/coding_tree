@@ -49,7 +49,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 ## Task checklist
 
 - [x] [M6-01 — Read and update a shareable manifest by revision](#m6-01)
-- [ ] [M6-02 — Validate shared hardware commands](#m6-02)
+- [x] [M6-02 — Validate shared hardware commands](#m6-02)
 - [ ] [M6-03 — Inspect imported SDK and pathing dependencies](#m6-03)
 - [ ] [M6-04 — Propose new-project and managed-library changes](#m6-04)
 - [ ] [M6-05 — Propose consistent Java hardware mappings](#m6-05)
@@ -90,16 +90,18 @@ Verified 2026-10-07 at `f3de7a3c7`: [implementation evidence](../validation/M6-0
 
 **Interfaces:** Produces `updateHardware({ root, expectedRevision, change, deviceCatalog }): ManifestSnapshot`; changes identify hub/category/port/type/name and are identical for form/chat callers.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/ftc-configuration-and-libraries/m6-02.test.ts`, add `form and chat enforce the same port and name rules`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/ftc-configuration-and-libraries/m6-02.test.ts`, add `form and chat enforce the same port and name rules`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(formError.code).toBe(chatError.code); expect(duplicateName.code).toBe('duplicate_name'); expect(invalidPort.code).toBe('invalid_port')
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/ftc-configuration-and-libraries/m6-02.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Validate missing names, duplicate names, hub/category/port/type relationships using versioned SDK rules. Return localized error codes and fields. Preserve device/API identifiers byte-for-byte and explain that these records do not prove wiring.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/ftc-configuration-and-libraries/m6-02.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): validate shared hardware commands`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/ftc-configuration-and-libraries/m6-02.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Validate missing names, duplicate names, hub/category/port/type relationships using versioned SDK rules. Return localized error codes and fields. Preserve device/API identifiers byte-for-byte and explain that these records do not prove wiring.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/ftc-configuration-and-libraries/m6-02.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): validate shared hardware commands`.
+
+Verified 2026-10-07: candidate `e4d498ca0`, scoped I1 repair `6620d1bc1`; [implementation evidence](../validation/M6-02-implementation.md), [independent review](../validation/M6-02-review.md). Actual SDK/catalog binding, physical wiring and composed/platform gates remain separate.
 
 <a id="m6-03"></a>
 

@@ -45,7 +45,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 ## Task checklist
 
-- [ ] [M12-01 — Persist personal progress with project-linked attempts](#m12-01)
+- [x] [M12-01 — Persist personal progress with project-linked attempts](#m12-01)
 - [ ] [M12-02 — Select entry level and skip familiar lessons](#m12-02)
 - [ ] [M12-03 — Choose a track and return exercise requests](#m12-03)
 - [ ] [M12-04 — Validate submitted evidence and retain provenance](#m12-04)
@@ -65,16 +65,18 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 **Interfaces:** Produces `progress({ courseID }): Progress` and private attempt storage keyed by stable lesson ID/version plus attempt ID.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/learning-and-progress/m12-01.test.ts`, add `progress survives reopen and language changes`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/learning-and-progress/m12-01.test.ts`, add `progress survives reopen and language changes`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(reopenedProgress).toEqual(savedProgress); expect(chineseProgress).toEqual(englishProgress); expect(manifestWrites).toBe(0)
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/learning-and-progress/m12-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Use existing local SQLite migration lifecycle with snake_case fields. Keep personal state outside ftc-project.json; associate each attempt with project/configuration/evidence versions and retain prior-version evidence without silently granting new-version completion.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/learning-and-progress/m12-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): persist personal progress with project-linked attempts`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/learning-and-progress/m12-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Use existing local SQLite migration lifecycle with snake_case fields. Keep personal state outside ftc-project.json; associate each attempt with project/configuration/evidence versions and retain prior-version evidence without silently granting new-version completion.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/learning-and-progress/m12-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): persist personal progress with project-linked attempts`.
+
+Verified 2026-10-07 at `8a0b5881b`: [implementation evidence](../validation/M12-01-implementation.md), [independent review](../validation/M12-01-review.md). Evidence verification/competence awards and production/UI/Windows acceptance remain separate.
 
 <a id="m12-02"></a>
 

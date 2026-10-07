@@ -52,7 +52,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 ## Task checklist
 
 - [x] [M5-01 — Own documents independently of editor views](#m5-01)
-- [ ] [M5-02 — Save and apply edits with conflict checks](#m5-02)
+- [x] [M5-02 — Save and apply edits with conflict checks](#m5-02)
 - [ ] [M5-03 — Evaluate FTC-aware Java import before building the full editor](#m5-03)
 - [ ] [M5-04 — Adapt scoped language-service requests](#m5-04)
 - [ ] [M5-05 — Build saved revisions and retain actual output](#m5-05)
@@ -95,16 +95,18 @@ Verified 2026-10-07 at `9bcb23ce6`: [implementation evidence](../validation/M5-0
 
 **Interfaces:** Produces `saveDocument({ projectID, path, expectedRevision }): DocumentSnapshot` and `applyEdits({ proposal: EditProposal, authorization }): EditResult`; authorization is supplied by the trusted code-change adapter, not arbitrary tool JSON.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/java-development/m5-02.test.ts`, add `dirty or externally changed files reject stale edits`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/java-development/m5-02.test.ts`, add `dirty or externally changed files reject stale edits`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(result.kind).toBe('conflict'); expect(bufferText).toBe('unsaved'); expect(externalDiskText).toBe('external')
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/java-development/m5-02.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Check buffer/disk revisions and authorized file scope before writing. Preserve the proposal and both versions; return save/merge/defer choices. Preflight every file in a multi-file proposal and report partial filesystem failure honestly; never silently discard changes.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/java-development/m5-02.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): save and apply edits with conflict checks`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/java-development/m5-02.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Check buffer/disk revisions and authorized file scope before writing. Preserve the proposal and both versions; return save/merge/defer choices. Preflight every file in a multi-file proposal and report partial filesystem failure honestly; never silently discard changes.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/java-development/m5-02.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): save and apply edits with conflict checks`.
+
+Verified 2026-10-07: candidate `23eed3535`, authorization repair `a82570d5f`; [implementation evidence](../validation/M5-02-implementation.md), [independent review and scoped re-review](../validation/M5-02-review.md). Actual auth/filesystem adapter composition and new-file/template creation remain separate.
 
 <a id="m5-03"></a>
 
