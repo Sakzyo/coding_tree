@@ -1,12 +1,13 @@
 export * as FtcProjects from "./projects"
 
-import { Context, Effect, Layer, Schema } from "effect"
+import { Context, Deferred, Effect, Exit, Layer, Schema } from "effect"
 import path from "node:path"
 import { FtcProject } from "@opencode-ai/schema/ftc-project"
 import { Location } from "@opencode-ai/schema/location"
 import { Session } from "@opencode-ai/schema/session"
 import { SessionInput } from "@opencode-ai/schema/session-input"
 import type { SessionV2 } from "../session"
+import type { ProjectGate } from "./projects/gate"
 
 export {
   ProjectContext,
@@ -72,6 +73,144 @@ export const submitter = (input: Submission) => ({
     ),
   ),
 })
+
+export interface ExecutionLifecycle {
+  /** Bounded registration/scheduling. The host must later notify the exact admission lease's terminal chain,
+   * including no-work/rejection/cancellation without execution acquisition. Wake return is not settlement. */
+  readonly wake: Submission["handoff"]
+  readonly interrupt: (sessionID: Session.ID) => Effect.Effect<void>
+}
+
+/** Admission and execution tokens are independent. The integration adapter associates each admission
+ * with its actual terminal chain; an older execution notification never settles later admission. */
+export const lifecycle = (input: {
+  readonly gate: Pick<ProjectGate.Interface, "acquire" | "release" | "held" | "activeChat">
+  readonly execution: ExecutionLifecycle
+}) =>
+  Effect.gen(function* () {
+    const claims = new Map<
+      FtcProject.GateToken,
+      { readonly lease: FtcProject.GateLease; pending?: Deferred.Deferred<void>; terminal: boolean }
+    >()
+    let closed = false
+    const settled = (lease: FtcProject.GateLease): Effect.Effect<void> =>
+      Effect.suspend(() => {
+        if (!Schema.is(FtcProject.GateLease)(lease)) return Effect.void
+        const claim = claims.get(lease.token)
+        if (
+          !claim ||
+          claim.lease.projectKey !== lease.projectKey ||
+          claim.lease.chatID !== lease.chatID ||
+          claim.lease.sessionID !== lease.sessionID
+        )
+          return Effect.void
+        if (claim.pending) {
+          claim.terminal = true
+          return Effect.void
+        }
+        claims.delete(lease.token)
+        return input.gate.release(claim.lease)
+      }).pipe(Effect.uninterruptible)
+    const awaitPending = (sessionID?: Session.ID): Effect.Effect<void> =>
+      Effect.suspend(() => {
+        const pending = [...claims.values()].flatMap((claim) =>
+          claim.pending && (sessionID === undefined || claim.lease.sessionID === sessionID) ? [claim.pending] : [],
+        )
+        return pending.length === 0
+          ? Effect.void
+          : Effect.forEach(pending, Deferred.await).pipe(Effect.andThen(awaitPending(sessionID)))
+      })
+    yield* Effect.addFinalizer(() =>
+      Effect.gen(function* () {
+        closed = true
+        yield* awaitPending()
+        const sessions = new Set([...claims.values()].map((claim) => claim.lease.sessionID))
+        yield* Effect.forEach(sessions, input.execution.interrupt, { concurrency: "unbounded" }).pipe(
+          Effect.ensuring(Effect.forEach([...claims.values()], (claim) => settled(claim.lease))),
+        )
+      }),
+    )
+    return {
+      acquire: Effect.fn("FtcProjects.acquireExecution")((chat: FtcProject.ChatRef) =>
+        Effect.scoped(
+          Effect.uninterruptibleMask((restore) =>
+            Effect.gen(function* () {
+              if (closed)
+                return yield* Effect.fail({ code: "gate_closed", recovery: "retry" } satisfies FtcProject.GateError)
+              const ownership = { accepted: false }
+              const result = yield* Effect.acquireRelease(
+                restore(input.gate.acquire(chat)),
+                (result) =>
+                  result.kind === "acquired" && !ownership.accepted ? input.gate.release(result.lease) : Effect.void,
+                { interruptible: true },
+              )
+              if (result.kind === "busy") return result
+              if (closed)
+                return yield* Effect.fail({ code: "gate_closed", recovery: "retry" } satisfies FtcProject.GateError)
+              claims.set(result.lease.token, { lease: result.lease, terminal: false })
+              ownership.accepted = true
+              return result
+            }),
+          ),
+        ),
+      ),
+      handoff: Effect.fn("FtcProjects.handoff")((request: Parameters<Submission["handoff"]>[0]) =>
+        Effect.uninterruptible(
+          Effect.gen(function* () {
+            if (closed)
+              return yield* Effect.fail({ code: "gate_closed", recovery: "retry" } satisfies FtcProject.GateError)
+            const lease = Object.freeze({ ...request.lease })
+            const chat = Object.freeze({ ...request.chat })
+            if (
+              !Schema.is(FtcProject.ChatRef)(chat) ||
+              chat.chatID !== lease.chatID ||
+              chat.sessionID !== lease.sessionID ||
+              request.receipt.sessionID !== lease.sessionID ||
+              !(yield* input.gate.held(lease)) ||
+              claims.has(lease.token)
+            )
+              return yield* Effect.fail({
+                code: "invalid_chat",
+                recovery: "reopen_project",
+              } satisfies FtcProject.GateError)
+            if (closed)
+              return yield* Effect.fail({ code: "gate_closed", recovery: "retry" } satisfies FtcProject.GateError)
+            const pending = Deferred.makeUnsafe<void>()
+            const claim = { lease, pending: pending as Deferred.Deferred<void> | undefined, terminal: false }
+            claims.set(lease.token, claim)
+            return yield* input.execution.wake({ ...request, chat, lease }).pipe(
+              Effect.onExit((exit) =>
+                Effect.gen(function* () {
+                  claim.pending = undefined
+                  if (Exit.isFailure(exit) || claim.terminal) yield* settled(lease)
+                  yield* Deferred.succeed(pending, undefined)
+                }),
+              ),
+            )
+          }),
+        ),
+      ),
+      settled,
+      stopRun: Effect.fn("FtcProjects.stopRun")((request: { readonly chat: FtcProject.ChatRef }) =>
+        Effect.uninterruptible(
+          Effect.gen(function* () {
+            if (closed) return yield* Effect.void
+            const chat = Object.freeze({ ...request.chat })
+            if (!Schema.is(FtcProject.ChatRef)(chat))
+              return yield* Effect.fail({
+                code: "invalid_chat",
+                recovery: "reopen_project",
+              } satisfies FtcProject.GateError)
+            yield* awaitPending(chat.sessionID)
+            if (closed) return yield* Effect.void
+            const active = yield* input.gate.activeChat(chat)
+            if (active?.chatID !== chat.chatID || active.sessionID !== chat.sessionID) return yield* Effect.void
+            return yield* input.execution.interrupt(chat.sessionID)
+          }),
+        ),
+      ),
+    }
+  })
 
 /** Resolves symlink/case aliases, inspects directory access, and supplies existing host identity without file edits. */
 export interface FolderIdentity {

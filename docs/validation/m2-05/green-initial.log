@@ -1,0 +1,16 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-05.test.ts:
+(pass) stop retains ownership until cleanup settles [14.43ms]
+(pass) terminal notification waits for pending handoff acceptance [4.22ms]
+(pass) admission bridges old execution completion and retains its own terminal identity [1.89ms]
+(pass) idle and different-chat stops do not interrupt the current owner [1.15ms]
+(pass) stop waits for registration before interruption and retains accepted reservations [3.01ms]
+(pass) same-chat admission and execution claims settle independently [1.29ms]
+(pass) failed handoff releases only its reservation and preserves the admitted receipt [1.10ms]
+(pass) scope closure waits for interruption cleanup then releases remaining exact claims [1.37ms]
+
+ 8 pass
+ 0 fail
+ 31 expect() calls
+Ran 8 tests across 1 file. [143.00ms]

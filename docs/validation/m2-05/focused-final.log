@@ -1,0 +1,23 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-05.test.ts:
+(pass) stop retains ownership until cleanup settles [15.85ms]
+(pass) terminal notification waits for pending handoff acceptance [2.56ms]
+(pass) admission bridges old execution completion and retains its own terminal identity [2.06ms]
+(pass) idle and different-chat stops do not interrupt the current owner [1.78ms]
+(pass) stop waits for registration before interruption and retains accepted reservations [6.59ms]
+(pass) same-chat admission and execution claims settle independently [2.48ms]
+(pass) failed handoff releases only its reservation [1.53ms]
+(pass) scope closure waits for bounded handoff registration before interruption [2.31ms]
+(pass) cancelling the submitting fiber during masked handoff retains accepted ownership [2.18ms]
+(pass) handoff rejects fabricated mismatched and released leases before scheduling [0.97ms]
+(pass) scope closure rejects a delayed execution acquisition and compensates its new token [0.94ms]
+(pass) cancelling pending execution acquisition leaves no claim or terminal release [1.58ms]
+(pass) held validates the complete process-local lease identity [1.06ms]
+(pass) defective handoff cleans its reservation even after a deferred terminal callback [5.98ms]
+(pass) scope closure waits for interruption cleanup then releases remaining exact claims [5.27ms]
+
+ 15 pass
+ 0 fail
+ 59 expect() calls
+Ran 15 tests across 1 file. [180.00ms]

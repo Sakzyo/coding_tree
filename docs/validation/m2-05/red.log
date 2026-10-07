@@ -1,0 +1,71 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-05.test.ts:
+67 |       expect(duringCleanup.kind).toBe("busy")
+68 |       yield* Deferred.succeed(clean, undefined)
+69 |       yield* lifecycle.settled(initial.lease)
+70 |       yield* Fiber.join(stop)
+71 |       const afterCleanup = yield* lifecycle.acquire(f.chats[1])
+72 |       expect(afterCleanup.kind).toBe("acquired")
+                                     ^
+error: expect(received).toBe(expected)
+
+Expected: "acquired"
+Received: "busy"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/projects-and-chats/m2-05.test.ts:72:33)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) stop retains ownership until cleanup settles [11.36ms]
+101 |       yield* Deferred.await(registering)
+102 |       yield* lifecycle.settled(reserved.lease)
+103 |       expect((yield* f.gate.acquire(f.chats[1])).kind).toBe("busy")
+104 |       yield* Deferred.succeed(registered, undefined)
+105 |       yield* Fiber.join(handoff)
+106 |       expect((yield* f.gate.acquire(f.chats[1])).kind).toBe("acquired")
+                                                             ^
+error: expect(received).toBe(expected)
+
+Expected: "acquired"
+Received: "busy"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/projects-and-chats/m2-05.test.ts:106:56)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) terminal notification waits for pending handoff acceptance [1.98ms]
+145 |       expect(accepted[0].token).not.toBe(initial.lease.token)
+146 |       yield* lifecycle.settled(initial.lease)
+147 |       expect((yield* f.gate.acquire(f.chats[1])).kind).toBe("busy")
+148 |       // A terminal no-work/rejection notification uses the admission lease even with no execution acquisition.
+149 |       yield* lifecycle.settled(accepted[0])
+150 |       expect((yield* f.gate.acquire(f.chats[1])).kind).toBe("acquired")
+                                                             ^
+error: expect(received).toBe(expected)
+
+Expected: "acquired"
+Received: "busy"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/projects-and-chats/m2-05.test.ts:150:56)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) admission bridges old execution completion and retains its own terminal identity [2.16ms]
+
+ 0 pass
+ 3 fail
+ 10 expect() calls
+Ran 3 tests across 1 file. [145.00ms]

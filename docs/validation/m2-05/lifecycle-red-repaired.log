@@ -1,0 +1,79 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-05.test.ts:
+162 |           wake: () => Effect.void,
+163 |           interrupt: (sessionID) => Effect.sync(() => interrupted.push(sessionID)).pipe(Effect.asVoid),
+164 |         },
+165 |       })
+166 |       yield* lifecycle.stopRun({ chat: f.chats[0] })
+167 |       expect(interrupted).toEqual([])
+                                ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   "ses_0",
++ ]
+
+- Expected  - 1
++ Received  + 3
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/projects-and-chats/m2-05.test.ts:167:27)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+(fail) idle and different-chat stops do not interrupt the current owner [8.34ms]
+211 |       expect(interrupted).toEqual([f.chats[0].sessionID])
+212 |       expect((yield* f.gate.acquire(f.chats[1])).kind).toBe("busy")
+213 |       yield* Deferred.succeed(clean, undefined)
+214 |       yield* Fiber.join(stop)
+215 |       yield* Fiber.join(submission)
+216 |       expect(earlyInterrupts).toEqual([])
+                                    ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   "ses_0",
++ ]
+
+- Expected  - 1
++ Received  + 3
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/projects-and-chats/m2-05.test.ts:216:31)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:656:13)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) stop waits for registration before interruption and retains accepted reservations [6.92ms]
+244 |       yield* lifecycle.settled(accepted[0])
+245 |       yield* lifecycle.settled(accepted[0])
+246 |       yield* lifecycle.settled({ ...accepted[1], sessionID: f.chats[1].sessionID })
+247 |       expect((yield* f.gate.acquire(f.chats[1])).kind).toBe("busy")
+248 |       yield* lifecycle.settled(accepted[1])
+249 |       expect((yield* f.gate.acquire(f.chats[1])).kind).toBe("acquired")
+                                                             ^
+error: expect(received).toBe(expected)
+
+Expected: "acquired"
+Received: "busy"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/projects-and-chats/m2-05.test.ts:249:56)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+(fail) same-chat admission and execution claims settle independently [2.62ms]
+
+ 0 pass
+ 5 filtered out
+ 3 fail
+ 7 expect() calls
+Ran 3 tests across 1 file. [136.00ms]

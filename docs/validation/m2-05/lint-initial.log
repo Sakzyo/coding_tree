@@ -1,0 +1,43 @@
+
+  ! typescript-eslint(consistent-return): Function expected a return value.
+     ,-[packages/core/src/ftc/projects.ts:156:22]
+ 155 |             Effect.uninterruptible(
+ 156 | ,->           Effect.gen(function* () {
+ 157 | |               if (closed) return yield* Effect.fail({ code: "gate_closed", recovery: "retry" } satisfies FtcProject.GateError)
+ 158 | |               const lease = Object.freeze({ ...request.lease })
+ 159 | |               if (
+ 160 | |                 !Schema.is(FtcProject.ChatRef)(request.chat) ||
+ 161 | |                 request.chat.chatID !== lease.chatID ||
+ 162 | |                 request.chat.sessionID !== lease.sessionID ||
+ 163 | |                 request.receipt.sessionID !== lease.sessionID ||
+ 164 | |                 !(yield* input.gate.held(lease)) ||
+ 165 | |                 claims.has(lease.token)
+ 166 | |               )
+ 167 | |                 return yield* Effect.fail({ code: "invalid_chat", recovery: "reopen_project" } satisfies FtcProject.GateError)
+ 168 | |               if (closed) return yield* Effect.fail({ code: "gate_closed", recovery: "retry" } satisfies FtcProject.GateError)
+ 169 | |               const pending = Deferred.makeUnsafe<void>()
+ 170 | |               const claim = { lease, pending: pending as Deferred.Deferred<void> | undefined, terminal: false }
+ 171 | |               claims.set(lease.token, claim)
+ 172 | |               yield* input.execution.wake({ ...request, chat: Object.freeze({ ...request.chat }), lease }).pipe(
+ 173 | |                 Effect.onExit((exit) =>
+ 174 | |                   Effect.gen(function* () {
+ 175 | |                     claim.pending = undefined
+ 176 | |                     if (Exit.isFailure(exit) || claim.terminal) yield* settled(lease)
+ 177 | |                     yield* Deferred.succeed(pending, undefined)
+ 178 | |                   }),
+ 179 | |                 ),
+ 180 | |               )
+ 181 | `->           }),
+ 182 |             ),
+     `----
+
+  ! typescript-eslint(consistent-return): Function expected no return value.
+     ,-[packages/core/src/ftc/projects.ts:191:15]
+ 190 |             if (!Schema.is(FtcProject.ChatRef)(chat))
+ 191 |               return yield* Effect.fail({ code: "invalid_chat", recovery: "reopen_project" } satisfies FtcProject.GateError)
+     :               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 192 |             yield* awaitPending(chat.sessionID)
+     `----
+
+Found 2 warnings and 0 errors.
+Finished in 871ms on 3 files with 130 rules using 10 threads.

@@ -14,6 +14,7 @@ export interface Interface {
     chat: FtcProject.ChatRef,
   ) => Effect.Effect<FtcProject.GateResult, FtcProject.GateError | FtcProject.ChatError>
   readonly release: (lease: FtcProject.GateLease) => Effect.Effect<void>
+  readonly held: (lease: FtcProject.GateLease) => Effect.Effect<boolean>
   readonly activeChat: (
     input: FtcProject.ProjectRequest,
   ) => Effect.Effect<FtcProject.ChatRef | undefined, FtcProject.GateError | FtcProject.ChatError>
@@ -101,6 +102,17 @@ export const make = (projects: Projects): Effect.Effect<Interface, never, Scope.
           )
             return
           if (owner.tokens.size === 0) owners.delete(lease.projectKey)
+        }),
+      held: (lease) =>
+        Effect.sync(() => {
+          if (!Schema.is(FtcProject.GateLease)(lease)) return false
+          const owner = owners.get(lease.projectKey)
+          return (
+            owner !== undefined &&
+            owner.chat.chatID === lease.chatID &&
+            owner.chat.sessionID === lease.sessionID &&
+            owner.tokens.has(lease.token)
+          )
         }),
       activeChat: Effect.fn("ProjectGate.activeChat")(function* (input) {
         const project = yield* resolve(input)

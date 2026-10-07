@@ -1,0 +1,30 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/projects-and-chats/m2-05.test.ts:
+103 |       yield* Deferred.await(registering)
+104 |       yield* lifecycle.settled(reserved.lease)
+105 |       const duringRegistration = yield* f.gate.acquire(f.chats[1])
+106 |       yield* Deferred.succeed(registered, undefined)
+107 |       yield* Fiber.join(handoff)
+108 |       expect(duringRegistration.kind).toBe("busy")
+                                            ^
+error: expect(received).toBe(expected)
+
+Expected: "busy"
+Received: "acquired"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/projects-and-chats/m2-05.test.ts:108:39)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) terminal notification waits for pending handoff acceptance [14.80ms]
+
+ 0 pass
+ 14 filtered out
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [130.00ms]
