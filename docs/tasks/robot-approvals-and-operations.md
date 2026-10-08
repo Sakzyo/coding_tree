@@ -52,7 +52,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 ## Task checklist
 
-- [ ] [M9-01 — Prepare typed operations under independent action policy](#m9-01)
+- [x] [M9-01 — Prepare typed operations under independent action policy](#m9-01)
 - [ ] [M9-02 — Bind single-use approval to exact operation context](#m9-02)
 - [ ] [M9-03 — Serialize mutations per physical controller](#m9-03)
 - [ ] [M9-04 — Revalidate current action preconditions immediately before dispatch](#m9-04)
@@ -74,16 +74,18 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 **Interfaces:** Produces `prepareOperation({ request, robotMode }): PreparedOperation`; robotMode is observation/actions-with-approval and cannot be changed by code/layout/inference settings.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/robot-approvals-and-operations/m9-01.test.ts`, add `observation blocks agent control but not separately approved deployment`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/robot-approvals-and-operations/m9-01.test.ts`, add `observation blocks agent control but not separately approved deployment`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(start.code).toBe('observation_only'); expect(deploy.status).toBe('awaiting_approval'); expect(dispatchCount).toBe(0)
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/robot-approvals-and-operations/m9-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Validate action-specific parameters and trusted project/chat identity; reject missing identity or unsupported capabilities. Store requested context without dispatching. Direct user commands and agent requests remain distinguishable at the trusted boundary.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/robot-approvals-and-operations/m9-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): prepare typed operations under independent action policy`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/robot-approvals-and-operations/m9-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Validate action-specific parameters and trusted project/chat identity; reject missing identity or unsupported capabilities. Store requested context without dispatching. Direct user commands and agent requests remain distinguishable at the trusted boundary.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/robot-approvals-and-operations/m9-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): prepare typed operations under independent action policy`.
+
+Verified 2026-10-08 at `768ec206c`: [implementation evidence](../validation/M9-01-implementation.md), [independent review](../validation/M9-01-review.md). Preparation only; producer/approval/dispatch/host/platform/physical gates remain separate. Minor parameterized test-name diagnostics are deferred.
 
 <a id="m9-02"></a>
 

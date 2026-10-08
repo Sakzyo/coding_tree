@@ -1,0 +1,871 @@
+{
+  "sourceBase": "5fdd801e1",
+  "tasks": {
+    "M3-01": {
+      "title": "Pin Session admission and continuation invariants",
+      "plan": "docs/tasks/agent-and-context.md",
+      "done": true,
+      "deps": []
+    },
+    "M3-02": {
+      "title": "Apply an injected gate at every Session execution entry",
+      "plan": "docs/tasks/agent-and-context.md",
+      "done": true,
+      "deps": [
+        "M3-01"
+      ]
+    },
+    "M3-03": {
+      "title": "Implement plan-first and direct code-change policy",
+      "plan": "docs/tasks/agent-and-context.md",
+      "done": true,
+      "deps": [
+        "M3-01"
+      ]
+    },
+    "M3-04": {
+      "title": "Assemble versioned FTC context from public sources",
+      "plan": "docs/tasks/agent-and-context.md",
+      "done": true,
+      "deps": [
+        "M3-01"
+      ]
+    },
+    "M3-05": {
+      "title": "Expose structured FTC tools with honest evidence",
+      "plan": "docs/tasks/agent-and-context.md",
+      "done": false,
+      "deps": [
+        "M3-03",
+        "M3-04"
+      ]
+    },
+    "M3-06": {
+      "title": "Bind real model and domain adapters in the host",
+      "plan": "docs/tasks/agent-and-context.md",
+      "done": false,
+      "deps": [
+        "M3-02",
+        "M3-05",
+        "M2-03",
+        "M5-06",
+        "M6-05",
+        "M7-07",
+        "M9-08",
+        "M10-05",
+        "M11-02"
+      ]
+    },
+    "M3-07": {
+      "title": "Verify user-visible coding and AI failure workflows",
+      "plan": "docs/tasks/agent-and-context.md",
+      "done": false,
+      "deps": [
+        "M3-06",
+        "M1-03",
+        "M1-07",
+        "M1-11",
+        "M1-04",
+        "M1-05"
+      ]
+    },
+    "M7-01": {
+      "title": "Select model profiles from available resources",
+      "plan": "docs/tasks/ai-access-and-local-inference.md",
+      "done": true,
+      "deps": []
+    },
+    "M7-02": {
+      "title": "Protect provider credentials in the desktop host",
+      "plan": "docs/tasks/ai-access-and-local-inference.md",
+      "done": false,
+      "deps": []
+    },
+    "M7-03": {
+      "title": "Adapt online provider streaming and failures",
+      "plan": "docs/tasks/ai-access-and-local-inference.md",
+      "done": false,
+      "deps": [
+        "M7-01",
+        "M7-02"
+      ]
+    },
+    "M7-04": {
+      "title": "Enforce verified local-only inference",
+      "plan": "docs/tasks/ai-access-and-local-inference.md",
+      "done": false,
+      "deps": [
+        "M7-03"
+      ]
+    },
+    "M7-05": {
+      "title": "Download models into a verified local inventory",
+      "plan": "docs/tasks/ai-access-and-local-inference.md",
+      "done": false,
+      "deps": [
+        "M7-01"
+      ]
+    },
+    "M7-06": {
+      "title": "Start and stop app-owned inference processes",
+      "plan": "docs/tasks/ai-access-and-local-inference.md",
+      "done": false,
+      "deps": [
+        "M7-04",
+        "M7-05"
+      ]
+    },
+    "M7-07": {
+      "title": "Expose AI settings and bind M3 model streams",
+      "plan": "docs/tasks/ai-access-and-local-inference.md",
+      "done": false,
+      "deps": [
+        "M7-03",
+        "M7-04",
+        "M7-06",
+        "M3-02"
+      ]
+    },
+    "M7-08": {
+      "title": "Evaluate model/runtime configurations on supported laptops",
+      "plan": "docs/tasks/ai-access-and-local-inference.md",
+      "done": false,
+      "deps": [
+        "M7-06",
+        "M7-07"
+      ]
+    },
+    "M8-01": {
+      "title": "Parse discovery and authorization states",
+      "plan": "docs/tasks/controller-connections.md",
+      "done": true,
+      "deps": []
+    },
+    "M8-02": {
+      "title": "Resolve controller identity across transport aliases",
+      "plan": "docs/tasks/controller-connections.md",
+      "done": false,
+      "deps": [
+        "M8-01",
+        "M8-04"
+      ]
+    },
+    "M8-03": {
+      "title": "Connect and select a target with generation tracking",
+      "plan": "docs/tasks/controller-connections.md",
+      "done": false,
+      "deps": [
+        "M8-01",
+        "M8-02"
+      ]
+    },
+    "M8-04": {
+      "title": "Evaluate and implement read endpoints and USB forwarding",
+      "plan": "docs/tasks/controller-connections.md",
+      "done": false,
+      "deps": [
+        "M8-01"
+      ]
+    },
+    "M8-05": {
+      "title": "Publish disconnect and read-only reconnect events",
+      "plan": "docs/tasks/controller-connections.md",
+      "done": false,
+      "deps": [
+        "M8-02",
+        "M8-03",
+        "M8-04"
+      ]
+    },
+    "M8-06": {
+      "title": "Validate the real controller and transport matrix",
+      "plan": "docs/tasks/controller-connections.md",
+      "done": false,
+      "deps": [
+        "M8-05"
+      ]
+    },
+    "M1-01": {
+      "title": "Show project/chat selection and busy ownership",
+      "plan": "docs/tasks/desktop-workspace.md",
+      "done": false,
+      "deps": []
+    },
+    "M1-02": {
+      "title": "Preserve state across layout and view changes",
+      "plan": "docs/tasks/desktop-workspace.md",
+      "done": false,
+      "deps": [
+        "M1-01"
+      ]
+    },
+    "M1-03": {
+      "title": "Present automatic and guided environment setup",
+      "plan": "docs/tasks/desktop-workspace.md",
+      "done": false,
+      "deps": [
+        "M1-01"
+      ]
+    },
+    "M1-04": {
+      "title": "Present provider and local-model setup",
+      "plan": "docs/tasks/desktop-workspace.md",
+      "done": false,
+      "deps": [
+        "M1-01"
+      ]
+    },
+    "M1-05": {
+      "title": "Present independent code and robot permission modes",
+      "plan": "docs/tasks/desktop-workspace.md",
+      "done": false,
+      "deps": [
+        "M1-01"
+      ]
+    },
+    "M1-06": {
+      "title": "Render a Driver Station-style hardware form and chooser",
+      "plan": "docs/tasks/desktop-workspace.md",
+      "done": false,
+      "deps": [
+        "M1-01"
+      ]
+    },
+    "M1-07": {
+      "title": "Display Java editor and actual diagnostic/build status",
+      "plan": "docs/tasks/desktop-workspace.md",
+      "done": false,
+      "deps": [
+        "M1-02",
+        "M5-07"
+      ]
+    },
+    "M1-08": {
+      "title": "Render diagnostics and exact robot operation controls",
+      "plan": "docs/tasks/desktop-workspace.md",
+      "done": false,
+      "deps": [
+        "M1-01"
+      ]
+    },
+    "M1-09": {
+      "title": "Host the isolated Panels view and external fallback",
+      "plan": "docs/tasks/desktop-workspace.md",
+      "done": false,
+      "deps": [
+        "M9-07",
+        "M10-04"
+      ]
+    },
+    "M1-10": {
+      "title": "Render lessons and personal progress",
+      "plan": "docs/tasks/desktop-workspace.md",
+      "done": false,
+      "deps": [
+        "M1-01"
+      ]
+    },
+    "M1-11": {
+      "title": "Connect workspace facades to generated APIs",
+      "plan": "docs/tasks/desktop-workspace.md",
+      "done": false,
+      "deps": [
+        "M1-03",
+        "M1-06",
+        "M1-07",
+        "M1-08",
+        "M1-10",
+        "M2-06",
+        "M4-06",
+        "M6-06",
+        "M7-07",
+        "M8-05",
+        "M10-05",
+        "M12-06",
+        "M5-08",
+        "M9-08",
+        "M11-10",
+        "M1-04",
+        "M1-05"
+      ]
+    },
+    "M1-12": {
+      "title": "Check module boundaries and fresh-scope cleanup",
+      "plan": "docs/tasks/desktop-workspace.md",
+      "done": false,
+      "deps": [
+        "M1-11",
+        "M3-06",
+        "M4-06"
+      ]
+    },
+    "M1-13": {
+      "title": "Audit complete bilingual UI and independent settings",
+      "plan": "docs/tasks/desktop-workspace.md",
+      "done": false,
+      "deps": [
+        "M1-11",
+        "M11-10"
+      ]
+    },
+    "M1-14": {
+      "title": "Verify packaged workspace and release acceptance",
+      "plan": "docs/tasks/desktop-workspace.md",
+      "done": false,
+      "deps": [
+        "M1-09",
+        "M1-12",
+        "M1-13",
+        "M3-07",
+        "M4-07",
+        "M7-08",
+        "M9-09",
+        "M10-06",
+        "M12-07"
+      ]
+    },
+    "M10-01": {
+      "title": "Decode versioned observation messages",
+      "plan": "docs/tasks/diagnostics-and-dashboard.md",
+      "done": false,
+      "deps": [
+        "M8-04"
+      ]
+    },
+    "M10-02": {
+      "title": "Maintain bounded provenance-aware snapshots",
+      "plan": "docs/tasks/diagnostics-and-dashboard.md",
+      "done": false,
+      "deps": [
+        "M10-01"
+      ]
+    },
+    "M10-03": {
+      "title": "Combine available logs and build evidence",
+      "plan": "docs/tasks/diagnostics-and-dashboard.md",
+      "done": false,
+      "deps": [
+        "M10-02"
+      ]
+    },
+    "M10-04": {
+      "title": "Publish safe dashboard descriptors and fallback",
+      "plan": "docs/tasks/diagnostics-and-dashboard.md",
+      "done": false,
+      "deps": [
+        "M10-02"
+      ]
+    },
+    "M10-05": {
+      "title": "Expose diagnostic queries and bind read transports",
+      "plan": "docs/tasks/diagnostics-and-dashboard.md",
+      "done": false,
+      "deps": [
+        "M10-03",
+        "M10-04",
+        "M8-05"
+      ]
+    },
+    "M10-06": {
+      "title": "Validate actual telemetry and fallback data access",
+      "plan": "docs/tasks/diagnostics-and-dashboard.md",
+      "done": false,
+      "deps": [
+        "M10-05",
+        "M8-06"
+      ]
+    },
+    "M4-01": {
+      "title": "Validate compatibility profiles",
+      "plan": "docs/tasks/environment-and-compatibility.md",
+      "done": true,
+      "deps": []
+    },
+    "M4-02": {
+      "title": "Inspect tools and imported project requirements",
+      "plan": "docs/tasks/environment-and-compatibility.md",
+      "done": true,
+      "deps": [
+        "M4-01"
+      ]
+    },
+    "M4-03": {
+      "title": "Guide setup through readiness checks",
+      "plan": "docs/tasks/environment-and-compatibility.md",
+      "done": true,
+      "deps": [
+        "M4-02"
+      ]
+    },
+    "M4-04": {
+      "title": "Download and prepare one missing prerequisite",
+      "plan": "docs/tasks/environment-and-compatibility.md",
+      "done": true,
+      "deps": [
+        "M4-02"
+      ]
+    },
+    "M4-05": {
+      "title": "Report prepared offline availability",
+      "plan": "docs/tasks/environment-and-compatibility.md",
+      "done": true,
+      "deps": [
+        "M4-01",
+        "M4-02"
+      ]
+    },
+    "M4-06": {
+      "title": "Expose setup API and compose build verification",
+      "plan": "docs/tasks/environment-and-compatibility.md",
+      "done": false,
+      "deps": [
+        "M4-03",
+        "M4-04",
+        "M4-05",
+        "M5-05"
+      ]
+    },
+    "M4-07": {
+      "title": "Evaluate clean-host setup and publish supported profiles",
+      "plan": "docs/tasks/environment-and-compatibility.md",
+      "done": false,
+      "deps": [
+        "M4-06",
+        "M5-08",
+        "M7-08",
+        "M8-06",
+        "M11-09"
+      ]
+    },
+    "M6-01": {
+      "title": "Read and update a shareable manifest by revision",
+      "plan": "docs/tasks/ftc-configuration-and-libraries.md",
+      "done": true,
+      "deps": []
+    },
+    "M6-02": {
+      "title": "Validate shared hardware commands",
+      "plan": "docs/tasks/ftc-configuration-and-libraries.md",
+      "done": true,
+      "deps": [
+        "M6-01"
+      ]
+    },
+    "M6-03": {
+      "title": "Inspect imported SDK and pathing dependencies",
+      "plan": "docs/tasks/ftc-configuration-and-libraries.md",
+      "done": false,
+      "deps": [
+        "M6-01"
+      ]
+    },
+    "M6-04": {
+      "title": "Propose new-project and managed-library changes",
+      "plan": "docs/tasks/ftc-configuration-and-libraries.md",
+      "done": false,
+      "deps": [
+        "M6-01",
+        "M6-03",
+        "M4-01",
+        "M11-03"
+      ]
+    },
+    "M6-05": {
+      "title": "Propose consistent Java hardware mappings",
+      "plan": "docs/tasks/ftc-configuration-and-libraries.md",
+      "done": false,
+      "deps": [
+        "M6-02",
+        "M6-03"
+      ]
+    },
+    "M6-06": {
+      "title": "Connect manifest commands to authorized editing",
+      "plan": "docs/tasks/ftc-configuration-and-libraries.md",
+      "done": false,
+      "deps": [
+        "M6-04",
+        "M6-05",
+        "M3-03",
+        "M5-02"
+      ]
+    },
+    "M11-01": {
+      "title": "Validate local content packages and bilingual IDs",
+      "plan": "docs/tasks/ftc-knowledge.md",
+      "done": true,
+      "deps": []
+    },
+    "M11-02": {
+      "title": "Query references by explicit version and language",
+      "plan": "docs/tasks/ftc-knowledge.md",
+      "done": true,
+      "deps": [
+        "M11-01"
+      ]
+    },
+    "M11-03": {
+      "title": "Author version-matched pathing comparisons and setup guides",
+      "plan": "docs/tasks/ftc-knowledge.md",
+      "done": false,
+      "deps": [
+        "M11-01"
+      ]
+    },
+    "M11-04": {
+      "title": "Author Java and FTC foundation lessons",
+      "plan": "docs/tasks/ftc-knowledge.md",
+      "done": true,
+      "deps": [
+        "M11-01"
+      ]
+    },
+    "M11-05": {
+      "title": "Author driver-control and mechanism exercises",
+      "plan": "docs/tasks/ftc-knowledge.md",
+      "done": false,
+      "deps": [
+        "M11-04"
+      ]
+    },
+    "M11-06": {
+      "title": "Author configuration debugging and deployment guidance",
+      "plan": "docs/tasks/ftc-knowledge.md",
+      "done": false,
+      "deps": [
+        "M11-04"
+      ]
+    },
+    "M11-07": {
+      "title": "Author the PedroPathing autonomous track and capstone",
+      "plan": "docs/tasks/ftc-knowledge.md",
+      "done": false,
+      "deps": [
+        "M11-03",
+        "M11-04",
+        "M11-05",
+        "M11-06"
+      ]
+    },
+    "M11-08": {
+      "title": "Author the Road Runner autonomous track and capstone",
+      "plan": "docs/tasks/ftc-knowledge.md",
+      "done": false,
+      "deps": [
+        "M11-03",
+        "M11-04",
+        "M11-05",
+        "M11-06"
+      ]
+    },
+    "M11-09": {
+      "title": "Package references for prepared offline use",
+      "plan": "docs/tasks/ftc-knowledge.md",
+      "done": false,
+      "deps": [
+        "M11-02",
+        "M11-03",
+        "M11-04",
+        "M11-07",
+        "M11-05",
+        "M11-06",
+        "M11-08"
+      ]
+    },
+    "M11-10": {
+      "title": "Expose content queries and review complete bilingual coverage",
+      "plan": "docs/tasks/ftc-knowledge.md",
+      "done": false,
+      "deps": [
+        "M11-02",
+        "M11-09",
+        "M11-07",
+        "M11-08"
+      ]
+    },
+    "M5-01": {
+      "title": "Own documents independently of editor views",
+      "plan": "docs/tasks/java-development.md",
+      "done": true,
+      "deps": []
+    },
+    "M5-02": {
+      "title": "Save and apply edits with conflict checks",
+      "plan": "docs/tasks/java-development.md",
+      "done": true,
+      "deps": [
+        "M5-01"
+      ]
+    },
+    "M5-03": {
+      "title": "Evaluate FTC-aware Java import before building the full editor",
+      "plan": "docs/tasks/java-development.md",
+      "done": false,
+      "deps": [
+        "M4-01"
+      ]
+    },
+    "M5-04": {
+      "title": "Adapt scoped language-service requests",
+      "plan": "docs/tasks/java-development.md",
+      "done": false,
+      "deps": [
+        "M5-01",
+        "M5-03"
+      ]
+    },
+    "M5-05": {
+      "title": "Build saved revisions and retain actual output",
+      "plan": "docs/tasks/java-development.md",
+      "done": false,
+      "deps": [
+        "M5-01"
+      ]
+    },
+    "M5-06": {
+      "title": "Issue and revalidate immutable artifact references",
+      "plan": "docs/tasks/java-development.md",
+      "done": false,
+      "deps": [
+        "M5-05"
+      ]
+    },
+    "M5-07": {
+      "title": "Connect Monaco to document and language-service facades",
+      "plan": "docs/tasks/java-development.md",
+      "done": false,
+      "deps": [
+        "M5-01",
+        "M5-02",
+        "M5-04"
+      ]
+    },
+    "M5-08": {
+      "title": "Expose Java API and validate real editor/build integration",
+      "plan": "docs/tasks/java-development.md",
+      "done": false,
+      "deps": [
+        "M5-04",
+        "M5-05",
+        "M5-06",
+        "M5-07"
+      ]
+    },
+    "M12-01": {
+      "title": "Persist personal progress with project-linked attempts",
+      "plan": "docs/tasks/learning-and-progress.md",
+      "done": true,
+      "deps": []
+    },
+    "M12-02": {
+      "title": "Select entry level and skip familiar lessons",
+      "plan": "docs/tasks/learning-and-progress.md",
+      "done": true,
+      "deps": [
+        "M12-01"
+      ]
+    },
+    "M12-03": {
+      "title": "Choose a track and return exercise requests",
+      "plan": "docs/tasks/learning-and-progress.md",
+      "done": false,
+      "deps": [
+        "M12-02"
+      ]
+    },
+    "M12-04": {
+      "title": "Validate submitted evidence and retain provenance",
+      "plan": "docs/tasks/learning-and-progress.md",
+      "done": false,
+      "deps": [
+        "M12-01",
+        "M12-03"
+      ]
+    },
+    "M12-05": {
+      "title": "Evaluate both complete-robot capstones",
+      "plan": "docs/tasks/learning-and-progress.md",
+      "done": false,
+      "deps": [
+        "M12-04",
+        "M11-07",
+        "M11-08"
+      ]
+    },
+    "M12-06": {
+      "title": "Wire exercise evidence collection through normal workflows",
+      "plan": "docs/tasks/learning-and-progress.md",
+      "done": false,
+      "deps": [
+        "M12-03",
+        "M12-04",
+        "M12-05",
+        "M11-02",
+        "M5-06",
+        "M9-05",
+        "M10-05"
+      ]
+    },
+    "M12-07": {
+      "title": "Validate learning outcome and offline restoration",
+      "plan": "docs/tasks/learning-and-progress.md",
+      "done": false,
+      "deps": [
+        "M12-06",
+        "M11-10",
+        "M1-10",
+        "M1-11"
+      ]
+    },
+    "M2-01": {
+      "title": "Associate canonical project folders",
+      "plan": "docs/tasks/projects-and-chats.md",
+      "done": true,
+      "deps": []
+    },
+    "M2-02": {
+      "title": "Persist separate chat-to-Session membership",
+      "plan": "docs/tasks/projects-and-chats.md",
+      "done": true,
+      "deps": [
+        "M2-01"
+      ]
+    },
+    "M2-03": {
+      "title": "Acquire one atomic project execution lease",
+      "plan": "docs/tasks/projects-and-chats.md",
+      "done": true,
+      "deps": [
+        "M2-01",
+        "M2-02"
+      ]
+    },
+    "M2-04": {
+      "title": "Submit without admitting a busy chat's draft",
+      "plan": "docs/tasks/projects-and-chats.md",
+      "done": true,
+      "deps": [
+        "M2-02",
+        "M2-03"
+      ]
+    },
+    "M2-05": {
+      "title": "Release ownership after settled stop or completion",
+      "plan": "docs/tasks/projects-and-chats.md",
+      "done": true,
+      "deps": [
+        "M2-03",
+        "M2-04"
+      ]
+    },
+    "M2-06": {
+      "title": "Expose project API and compose the execution gate",
+      "plan": "docs/tasks/projects-and-chats.md",
+      "done": true,
+      "deps": [
+        "M2-01",
+        "M2-02",
+        "M2-03",
+        "M2-04",
+        "M2-05",
+        "M3-02"
+      ]
+    },
+    "M9-01": {
+      "title": "Prepare typed operations under independent action policy",
+      "plan": "docs/tasks/robot-approvals-and-operations.md",
+      "done": false,
+      "deps": []
+    },
+    "M9-02": {
+      "title": "Bind single-use approval to exact operation context",
+      "plan": "docs/tasks/robot-approvals-and-operations.md",
+      "done": false,
+      "deps": [
+        "M9-01"
+      ]
+    },
+    "M9-03": {
+      "title": "Serialize mutations per physical controller",
+      "plan": "docs/tasks/robot-approvals-and-operations.md",
+      "done": false,
+      "deps": [
+        "M9-01"
+      ]
+    },
+    "M9-04": {
+      "title": "Revalidate current action preconditions immediately before dispatch",
+      "plan": "docs/tasks/robot-approvals-and-operations.md",
+      "done": false,
+      "deps": [
+        "M9-02",
+        "M9-03"
+      ]
+    },
+    "M9-05": {
+      "title": "Execute once and persist confirmed or unknown outcomes",
+      "plan": "docs/tasks/robot-approvals-and-operations.md",
+      "done": false,
+      "deps": [
+        "M9-04"
+      ]
+    },
+    "M9-06": {
+      "title": "Implement versioned mutation transport adapters",
+      "plan": "docs/tasks/robot-approvals-and-operations.md",
+      "done": false,
+      "deps": [
+        "M9-04",
+        "M9-05",
+        "M8-04"
+      ]
+    },
+    "M9-07": {
+      "title": "Evaluate enforceable process and dashboard isolation",
+      "plan": "docs/tasks/robot-approvals-and-operations.md",
+      "done": false,
+      "deps": []
+    },
+    "M9-08": {
+      "title": "Enforce the evaluated boundary in every production entry point",
+      "plan": "docs/tasks/robot-approvals-and-operations.md",
+      "done": false,
+      "deps": [
+        "M9-06",
+        "M9-07",
+        "M8-05",
+        "M5-06",
+        "M3-05",
+        "M1-09"
+      ]
+    },
+    "M9-09": {
+      "title": "Validate deployment and controls on physical robots",
+      "plan": "docs/tasks/robot-approvals-and-operations.md",
+      "done": false,
+      "deps": [
+        "M9-08",
+        "M8-06",
+        "M10-06"
+      ]
+    }
+  },
+  "missing": [],
+  "cycles": [],
+  "dependencyReady": [
+    "M3-05",
+    "M7-02",
+    "M7-05",
+    "M8-04",
+    "M1-01",
+    "M6-03",
+    "M11-03",
+    "M11-05",
+    "M11-06",
+    "M5-03",
+    "M5-05",
+    "M12-03",
+    "M9-01",
+    "M9-07"
+  ]
+}

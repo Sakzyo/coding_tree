@@ -1,6 +1,6 @@
 # M12-03 exercise-request brief — 2026-10-08
 
-PREPARED ONLY, not dispatched. Root fills source checkpoint and writer ownership at dispatch. Read AGENTS.md (including Schema), docs/prompt.md, M12 exact task/module, proposal LRN-04, M12-01/02 implementation/review and docs/validation/M12-03-preflight.md. Reviewed M12-02 is the prerequisite; authored real course/capstone and platform/physical gates remain separate.
+Released to `/root/m12_03` as sole product writer at source checkpoint `768ec206c`, after independent M9-01 approval on 2026-10-08. Existing unchanged baseline evidence is retained; meaningful M12-03 behavioral RED remains required. Read AGENTS.md (including Schema), docs/prompt.md, M12 exact task/module, proposal LRN-04, M12-01/02 implementation/review and docs/validation/M12-03-preflight.md. Reviewed M12-02 is the prerequisite; authored real course/capstone and platform/physical gates remain separate.
 
 Allowed product paths: packages/core/src/ftc/learning.ts; packages/core/test/ftc/learning-and-progress/m12-03.test.ts; necessary producer-owned packages/schema/src/ftc-learning.ts and packages/schema/test/ftc-learning.test.ts canonical command/result extensions. No M11 metadata/runtime/content changes, M6 files, SQL/migration, composition, host, Protocol/Client, context/sanitizer or operations changes. Evidence docs/validation/M12-03-implementation.md and docs/validation/m12-03/* only. Root owns Git/index/ledger/shared exports; no subagents/worker commits.
 
@@ -15,6 +15,12 @@ Return a lesson-level ExerciseRequest preserving ALL canonical exercise records/
 Neither allows declared generic Java/hardware/driver-control foundations, but returns pathing_required for declared library-specific work. Selected Pedro/Road Runner must match the course's declared library and exact supplied concrete version; wrong library/version is incompatibility, never migration or substitution. Generic SDK course remains applicable under an explicit library binding (reviewed M12-02 rule). Missing/invalid/local-unavailable/translation/version/lesson/binding failures use stable existing errors where applicable, never successful request/guidance.
 
 This method returns only a request; no editing, agent startup, builds, robot operations, attempt/entry/skip persistence, configuration changes or automatic progress awards. Existing service lifecycle retains owned lookup cancellation/disposal semantics; source import starts no I/O. No new persistence or runtime.
+
+## Resume reconciliation
+
+Read `docs/validation/M12-03-resume-reconciliation.md` before implementation. Preserve the existing borrowed database and producer-owned self-scoped lookup lifetime; the preceding cleanup requirement means caller cancellation must interrupt and await supplied port cleanup, not a new M12 owner/registry. No owner_closed contract or service lifecycle redesign is assigned.
+
+Use a narrow exercise-specific trusted binding that receives the captured complete request and binds projectID, configurationRevision, SDK, courseVersion, declared track, and paired concrete content library/version for a library-specific course. Curriculum applicability is distinct from installed project facts: with neither, the content pair permits canonical local translated course/lesson verification before pathing_required, but must never become an installed-library claim or exercise request. With a selected library, track and exact library/version must agree with supplied project/configuration facts. Missing trusted declarations fail closed. Verify returned context binding before lookup; verify metadata, exact language/local content and lesson before guidance. Preserve SDK-wide generic courses under explicit project library bindings.
 
 ## Verification
 

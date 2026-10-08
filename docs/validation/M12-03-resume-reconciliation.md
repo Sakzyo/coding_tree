@@ -1,0 +1,67 @@
+# M12-03 resume reconciliation — 2026-10-08
+
+Read-only reconciliation before implementation. Assigned output: this report only. No product/test edits, tests, commits, Git/index/ledger changes, subagents, network, applications, providers, toolchains or robot operations were performed. No changing M9 operation sources or review snapshots were inspected. Optional unchanged baseline tests were not run: the reviewed prerequisite's exact source/test hashes still match, and source inspection identifies the missing exercise contracts directly. This report provides dispatch guidance, not M12-03 acceptance evidence.
+
+## Prerequisite and current source checkpoint
+
+M12-03's sole task prerequisite is M12-02 (`docs/tasks/learning-and-progress.md:108`). M12-02 is checked and explicitly records candidate `181f495ee` plus repaired/independently approved `088310368` (`:102`). The appended fix-round review in `docs/validation/M12-02-review.md` approves specification compliance and quality, closes I1, and retains production curriculum, classroom, physical, platform/UI and composition limits.
+
+Current `learning.ts:153–162` implements the reviewed repair: SDK-wide records with neither library field remain applicable under an explicit project library binding; partial record library/range pairs reject; complete pairs require matching library and satisfying explicit version. The actual current file hashes match `docs/validation/m12-02/fix1-source-sha256.txt` exactly:
+
+| Stable source | Current SHA-256 |
+| --- | --- |
+| `packages/core/src/ftc/learning.ts` | `33d6c3d3d8f6ae7a769355fb95f33ef99f3f1382a05dcb38fae2b4878f171884` |
+| `packages/core/test/ftc/learning-and-progress/m12-02.test.ts` | `e482c9d700d7615b313eadd6caf436fd2755a0407ec1b55551b6a17d811b7fca` |
+| `packages/schema/src/ftc-learning.ts` | `5499e84078c458f0390144170b1a7e3fd63d061945ed6eb40853351af7cca352` |
+| `packages/schema/src/ftc-knowledge.ts` | `8d6120ae9755c2986baaa99d9bc44916215a9c6b13216ff96e74b861dbca972b` |
+| `packages/core/src/ftc/knowledge.ts` | `9262770dd0b10c043677cb74f5656a62805ed89c9fe82be3932ace8f0b12c113` |
+| `packages/schema/src/ftc-project.ts` | `98a7d751726b594ff598852faff48ea23076ed868a9eb82ae1d730ea7a2c4920` |
+| `packages/schema/src/ftc-configuration.ts` | `1940fc8a123213368bce4392dca08b3f49c56df88d02f911c3fe1efcda691b53` |
+
+Historical recorded repair evidence is 141 Core/M11 tests and 708 assertions, with Core types/lint/format/diff clean; unchanged Schema evidence is 10 tests/39 assertions. These are inspected prior reports, not fresh executions. No current M12-03 method, command/result Schema or focused test exists. The prepared brief is still a proposal until root assigns its checkpoint/writer ownership after the active review gate.
+
+## Exact scope and preserved decisions
+
+The brief already resolves the preflight's principal choices: separate wholly generic/library-specific courses, an explicit trusted track declaration, explicit `en | zh` language, `localOnly:true`, a lesson-level request retaining every canonical exercise, and `foundations | pedro | road-runner` track vocabulary. This aligns with LRN-04 (`docs/proposal.md:181`) and the M12 design (`docs/high-level-design.md:324`). Neither delays only library-specific autonomous work; Java/hardware/driver-control foundations stay available. Classification cannot come from topics, identifiers, translated prose or project selection. Missing classification cannot default to foundations. Mixed-course lesson metadata remains outside scope.
+
+Allowed implementation remains only Core `learning.ts`, new `m12-03.test.ts`, and necessary canonical Schema `ftc-learning.ts`/test changes. Canonical Schema values must be re-exported by exact identity through the existing Core facade. Preserve the old optional navigation `course` port and M12-01 bare-lessons callers. No M11 runtime/metadata/content edits, M6 producer/inspection imports, SQL/migration, root barrel, composition, host, Protocol/Client, operations or execution changes are required. Root owns shared state, commits and completion credit.
+
+`requiredEvidence` must retain the complete ordered canonical `FtcKnowledge.Exercise[]`: IDs, prompts, explanation/application criteria, required true flags and true/false/omitted physical policy. It is not the existing recorded-attempt `FtcLearning.Evidence[]` vocabulary. No reading/build/physical requirement can be synthesized from prose. A successful result records exact resolved course/lesson versions, project identity, configuration revision, SDK and the actual selected project-library/version binding; a generic course still returns foundations when a project has selected a pathing library. No attempt/entry/skip persistence, award or operation starts.
+
+## Specific gaps and minimum refinements
+
+### 1. Exercise binding must be request-bound and distinguish curriculum applicability from project installation
+
+Existing `LessonLookup.course.binding` accepts only `{courseID}` (`learning.ts:32–44`). It cannot prove that closed-over SDK/library facts belong to this request's project/configuration. M2 `ProjectContext` supplies canonical local `Project.ID`, root and Location, with no SDK/library facts (`ftc-project.ts:13–21`). M6 `ManifestSnapshot` supplies revision and managed choice, with no installed library version (`ftc-configuration.ts:28–42`). Inspection results explicitly contain optional/conflicting/unknown per-file observations, not an atomic version authority. No source currently supplies a combined trusted project applicability projection. Defining M12's consumed boundary does not make that missing production adapter implemented.
+
+Minimum refinement: add an exercise-specific trusted binding capability receiving the fully captured command context: course/lesson/language, canonical project identity and supplied SDK/library/version facts, and canonical configuration snapshot/revision/managed choice. It must declare `courseVersion`, the wholly-course track, and for library-specific content a paired canonical content-library name and concrete content-library version. Its reply must be bound to the request context (explicit matching identity/revision/applicability values or equivalent producer contract), rather than accepting an unrelated navigation closure. Copy/decode the reply before later waits. Missing, malformed or mismatched bindings fail closed with existing typed failures where applicable. Preserve the old navigation binding signature.
+
+There is a concrete guidance/error precedence problem without that content pair: canonical M11 filters library applicability before translation/local availability (`knowledge.ts:62–79`). A library-specific query with no library/version returns `incompatible`, so an early declaration-only `pathing_required` would conceal missing translation, unavailable local bytes or nonexistent lessons. The prepared brief correctly prohibits those failures becoming guidance, but had not specified the extra trusted facts needed to check them.
+
+Coordinator-confirmed recommendation: with `neither`, the trusted content pair represents **curriculum applicability only**. Use it to perform the canonical local translated lookup and validate exact course/lesson identity and versions before returning `pathing_required`. Never report it as an installed/selected project library, migrate configuration or fabricate an installed version. If the pair is unavailable, fail unavailable/invalid rather than guessing. With Pedro/Road Runner selected, require the declaration and binding to agree with the project's managed choice and exact supplied canonical library/version; the content pair must not substitute another version. Generic courses have no library-specific declaration and remain SDK-wide under either project choice.
+
+The manifest's `pedro`/`road-runner` literals are track/selection values; canonical content-library names are supplied binding facts, not translated display strings inferred from those literals. Matching found M11 metadata must agree with the declaration: foundations requires a generic record; a library-specific track requires the matching paired record library/range and valid SDK/version applicability. Select exactly one matching ID/course-version/language record, never first/latest. Validate the selected lesson exists and retain M12's current lesson-version/structural-policy reconciliation without comparing translated prose across languages.
+
+### 2. Exercise retrieval must bypass entry-point requirements without weakening navigation
+
+Current `course()` does appropriate identity/applicability/local/policy validation, then requires `entryPoints` (`learning.ts:168–194`). The actual English/Chinese foundations documents lack entry points and explicit physical flags. Direct reuse of navigation `course()` therefore rejects valid exercise content with `missing_entry_points`.
+
+Minimum resolution: isolate the shared content validation or use a bounded exercise-specific resolver that does not require navigation entry metadata. Keep select/skip/next/progress semantics unchanged. Preserve local document, exact course/lesson versions, unique IDs, canonical policy and present entry-reference validity. Missing entry points must not prevent exercise retrieval; omitted physical metadata must stay omitted.
+
+### 3. Brief lifecycle wording overstates M12 ownership
+
+`layer(lookup, db)` uses `Layer.succeed` and borrows its caller's externally scoped database (`learning.ts:60–62`, `:255`). Supplied public content effects require no external Scope parameter. Existing cancellation fixtures self-scope their finalizers (`m12-01.test.ts:370`, `m12-02.test.ts:450`); M11's actual lookup owns `Effect.scoped` (`knowledge.ts:40–43`). M12-01/02 reviews explicitly preserve the borrowed DB lifetime.
+
+Coordinator-confirmed recommendation: interpret “owned lookup cancellation/disposal” as preservation of interruptible supplied self-scoped lookup effects and producer-owned cleanup. Add no new M12 owner service, connection disposal or sibling startup. Exercise success/failure/interruption must release supplied port resources while leaving the borrowed DB usable. Capture/copy every nested input before the first asynchronous binding wait; freeze or otherwise protect port-facing snapshots so mutation cannot retarget the project/configuration/course. Copy returned canonical records before later asynchronous reconciliation.
+
+## Verification handoff
+
+The original focused assertion remains exactly `neither permits foundations but blocks autonomous track`, with real M12 service/temp SQLite and supplied synthetic canonical ports, an intended RED for missing behavior, then GREEN. No test should clone the applicability algorithm. Cover both selected libraries, generic+explicit-library success, wrong track/exact version, missing/partial binding and classification, wrong project/configuration, multiple exercises, true/false/omitted physical flags, missing entry points, requested zh, local absence, missing translation/lesson and malformed/mixed versions. Specifically cover neither+library-content failures to prove guidance is returned only after valid local lesson resolution. Verify empty attempt/entry/skip tables, unchanged configuration, zero operations, captured-input mutation, port-result mutation and cleanup on success/failure/interruption.
+
+Pinned Bun in the brief is a directory: executable `/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun`, or prepend its containing directory as prior evidence drivers do. Use task-isolated OPENCODE_TEST_HOME and XDG roots, package-local test/typecheck invocations, scoped imports/lint/format/diff and fresh frozen hashes. The planned `packages/core/test/ftc-boundaries.test.ts` and M12-03 focused test are currently absent; never count an absent test selection as passing. Core selections are the new focused test, affected learning suite, and existing `ftc-knowledge/course-metadata.test.ts`, `m11-02.test.ts`, `m11-04.test.ts`; Schema selection is `test/ftc-learning.test.ts`. No migration or Client generation is needed.
+
+## Evidence limits and readiness
+
+Read root/Schema AGENTS, the brief/preflight, docs/prompt.md, exact M12 plan, relevant proposal/design/global contract and M11/M6 sections, M12-01/02 implementation/review evidence, current learning/Schema/M11 source, focused predecessor/query/metadata tests and foundations documents. Source SHA-256 reads completed successfully; two existence probes intentionally exit 1 for the absent planned tests. A guessed content-directory discovery returned absent before the actual `packages/core/resources/ftc/content` path was located; it does not indicate a product failure.
+
+The next isolated implementation is dependency-ready after root records the binding/lifecycle refinements and dispatch ownership. No learning implementation was started. Real M11-07/08 authored autonomous tracks/capstones, trusted production project/content binding, M12-04 evidence validation, M12-05 capstones, M12-06 routing/composition, offline restoration/course acceptance, Chinese terminology review, classroom independent application, physical configuration/tuning/diagnosis/deployment, Windows/macOS UI/runtime and release gates remain unrun and separate. Synthetic metadata and trusted fixture declarations demonstrate only the assigned module behavior; they cannot establish actual curriculum quality, installed versions, robot correctness or physical competence.
