@@ -1,0 +1,127 @@
+bun test v1.3.14 (0d9b296a)
+
+test-browser/ftc/desktop-workspace/m1-01.test.ts:
+(pass) busy project identifies active chat without submitting drafts [15.30ms]
+(pass) idle transitions retain drafts and only an explicit send admits once [5.12ms]
+(pass) project and chat selection restore independent drafts and exact Session presentation [5.65ms]
+(pass) same owner can deliberately submit with canonical delivery options [3.07ms]
+(pass) stop captures the displayed owner and never infers idle on completion [7.24ms]
+(pass) raced busy submission preserves original draft and never retries on idle [4.06ms]
+(pass) deferred admission clears only unchanged original text despite later selection [5.63ms]
+169 | const admitted = (request: FtcProject.SubmitPrompt): FtcProject.SubmitResult => ({
+170 |   kind: "admitted",
+171 |   receipt: SessionInput.Admitted.make({
+172 |     admittedSeq: 1,
+173 |     id: SessionMessage.ID.make("msg_admitted"),
+174 |     sessionID: request.chat.sessionID,
+                     ^
+TypeError: undefined is not an object (evaluating 'request.chat')
+      at admitted (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:174:16)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:291:18)
+(fail) edit and revert while admission waits still preserves the user's edit [4.22ms]
+(pass) deferred failure belongs to the original chat and leaves the later chat untouched [6.24ms]
+(pass) structured project_changed retains draft and requests explicit reopen [2.76ms]
+(pass) structured session_mismatch retains draft and requests explicit reopen [2.92ms]
+(pass) structured chat_session_conflict retains draft and requests explicit reopen [2.83ms]
+(pass) execution unavailable retains input with localized recovery [4.13ms]
+(pass) owner event supersedes an older initial snapshot [2.84ms]
+(pass) obsolete target queries abort and late data or rejection cannot replace current view [2.74ms]
+(pass) active failure is not idle and explicit retry only rechecks [2.66ms]
+(pass) listChats failure is not idle and explicit retry only rechecks [2.65ms]
+(pass) invalid chat or owner membership is never presented as a runnable identity [1.44ms]
+(pass) explicit create forwards exact selected folder then canonical context [2.56ms]
+(pass) explicit open forwards exact selected folder then canonical context [4.01ms]
+(pass) new chat uses association ID and selects only canonical success [2.65ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:424:8)
+(fail) create rejection does not fabricate success or lose drafts [1.65ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:424:8)
+(fail) open rejection does not fabricate success or lose drafts [1.37ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:424:8)
+(fail) createChat rejection does not fabricate success or lose drafts [1.34ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:424:8)
+(fail) stop rejection does not fabricate success or lose drafts [1.30ms]
+(pass) late new-chat success cannot retarget a later project selection [3.81ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:448:8)
+(fail) language switching localizes controls, ownership, guidance and accessibility without resetting draft [1.42ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:470:8)
+(fail) unmount cancels observations and pending commands without stopping execution [1.41ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:489:9)
+(fail) fresh component scopes have independent drafts and subscriptions [2.50ms]
+
+8 tests failed:
+(fail) edit and revert while admission waits still preserves the user's edit [4.22ms]
+(fail) create rejection does not fabricate success or lose drafts [1.65ms]
+(fail) open rejection does not fabricate success or lose drafts [1.37ms]
+(fail) createChat rejection does not fabricate success or lose drafts [1.34ms]
+(fail) stop rejection does not fabricate success or lose drafts [1.30ms]
+(fail) language switching localizes controls, ownership, guidance and accessibility without resetting draft [1.42ms]
+(fail) unmount cancels observations and pending commands without stopping execution [1.41ms]
+(fail) fresh component scopes have independent drafts and subscriptions [2.50ms]
+
+ 21 pass
+ 8 fail
+ 83 expect() calls
+Ran 29 tests across 1 file. [568.00ms]

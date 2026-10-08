@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+test-browser/ftc/desktop-workspace/m1-01.test.ts:
+146 | }
+147 | 
+148 | test("busy project identifies active chat without submitting drafts", async () => {
+149 |   const view = fixture()
+150 |   await flush()
+151 |   expect(view.host.querySelector("article")?.getAttribute("data-active-chat")).toBe(a2.chatID)
+                                                                                     ^
+error: expect(received).toBe(expected)
+
+Expected: "chat_a2"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:151:80)
+(fail) busy project identifies active chat without submitting drafts [8.53ms]
+
+ 0 pass
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [665.00ms]

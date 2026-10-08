@@ -1,0 +1,93 @@
+bun test v1.3.14 (0d9b296a)
+
+test-browser/ftc/desktop-workspace/m1-01.test.ts:
+(pass) busy project identifies active chat without submitting drafts [14.54ms]
+(pass) idle transitions retain drafts and only an explicit send admits once [4.61ms]
+(pass) project and chat selection restore independent drafts and exact Session presentation [5.34ms]
+(pass) same owner can deliberately submit with canonical delivery options [3.12ms]
+(pass) stop captures the displayed owner and never infers idle on completion [7.16ms]
+(pass) raced busy submission preserves original draft and never retries on idle [4.34ms]
+(pass) deferred admission clears only unchanged original text despite later selection [5.61ms]
+(pass) edit and revert while admission waits still preserves the user's edit [4.04ms]
+(pass) deferred failure belongs to the original chat and leaves the later chat untouched [7.29ms]
+(pass) structured project_changed retains draft and requests explicit reopen [2.80ms]
+(pass) structured session_mismatch retains draft and requests explicit reopen [2.80ms]
+(pass) structured chat_session_conflict retains draft and requests explicit reopen [2.65ms]
+(pass) execution unavailable retains input with localized recovery [2.69ms]
+(pass) owner event supersedes an older initial snapshot [2.78ms]
+(pass) obsolete target queries abort and late data or rejection cannot replace current view [5.69ms]
+(pass) active failure is not idle and explicit retry only rechecks [2.96ms]
+(pass) listChats failure is not idle and explicit retry only rechecks [2.72ms]
+(pass) invalid chat or owner membership is never presented as a runnable identity [1.40ms]
+(pass) explicit create forwards exact selected folder then canonical context [2.55ms]
+(pass) explicit open forwards exact selected folder then canonical context [2.62ms]
+(pass) new chat uses association ID and selects only canonical success [4.16ms]
+(pass) create rejection does not fabricate success or lose drafts [2.81ms]
+(pass) open rejection does not fabricate success or lose drafts [2.65ms]
+(pass) createChat rejection does not fabricate success or lose drafts [2.70ms]
+(pass) stop rejection does not fabricate success or lose drafts [2.62ms]
+(pass) late new-chat success cannot retarget a later project selection [3.91ms]
+(pass) language switching localizes controls, ownership, guidance and accessibility without resetting draft [4.39ms]
+(pass) unmount cancels observations and pending commands without stopping execution [4.10ms]
+(pass) fresh component scopes have independent drafts and subscriptions [2.84ms]
+(pass) unmount before scheduled invocation retires the pending submit [2.62ms]
+(pass) reopen recovery sends the displayed canonical folder without choosing a different target [3.90ms]
+(pass) mutable supplied project and owner records cannot retarget presentation or stop [4.49ms]
+(pass) newer owner event wins over an older busy submit result [2.88ms]
+(pass) foreign busy result or admission receipt retains original draft and membership [5.57ms]
+(pass) conflicting new-chat mapping retains selected identity [2.76ms]
+(pass) cancelled folder selection performs no association command [2.63ms]
+(pass) folder selection finishing after unmount cannot open an association [5.27ms]
+(pass) Chinese failures and recovery use complete phrases [5.52ms]
+(pass) supplied chat stop handler targets the displayed owner and retires with its view [3.72ms]
+(pass) structured list membership failure retains prior presentation and offers exact reopen [3.07ms]
+803 | test("an empty project catalog still displays association failure and allows explicit retry", async () => {
+804 |   const calls: string[] = []
+805 |   const view = fixture({ create: async () => { calls.push("create"); throw new Error("private") } }, [])
+806 |   view.button('[data-action="create"]').click()
+807 |   await flush()
+808 |   expect(view.host.textContent).toContain("Request failed")
+                                      ^
+
+[Bounded excerpt: 801282 middle lines omitted; full original retained locally.]
+
+  replaceChild: [Function: replaceChild],
+  isEqualNode: [Function: isEqualNode],
+  compareDocumentPosition: [Function: compareDocumentPosition],
+  normalize: [Function: normalize],
+  isSameNode: [Function: isSameNode],
+  ELEMENT_NODE: 1,
+  ATTRIBUTE_NODE: 2,
+  TEXT_NODE: 3,
+  CDATA_SECTION_NODE: 4,
+  COMMENT_NODE: 8,
+  DOCUMENT_NODE: 9,
+  DOCUMENT_TYPE_NODE: 10,
+  DOCUMENT_FRAGMENT_NODE: 11,
+  PROCESSING_INSTRUCTION_NODE: 7,
+  DOCUMENT_POSITION_CONTAINED_BY: 16,
+  DOCUMENT_POSITION_CONTAINS: 8,
+  DOCUMENT_POSITION_DISCONNECTED: 1,
+  DOCUMENT_POSITION_FOLLOWING: 4,
+  DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: 32,
+  DOCUMENT_POSITION_PRECEDING: 2,
+  [Symbol(replaceChild)]: [Function],
+  [Symbol(observeMutations)]: [Function],
+  [Symbol(unobserveMutations)]: [Function],
+  [Symbol(reportMutation)]: [Function],
+  [Symbol(clearCache)]: [Function],
+  [Symbol(connectedToNode)]: [Function],
+  [Symbol(disconnectedFromNode)]: [Function],
+}
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:822:53)
+(fail) a successful owner event recovers failed observation without sending its draft [246.89ms]
+
+2 tests failed:
+(fail) an empty project catalog still displays association failure and allows explicit retry [2.36ms]
+(fail) a successful owner event recovers failed observation without sending its draft [246.89ms]
+
+ 40 pass
+ 2 fail
+ 149 expect() calls
+Ran 42 tests across 1 file. [747.00ms]

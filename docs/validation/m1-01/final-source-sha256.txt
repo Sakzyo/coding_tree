@@ -1,0 +1,6 @@
+a1650462d436f59b7384182f1fcc48e60eed98866c590212fc24918a18d423cd  packages/app/src/ftc/facades.ts
+02e49b5944251561c67d46e0c3f6221c3a7d2d855561f71c201489c4ad2f33a3  packages/app/src/ftc/workspace.tsx
+f21cbdd3c3b9e5f603b238f58dea4ab35f337b22aceb2cb07e0c6d9056798388  packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts
+41e013b8bb83f8a2555f8e78b71492450ee7360c966bb15cc5da6c2be2843a9d  packages/app/src/i18n/en.ts
+1bed34f5b3617833cda74b970d5dfa3694f9745cf26f1a7c1fba72afd0b3400b  packages/app/src/i18n/zh.ts
+a16ee0cde6446de138fb488db59191d7610e275b9ca3a06d6a61d84eb7df98be  packages/app/src/i18n/parity.test.ts

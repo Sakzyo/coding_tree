@@ -1,0 +1,72 @@
+bun test v1.3.14 (0d9b296a)
+
+test-browser/ftc/desktop-workspace/m1-01.test.ts:
+(pass) busy project identifies active chat without submitting drafts [13.63ms]
+(pass) idle transitions retain drafts and only an explicit send admits once [5.04ms]
+(pass) project and chat selection restore independent drafts and exact Session presentation [7.07ms]
+(pass) same owner can deliberately submit with canonical delivery options [3.15ms]
+(pass) stop captures the displayed owner and never infers idle on completion [5.62ms]
+(pass) raced busy submission preserves original draft and never retries on idle [4.06ms]
+(pass) deferred admission clears only unchanged original text despite later selection [5.46ms]
+(pass) edit and revert while admission waits still preserves the user's edit [5.51ms]
+(pass) deferred failure belongs to the original chat and leaves the later chat untouched [6.21ms]
+(pass) structured project_changed retains draft and requests explicit reopen [2.85ms]
+(pass) structured session_mismatch retains draft and requests explicit reopen [2.65ms]
+(pass) structured chat_session_conflict retains draft and requests explicit reopen [2.59ms]
+(pass) execution unavailable retains input with localized recovery [4.41ms]
+(pass) owner event supersedes an older initial snapshot [2.89ms]
+358 |     listChats: (request, signal) => { signals.push(signal); return request.projectID === a.projectID ? list.promise : Promise.resolve([b1]) },
+359 |     active: (request, signal) => { signals.push(signal); return request.projectID === a.projectID ? active.promise : Promise.resolve({ projectID: b.projectID }) },
+360 |   })
+361 |   view.button(`[data-project-id="${b.projectID}"]`).click()
+362 |   await flush()
+363 |   expect(signals.slice(0, 2).every((signal) => signal.aborted)).toBe(true)
+                                                                      ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:363:65)
+(fail) obsolete target queries abort and late data or rejection cannot replace current view [2.32ms]
+(pass) active failure is not idle and explicit retry only rechecks [2.76ms]
+(pass) listChats failure is not idle and explicit retry only rechecks [2.64ms]
+(pass) invalid chat or owner membership is never presented as a runnable identity [1.41ms]
+(pass) explicit create forwards exact selected folder then canonical context [3.90ms]
+(pass) explicit open forwards exact selected folder then canonical context [2.58ms]
+(pass) new chat uses association ID and selects only canonical success [2.69ms]
+(pass) create rejection does not fabricate success or lose drafts [2.60ms]
+(pass) open rejection does not fabricate success or lose drafts [2.69ms]
+(pass) createChat rejection does not fabricate success or lose drafts [3.88ms]
+(pass) stop rejection does not fabricate success or lose drafts [2.81ms]
+(pass) late new-chat success cannot retarget a later project selection [3.97ms]
+(pass) language switching localizes controls, ownership, guidance and accessibility without resetting draft [2.83ms]
+477 |   expect(view.listeners.size).toBe(0)
+478 |   expect(signals.every((signal) => signal.aborted)).toBe(true)
+479 |   expect(view.disposed).toEqual([a1.sessionID])
+480 |   lateEvent({ projectID: a.projectID, active: a2 })
+481 |   owner.reject(new Error("retired owner"))
+482 |   submit.reject(new Error("retired submit"))
+                          ^
+error: retired submit
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:482:21)
+(fail) unmount cancels observations and pending commands without stopping execution [1.71ms]
+(pass) fresh component scopes have independent drafts and subscriptions [2.51ms]
+(pass) unmount before scheduled invocation retires the pending submit [2.66ms]
+(pass) reopen recovery sends the displayed canonical folder without choosing a different target [5.01ms]
+(pass) mutable supplied project and owner records cannot retarget presentation or stop [2.68ms]
+(pass) newer owner event wins over an older busy submit result [2.67ms]
+(pass) foreign busy result or admission receipt retains original draft and membership [5.31ms]
+(pass) conflicting new-chat mapping retains selected identity [2.58ms]
+(pass) cancelled folder selection performs no association command [3.71ms]
+(pass) folder selection finishing after unmount cannot open an association [3.83ms]
+(pass) Chinese failures and recovery use complete phrases [5.36ms]
+
+2 tests failed:
+(fail) obsolete target queries abort and late data or rejection cannot replace current view [2.32ms]
+(fail) unmount cancels observations and pending commands without stopping execution [1.71ms]
+
+ 36 pass
+ 2 fail
+ 137 expect() calls
+Ran 38 tests across 1 file. [570.00ms]

@@ -1,0 +1,3 @@
+$ oxlint packages/app/src/ftc/facades.ts packages/app/src/ftc/workspace.tsx "packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts" "packages/app/src/i18n/en.ts" "packages/app/src/i18n/zh.ts" "packages/app/src/i18n/parity.test.ts"
+Found 0 warnings and 0 errors.
+Finished in 600ms on 6 files with 130 rules using 10 threads.

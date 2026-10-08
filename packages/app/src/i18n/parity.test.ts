@@ -12,6 +12,16 @@ const guidedSetupKeys = new Set([
   "ftc.setup.available",
 ])
 
+const workspaceKeys = new Set([
+  "ftc.workspace.activeChat",
+  "ftc.workspace.busyDraft",
+  "ftc.workspace.queryFailed",
+  "ftc.workspace.retry",
+  "ftc.workspace.reopen",
+  "ftc.workspace.membershipFailed",
+  "ftc.workspace.sendFailed",
+])
+
 const appLocales = [
   "ar",
   "br",
@@ -115,7 +125,8 @@ describe("i18n parity", () => {
         const target = await dictionary(domain.target(locale))
         const missing = Object.keys(source).filter(
           (key) =>
-            !(domain.name === "app" && locale !== "zh" && guidedSetupKeys.has(key)) && !Object.hasOwn(target, key),
+            !(domain.name === "app" && locale !== "zh" && (guidedSetupKeys.has(key) || workspaceKeys.has(key))) &&
+            !Object.hasOwn(target, key),
         )
         const extra = Object.keys(target)
           .filter((key) => !Object.hasOwn(source, key))
@@ -137,6 +148,17 @@ describe("i18n parity", () => {
     const source = await dictionary("./en.ts")
     const target = await dictionary("./zh.ts")
     for (const key of guidedSetupKeys) {
+      expect(source[key]?.trim()).toBeTruthy()
+      expect(target[key]?.trim()).toBeTruthy()
+      expect(target[key]).not.toBe(source[key])
+      expect(placeholders(target[key])).toEqual(placeholders(source[key]))
+    }
+  })
+
+  test("workspace has seven complete English and Chinese phrases with matching placeholders", async () => {
+    const source = await dictionary("./en.ts")
+    const target = await dictionary("./zh.ts")
+    for (const key of workspaceKeys) {
       expect(source[key]?.trim()).toBeTruthy()
       expect(target[key]?.trim()).toBeTruthy()
       expect(target[key]).not.toBe(source[key])

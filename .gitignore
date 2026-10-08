@@ -32,3 +32,6 @@ UPCOMING_CHANGELOG.md
 logs/
 *.bun-build
 tsconfig.tsbuildinfo
+
+# Retain the full oversized Happy DOM failure locally; commit its bounded excerpt and provenance.
+/docs/validation/m1-01/empty-recovery-red.log

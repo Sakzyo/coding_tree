@@ -1,0 +1,70 @@
+bun test v1.3.14 (0d9b296a)
+
+test-browser/ftc/desktop-workspace/m1-01.test.ts:
+(pass) busy project identifies active chat without submitting drafts [12.96ms]
+(pass) idle transitions retain drafts and only an explicit send admits once [4.90ms]
+(pass) project and chat selection restore independent drafts and exact Session presentation [7.26ms]
+(pass) same owner can deliberately submit with canonical delivery options [3.14ms]
+(pass) stop captures the displayed owner and never infers idle on completion [5.46ms]
+(pass) raced busy submission preserves original draft and never retries on idle [4.05ms]
+(pass) deferred admission clears only unchanged original text despite later selection [5.48ms]
+(pass) edit and revert while admission waits still preserves the user's edit [6.04ms]
+(pass) deferred failure belongs to the original chat and leaves the later chat untouched [5.96ms]
+(pass) structured project_changed retains draft and requests explicit reopen [2.79ms]
+(pass) structured session_mismatch retains draft and requests explicit reopen [2.76ms]
+(pass) structured chat_session_conflict retains draft and requests explicit reopen [4.20ms]
+(pass) execution unavailable retains input with localized recovery [2.86ms]
+(pass) owner event supersedes an older initial snapshot [2.84ms]
+(pass) obsolete target queries abort and late data or rejection cannot replace current view [3.88ms]
+(pass) active failure is not idle and explicit retry only rechecks [2.75ms]
+(pass) listChats failure is not idle and explicit retry only rechecks [3.81ms]
+(pass) invalid chat or owner membership is never presented as a runnable identity [1.58ms]
+(pass) explicit create forwards exact selected folder then canonical context [2.71ms]
+(pass) explicit open forwards exact selected folder then canonical context [2.54ms]
+(pass) new chat uses association ID and selects only canonical success [2.68ms]
+(pass) create rejection does not fabricate success or lose drafts [2.77ms]
+(pass) open rejection does not fabricate success or lose drafts [2.64ms]
+(pass) createChat rejection does not fabricate success or lose drafts [3.96ms]
+(pass) stop rejection does not fabricate success or lose drafts [2.80ms]
+(pass) late new-chat success cannot retarget a later project selection [3.95ms]
+(pass) language switching localizes controls, ownership, guidance and accessibility without resetting draft [2.81ms]
+(pass) unmount cancels observations and pending commands without stopping execution [3.88ms]
+(pass) fresh component scopes have independent drafts and subscriptions [2.79ms]
+(pass) unmount before scheduled invocation retires the pending submit [3.81ms]
+(pass) reopen recovery sends the displayed canonical folder without choosing a different target [4.01ms]
+(pass) mutable supplied project and owner records cannot retarget presentation or stop [2.78ms]
+(pass) newer owner event wins over an older busy submit result [2.75ms]
+(pass) foreign busy result or admission receipt retains original draft and membership [5.31ms]
+(pass) conflicting new-chat mapping retains selected identity [3.83ms]
+(pass) cancelled folder selection performs no association command [2.69ms]
+(pass) folder selection finishing after unmount cannot open an association [3.78ms]
+(pass) Chinese failures and recovery use complete phrases [5.29ms]
+631 | 
+632 | test("supplied chat stop handler targets the displayed owner and retires with its view", async () => {
+633 |   const view = fixture()
+634 |   await flush()
+635 |   const slot = view.views.at(-1)!
+636 |   slot.onStop()
+             ^
+TypeError: slot.onStop is not a function. (In 'slot.onStop()', 'slot.onStop' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:636:8)
+(fail) supplied chat stop handler targets the displayed owner and retires with its view [2.82ms]
+654 |   view.listeners.get(a.projectID)!({ projectID: a.projectID, active: b1 })
+655 |   view.button('[data-action="retry"]').click()
+656 |   await flush()
+657 |   expect(view.host.querySelector("textarea")?.value).toBe("prior draft")
+658 |   expect(view.host.querySelector("output")?.getAttribute("data-history")).toBe(a1.sessionID)
+659 |   expect(view.button('[data-action="reopen"]').textContent).toBe("Reopen project")
+                                                   ^
+TypeError: null is not an object (evaluating 'view.button('[data-action="reopen"]').textContent')
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:659:46)
+(fail) structured list membership failure retains prior presentation and offers exact reopen [4.18ms]
+
+2 tests failed:
+(fail) supplied chat stop handler targets the displayed owner and retires with its view [2.82ms]
+(fail) structured list membership failure retains prior presentation and offers exact reopen [4.18ms]
+
+ 38 pass
+ 2 fail
+ 142 expect() calls
+Ran 40 tests across 1 file. [582.00ms]

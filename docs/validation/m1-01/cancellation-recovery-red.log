@@ -1,0 +1,110 @@
+bun test v1.3.14 (0d9b296a)
+
+test-browser/ftc/desktop-workspace/m1-01.test.ts:
+(pass) busy project identifies active chat without submitting drafts [13.07ms]
+(pass) idle transitions retain drafts and only an explicit send admits once [5.33ms]
+(pass) project and chat selection restore independent drafts and exact Session presentation [7.48ms]
+(pass) same owner can deliberately submit with canonical delivery options [4.54ms]
+(pass) stop captures the displayed owner and never infers idle on completion [5.86ms]
+(pass) raced busy submission preserves original draft and never retries on idle [4.12ms]
+(pass) deferred admission clears only unchanged original text despite later selection [6.83ms]
+(pass) edit and revert while admission waits still preserves the user's edit [4.18ms]
+(pass) deferred failure belongs to the original chat and leaves the later chat untouched [6.32ms]
+(pass) structured project_changed retains draft and requests explicit reopen [2.81ms]
+(pass) structured session_mismatch retains draft and requests explicit reopen [2.75ms]
+(pass) structured chat_session_conflict retains draft and requests explicit reopen [4.12ms]
+(pass) execution unavailable retains input with localized recovery [2.80ms]
+(pass) owner event supersedes an older initial snapshot [2.75ms]
+(pass) obsolete target queries abort and late data or rejection cannot replace current view [2.73ms]
+(pass) active failure is not idle and explicit retry only rechecks [2.81ms]
+(pass) listChats failure is not idle and explicit retry only rechecks [2.69ms]
+(pass) invalid chat or owner membership is never presented as a runnable identity [1.43ms]
+(pass) explicit create forwards exact selected folder then canonical context [3.88ms]
+(pass) explicit open forwards exact selected folder then canonical context [2.57ms]
+(pass) new chat uses association ID and selects only canonical success [2.68ms]
+(pass) create rejection does not fabricate success or lose drafts [2.66ms]
+(pass) open rejection does not fabricate success or lose drafts [2.56ms]
+(pass) createChat rejection does not fabricate success or lose drafts [2.50ms]
+(pass) stop rejection does not fabricate success or lose drafts [3.90ms]
+(pass) late new-chat success cannot retarget a later project selection [3.85ms]
+(pass) language switching localizes controls, ownership, guidance and accessibility without resetting draft [2.59ms]
+(pass) unmount cancels observations and pending commands without stopping execution [2.61ms]
+(pass) fresh component scopes have independent drafts and subscriptions [2.80ms]
+505 |   await flush()
+506 |   view.draft("pending")
+507 |   view.button('[data-action="send"]').click()
+508 |   view.close()
+509 |   await flush()
+510 |   expect(requests).toEqual([])
+                         ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   {
++     "chat": {
++       "chatID": "chat_a1",
++       "projectID": "project_a",
++       "sessionID": "ses_a1",
++     },
++     "prompt": {
++       "text": "pending",
++     },
++   },
++ ]
+
+- Expected  - 1
++ Received  + 12
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:510:20)
+(fail) unmount before scheduled invocation retires the pending submit [5.72ms]
+524 |   view.draft("kept")
+525 |   view.button('[data-action="send"]').click()
+526 |   await flush()
+527 |   view.button('[data-action="reopen"]').click()
+528 |   await flush()
+529 |   expect(roots).toEqual([{ root: a.canonicalRoot }])
+                      ^
+error: expect(received).toEqual(expected)
+
+  [
+    {
+-     "root": "/prepared/a",
++     "root": "/prepared/b",
+    },
+  ]
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:529:17)
+(fail) reopen recovery sends the displayed canonical folder without choosing a different target [4.32ms]
+(pass) mutable supplied project and owner records cannot retarget presentation or stop [2.71ms]
+553 |   view.draft("old busy result")
+554 |   view.button('[data-action="send"]').click()
+555 |   view.listeners.get(a.projectID)!({ projectID: a.projectID })
+556 |   response.resolve({ kind: "busy", active: a2 })
+557 |   await flush()
+558 |   expect(view.host.querySelector("article")?.getAttribute("data-active-chat")).toBeUndefined()
+                                                                                     ^
+error: expect(received).toBeUndefined()
+
+Received: "undefined"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:558:80)
+(fail) newer owner event wins over an older busy submit result [3.04ms]
+(pass) foreign busy result or admission receipt retains original draft and membership [5.25ms]
+(pass) conflicting new-chat mapping retains selected identity [2.57ms]
+(pass) cancelled folder selection performs no association command [3.82ms]
+(pass) folder selection finishing after unmount cannot open an association [3.70ms]
+(pass) Chinese failures and recovery use complete phrases [5.27ms]
+
+3 tests failed:
+(fail) unmount before scheduled invocation retires the pending submit [5.72ms]
+(fail) reopen recovery sends the displayed canonical folder without choosing a different target [4.32ms]
+(fail) newer owner event wins over an older busy submit result [3.04ms]
+
+ 35 pass
+ 3 fail
+ 136 expect() calls
+Ran 38 tests across 1 file. [619.00ms]

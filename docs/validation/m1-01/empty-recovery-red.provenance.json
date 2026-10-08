@@ -1,0 +1,20 @@
+{
+  "originalPath": "docs/validation/m1-01/empty-recovery-red.log",
+  "bytes": 39731578,
+  "lines": 801372,
+  "sha256": "5cf9d8d9dda44d39da4ee2c2fecdd789433dc73ded84137dd924de25d074af26",
+  "originalPreservedLocally": true,
+  "excerptPath": "docs/validation/m1-01/empty-recovery-red.excerpt.log",
+  "excerptSha256": "80e9377cecc7e04d2e6bfe4020055f024e35ed954736f09b0cea0cd1cfe96f42",
+  "segments": [
+    {
+      "from": 1,
+      "through": 50
+    },
+    {
+      "from": 801333,
+      "through": 801372
+    }
+  ],
+  "note": "Large Happy DOM assertion object dump. Original reports 40 pass,2 fail,149 assertions. Original raw bytes are ignored locally; the excerpt is not claimed as complete output."
+}

@@ -1,0 +1,330 @@
+bun test v1.3.14 (0d9b296a)
+
+test-browser/ftc/desktop-workspace/m1-01.test.ts:
+152 | }
+153 | 
+154 | test("busy project identifies active chat without submitting drafts", async () => {
+155 |   const view = fixture()
+156 |   await flush()
+157 |   expect(view.host.querySelector("article")?.getAttribute("data-active-chat")).toBe(a2.chatID)
+                                                                                     ^
+error: expect(received).toBe(expected)
+
+Expected: "chat_a2"
+Received: undefined
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:157:80)
+(fail) busy project identifies active chat without submitting drafts [7.38ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:185:8)
+(fail) idle transitions retain drafts and only an explicit send admits once [1.74ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:199:8)
+(fail) project and chat selection restore independent drafts and exact Session presentation [1.40ms]
+216 | 
+217 | test("same owner can deliberately submit with canonical delivery options", async () => {
+218 |   const requests: FtcProject.SubmitPrompt[] = []
+219 |   const view = fixture({ submit: async (request) => { requests.push(request); return admitted(request) } })
+220 |   await flush()
+221 |   view.button(`[data-chat-id="${a2.chatID}"]`).click()
+                                                   ^
+TypeError: null is not an object (evaluating 'view.button(`[data-chat-id="${a2.chatID}"]`).click')
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:221:46)
+(fail) same owner can deliberately submit with canonical delivery options [1.50ms]
+229 | test("stop captures the displayed owner and never infers idle on completion", async () => {
+230 |   const stop = Promise.withResolvers<void>()
+231 |   const targets: FtcProject.ChatRef[] = []
+232 |   const view = fixture({ stop: (target) => { targets.push(target); return stop.promise } })
+233 |   await flush()
+234 |   view.button('[data-action="stop"]').click()
+                                          ^
+TypeError: null is not an object (evaluating 'view.button('[data-action="stop"]').click')
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:234:37)
+(fail) stop captures the displayed owner and never infers idle on completion [1.43ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:249:8)
+(fail) raced busy submission preserves original draft and never retries on idle [1.36ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:265:8)
+(fail) deferred admission clears only unchanged original text despite later selection [1.29ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:287:8)
+(fail) edit and revert while admission waits still preserves the user's edit [2.30ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:300:8)
+(fail) deferred failure belongs to the original chat and leaves the later chat untouched [1.46ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:319:8)
+(fail) structured project_changed retains draft and requests explicit reopen [1.35ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:319:8)
+(fail) structured session_mismatch retains draft and requests explicit reopen [1.29ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:319:8)
+(fail) structured chat_session_conflict retains draft and requests explicit reopen [1.30ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:331:8)
+(fail) execution unavailable retains input with localized recovery [1.31ms]
+338 | 
+339 | test("owner event supersedes an older initial snapshot", async () => {
+340 |   const active = Promise.withResolvers<FtcProject.OwnerStatus>()
+341 |   const view = fixture({ active: () => active.promise })
+342 |   await flush()
+343 |   expect(view.button('[data-action="send"]').disabled).toBe(true)
+                                                 ^
+TypeError: null is not an object (evaluating 'view.button('[data-action="send"]').disabled')
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:343:44)
+(fail) owner event supersedes an older initial snapshot [1.35ms]
+355 |   const signals: AbortSignal[] = []
+356 |   const view = fixture({
+357 |     listChats: (request, signal) => { signals.push(signal); return request.projectID === a.projectID ? list.promise : Promise.resolve([b1]) },
+358 |     active: (request, signal) => { signals.push(signal); return request.projectID === a.projectID ? active.promise : Promise.resolve({ projectID: b.projectID }) },
+359 |   })
+360 |   view.button(`[data-project-id="${b.projectID}"]`).click()
+                                                        ^
+TypeError: null is not an object (evaluating 'view.button(`[data-project-id="${b.projectID}"]`).click')
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:360:51)
+(fail) obsolete target queries abort and late data or rejection cannot replace current view [0.20ms]
+373 |   const view = fixture({
+374 |     active: idle,
+375 |     [method]: async () => { calls.push(method); throw new Error("private query detail") },
+376 |   })
+377 |   await flush()
+378 |   expect(view.host.textContent).toContain("Could not load project status or sessions.")
+                                      ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "Could not load project status or sessions."
+Received: ""
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:378:33)
+(fail) active failure is not idle and explicit retry only rechecks [1.51ms]
+373 |   const view = fixture({
+374 |     active: idle,
+375 |     [method]: async () => { calls.push(method); throw new Error("private query detail") },
+376 |   })
+377 |   await flush()
+378 |   expect(view.host.textContent).toContain("Could not load project status or sessions.")
+                                      ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "Could not load project status or sessions."
+Received: ""
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:378:33)
+(fail) listChats failure is not idle and explicit retry only rechecks [1.37ms]
+386 | 
+387 | test("invalid chat or owner membership is never presented as a runnable identity", async () => {
+388 |   const view = fixture({ listChats: async () => [b1], active: async () => ({ projectID: a.projectID, active: b1 }) })
+389 |   await flush()
+390 |   expect(view.host.querySelector("article")).toBeNull()
+391 |   expect(view.host.textContent).toContain("Could not load project status or sessions.")
+                                      ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "Could not load project status or sessions."
+Received: ""
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:391:33)
+(fail) invalid chat or owner membership is never presented as a runnable identity [1.58ms]
+398 |     selectFolder: async (kind) => { calls.push(kind); return { root: b.canonicalRoot } },
+399 |     [action]: async (request) => { calls.push(request); return b },
+400 |   }, [a])
+401 |   await flush()
+402 |   expect(calls).toEqual([])
+403 |   view.button(`[data-action="${action}"]`).click()
+                                               ^
+TypeError: null is not an object (evaluating 'view.button(`[data-action="${action}"]`).click')
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:403:42)
+(fail) explicit create forwards exact selected folder then canonical context [1.34ms]
+398 |     selectFolder: async (kind) => { calls.push(kind); return { root: b.canonicalRoot } },
+399 |     [action]: async (request) => { calls.push(request); return b },
+400 |   }, [a])
+401 |   await flush()
+402 |   expect(calls).toEqual([])
+403 |   view.button(`[data-action="${action}"]`).click()
+                                               ^
+TypeError: null is not an object (evaluating 'view.button(`[data-action="${action}"]`).click')
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:403:42)
+(fail) explicit open forwards exact selected folder then canonical context [2.03ms]
+409 | 
+410 | test("new chat uses association ID and selects only canonical success", async () => {
+411 |   const calls: FtcProject.ProjectRequest[] = []
+412 |   const view = fixture({ active: idle, createChat: async (request) => { calls.push(request); return a2 } })
+413 |   await flush()
+414 |   view.button('[data-action="new-chat"]').click()
+                                              ^
+TypeError: null is not an object (evaluating 'view.button('[data-action="new-chat"]').click')
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:414:41)
+(fail) new chat uses association ID and selects only canonical success [1.30ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:424:8)
+(fail) create rejection does not fabricate success or lose drafts [1.34ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:424:8)
+(fail) open rejection does not fabricate success or lose drafts [1.26ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:424:8)
+(fail) createChat rejection does not fabricate success or lose drafts [1.27ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:424:8)
+(fail) stop rejection does not fabricate success or lose drafts [1.22ms]
+432 | 
+433 | test("late new-chat success cannot retarget a later project selection", async () => {
+434 |   const result = Promise.withResolvers<FtcProject.ChatRef>()
+435 |   const view = fixture({ createChat: () => result.promise })
+436 |   await flush()
+437 |   view.button('[data-action="new-chat"]').click()
+                                              ^
+TypeError: null is not an object (evaluating 'view.button('[data-action="new-chat"]').click')
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:437:41)
+(fail) late new-chat success cannot retarget a later project selection [1.35ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:448:8)
+(fail) language switching localizes controls, ownership, guidance and accessibility without resetting draft [1.30ms]
+464 |     active: (request, signal) => { signals.push(signal); return owner.promise },
+465 |     submit: (_request, signal) => { signals.push(signal); return submit.promise },
+466 |   })
+467 |   await flush()
+468 |   const lateEvent = view.listeners.get(a.projectID)!
+469 |   lateEvent({ projectID: a.projectID })
+        ^
+TypeError: lateEvent is not a function. (In 'lateEvent({ projectID: a.projectID })', 'lateEvent' is undefined)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:469:3)
+(fail) unmount cancels observations and pending commands without stopping execution [1.32ms]
+143 |     close,
+144 |     setChinese: () => setLocale("chinese", true),
+145 |     button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
+146 |     draft: (text: string) => {
+147 |       const textarea = host.querySelector("textarea")!
+148 |       textarea.value = text
+            ^
+TypeError: null is not an object (evaluating 'textarea.value = text')
+      at draft (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:148:7)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:489:9)
+(fail) fresh component scopes have independent drafts and subscriptions [1.31ms]
+
+ 0 pass
+ 29 fail
+ 7 expect() calls
+Ran 29 tests across 1 file. [461.00ms]

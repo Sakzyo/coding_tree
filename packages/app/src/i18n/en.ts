@@ -1,6 +1,14 @@
 import { DESKTOP_NATIVE_ENGLISH } from "./desktop-native"
 
 export const dict = {
+  "ftc.workspace.activeChat": "Active session: {{chatID}}",
+  "ftc.workspace.busyDraft":
+    "Wait for the active session to finish or stop it before sending. Your draft will not be sent automatically.",
+  "ftc.workspace.queryFailed": "Could not load project status or sessions. Retry to check again.",
+  "ftc.workspace.retry": "Retry",
+  "ftc.workspace.reopen": "Reopen project",
+  "ftc.workspace.membershipFailed": "The project or session changed. Reopen the project; your draft is still here.",
+  "ftc.workspace.sendFailed": "Could not send. Your draft is still here.",
   ...DESKTOP_NATIVE_ENGLISH,
   "command.category.suggested": "Suggested",
   "command.category.view": "View",

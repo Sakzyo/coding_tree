@@ -3,6 +3,13 @@ import { dict as en } from "./en"
 type Keys = keyof typeof en
 
 export const dict = {
+  "ftc.workspace.activeChat": "正在运行的会话：{{chatID}}",
+  "ftc.workspace.busyDraft": "请等待正在运行的会话结束或将其停止后再发送。草稿不会自动发送。",
+  "ftc.workspace.queryFailed": "无法加载项目状态或会话。请重试。",
+  "ftc.workspace.retry": "重试",
+  "ftc.workspace.reopen": "重新打开项目",
+  "ftc.workspace.membershipFailed": "项目或会话已更改。请重新打开项目；草稿仍保留在此处。",
+  "ftc.workspace.sendFailed": "无法发送。草稿仍保留在此处。",
   "desktop.menu.app": "OpenCode",
   "desktop.menu.file": "文件",
   "desktop.menu.edit": "编辑",

@@ -1,0 +1,37 @@
+bun test v1.3.14 (0d9b296a)
+
+test-browser/ftc/desktop-workspace/m1-01.test.ts:
+(pass) busy project identifies active chat without submitting drafts [13.67ms]
+(pass) idle transitions retain drafts and only an explicit send admits once [4.82ms]
+(pass) project and chat selection restore independent drafts and exact Session presentation [5.41ms]
+(pass) same owner can deliberately submit with canonical delivery options [2.93ms]
+(pass) stop captures the displayed owner and never infers idle on completion [7.12ms]
+(pass) raced busy submission preserves original draft and never retries on idle [4.22ms]
+(pass) deferred admission clears only unchanged original text despite later selection [5.66ms]
+(pass) edit and revert while admission waits still preserves the user's edit [4.03ms]
+(pass) deferred failure belongs to the original chat and leaves the later chat untouched [7.18ms]
+(pass) structured project_changed retains draft and requests explicit reopen [2.76ms]
+(pass) structured session_mismatch retains draft and requests explicit reopen [2.73ms]
+(pass) structured chat_session_conflict retains draft and requests explicit reopen [2.71ms]
+(pass) execution unavailable retains input with localized recovery [2.73ms]
+(pass) owner event supersedes an older initial snapshot [2.71ms]
+(pass) obsolete target queries abort and late data or rejection cannot replace current view [4.46ms]
+(pass) active failure is not idle and explicit retry only rechecks [2.84ms]
+(pass) listChats failure is not idle and explicit retry only rechecks [2.71ms]
+(pass) invalid chat or owner membership is never presented as a runnable identity [1.42ms]
+(pass) explicit create forwards exact selected folder then canonical context [2.59ms]
+(pass) explicit open forwards exact selected folder then canonical context [2.49ms]
+(pass) new chat uses association ID and selects only canonical success [4.06ms]
+(pass) create rejection does not fabricate success or lose drafts [2.91ms]
+(pass) open rejection does not fabricate success or lose drafts [2.61ms]
+(pass) createChat rejection does not fabricate success or lose drafts [2.53ms]
+(pass) stop rejection does not fabricate success or lose drafts [2.65ms]
+(pass) late new-chat success cannot retarget a later project selection [3.90ms]
+(pass) language switching localizes controls, ownership, guidance and accessibility without resetting draft [3.95ms]
+(pass) unmount cancels observations and pending commands without stopping execution [2.88ms]
+(pass) fresh component scopes have independent drafts and subscriptions [2.84ms]
+
+ 29 pass
+ 0 fail
+ 117 expect() calls
+Ran 29 tests across 1 file. [437.00ms]
