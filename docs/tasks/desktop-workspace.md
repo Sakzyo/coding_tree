@@ -58,7 +58,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 ## Task checklist
 
-- [ ] [M1-01 — Show project/chat selection and busy ownership](#m1-01)
+- [x] [M1-01 — Show project/chat selection and busy ownership](#m1-01)
 - [ ] [M1-02 — Preserve state across layout and view changes](#m1-02)
 - [ ] [M1-03 — Present automatic and guided environment setup](#m1-03)
 - [ ] [M1-04 — Present provider and local-model setup](#m1-04)
@@ -85,16 +85,18 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 **Interfaces:** Consumes M2 ProjectContext/ChatRef/status contracts through fixture facades. Produces create/open/chat/submit/stop commands and local unsent drafts.
 
-- [ ] **1. Write the focused test:** In `packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts`, add `busy project identifies active chat without submitting drafts`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts`, add `busy project identifies active chat without submitting drafts`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(view.activeChatID).toBe(activeChatID); expect(submittedDrafts).toEqual([]); expect(otherProjectEnabled).toBe(true)
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/app`, run `bun test --conditions=browser --preload ./happydom.ts ./test-browser/ftc/desktop-workspace/m1-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Reuse existing chat presentation and createStore state. Separate project histories and show the active owner, allowing another project to run; no automatic submission when busy status clears. Read package instructions and record required benchmark baseline before changing existing session/timeline code.
-- [ ] **4. Verify:** Re-run `bun test --conditions=browser --preload ./happydom.ts ./test-browser/ftc/desktop-workspace/m1-01.test.ts` from `packages/app`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): show project/chat selection and busy ownership`.
+- [x] **2. Establish the baseline:** From `packages/app`, run `bun test --conditions=browser --preload ./happydom.ts ./test-browser/ftc/desktop-workspace/m1-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Reuse existing chat presentation and createStore state. Separate project histories and show the active owner, allowing another project to run; no automatic submission when busy status clears. Read package instructions and record required benchmark baseline before changing existing session/timeline code.
+- [x] **4. Verify:** Re-run `bun test --conditions=browser --preload ./happydom.ts ./test-browser/ftc/desktop-workspace/m1-01.test.ts` from `packages/app`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): show project/chat selection and busy ownership`.
+
+**Verified 2026-10-08:** standalone supplied-port component product `87fffe434`, repairs `0a0a23ed9` and `dd00790ac`; actual DOM **62/246**, localization **7/1031**, affected browser **9/15**, App types/lint/format/import/Scope checks and six current hashes verified. Independent initial/fix reviews cumulatively close I1/I2: specification **Compliant**, quality **Approved**. [Implementation and evidence](../validation/M1-01-implementation.md), [final review](../validation/M1-01-fix2-review.md). Production presentation/API composition, persistence, provider concurrency, visual/bilingual/native/platform/physical and module acceptance remain separate unrun gates.
 
 <a id="m1-02"></a>
 

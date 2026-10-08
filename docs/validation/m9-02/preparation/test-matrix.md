@@ -1,0 +1,21 @@
+# M9-02 prepared test matrix
+
+Preparation only, `/root/m9_02`, 2026-10-08. These are required future behavioral cases, not executed tests. Exact brief contracts are adopted; no product/test file exists from this preparation.
+
+| Group | Real-service observation required |
+| --- | --- |
+| Exact deliberate event | Deploy in each allowed mode/initiator returns original displayed build/target without another confirmation; install event cannot approve initialize/start sibling; specific approve applies to one eligible control; user declaration alone grants nothing. |
+| Authenticity and scope | Plain/copied/serialized/code-approval/wrong-owner events fail; same hash with another ID cannot transfer consent; fresh owner does not restore old events or preparation. Forged rejection cannot retire valid pending state. |
+| Canonical ingress | Exact ApprovalRequest identity/identifier and field schemas; event excluded from Schema; malformed/excess request fails; optional port absence retains preparation and returns approval_unavailable; canonical errors omit undefined optionals; facade exactly prepare/approve and no execution. |
+| Capture and immutability | Request scalars and event reference cannot retarget through held preclaim clock/deadline waits; claimed decision fields cannot change after claim; policy gets original frozen preparation; result preserves awaiting_approval snapshot. |
+| Full bound context | Project/chat/initiator/mode/controller/generation and action kind; deploy build/source/configuration/digest; control OpMode/expected state; tuning field/value including distinct zero/false remain bound. Trusted exact revocation before claim/during wait/after success retires; change-away/change-back remains retired; unknown/mismatched callbacks isolate other bindings. |
+| Synchronous reentrancy | Claim callback can synchronously revoke/close before return; recheck before reservation/commit, no resurrection. Event is single-use even when matching claim loses to retirement. Callback delivery immediately preceding commit is visible synchronously. |
+| Rejection and precedence | Trusted reject before claim and while delayed accept retires; mandatory trusted rejection callback also retires accepted consent. Closed precedence, then first tombstone, then consumed for valid claimed/accepted state; late acceptance never overwrites a completed rejection/revocation. |
+| Expiry and availability | Before/equal/after finite injected deadline; deadline <= claimedAt; time advances while policy waits; malformed/unavailable now/deadline and port domain failures fail closed; accepted consent expires on repeat check; no default TTL or wall sleep. |
+| At-most-once | Same event and different genuine events race one operation with at most one success/consumed loser; no yield between matching claim/bookkeeping or final compare/commit; unrelated operations/owners progress while waits held. |
+| Caller interruption | Hold deadline/clock asynchronous release after legitimate claim; interruption stays pending until release, completes interrupted, retires with no late consent, same event cannot retry; unrelated work remains usable. No invented asynchronous claim wait. |
+| Owner retirement | Hold deadline/clock cleanup; owner rejects calls immediately before close finishes; cleared state cannot reinsert; close joins release and independent owner works. Retain existing preparation/observer-safe held cleanup checks. |
+| Subscription retirement | Hold observer unregister release; closed/clear visible first, close joins exactly one unsubscribe; callback after closure cannot insert; repeated scopes leak no registration/timer/fiber/global registry. |
+| Capability boundary | Inspect actual runtime imports and narrow ports/facade: no SQL/host/transport/execute/initialize/start capability. Disconnected recording transport/counter is not dispatch protection. No private consent accessor. |
+
+Future checks: exact focused M9-02, then M9-01+M9-02, Core and Schema package typechecks, scoped source lint/format/whitespace/identity/import checks and final manifest freeze. Extra named regressions need a changed shared boundary. No producer/host/robot/provider/toolchain/platform action is part of these isolated cases.

@@ -1,0 +1,9 @@
+{
+  "classification": "source-only preflight",
+  "report": "docs/validation/M5-06-preflight.md",
+  "trailing_whitespace_lines": [],
+  "missing_local_link_targets": [],
+  "local_link_count": 21,
+  "tests_or_typechecks_run": 0,
+  "changing_M5_runtime_inspected": false
+}

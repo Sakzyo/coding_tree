@@ -3,7 +3,7 @@
 Date: 2026-10-08
 Planning baseline: `d7aca195c`
 
-**Implementation progress: 0 / 12 modules complete; 28 / 94 tasks complete.**
+**Implementation progress: 0 / 12 modules complete; 29 / 94 tasks complete.**
 
 These checkboxes track future development, not completion of this planning document. The existing OpenCode foundation is reused, but its presence does not prove that the FTC tasks are done. Both inputs describe unimplemented or unevaluated product work, so every implementation box starts unchecked.
 
@@ -11,7 +11,7 @@ These checkboxes track future development, not completion of this planning docum
 
 ## Module checklist
 
-- [ ] **M1 — [Desktop workspace](desktop-workspace.md)** — 0 / 14 tasks.
+- [ ] **M1 — [Desktop workspace](desktop-workspace.md)** — 1 / 14 tasks.
 - [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 6 / 6 tasks.
 - [ ] **M3 — [Agent and context](agent-and-context.md)** — 4 / 7 tasks.
 - [ ] **M4 — [Environment and compatibility](environment-and-compatibility.md)** — 5 / 7 tasks.
@@ -758,3 +758,9 @@ The user requested continuation to **32/94 completed tasks in total**, then to e
 - M1-01 fix round 1 candidate committed `0a0a23ed9`: two assigned source/test paths only; six current hashes match. Expanded genuine RED **44 pass / 11 fail / 173 assertions**, additional observed-owner RED **56/2/214**; final actual DOM **58/218**, unchanged reviewer probes **2/4**, affected browser **9/15**, App types/lint **0 warnings/errors**/format/import checks pass. Original independent reviewer receives the complete fix-only [diff](../validation/M1-01-fix1-review.diff) for I1/I2 plus new fix-introduced blockers. **IN_REVIEW**, no credit; count **28/94**. Raw log/diff whitespace remains preserved; staged source/report/metadata whitespace check is clean with explicit raw-evidence exclusions.
 
 - M1-01 scoped fix1 review confirms I1 addressed but finds one remaining Important I2 cross-project arrival race: an A create resolves after an unlisted B owner with the same Session is accepted; canonical membership retires the observation cache but leaves B stop-enabled. The reviewer reproduces this with one focused actual-TSX failure. Fix round **2/5** will return to the original writer, requiring every affected cached owner to be revalidated on canonical membership ingress and preserving valid presentation/drafts/new-owner behavior. Still **28/94**, no completion credit.
+
+- M5-06 [source-only preflight](../validation/M5-06-preflight.md) is ready, with retained APK capability/capture alternatives and required reconciliation against the actual future M5-05 producer. M9's current document-revision preparation projection cannot encode complete M5 saved-input identity; no lossy conversion or consumer change is assigned here. Root chooses the smallest trusted artifact lifetime boundary after M5-05 freezes. No product work or task credit.
+- M9-02 `/root/m9_02` read-only preparation is ready: unchanged M9-01 baseline **66/194**, fifteen source hashes match, [report](../validation/M9-02-implementation.md) and exact command metadata saved. Explicit writer release still waits for reviewed M1-01/M5-05/M5-06; no approval consent or execution capability exists from preparation.
+
+- M1-01 **DONE** at `dd00790ac`: independent scoped fix2 specification **Compliant**, quality **Approved**, I1/I2 cumulatively **ADDRESSED**, no remaining/new Critical or Important issue. Root reconfirms six source hashes, required named/component/Scope/locale/type checks and all five substeps before credit. [Final review](../validation/M1-01-fix2-review.md). Counts **29/94 tasks, 0/12 modules**, M1 **1/14**. Existing host/visual/persistence/bilingual/native/platform/physical gates remain open.
+- M5-05 root releases prepared `/root/m5_05` as sole product writer from source checkpoint `dd00790ac`; exact five-path [brief](../validation/M5-05-brief.md), immutable complete saved-input/runtime process boundaries, public owner-issued start/result/cancel/query and canonical contracts govern. **IN_PROGRESS**, intended task30; no artifact/production process/robot authority. Required actual RED/GREEN/Scope/types/Schema/facade/source freeze then independent review precede credit. M9-02 remains preparation-only awaiting later release.
