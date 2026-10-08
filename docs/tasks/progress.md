@@ -3,7 +3,7 @@
 Date: 2026-10-08
 Planning baseline: `d7aca195c`
 
-**Implementation progress: 0 / 12 modules complete; 24 / 94 tasks complete.**
+**Implementation progress: 0 / 12 modules complete; 25 / 94 tasks complete.**
 
 These checkboxes track future development, not completion of this planning document. The existing OpenCode foundation is reused, but its presence does not prove that the FTC tasks are done. Both inputs describe unimplemented or unevaluated product work, so every implementation box starts unchecked.
 
@@ -13,7 +13,7 @@ These checkboxes track future development, not completion of this planning docum
 
 - [ ] **M1 — [Desktop workspace](desktop-workspace.md)** — 0 / 14 tasks.
 - [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 5 / 6 tasks.
-- [ ] **M3 — [Agent and context](agent-and-context.md)** — 3 / 7 tasks.
+- [ ] **M3 — [Agent and context](agent-and-context.md)** — 4 / 7 tasks.
 - [ ] **M4 — [Environment and compatibility](environment-and-compatibility.md)** — 5 / 7 tasks.
 - [ ] **M5 — [Java development](java-development.md)** — 2 / 8 tasks.
 - [ ] **M6 — [FTC configuration and libraries](ftc-configuration-and-libraries.md)** — 2 / 6 tasks.
@@ -649,3 +649,19 @@ User requested continuation from the last endpoint. Reconciled clean `ftc-worksp
 - M2-06 resumed [activation preflight](../validation/M2-06-activation-resume-preflight.md) is complete, read-only: identified HTTP async acceptance and escaped promotion lifetimes in addition to prior foreground/queue/detached/background owners. [Follow-on brief](../validation/M2-06-activation-brief.md) is prepared but not dispatched while M3-04 writes.
 - Ruling: M2-06 I2 adopts a legacy-domain process-local activity registry and fence-held repository association decorator, with minimal optional generic lifecycle hooks and narrowly shared scoped live binding; keep existing activation_unavailable — approved architecture requires current-process ownership and exact terminal cleanup, not a precheck/status poll — a missed admission, detached fork, promotion or cleanup owner could allow overlapping project execution, so the eight resumed-preflight race/host categories and independent review gate implementation. Cross-process/OS-wide isolation remains unavailable, and M9 host execution stays disabled.
 - Stable ownership baseline before those source edits: legacy Runner/Background **36 pass / 95 assertions** and Core BackgroundJob **4 pass / 404 assertions** ([legacy log](../validation/resume-2026-10-08/legacy-ownership-baseline.log), [Core log](../validation/resume-2026-10-08/core-background-baseline.log)). No new fence acceptance is credited.
+
+- M9-01 [source preflight](../validation/M9-01-preflight.md) complete; [preparation-only brief](../validation/M9-01-brief.md) is prepared, not dispatched. Ruling: M9-01 uses a Core-only caller handle, an M9 deployment-binding projection, opaque generation equality token, mandatory trusted semantic validator and action-kind eligibility facts — missing M5/M8 producer records cannot become guessed real target/build authority, while the task explicitly supports narrow supplied fixtures — wrong future producer/host binding could accept stale or forged preparation; M9-04/07/08 real revalidation/isolation remain mandatory and no preparation result is approval or dispatch.
+- Read-only `/root/m12_03_preflight` prepares next learning exercise-request contracts; only `M12-03-preflight.md` assigned, no learning implementation or curriculum changes.
+
+- `/root/m2_06_activation` is dispatched for **read-only preparation only** against the activation follow-on brief, while M3-04 remains sole product writer. It may inspect stable legacy/M2 paths and prepare performance/race evidence, but product edits await explicit coordinator release after M3-04 review. No activation implementation or completion is credited.
+
+- Activation preparation found an actual ToolRegistry composition dependency: conditionally assign `packages/opencode/src/tool/registry.ts` only for LegacyActivity import/node binding required by TaskTool claims. Generic BackgroundJob stays independent of FTC/legacy policy. Product edits still await M3-04 review/start release. Fresh worker baseline counts match earlier root evidence; initial ownership benchmark samples are retained under `m2-06-activation/`, not credited as new fence acceptance.
+
+- M3-04 stable candidate committed `5b8618d0f`; all eight frozen source/test/barrel hashes match. Focused **15 pass / 67 assertions**, affected Context/M11/M3 suites **85 pass / 284 assertions** on final frozen bytes; Core/Schema types, scoped lint (0 warnings/errors), formatting and source/document whitespace pass. Raw failing-probe output retains original whitespace rather than rewriting evidence. Fresh `/root/m3_04_review` receives exact brief/report and full eight-path stable review package from `11b3fe90e`; task remains **IN_REVIEW**, unchecked, counts **24/94, 0/12**. Production M3-06 sanitizer/Session selection and all robot/platform/release gates remain separate.
+
+- M12-03 [preflight](../validation/M12-03-preflight.md) complete; [exercise-request brief](../validation/M12-03-brief.md) is prepared, not dispatched. Ruling: use declared separate generic/library-specific course bindings, explicit language/local-only lookup and all lesson exercise records as requiredEvidence — source selects a lesson with no individual exercise selector and requires neither to block only library-specific work; guessing from prose or choosing first would discard obligations — wrong producer declarations could choose the wrong track, so missing declarations fail closed, canonical M11 metadata must agree, and real mixed-course/content/host/physical acceptance stays separate.
+
+- M3-04 **DONE** at `5b8618d0f`: independent specification **Compliant**, quality **Approved**, no blocking/minor findings. All eight hashes still match. Focused **15/67**, affected suites **85/284**, Core/Schema types/scoped checks pass. Checked exactly M3-04 and its five substeps; M3 **4/7**. Counts **25/94 tasks, 0/12 modules**. [Review](../validation/M3-04-review.md).
+- Ruling: M3-04 reviewer-confirmed same-association snapshots can name an outside-root path; retain the explicitly supplied authorized-document contract rather than duplicating M2/M5 filesystem authorization in context assembly — preflight/design assign real canonical root/path authorization to the producing M2/M5/host boundary, while M3 verifies supplied association/root/Location bindings — an incorrectly bound producer could expose foreign code, so M3-06 must prove actual authorized selection and reject foreign snapshots before context; isolated source tests do not grant filesystem access.
+- M3-04 Cannot-verify items are reconciled as named unimplemented downstream gates: trusted host sanitizer/Session selection (M3-06), real local-only inference (M7-04/07), positive authenticated diagnostics (M10). They are not claimed as task/production acceptance from fixture evidence. No task-specific requirement gap remains open.
+- M2-06 activation writer is released next from reviewed source checkpoint `5b8618d0f`; original I2 remains open until its real lifetime/association/host race evidence and independent review pass. Existing M3 source freeze remains read-only; no second product writer is active.

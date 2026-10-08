@@ -22,6 +22,8 @@ Command shell-template expansion's Process.text cancellation must retain ownersh
 
 All required product paths in the resumed preflight's Exact path assignment table are assigned to this one writer: legacy-activity.ts, legacy prompt/run-state/Runner/processor/compaction/TaskTool/background wrapper, generic Core background-job.ts, Core M2 project adapters/composition, Server routes, OpenCode actual HTTP host/session handlers; focused test paths from that table. Conditional app-runtime.ts/server.ts only if actual binding cannot use existing node dependencies; explain evidence first. No changes to Schema contracts, SQL/migrations, V2 Session coordinator, context, root barrels, UI, PTY, permission policy or OS isolation.
 
+Conditional additional path: packages/opencode/src/tool/registry.ts, only the LegacyActivity import/node dependency needed for actual TaskTool parent/reused-child/notification ownership. No tool policy redesign.
+
 Evidence only: docs/validation/M2-06-activation-implementation.md and docs/validation/m2-06-activation/*.
 Root alone owns Git/index/commits, shared ledger/checklists, generated artifacts, and any required public API generation. No subagents/reviewer. Report source SHA256 manifest and stable tested candidate; do not mark task complete. Preserve all coordinator/other-worker files.
 

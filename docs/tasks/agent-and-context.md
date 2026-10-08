@@ -56,7 +56,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 - [x] [M3-01 — Pin Session admission and continuation invariants](#m3-01)
 - [x] [M3-02 — Apply an injected gate at every Session execution entry](#m3-02)
 - [x] [M3-03 — Implement plan-first and direct code-change policy](#m3-03)
-- [ ] [M3-04 — Assemble versioned FTC context from public sources](#m3-04)
+- [x] [M3-04 — Assemble versioned FTC context from public sources](#m3-04)
 - [ ] [M3-05 — Expose structured FTC tools with honest evidence](#m3-05)
 - [ ] [M3-06 — Bind real model and domain adapters in the host](#m3-06)
 - [ ] [M3-07 — Verify user-visible coding and AI failure workflows](#m3-07)
@@ -142,16 +142,18 @@ Verified 2026-10-07: candidate `118a1ac80`, scoped I1 repair `10c34d122`; [imple
 
 **Interfaces:** Consumes immutable project code/configuration/reference/diagnostic records through registered domain Context Sources. Produces context inputs for existing System Context and Session-owned Context Epoch persistence.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/agent-and-context/m3-04.test.ts`, add `context preserves project version freshness and missing facts`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/agent-and-context/m3-04.test.ts`, add `context preserves project version freshness and missing facts`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(context.projectID).toBe(requestProjectID); expect(context.missingFacts).toContain('wheel-diameter'); expect(context.text).not.toContain(secret)
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/agent-and-context/m3-04.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Keep producers with their domains; adapt in host wiring without moving System Context algebra or history selection. Tag sources/versions/freshness, preserve unknown facts and language/identifiers, and include online disclosure/offline missing references. Treat external text as data, not action authority.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/agent-and-context/m3-04.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): assemble versioned ftc context from public sources`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/agent-and-context/m3-04.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Keep producers with their domains; adapt in host wiring without moving System Context algebra or history selection. Tag sources/versions/freshness, preserve unknown facts and language/identifiers, and include online disclosure/offline missing references. Treat external text as data, not action authority.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/agent-and-context/m3-04.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): assemble versioned ftc context from public sources`.
+
+Verified 2026-10-08: candidate `5b8618d0f`; [implementation evidence](../validation/M3-04-implementation.md), [independent review](../validation/M3-04-review.md). Trusted production sanitizer, Session-specific source selection, path authorization from M2/M5/host, real offline transport and positive diagnostics remain separate M3-06/M7/M10 integration gates.
 
 <a id="m3-05"></a>
 
