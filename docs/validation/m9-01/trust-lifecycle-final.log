@@ -1,0 +1,159 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/robot-approvals-and-operations/m9-01.test.ts:
+(pass) observation blocks agent control but not separately approved deployment [33.90ms]
+(pass) agent observation rejects initialize and approval mode only prepares [4.59ms]
+(pass) agent observation rejects start and approval mode only prepares [3.45ms]
+(pass) agent observation rejects tune and approval mode only prepares [2.32ms]
+(pass) direct users may omit chat in observation and never self-approve [0.60ms]
+(pass) asserted context cannot override trusted project_unauthorized [0.30ms]
+(pass) asserted context cannot override trusted chat_unauthorized [0.85ms]
+(pass) asserted context cannot override trusted chat_unauthorized [0.31ms]
+(pass) asserted context cannot override trusted initiator_mismatch [0.22ms]
+(pass) asserted context cannot override trusted context_changed [0.23ms]
+(pass) asserted context cannot override trusted context_changed [0.50ms]
+(pass) forged caller and independent mode mismatch cannot prepare [0.98ms]
+(pass) invalid trusted identity fails with controller_unknown [1.39ms]
+(pass) invalid trusted identity fails with controller_unknown [0.50ms]
+(pass) invalid trusted identity fails with controller_unknown [0.94ms]
+(pass) invalid trusted identity fails with controller_unknown [0.68ms]
+(pass) invalid trusted identity fails with project_unauthorized [0.57ms]
+(pass) invalid trusted identity fails with project_unauthorized [0.54ms]
+(pass) invalid trusted identity fails with chat_unauthorized [0.71ms]
+(pass) invalid trusted identity fails with chat_unauthorized [0.86ms]
+(pass) invalid trusted identity fails with chat_unauthorized [0.79ms]
+(pass) start capability does not permit initialize [1.11ms]
+(pass) start capability does not permit tune [1.00ms]
+(pass) start capability does not permit deploy [4.25ms]
+(pass) malformed input is rejected before any trusted port ($) [0.75ms]
+(pass) malformed input is rejected before any trusted port ($) [0.51ms]
+(pass) malformed input is rejected before any trusted port ($) [0.31ms]
+(pass) malformed input is rejected before any trusted port ($) [0.23ms]
+(pass) malformed input is rejected before any trusted port ($) [0.14ms]
+(pass) malformed input is rejected before any trusted port ($) [0.16ms]
+(pass) malformed input is rejected before any trusted port ($) [0.30ms]
+(pass) malformed input is rejected before any trusted port ($) [0.17ms]
+(pass) malformed input is rejected before any trusted port ($) [0.25ms]
+(pass) malformed input is rejected before any trusted port ($) [0.91ms]
+(pass) malformed input is rejected before any trusted port ($) [0.36ms]
+(pass) malformed input is rejected before any trusted port ($) [0.23ms]
+(pass) malformed input is rejected before any trusted port ($) [0.18ms]
+(pass) malformed input is rejected before any trusted port ($) [0.22ms]
+(pass) malformed input is rejected before any trusted port ($) [0.16ms]
+(pass) malformed input is rejected before any trusted port ($) [0.28ms]
+(pass) malformed input is rejected before any trusted port ($) [0.16ms]
+(pass) required semantic port rejects unsupported parameters ($) [2.42ms]
+(pass) required semantic port rejects unsupported parameters ($) [0.87ms]
+(pass) required semantic port rejects unsupported parameters ($) [0.85ms]
+(pass) required semantic port rejects unsupported parameters ($) [0.85ms]
+(pass) accepted tuning preserves valid 0 [1.32ms]
+(pass) accepted tuning preserves valid false [0.68ms]
+(pass) deployment requires matching artifact validation in observation [8.55ms]
+(pass) deployment requires matching artifact validation in actions-with-approval [2.80ms]
+(pass) ingress snapshot survives caller mutation during policy wait [2.59ms]
+(pass) ingress snapshot survives caller mutation during parameters wait [0.61ms]
+(pass) canonical fingerprints exclude operation IDs and bind every decision context [3.52ms]
+(pass) control snapshot preserves field value state and exact OpMode across policy waits [1.11ms]
+(pass) fingerprint binds matched project context independently of approval [79.75ms]
+(pass) fingerprint binds matched chat context independently of approval [0.39ms]
+(pass) fingerprint binds matched initiator context independently of approval [0.17ms]
+(pass) fingerprint binds matched controller context independently of approval [1.19ms]
+(pass) fingerprint binds matched generation context independently of approval [0.24ms]
+(pass) fingerprint binds matched mode context independently of approval [0.38ms]
+(pass) caller cancellation releases policy without closing other preparations [0.71ms]
+(pass) caller cancellation releases parameters without closing other preparations [6.36ms]
+(pass) owner disposal waits through policy resource cleanup and blocks late retention [5.94ms]
+(pass) owner disposal waits through parameters resource cleanup and blocks late retention [1.48ms]
+(pass) caller interruption awaits asynchronous policy cleanup [26.04ms]
+(pass) caller interruption awaits asynchronous parameters cleanup [0.41ms]
+(pass) facade reuses serializable canonical schemas and exact emitted ID prefix [7.16ms]
+
+test/ftc/agent-and-context/m3-03.test.ts:
+(pass) plan-first waits and stale approval cannot edit [24.54ms]
+(pass) model-selected direct mode and forged or wrong-plan events cannot apply [1.24ms]
+(pass) proposal and scalar envelope are copied before asynchronous policy resolution [1.23ms]
+(pass) approval envelope mutation and concurrent claims cannot redirect or repeat application [0.74ms]
+(pass) fresh trusted policy rejects changed mode and consumes approval [0.27ms]
+(pass) fresh trusted policy rejects changed root and consumes approval [0.14ms]
+(pass) fresh trusted policy rejects changed paths and consumes approval [0.14ms]
+(pass) fresh trusted policy rejects changed revoked and consumes approval [0.14ms]
+(pass) opaque authorization binds every proposal field and expires after apply [0.77ms]
+(pass) active application rechecks changed mode policy before edits [0.35ms]
+(pass) active application rechecks changed root policy before edits [9.85ms]
+(pass) active application rechecks changed paths policy before edits [0.99ms]
+(pass) active application rechecks changed revoked policy before edits [0.56ms]
+(pass) independent owners cannot exchange plans or active edit capabilities [1.60ms]
+(pass) canonical conflict result is preserved and its plan never replays [1.23ms]
+(pass) canonical failed result is preserved and its plan never replays [0.63ms]
+(pass) canonical error result is preserved and its plan never replays [0.75ms]
+(pass) caller cancellation revokes capability and consumes its claimed plan [0.68ms]
+(pass) owner disposal revokes pending plans and active capabilities [0.55ms]
+(pass) owner disposal releases the pending proposal-policy resource without caller interruption [0.44ms]
+(pass) owner disposal releases the pending approval-event resource without caller interruption [0.12ms]
+(pass) owner disposal releases the pending approval-policy resource without caller interruption [0.18ms]
+(pass) owner disposal releases the pending authorization-policy resource without caller interruption [0.29ms]
+(pass) owner disposal waits for asynchronous policy release before returning [0.78ms]
+
+test/ftc/projects-and-chats/m2-05.test.ts:
+(pass) stop retains ownership until cleanup settles [2.43ms]
+(pass) terminal notification waits for pending handoff acceptance [0.78ms]
+(pass) admission bridges old execution completion and retains its own terminal identity [0.70ms]
+(pass) idle and different-chat stops do not interrupt the current owner [0.45ms]
+(pass) stop waits for registration before interruption and retains accepted reservations [0.67ms]
+(pass) same-chat admission and execution claims settle independently [0.48ms]
+(pass) failed handoff releases only its reservation [0.32ms]
+(pass) scope closure waits for bounded handoff registration before interruption [0.51ms]
+(pass) cancelling the submitting fiber during masked handoff retains accepted ownership [2.41ms]
+(pass) handoff rejects fabricated mismatched and released leases before scheduling [1.15ms]
+(pass) scope closure rejects a delayed execution acquisition and compensates its new token [0.85ms]
+(pass) cancelling pending execution acquisition leaves no claim or terminal release [0.59ms]
+(pass) held validates the complete process-local lease identity [3.35ms]
+(pass) defective handoff cleans its reservation even after a deferred terminal callback [3.78ms]
+(pass) scope closure waits for interruption cleanup then releases remaining exact claims [0.72ms]
+
+test/ftc/ftc-configuration-and-libraries/m6-03.test.ts:
+(pass) ambiguous imports stay untouched [4.17ms]
+(pass) static Kotlin coordinates and Java imports ignore comments and preserve evidence [0.74ms]
+(pass) unsupported source cannot establish absence or parse embedded code dependencies {
+ implementation(libs.pathing)
+ if (enabled) {
+ implementation 'com.pedropathing:core:2.1.2'
+ }
+}
+ [0.48ms]
+(pass) unsupported source cannot establish absence or parse embedded code customDependencyLoader()
+ [2.66ms]
+(pass) unsupported source cannot establish absence or parse embedded code if (enabled) {
+ dependencies {
+ implementation 'com.pedropathing:core:2.1.2'
+ }
+}
+ [1.80ms]
+(pass) unsupported source cannot establish absence or parse embedded code val sample = """
+dependencies {
+ implementation "com.pedropathing:core:2.1.2"
+}
+"""
+ [2.41ms]
+(pass) unsupported source cannot establish absence or parse embedded code dependencies {
+}
+loadTeamDependencies()
+ [1.79ms]
+(pass) complete supported layout can observe neither independently of managed selection [0.62ms]
+(pass) changed observed bytes cannot supply a version [0.38ms]
+(pass) reader scope closes on success and input is captured before asynchronous admission [0.35ms]
+(pass) scope disposal interrupts reads, releases project reader and rejects escaped API [3.85ms]
+(pass) reader verification failure is surfaced before any relative read [0.65ms]
+(pass) SDK disagreement is unknown and matching managed selection is consistent [1.40ms]
+(pass) unsupported Groovy / literal content is never dependency evidence [0.36ms]
+(pass) unsupported Groovy $/ literal content is never dependency evidence [0.17ms]
+(pass) generic pathname file retarget fallback is rejected before consuming foreign data [2.90ms]
+(pass) generic pathname ancestor retarget fallback is rejected before consuming foreign data [2.75ms]
+(pass) unsupported protected binding fails visibly without manifest or source reads [0.66ms]
+(pass) managed snapshot selection is captured before later reader verification [1.10ms]
+(pass) reader listing cannot make the module request a parent path [0.82ms]
+
+ 125 pass
+ 0 fail
+ 453 expect() calls
+Ran 125 tests across 4 files. [601.00ms]

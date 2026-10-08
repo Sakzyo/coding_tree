@@ -1,0 +1,49 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-03.test.ts:
+(pass) plan-first waits and stale approval cannot edit [6.79ms]
+(pass) model-selected direct mode and forged or wrong-plan events cannot apply [1.95ms]
+(pass) proposal and scalar envelope are copied before asynchronous policy resolution [1.24ms]
+(pass) approval envelope mutation and concurrent claims cannot redirect or repeat application [1.40ms]
+(pass) fresh trusted policy rejects changed mode and consumes approval [0.44ms]
+(pass) fresh trusted policy rejects changed root and consumes approval [0.35ms]
+(pass) fresh trusted policy rejects changed paths and consumes approval [0.45ms]
+(pass) fresh trusted policy rejects changed revoked and consumes approval [0.22ms]
+(pass) opaque authorization binds every proposal field and expires after apply [1.05ms]
+(pass) active application rechecks changed mode policy before edits [0.49ms]
+(pass) active application rechecks changed root policy before edits [0.28ms]
+(pass) active application rechecks changed paths policy before edits [0.20ms]
+(pass) active application rechecks changed revoked policy before edits [0.36ms]
+(pass) independent owners cannot exchange plans or active edit capabilities [1.03ms]
+(pass) canonical conflict result is preserved and its plan never replays [0.41ms]
+(pass) canonical failed result is preserved and its plan never replays [0.20ms]
+(pass) canonical error result is preserved and its plan never replays [0.20ms]
+(pass) caller cancellation revokes capability and consumes its claimed plan [0.79ms]
+(pass) owner disposal revokes pending plans and active capabilities [0.61ms]
+(pass) owner disposal releases the pending proposal-policy resource without caller interruption [0.32ms]
+(pass) owner disposal releases the pending approval-event resource without caller interruption [0.16ms]
+(pass) owner disposal releases the pending approval-policy resource without caller interruption [0.22ms]
+(pass) owner disposal releases the pending authorization-policy resource without caller interruption [0.26ms]
+(pass) owner disposal waits for asynchronous policy release before returning [0.39ms]
+
+test/ftc/projects-and-chats/m2-05.test.ts:
+(pass) stop retains ownership until cleanup settles [5.24ms]
+(pass) terminal notification waits for pending handoff acceptance [1.49ms]
+(pass) admission bridges old execution completion and retains its own terminal identity [1.91ms]
+(pass) idle and different-chat stops do not interrupt the current owner [1.15ms]
+(pass) stop waits for registration before interruption and retains accepted reservations [3.35ms]
+(pass) same-chat admission and execution claims settle independently [6.09ms]
+(pass) failed handoff releases only its reservation [0.94ms]
+(pass) scope closure waits for bounded handoff registration before interruption [1.52ms]
+(pass) cancelling the submitting fiber during masked handoff retains accepted ownership [1.59ms]
+(pass) handoff rejects fabricated mismatched and released leases before scheduling [0.96ms]
+(pass) scope closure rejects a delayed execution acquisition and compensates its new token [0.97ms]
+(pass) cancelling pending execution acquisition leaves no claim or terminal release [0.62ms]
+(pass) held validates the complete process-local lease identity [0.78ms]
+(pass) defective handoff cleans its reservation even after a deferred terminal callback [1.56ms]
+(pass) scope closure waits for interruption cleanup then releases remaining exact claims [1.53ms]
+
+ 39 pass
+ 0 fail
+ 169 expect() calls
+Ran 39 tests across 2 files. [118.00ms]

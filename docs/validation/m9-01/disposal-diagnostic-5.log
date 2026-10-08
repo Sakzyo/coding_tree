@@ -1,0 +1,21 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/robot-approvals-and-operations/m9-01.test.ts:
+m9 disposal entered policy
+m9 disposal cleaning policy
+m9 disposal rejects policy
+m9 owned end
+m9 outer release
+m9 other prepared policy
+m9 resource released policy
+m9 owned end
+m9 outer release
+m9 release signaled policy
+(fail) owner disposal waits through policy resource cleanup and blocks late retention [5000.98ms]
+  ^ this test timed out after 5000ms.
+
+ 0 pass
+ 54 filtered out
+ 1 fail
+ 4 expect() calls
+Ran 1 test across 1 file. [5.19s]

@@ -1,0 +1,12 @@
+packages/schema/src/ftc-operation.ts: OK
+packages/schema/src/index.ts: OK
+packages/core/src/ftc/operations.ts: OK
+packages/core/test/ftc/robot-approvals-and-operations/m9-01.test.ts: OK
+docs/validation/M9-01-brief.md: OK
+docs/validation/M9-01-preflight.md: OK
+docs/prompt.md: OK
+docs/proposal.md: OK
+docs/high-level-design.md: OK
+docs/tasks/robot-approvals-and-operations.md: OK
+AGENTS.md: OK
+packages/schema/AGENTS.md: OK

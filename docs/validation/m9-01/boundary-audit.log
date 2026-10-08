@@ -1,0 +1,14 @@
+3:import { createHash } from "node:crypto"
+4:import { FtcOperation } from "@opencode-ai/schema/ftc-operation"
+5:import { FtcProject } from "@opencode-ai/schema/ftc-project"
+6:import { Context, Effect, Exit, Fiber, Layer, Option, Schema, Scope } from "effect"
+38:  // Mandatory version-specific semantic/artifact validation, with no transport or execution capability.
+68:        pending.clear()
+74:      active().pipe(
+75:        Effect.andThen(Effect.acquireUseRelease(Effect.forkIn(effect, operations), joinPreparation, Fiber.interrupt)),
+79:        yield* active()
+97:            yield* active()
+99:            yield* active()
+110:            yield* active()
+120:            pending.set(prepared.operationID, prepared)
+166:function joinPreparation<A, E>(fiber: Fiber.Fiber<A, E>) {

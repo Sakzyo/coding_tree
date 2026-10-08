@@ -1,6 +1,6 @@
 # M9-01 preparation implementation brief — 2026-10-08
 
-PREPARED ONLY; not dispatched. Root assigns actual source checkpoint when sole product writer slot is available.
+Dispatched on explicit continuation, 2026-10-08. Source base `5fdd801e1`; sole product writer `/root/m9_01`. Root owns shared exports, Git and authoritative progress accounting.
 Read AGENTS.md, docs/prompt.md, M9 module, proposal ROB-03/04/07, high-level M9 ownership and docs/validation/M9-01-preflight.md. Exact original task follows below. Prerequisites: fixture-ready with no implementation prerequisite; action isolation M9-07/08 stays blocked and is not promoted by preparation.
 
 Allowed product paths: packages/schema/src/ftc-operation.ts, packages/core/src/ftc/operations.ts, packages/core/test/ftc/robot-approvals-and-operations/m9-01.test.ts. Evidence docs/validation/M9-01-implementation.md and docs/validation/m9-01/*. Root owns shared Schema export/Git/ledger; no manifest/migration/generated/host/transport/approval/UI edits, no subagents or worker commits.

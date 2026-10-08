@@ -1,0 +1,96 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/robot-approvals-and-operations/m9-01.test.ts:
+(pass) observation blocks agent control but not separately approved deployment [8.89ms]
+(pass) agent observation rejects initialize and approval mode only prepares [1.02ms]
+(pass) agent observation rejects start and approval mode only prepares [0.37ms]
+(pass) agent observation rejects tune and approval mode only prepares [0.35ms]
+error
+{
+  code: "invalid_operation_input",
+}
+(fail) direct users may omit chat in observation and never self-approve [0.62ms]
+(pass) asserted context cannot override trusted project_unauthorized [0.22ms]
+(pass) asserted context cannot override trusted chat_unauthorized [0.16ms]
+182 |   { change: { generation: "other" }, code: "context_changed" },
+183 | ])("asserted context cannot override trusted $code", (input) =>
+184 |   run(
+185 |     Effect.gen(function* () {
+186 |       const f = yield* fixture()
+187 |       expect((yield* f.prepare(request.action, { ...request, ...input.change } as FtcOperation.OperationRequest).pipe(Effect.flip)).code).toBe(input.code)
+                                                                                                                                                ^
+error: expect(received).toBe(expected)
+
+Expected: "chat_unauthorized"
+Received: "invalid_operation_input"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/robot-approvals-and-operations/m9-01.test.ts:187:139)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+(fail) asserted context cannot override trusted chat_unauthorized [0.28ms]
+(pass) asserted context cannot override trusted initiator_mismatch [0.14ms]
+(pass) asserted context cannot override trusted context_changed [0.12ms]
+(pass) asserted context cannot override trusted context_changed [0.10ms]
+(pass) forged caller and independent mode mismatch cannot prepare [0.25ms]
+(pass) invalid trusted identity fails with controller_unknown [0.15ms]
+(pass) invalid trusted identity fails with controller_unknown [0.10ms]
+(pass) invalid trusted identity fails with project_unauthorized [0.10ms]
+(pass) invalid trusted identity fails with project_unauthorized [0.10ms]
+(pass) invalid trusted identity fails with chat_unauthorized [0.10ms]
+(pass) invalid trusted identity fails with chat_unauthorized [0.09ms]
+(pass) invalid trusted identity fails with chat_unauthorized [0.11ms]
+(pass) start capability does not permit initialize [0.25ms]
+(pass) start capability does not permit tune [0.19ms]
+(pass) start capability does not permit deploy [0.19ms]
+(pass) malformed input is rejected before any trusted port ($) [0.11ms]
+(pass) malformed input is rejected before any trusted port ($) [0.05ms]
+(pass) malformed input is rejected before any trusted port ($) [0.28ms]
+(pass) malformed input is rejected before any trusted port ($) [0.07ms]
+(pass) malformed input is rejected before any trusted port ($) [0.07ms]
+(pass) malformed input is rejected before any trusted port ($) [0.08ms]
+(pass) malformed input is rejected before any trusted port ($) [0.07ms]
+(pass) malformed input is rejected before any trusted port ($) [0.05ms]
+(pass) malformed input is rejected before any trusted port ($) [0.06ms]
+(pass) malformed input is rejected before any trusted port ($) [0.05ms]
+(pass) malformed input is rejected before any trusted port ($) [0.10ms]
+(pass) malformed input is rejected before any trusted port ($) [0.05ms]
+(pass) malformed input is rejected before any trusted port ($) [0.05ms]
+(pass) malformed input is rejected before any trusted port ($) [0.06ms]
+(pass) malformed input is rejected before any trusted port ($) [0.05ms]
+(pass) malformed input is rejected before any trusted port ($) [0.06ms]
+(pass) malformed input is rejected before any trusted port ($) [0.03ms]
+(pass) required semantic port rejects unsupported parameters ($) [0.15ms]
+(pass) required semantic port rejects unsupported parameters ($) [0.07ms]
+(pass) required semantic port rejects unsupported parameters ($) [0.06ms]
+(pass) required semantic port rejects unsupported parameters ($) [0.07ms]
+(pass) accepted tuning preserves valid 0 [0.35ms]
+(pass) accepted tuning preserves valid false [0.18ms]
+(pass) deployment requires matching artifact validation in observation [0.46ms]
+(pass) deployment requires matching artifact validation in actions-with-approval [0.22ms]
+(pass) ingress snapshot survives caller mutation during policy wait [0.44ms]
+(pass) ingress snapshot survives caller mutation during parameters wait [0.11ms]
+(pass) canonical fingerprints exclude operation IDs and bind every decision context [0.56ms]
+(pass) caller cancellation releases policy without closing other preparations [0.43ms]
+(pass) caller cancellation releases parameters without closing other preparations [0.15ms]
+(fail) owner disposal waits through policy resource cleanup and blocks late retention [5000.00ms]
+  ^ this test timed out after 5000ms.
+(fail) owner disposal waits through parameters resource cleanup and blocks late retention [5000.00ms]
+  ^ this test timed out after 5000ms.
+(pass) facade reuses serializable canonical schemas and exact emitted ID prefix [2.27ms]
+
+4 tests failed:
+(fail) direct users may omit chat in observation and never self-approve [0.62ms]
+(fail) asserted context cannot override trusted chat_unauthorized [0.28ms]
+(fail) owner disposal waits through policy resource cleanup and blocks late retention [5000.00ms]
+  ^ this test timed out after 5000ms.
+(fail) owner disposal waits through parameters resource cleanup and blocks late retention [5000.00ms]
+  ^ this test timed out after 5000ms.
+
+ 51 pass
+ 4 fail
+ 145 expect() calls
+Ran 55 tests across 1 file. [10.09s]
