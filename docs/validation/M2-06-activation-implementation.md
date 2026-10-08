@@ -1,6 +1,6 @@
 # M2-06 I2 activation fence — candidate frozen for independent review
 
-2026-10-08. Current status: DONE_WITH_CONCERNS (implementation candidate; independent review and coordinator acceptance pending). Explicit start received on product source `5b8618d0f`; coordinator docs-only commit `4122d5d54` follows it. This lane is the sole product writer. The following preparation baseline is retained as historical evidence. This report does not close I2 or mark M2-06 complete. Product baseline supplied by coordinator: `11b3fe90e` plus separate in-flight M3 work, which this lane does not inspect. Exact affected source hashes are in `m2-06-activation/baseline-source-sha256.txt`.
+2026-10-08. Current status: DONE_WITH_CONCERNS (fix round 1 candidate frozen on base `4a8005983782eac8220dc7243167356f79636626`; independent re-review and coordinator acceptance pending). Explicit start received on product source `5b8618d0f`; coordinator docs-only commit `4122d5d54` follows it. This lane is the sole product writer. The following preparation baseline is retained as historical evidence. This report does not close I2 or mark M2-06 complete. Product baseline supplied by coordinator: `11b3fe90e` plus separate in-flight M3 work, which this lane does not inspect. Exact affected source hashes are in `m2-06-activation/baseline-source-sha256.txt`.
 
 ## Scope and decisions
 
@@ -75,7 +75,7 @@ Not every individual fixture was independently RED before implementation. The fi
 7. **Actual host binding:** AppRuntime, lazy webHandler and separately constructed listener-route memo graphs share one authority. Closing one borrower leaves another protected. A separate process script builds actual AppLayer graphs and gates last-close/reopen on the exact old claim, cancels one waiting graph, admits a successor only after old cleanup, and closes/reopens normally. Pure factory isolation is separately tested. No user listener/socket is launched by these graph tests.
 8. **Compatibility:** Core M2 composition/boundaries, standalone/embedded Server host, generated SDK Client and OpenCode host tests pass. Raw and facade FTC execution remain disabled pending M9; read/history and association reopen remain available. Public Protocol/HttpApi shapes did not change, so Client regeneration is not required.
 
-## Final executed verification
+## Initial candidate executed verification
 
 All commands use pinned Bun 1.3.14. [commands.jsonl](m2-06-activation/commands.jsonl) records exact command arrays, package cwd, exits and elapsed time; [check.py](m2-06-activation/check.py) records environment construction. The table records final relevant runs, not the sum of every repeated debugging run.
 
@@ -102,3 +102,35 @@ The additional [benchmark-owned.ts](m2-06-activation/benchmark-owned.ts) uses re
 ## Remaining gates and handoff
 
 No known required software contract remains unimplemented in this candidate. Independent review, scoped Git diff/whitespace reconciliation, commit and ledger acceptance remain with root. Root compared the original `5b8618d0f` diagnostics and confirmed all 31 lint warnings are inherited; see `lint-baseline*` evidence. The pre-existing unused Layer import in TaskTool tests was restored after scope review, without an artificial use or unrelated cleanup. Windows behavior, packaged desktop/release validation, real production/provider performance and M9 host/action/physical-robot isolation remain NOT RUN / outside this bounded current-process task. Separate processes or arbitrary escaped OS children are not covered by these volatile claims. Unknown/uncovered host deployments continue failing closed. This report is candidate evidence and does not itself mark M2-06 or a whole module complete.
+
+
+## Review fix round 1 — owner-scope shell teardown
+
+The independent review found an Important violation in candidate `4a8005983782eac8220dc7243167356f79636626`: the shell's accepted release scope was attached to the Runner owner while shell execution was a child of the calling fiber. SessionRunState registers cancellation before accepting work, so LIFO owner disposal released the newer claim before invoking the earlier cancellation finalizer and waiting for shell cleanup. The initial candidate's software-complete claim above is superseded by this review finding and repair; I2 remains coordinator-owned pending re-review.
+
+**Amended product/test paths:** only `packages/opencode/src/effect/runner.ts` and `packages/opencode/test/effect/runner.test.ts`. No scope/interface expansion or other product edits. The report/evidence and SHA manifests are refreshed in the assigned validation directory.
+
+**Meaningful RED:** before changing Runner, added `owner disposal holds shell ownership until shell cleanup finishes`. It creates the actual owner Scope, registers real `runner.cancel` first exactly as SessionRunState does, starts the real shell, and holds interruption cleanup behind a Deferred. Running from `packages/opencode` with pinned Bun `test ./test/effect/runner.test.ts -t 'owner disposal holds shell ownership'` exited 1: disposal remained pending but expected held ownership 1 was actually 0. The exact failure is preserved in `fix1-red-shell-disposal.log` (0 pass, 1 fail, 2 assertions). Cleanup barriers release even on assertion failure.
+
+**Smallest repaired boundary:** both Runner execution branches use one local `ownedWork` helper. The accepted lifetime still owns the release finalizer. It first adds a child resource scope, then attaches an actual work fiber to the accepted lifetime and waits for that fiber's full exit, including automatic child cleanup. Owner disposal therefore interrupts/joins work before closing its resources and finally releasing the exact claim, without depending on sibling owner-finalizer ordering. The existing outer shell fiber remains a caller child, preserving caller-cancellation semantics; its cancellation interrupts and joins the inner worker. The worker's actual exit is propagated so interruption cleanup defects are not mistaken for plain cancellation. Immediate worker start preserves the existing accepted-work scheduling behavior. The same boundary protects the normal run branch and works with a parallel parent owner scope. No FTC policy entered Runner.
+
+Five new deterministic cases cover the reproduced shell owner-disposal order, parallel parent disposal of a normal run, shell caller cancellation, and normal run/shell completion while an automatic child is still cleaning up. The latter cases assert exact order `child`, `resource`, `release`, retained ownership while blocked, and zero ownership after completion. Existing queued/handoff/joiner/replacement/cancel/compound-defect tests remain passing. Two initial repair attempts exposed additional scheduling and exit-propagation regressions; `fix1-green-runner-first.log`, `fix1-green-runner-second.log` and `fix1-debug-*` are retained debugging failures, not passing evidence. The corrected focused suite passed in `fix1-green-runner-third.log`, followed by all added lifetime cases in `fix1-green-lifetimes.log`.
+
+### Final repaired candidate checks
+
+Exact commands, cwd, environment wrapper, timing and exits are appended to `m2-06-activation/commands.jsonl`; all following checks exited 0.
+
+| Package / command | Result | Evidence |
+| --- | --- | --- |
+| `packages/opencode`: pinned Bun `test ./test/effect/runner.test.ts ./test/background/job.test.ts ./test/session/legacy-activity.test.ts ./test/server/httpapi-ftc-project.test.ts ./test/session/prompt.test.ts ./test/session/compaction.test.ts ./test/session/processor-effect.test.ts ./test/tool/task.test.ts` | 211 pass, 2 unchanged projector-disabled skips, 0 fail, 738 assertions; 38.58 s | `fix1-regression-opencode.log` |
+| `packages/core`: pinned Bun `test ./test/ftc-integration/m2-06.test.ts` | 13 pass, 0 fail, 75 assertions | `fix1-m2-composition.log` |
+| `packages/opencode`: pinned Bun `../../docs/validation/m2-06-activation/actual-host-generation.ts` | PASS actual AppLayer last-close/cancelled waiter/exact release/reopen | `fix1-actual-host-generation.log` |
+| `packages/opencode`: pinned Bun `typecheck` | exit 0 | `fix1-types.log` |
+| Root local `oxlint` over the explicit 22-path source list | 31 inherited warnings, 0 errors | `fix1-lint.log` |
+| Root local `prettier --check` over the same 22 paths | all formatted | `fix1-format.log` |
+
+The broad OpenCode rerun includes the previously added final HTTP scalar-capture changes as well as this Runner repair. Controlled loopback fixture access was approved; no live user server, remote provider or robot ran. Unchanged Core/Server/SDK types and Server/SDK integration checks retain their earlier passing evidence; unrelated checks were not repeated.
+
+The unchanged benchmark scripts were rerun after the regression commands finished. Ten alternating samples after two warmups remain preserved in `fix1-performance.log` and `fix1-performance-owned.log`. Per 1000 actual cycles including scope closure, median unowned Runner/BackgroundJob times are 9.253/25.139 ms; real-owned times are 15.090/33.594 ms. The repaired Runner adds an inner work fiber and resource scope to guarantee termination ordering. This costs approximately 5.837 microseconds per Runner cycle when comparing real-owned to unowned on this candidate; the previous pre-repair owned median was 11.781 ms per 1000 cycles. BackgroundJob source is unchanged, and its differing samples illustrate why these short local observations are not a production speedup/regression budget. All earlier baseline and candidate samples remain intact. Filesystem/SQLite/provider/platform/robot costs remain outside this microbenchmark.
+
+The final 22 source/test hashes are refreshed in both `fix1-source-sha256.txt` and `final-source-sha256.txt`; manifest SHA256 is `441315593885af3a340d081de4b0d4cdd0a1be49a5f988cc7e49030e14978b70`. Product source is frozen for root's independent re-review. No Git/index/commit/ledger action was performed by this worker. Review acceptance, commit and progress reconciliation remain root-owned; all previously stated Windows, packaging, production, external-process and M9/physical limits remain open and unchanged.

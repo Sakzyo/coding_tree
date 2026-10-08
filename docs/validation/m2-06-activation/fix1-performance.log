@@ -1,0 +1,39 @@
+{
+  "measurement": "1000 actual Runner ensureRunning/completion cycles and 1000 actual BackgroundJob start/wait cycles including owner-scope close; 2 warmup and 10 alternating samples",
+  "environment": {
+    "bun": "1.3.14",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "samples_ms": {
+    "runner": [
+      11.40354099999999,
+      11.854042000000021,
+      9.153582999999998,
+      8.319083000000035,
+      10.55904099999998,
+      9.352917000000048,
+      9.751499999999965,
+      8.948416000000009,
+      8.598416999999984,
+      8.428709000000026
+    ],
+    "background": [
+      27.505957999999993,
+      23.823208000000022,
+      23.886083000000013,
+      23.430542000000003,
+      28.00354199999998,
+      25.325625000000002,
+      25.618000000000052,
+      24.95324999999997,
+      28.042500000000018,
+      24.724417000000017
+    ]
+  },
+  "medians_ms": {
+    "runner": 9.253250000000023,
+    "background": 25.139437499999985
+  },
+  "limits": "Local process microbenchmark only; no provider, shell, robot, UI, or production throughput claim. No runtime ownership hooks exist in the baseline."
+}

@@ -1,0 +1,114 @@
+bun test v1.3.14 (0d9b296a)
+
+test/effect/runner.test.ts:
+(pass) Runner > ensureRunning starts work and returns result [6.78ms]
+(pass) Runner > ensureRunning propagates work failures [0.42ms]
+(pass) Runner > concurrent callers share the same run [11.81ms]
+(pass) Runner > concurrent callers all receive same error [13.34ms]
+(pass) Runner > ensureRunning can be called again after previous run completes [0.40ms]
+(pass) Runner > second ensureRunning ignores new work if already running [53.29ms]
+(pass) Runner > cancel interrupts running work [1.00ms]
+(pass) Runner > cancel on idle is a no-op [0.13ms]
+(pass) Runner > cancel with onInterrupt resolves callers gracefully [0.74ms]
+(pass) Runner > cancel with queued callers resolves all [0.60ms]
+(pass) Runner > work can be started after cancel [0.39ms]
+[11:24:16.392] ERROR (#52): 1464 | /** @internal */
+1465 | export const timeoutOrElse = /*#__PURE__*/dual(2, (self, options) => raceFirst(self, flatMap(sleep(options.duration), options.orElse)));
+1466 | /** @internal */
+1467 | export const timeout = /*#__PURE__*/dual(2, (self, duration) => timeoutOrElse(self, {
+1468 |   duration,
+1469 |   orElse: () => fail(new TimeoutError())
+                            ^
+TimeoutError: TimeoutError
+       _tag: "TimeoutError",
+ ~effect/Cause/TimeoutError: "~effect/Cause/TimeoutError",
+
+      at orElse (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1469:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+
+1464 | /** @internal */
+1465 | export const timeoutOrElse = /*#__PURE__*/dual(2, (self, options) => raceFirst(self, flatMap(sleep(options.duration), options.orElse)));
+1466 | /** @internal */
+1467 | export const timeout = /*#__PURE__*/dual(2, (self, duration) => timeoutOrElse(self, {
+1468 |   duration,
+1469 |   orElse: () => fail(new TimeoutError())
+                            ^
+error: undefined
+       _tag: "TimeoutError",
+ ~effect/Cause/TimeoutError: "~effect/Cause/TimeoutError",
+
+      at orElse (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1469:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+(fail) Runner > cancel does not deadlock when replacement work starts before interrupted run exits [258.87ms]
+(pass) Runner > shell runs exclusively [0.85ms]
+(pass) Runner > shell rejects when run is active [0.77ms]
+(pass) Runner > shell rejects when another shell is running [0.73ms]
+(pass) Runner > cancel interrupts shell [0.73ms]
+[11:24:16.397] ERROR (#87): 348 |         )
+349 |         .pipe(Effect.forkChild)
+350 |       yield* ready.await.pipe(Effect.timeout("250 millis"))
+351 | 
+352 |       yield* runner.cancel
+353 |       expect(Exit.isFailure(yield* Fiber.await(sh))).toBe(true)
+      ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at toBe (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/opencode/test/effect/runner.test.ts:353:54
+
+348 |         )
+349 |         .pipe(Effect.forkChild)
+350 |       yield* ready.await.pipe(Effect.timeout("250 millis"))
+351 | 
+352 |       yield* runner.cancel
+353 |       expect(Exit.isFailure(yield* Fiber.await(sh))).toBe(true)
+      ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at toBe (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/opencode/test/effect/runner.test.ts:353:54
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:910:23)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at onExit (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1009:2)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1028:5
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at flushWaiters (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2761:13)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) Runner > cancel does not mask shell defects [0.90ms]
+(pass) Runner > ensureRunning queues behind shell then runs after [0.51ms]
+(pass) Runner > multiple ensureRunning callers share the queued run behind shell [0.63ms]
+(pass) Runner > cancel during shell_then_run cancels both [0.51ms]
+(pass) Runner > onIdle fires when returning to idle from running [0.21ms]
+(pass) Runner > onIdle fires on cancel [0.28ms]
+(pass) Runner > onBusy fires when shell starts [0.19ms]
+(pass) Runner > busy is true during run [0.24ms]
+(pass) Runner > busy is true during shell [0.22ms]
+(fail) accepted Runner ownership survives a cancelled joiner and idle cleanup [5000.00ms]
+  ^ this test timed out after 5000ms.
+(pass) accepted queued ownership survives waiter cancellation and releases only its generation [3.98ms]
+(pass) owner disposal holds shell ownership until shell cleanup finishes [0.54ms]
+
+3 tests failed:
+(fail) Runner > cancel does not deadlock when replacement work starts before interrupted run exits [258.87ms]
+(fail) Runner > cancel does not mask shell defects [0.90ms]
+(fail) accepted Runner ownership survives a cancelled joiner and idle cleanup [5000.00ms]
+  ^ this test timed out after 5000ms.
+
+ 25 pass
+ 3 fail
+ 65 expect() calls
+Ran 28 tests across 1 file. [6.20s]

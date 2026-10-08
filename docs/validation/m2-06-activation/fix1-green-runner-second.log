@@ -1,0 +1,74 @@
+bun test v1.3.14 (0d9b296a)
+
+test/effect/runner.test.ts:
+(pass) Runner > ensureRunning starts work and returns result [4.75ms]
+(pass) Runner > ensureRunning propagates work failures [0.36ms]
+(pass) Runner > concurrent callers share the same run [13.56ms]
+(pass) Runner > concurrent callers all receive same error [12.74ms]
+(pass) Runner > ensureRunning can be called again after previous run completes [0.36ms]
+(pass) Runner > second ensureRunning ignores new work if already running [52.77ms]
+(pass) Runner > cancel interrupts running work [0.96ms]
+(pass) Runner > cancel on idle is a no-op [0.13ms]
+(pass) Runner > cancel with onInterrupt resolves callers gracefully [0.71ms]
+[11:25:58.814] ERROR (#38): 179 |       yield* Effect.yieldNow
+180 | 
+181 |       yield* runner.cancel
+182 | 
+183 |       const [exitA, exitB] = yield* Effect.all([Fiber.await(a), Fiber.await(b)])
+184 |       expect(Exit.isSuccess(exitA)).toBe(true)
+      ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at toBe (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/opencode/test/effect/runner.test.ts:184:37
+
+179 |       yield* Effect.yieldNow
+180 | 
+181 |       yield* runner.cancel
+182 | 
+183 |       const [exitA, exitB] = yield* Effect.all([Fiber.await(a), Fiber.await(b)])
+184 |       expect(Exit.isSuccess(exitA)).toBe(true)
+      ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at toBe (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/opencode/test/effect/runner.test.ts:184:37
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:910:23)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) Runner > cancel with queued callers resolves all [1.36ms]
+(pass) Runner > work can be started after cancel [0.45ms]
+(pass) Runner > cancel does not deadlock when replacement work starts before interrupted run exits [1.02ms]
+(pass) Runner > shell runs exclusively [0.54ms]
+(pass) Runner > shell rejects when run is active [0.49ms]
+(pass) Runner > shell rejects when another shell is running [0.35ms]
+(pass) Runner > cancel interrupts shell [0.60ms]
+(pass) Runner > cancel does not mask shell defects [0.50ms]
+(pass) Runner > ensureRunning queues behind shell then runs after [0.42ms]
+(pass) Runner > multiple ensureRunning callers share the queued run behind shell [0.55ms]
+(pass) Runner > cancel during shell_then_run cancels both [0.45ms]
+(pass) Runner > onIdle fires when returning to idle from running [0.18ms]
+(pass) Runner > onIdle fires on cancel [0.26ms]
+(pass) Runner > onBusy fires when shell starts [0.18ms]
+(pass) Runner > busy is true during run [0.23ms]
+(pass) Runner > busy is true during shell [0.22ms]
+(pass) accepted Runner ownership survives a cancelled joiner and idle cleanup [0.45ms]
+(pass) accepted queued ownership survives waiter cancellation and releases only its generation [0.60ms]
+(pass) owner disposal holds shell ownership until shell cleanup finishes [0.44ms]
+
+1 tests failed:
+(fail) Runner > cancel with queued callers resolves all [1.36ms]
+
+ 27 pass
+ 1 fail
+ 71 expect() calls
+Ran 28 tests across 1 file. [941.00ms]

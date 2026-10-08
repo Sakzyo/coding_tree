@@ -1,0 +1,53 @@
+bun test v1.3.14 (0d9b296a)
+
+test/effect/runner.test.ts:
+[11:22:36.248] ERROR (#2): 625 |       ).pipe(Effect.exit, Effect.forkChild)
+626 |       yield* Deferred.await(entered)
+627 |       const disposal = yield* Scope.close(owner, Exit.void).pipe(Effect.forkChild)
+628 |       yield* Deferred.await(closing)
+629 |       expect(disposal.pollUnsafe()).toBeUndefined()
+630 |       expect(held.size).toBe(1)
+      ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at toBe (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/opencode/test/effect/runner.test.ts:630:25
+
+625 |       ).pipe(Effect.exit, Effect.forkChild)
+626 |       yield* Deferred.await(entered)
+627 |       const disposal = yield* Scope.close(owner, Exit.void).pipe(Effect.forkChild)
+628 |       yield* Deferred.await(closing)
+629 |       expect(disposal.pollUnsafe()).toBeUndefined()
+630 |       expect(held.size).toBe(1)
+      ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at toBe (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/opencode/test/effect/runner.test.ts:630:25
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:910:23)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at doneUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Deferred.js:657:20)
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:612:37)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at interruptUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:366:7)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:580:7
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) owner disposal holds shell ownership until shell cleanup finishes [6.66ms]
+
+ 0 pass
+ 27 filtered out
+ 1 fail
+ 2 expect() calls
+Ran 1 test across 1 file. [1019.00ms]

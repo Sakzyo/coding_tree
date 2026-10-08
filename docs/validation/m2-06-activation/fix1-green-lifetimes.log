@@ -1,0 +1,40 @@
+bun test v1.3.14 (0d9b296a)
+
+test/effect/runner.test.ts:
+(pass) Runner > ensureRunning starts work and returns result [5.50ms]
+(pass) Runner > ensureRunning propagates work failures [0.42ms]
+(pass) Runner > concurrent callers share the same run [13.80ms]
+(pass) Runner > concurrent callers all receive same error [12.99ms]
+(pass) Runner > ensureRunning can be called again after previous run completes [0.39ms]
+(pass) Runner > second ensureRunning ignores new work if already running [52.69ms]
+(pass) Runner > cancel interrupts running work [1.08ms]
+(pass) Runner > cancel on idle is a no-op [0.14ms]
+(pass) Runner > cancel with onInterrupt resolves callers gracefully [0.74ms]
+(pass) Runner > cancel with queued callers resolves all [0.65ms]
+(pass) Runner > work can be started after cancel [0.39ms]
+(pass) Runner > cancel does not deadlock when replacement work starts before interrupted run exits [0.93ms]
+(pass) Runner > shell runs exclusively [0.55ms]
+(pass) Runner > shell rejects when run is active [0.54ms]
+(pass) Runner > shell rejects when another shell is running [0.39ms]
+(pass) Runner > cancel interrupts shell [0.54ms]
+(pass) Runner > cancel does not mask shell defects [0.48ms]
+(pass) Runner > ensureRunning queues behind shell then runs after [0.42ms]
+(pass) Runner > multiple ensureRunning callers share the queued run behind shell [0.55ms]
+(pass) Runner > cancel during shell_then_run cancels both [0.47ms]
+(pass) Runner > onIdle fires when returning to idle from running [0.19ms]
+(pass) Runner > onIdle fires on cancel [0.27ms]
+(pass) Runner > onBusy fires when shell starts [0.18ms]
+(pass) Runner > busy is true during run [0.23ms]
+(pass) Runner > busy is true during shell [0.21ms]
+(pass) accepted Runner ownership survives a cancelled joiner and idle cleanup [0.43ms]
+(pass) accepted queued ownership survives waiter cancellation and releases only its generation [0.63ms]
+(pass) owner disposal holds shell ownership until shell cleanup finishes [0.44ms]
+(pass) run completion retains ownership through child and resource cleanup [0.52ms]
+(pass) shell completion retains ownership through child and resource cleanup [0.13ms]
+(pass) shell caller cancellation joins cleanup before releasing ownership [0.36ms]
+(pass) owner disposal drops queued work and joins the active run before releasing its claim [0.42ms]
+
+ 32 pass
+ 0 fail
+ 93 expect() calls
+Ran 32 tests across 1 file. [941.00ms]

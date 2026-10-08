@@ -91,6 +91,19 @@ export const make = <A, E = never>(
     }),
   )
 
+  const ownedWork = (work: Effect.Effect<A, E, Scope.Scope>, owned: Scope.Closeable) =>
+    Effect.uninterruptibleMask((restore) =>
+      Effect.gen(function* () {
+        const resources = yield* Scope.fork(owned, "sequential")
+        // Join the work fiber (including its children) before resources and ownership close.
+        const fiber = yield* work.pipe(Scope.provide(resources), Effect.forkIn(owned, { startImmediately: true }))
+        const exit = yield* restore(Fiber.await(fiber)).pipe(
+          Effect.catchCause(() => Fiber.interrupt(fiber).pipe(Effect.andThen(Fiber.await(fiber)))),
+        )
+        return yield* exit
+      }),
+    )
+
   const startRun = (
     work: Effect.Effect<A, E, Scope.Scope>,
     done: Deferred.Deferred<A, E | Cancelled>,
@@ -98,8 +111,7 @@ export const make = <A, E = never>(
   ) =>
     Effect.gen(function* () {
       const id = next()
-      const fiber = yield* work.pipe(
-        Scope.provide(owned),
+      const fiber = yield* ownedWork(work, owned).pipe(
         Effect.onExit((exit) => Scope.close(owned, exit).pipe(Effect.ensuring(finishRun(id, done, exit)))),
         Effect.forkIn(scope),
       )
@@ -166,8 +178,7 @@ export const make = <A, E = never>(
         yield* onBusy
         const id = next()
         const cancelled = yield* Deferred.make<void>()
-        const fiber = yield* work.pipe(
-          Scope.provide(owned),
+        const fiber = yield* ownedWork(work, owned).pipe(
           Effect.onExit((exit) => Scope.close(owned, exit).pipe(Effect.ensuring(finishShell(id)))),
           Effect.forkChild,
         )

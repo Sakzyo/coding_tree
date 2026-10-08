@@ -598,3 +598,179 @@ it.live(
     )
   }),
 )
+
+it.live(
+  "owner disposal holds shell ownership until shell cleanup finishes",
+  Effect.gen(function* () {
+    const owner = yield* Scope.make()
+    const entered = yield* Deferred.make<void>()
+    const closing = yield* Deferred.make<void>()
+    const cleanup = yield* Deferred.make<void>()
+    const held = new Set<object>()
+    const runner = Runner.make<string>(owner, {
+      ownership: Effect.sync(() => {
+        const claim = {}
+        held.add(claim)
+        return Effect.sync(() => {
+          held.delete(claim)
+        })
+      }),
+    })
+    // SessionRunState registers cancellation before accepting any work.
+    yield* Scope.addFinalizer(owner, runner.cancel)
+    yield* Effect.gen(function* () {
+      const shell = yield* runner
+        .startShell(
+          Deferred.succeed(entered, undefined).pipe(
+            Effect.andThen(Effect.never),
+            Effect.ensuring(Deferred.succeed(closing, undefined).pipe(Effect.andThen(Deferred.await(cleanup)))),
+          ),
+        )
+        .pipe(Effect.exit, Effect.forkChild)
+      yield* Deferred.await(entered)
+      const disposal = yield* Scope.close(owner, Exit.void).pipe(Effect.forkChild)
+      yield* Deferred.await(closing)
+      expect(disposal.pollUnsafe()).toBeUndefined()
+      expect(held.size).toBe(1)
+      yield* Deferred.succeed(cleanup, undefined)
+      yield* Fiber.join(disposal)
+      yield* Fiber.join(shell)
+      expect(held.size).toBe(0)
+    }).pipe(Effect.ensuring(Deferred.succeed(cleanup, undefined)), Effect.ensuring(Scope.close(owner, Exit.void)))
+  }),
+)
+
+for (const mode of ["run", "shell"] as const) {
+  it.live(
+    `${mode} completion retains ownership through child and resource cleanup`,
+    Effect.gen(function* () {
+      const scope = yield* Scope.Scope
+      const closing = yield* Deferred.make<void>()
+      const cleanup = yield* Deferred.make<void>()
+      const order: string[] = []
+      const held = new Set<object>()
+      const runner = Runner.make<string>(scope, {
+        ownership: Effect.sync(() => {
+          const claim = {}
+          held.add(claim)
+          return Effect.sync(() => {
+            held.delete(claim)
+            order.push("release")
+          })
+        }),
+      })
+      const work = Effect.gen(function* () {
+        yield* Effect.addFinalizer(() =>
+          Effect.sync(() => {
+            expect(held.size).toBe(1)
+            order.push("resource")
+          }),
+        )
+        const entered = yield* Deferred.make<void>()
+        yield* Deferred.succeed(entered, undefined).pipe(
+          Effect.andThen(Effect.never),
+          Effect.ensuring(
+            Deferred.succeed(closing, undefined).pipe(
+              Effect.andThen(Deferred.await(cleanup)),
+              Effect.andThen(Effect.sync(() => order.push("child"))),
+            ),
+          ),
+          Effect.forkChild,
+        )
+        yield* Deferred.await(entered)
+        return "done"
+      })
+      yield* Effect.gen(function* () {
+        const caller = yield* (mode === "run" ? runner.ensureRunning(work) : runner.startShell(work)).pipe(
+          Effect.forkChild,
+        )
+        yield* Deferred.await(closing)
+        expect(caller.pollUnsafe()).toBeUndefined()
+        expect(held.size).toBe(1)
+        yield* Deferred.succeed(cleanup, undefined)
+        expect(yield* Fiber.join(caller)).toBe("done")
+        expect(held.size).toBe(0)
+        expect(order).toEqual(["child", "resource", "release"])
+      }).pipe(Effect.ensuring(Deferred.succeed(cleanup, undefined)))
+    }),
+  )
+}
+
+it.live(
+  "shell caller cancellation joins cleanup before releasing ownership",
+  Effect.gen(function* () {
+    const scope = yield* Scope.Scope
+    const entered = yield* Deferred.make<void>()
+    const closing = yield* Deferred.make<void>()
+    const cleanup = yield* Deferred.make<void>()
+    const held = new Set<object>()
+    const runner = Runner.make<string>(scope, {
+      ownership: Effect.sync(() => {
+        const claim = {}
+        held.add(claim)
+        return Effect.sync(() => {
+          held.delete(claim)
+        })
+      }),
+    })
+    yield* Effect.gen(function* () {
+      const caller = yield* runner
+        .startShell(
+          Deferred.succeed(entered, undefined).pipe(
+            Effect.andThen(Effect.never),
+            Effect.ensuring(Deferred.succeed(closing, undefined).pipe(Effect.andThen(Deferred.await(cleanup)))),
+          ),
+        )
+        .pipe(Effect.forkChild)
+      yield* Deferred.await(entered)
+      const cancellation = yield* Fiber.interrupt(caller).pipe(Effect.forkChild)
+      yield* Deferred.await(closing)
+      expect(cancellation.pollUnsafe()).toBeUndefined()
+      expect(held.size).toBe(1)
+      yield* Deferred.succeed(cleanup, undefined)
+      yield* Fiber.join(cancellation)
+      expect(held.size).toBe(0)
+      expect(runner.busy).toBe(false)
+    }).pipe(Effect.ensuring(Deferred.succeed(cleanup, undefined)))
+  }),
+)
+
+it.live(
+  "parallel owner disposal joins the active run before releasing its claim",
+  Effect.gen(function* () {
+    const owner = yield* Scope.make("parallel")
+    const entered = yield* Deferred.make<void>()
+    const closing = yield* Deferred.make<void>()
+    const cleanup = yield* Deferred.make<void>()
+    const held = new Set<object>()
+    const runner = Runner.make<string>(owner, {
+      ownership: Effect.sync(() => {
+        const claim = {}
+        held.add(claim)
+        return Effect.sync(() => {
+          held.delete(claim)
+        })
+      }),
+    })
+    yield* Scope.addFinalizer(owner, runner.cancel)
+    yield* Effect.gen(function* () {
+      const run = yield* runner
+        .ensureRunning(
+          Deferred.succeed(entered, undefined).pipe(
+            Effect.andThen(Effect.never),
+            Effect.ensuring(Deferred.succeed(closing, undefined).pipe(Effect.andThen(Deferred.await(cleanup)))),
+          ),
+        )
+        .pipe(Effect.exit, Effect.forkChild)
+      yield* Deferred.await(entered)
+      const disposal = yield* Scope.close(owner, Exit.void).pipe(Effect.forkChild)
+      yield* Deferred.await(closing)
+      expect(disposal.pollUnsafe()).toBeUndefined()
+      expect(held.size).toBe(1)
+      yield* Deferred.succeed(cleanup, undefined)
+      yield* Fiber.join(disposal)
+      yield* Fiber.join(run)
+      expect(held.size).toBe(0)
+    }).pipe(Effect.ensuring(Deferred.succeed(cleanup, undefined)), Effect.ensuring(Scope.close(owner, Exit.void)))
+  }),
+)

@@ -1,0 +1,36 @@
+bun test v1.3.14 (0d9b296a)
+
+test/effect/runner.test.ts:
+(pass) Runner > ensureRunning starts work and returns result [2.26ms]
+(pass) Runner > ensureRunning propagates work failures [0.40ms]
+(pass) Runner > concurrent callers share the same run [13.54ms]
+(pass) Runner > concurrent callers all receive same error [13.01ms]
+(pass) Runner > ensureRunning can be called again after previous run completes [0.38ms]
+(pass) Runner > second ensureRunning ignores new work if already running [53.26ms]
+(pass) Runner > cancel interrupts running work [1.12ms]
+(pass) Runner > cancel on idle is a no-op [0.14ms]
+(pass) Runner > cancel with onInterrupt resolves callers gracefully [0.70ms]
+(pass) Runner > cancel with queued callers resolves all [0.61ms]
+(pass) Runner > work can be started after cancel [0.37ms]
+(pass) Runner > cancel does not deadlock when replacement work starts before interrupted run exits [0.97ms]
+(pass) Runner > shell runs exclusively [0.49ms]
+(pass) Runner > shell rejects when run is active [0.48ms]
+(pass) Runner > shell rejects when another shell is running [0.36ms]
+(pass) Runner > cancel interrupts shell [0.51ms]
+(pass) Runner > cancel does not mask shell defects [0.47ms]
+(pass) Runner > ensureRunning queues behind shell then runs after [0.46ms]
+(pass) Runner > multiple ensureRunning callers share the queued run behind shell [0.58ms]
+(pass) Runner > cancel during shell_then_run cancels both [0.47ms]
+(pass) Runner > onIdle fires when returning to idle from running [0.18ms]
+(pass) Runner > onIdle fires on cancel [0.27ms]
+(pass) Runner > onBusy fires when shell starts [0.18ms]
+(pass) Runner > busy is true during run [0.22ms]
+(pass) Runner > busy is true during shell [0.22ms]
+(pass) accepted Runner ownership survives a cancelled joiner and idle cleanup [0.44ms]
+(pass) accepted queued ownership survives waiter cancellation and releases only its generation [0.63ms]
+(pass) owner disposal holds shell ownership until shell cleanup finishes [0.44ms]
+
+ 28 pass
+ 0 fail
+ 74 expect() calls
+Ran 28 tests across 1 file. [931.00ms]

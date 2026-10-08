@@ -1,0 +1,64 @@
+bun test v1.3.14 (0d9b296a)
+
+test/effect/runner.test.ts:
+FIX1 {
+  _id: "Exit",
+  _tag: "Failure",
+  cause: {
+    _id: "Cause",
+    failures: [
+      [Object ...]
+    ],
+  },
+} {
+  _id: "Exit",
+  _tag: "Failure",
+  cause: {
+    _id: "Cause",
+    failures: [
+      [Object ...]
+    ],
+  },
+}
+[11:26:29.875] ERROR (#2): 180 | 
+181 |       yield* runner.cancel
+182 | 
+183 |       const [exitA, exitB] = yield* Effect.all([Fiber.await(a), Fiber.await(b)])
+184 |       console.log("FIX1", exitA, exitB)
+185 |       expect(Exit.isSuccess(exitA)).toBe(true)
+      ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at toBe (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/opencode/test/effect/runner.test.ts:185:37
+
+180 | 
+181 |       yield* runner.cancel
+182 | 
+183 |       const [exitA, exitB] = yield* Effect.all([Fiber.await(a), Fiber.await(b)])
+184 |       console.log("FIX1", exitA, exitB)
+185 |       expect(Exit.isSuccess(exitA)).toBe(true)
+      ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at toBe (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/opencode/test/effect/runner.test.ts:185:37
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:910:23)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) Runner > cancel with queued callers resolves all [8.54ms]
+
+ 0 pass
+ 27 filtered out
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [843.00ms]
