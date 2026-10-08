@@ -12,6 +12,9 @@ export function FtcWorkspace(props: WorkspaceProps) {
     projectID: props.projects[0]?.projectID,
     selections: {} as Record<string, FtcProject.ChatRef | undefined>,
     chats: {} as Record<string, readonly FtcProject.ChatRef[]>,
+    membership: [] as readonly FtcProject.ChatRef[],
+    observedOwners: [] as readonly FtcProject.ChatRef[],
+    membershipRevisions: {} as Record<string, number>,
     lists: {} as Record<string, "loading" | "ready" | "error">,
     owners: {} as Record<string, Owner>,
     drafts: {} as Record<string, { text: string; revision: number }>,
@@ -56,6 +59,7 @@ export function FtcWorkspace(props: WorkspaceProps) {
     untrack(() => {
       const controller = new AbortController()
       const request = Object.freeze({ projectID: context.projectID })
+      const membershipRevision = store.membershipRevisions[request.projectID] ?? 0
       const observation = { live: true, event: false }
       const current = () => scope.live && observation.live
       setStore("errors", `query:${request.projectID}`, undefined)
@@ -68,17 +72,14 @@ export function FtcWorkspace(props: WorkspaceProps) {
       const receive = (status: FtcProject.OwnerStatus) => {
         if (!current()) return
         observation.event = true
-        if (validOwner(status, request.projectID) && store.lists[request.projectID] !== "error")
+        const valid = validOwner(status, request.projectID, [...store.membership, ...store.observedOwners])
+        if (valid) rememberOwner(status.active)
+        if (valid && store.lists[request.projectID] !== "error")
           setStore("errors", `query:${request.projectID}`, undefined)
-        if (!validOwner(status, request.projectID))
-          setStore(
-            "errors",
-            `query:${request.projectID}`,
-            failure({ code: "project_changed", recovery: "reopen_project" }, false),
-          )
+        if (!valid) rejectOwner(request.projectID)
         setStore("owners", request.projectID, {
-          state: validOwner(status, request.projectID) ? "ready" : "error",
-          active: validOwner(status, request.projectID) && status.active ? copyChat(status.active) : undefined,
+          state: valid ? "ready" : "error",
+          active: valid && status.active ? copyChat(status.active) : undefined,
           epoch: store.owners[request.projectID].epoch + 1,
         })
       }
@@ -96,15 +97,12 @@ export function FtcWorkspace(props: WorkspaceProps) {
         .then(
           (status) => {
             if (!current() || observation.event) return
-            if (!validOwner(status, request.projectID))
-              setStore(
-                "errors",
-                `query:${request.projectID}`,
-                failure({ code: "project_changed", recovery: "reopen_project" }, false),
-              )
+            const valid = validOwner(status, request.projectID, [...store.membership, ...store.observedOwners])
+            if (valid) rememberOwner(status.active)
+            if (!valid) rejectOwner(request.projectID)
             setStore("owners", request.projectID, {
-              state: validOwner(status, request.projectID) ? "ready" : "error",
-              active: validOwner(status, request.projectID) && status.active ? copyChat(status.active) : undefined,
+              state: valid ? "ready" : "error",
+              active: valid && status.active ? copyChat(status.active) : undefined,
             })
           },
           (cause: unknown) => {
@@ -122,7 +120,7 @@ export function FtcWorkspace(props: WorkspaceProps) {
           (chats) => {
             if (!current()) return
             if (
-              chats.some((chat) => chat.projectID !== request.projectID) ||
+              chats.some((chat) => chat.projectID !== request.projectID || conflicts(store.membership, chat)) ||
               new Set(chats.map((chat) => chat.chatID)).size !== chats.length ||
               new Set(chats.map((chat) => chat.sessionID)).size !== chats.length
             ) {
@@ -134,10 +132,24 @@ export function FtcWorkspace(props: WorkspaceProps) {
               )
               return
             }
-            setStore("chats", request.projectID, chats.map(copyChat))
+            // A list captured before a successful create cannot remove that new
+            // canonical member or change the user's more recent selection.
+            const members =
+              membershipRevision === (store.membershipRevisions[request.projectID] ?? 0)
+                ? chats
+                : [
+                    ...chats,
+                    ...(store.chats[request.projectID] ?? []).filter(
+                      (chat) => !chats.some((item) => chatKey(item) === chatKey(chat)),
+                    ),
+                  ]
+            remember(members)
+            setStore("chats", request.projectID, members.map(copyChat))
             setStore("lists", request.projectID, "ready")
+            const active = store.owners[request.projectID]?.active
+            if (active && conflicts(store.membership, active)) rejectOwner(request.projectID)
             const previous = store.selections[request.projectID]
-            const next = chats.find((chat) => previous && chatKey(chat) === chatKey(previous)) ?? chats[0]
+            const next = members.find((chat) => previous && chatKey(chat) === chatKey(previous)) ?? members[0]
             setStore("selections", request.projectID, next ? copyChat(next) : undefined)
           },
           (cause: unknown) => {
@@ -151,6 +163,30 @@ export function FtcWorkspace(props: WorkspaceProps) {
 
   function selectProject(context: FtcProject.ProjectContext) {
     setStore({ projectID: context.projectID, selectionRevision: store.selectionRevision + 1 })
+  }
+
+  function remember(chats: readonly FtcProject.ChatRef[]) {
+    setStore("membership", (known) => [
+      ...known,
+      ...chats.filter((chat) => !known.some((item) => chatKey(item) === chatKey(chat))).map(copyChat),
+    ])
+    // Membership is canonical; a later list/create can expose an earlier owner
+    // observation as inconsistent without discarding the valid member or draft.
+    setStore("observedOwners", (owners) => owners.filter((chat) => !conflicts(store.membership, chat)))
+  }
+
+  function rememberOwner(chat: FtcProject.ChatRef | undefined) {
+    if (!chat || store.observedOwners.some((item) => chatKey(item) === chatKey(chat))) return
+    setStore("observedOwners", (owners) => [...owners, copyChat(chat)])
+  }
+
+  function rejectOwner(projectID: FtcProject.ProjectContext["projectID"]) {
+    setStore("owners", projectID, { state: "error", active: undefined })
+    setStore(
+      "errors",
+      `query:${projectID}`,
+      failure({ code: "chat_session_conflict", recovery: "reopen_project" }, false),
+    )
   }
 
   function command<T>(
@@ -211,21 +247,18 @@ export function FtcWorkspace(props: WorkspaceProps) {
       request.projectID,
       (signal) => props.ports.createChat(request, signal),
       (result) => {
-        if (
-          result.projectID !== request.projectID ||
-          store.chats[request.projectID]?.some(
-            (chat) =>
-              (chat.chatID === result.chatID || chat.sessionID === result.sessionID) &&
-              chatKey(chat) !== chatKey(result),
-          )
-        ) {
+        if (result.projectID !== request.projectID || conflicts(store.membership, result)) {
           throw { code: "chat_session_conflict", recovery: "reopen_project" }
         }
         const reference = copyChat(result)
+        remember([reference])
+        setStore("membershipRevisions", request.projectID, (revision = 0) => revision + 1)
         setStore("chats", request.projectID, (chats = []) => [
           ...chats.filter((chat) => chatKey(chat) !== chatKey(reference)),
           reference,
         ])
+        const active = store.owners[request.projectID]?.active
+        if (active && conflicts(store.membership, active)) rejectOwner(request.projectID)
         if (store.selectionRevision === revision) setStore("selections", request.projectID, reference)
       },
     )
@@ -408,13 +441,22 @@ export function FtcWorkspace(props: WorkspaceProps) {
                         (signal) => props.ports.submit(request, signal),
                         (result) => {
                           if (result.kind === "busy") {
-                            if (result.active.projectID !== reference.projectID)
-                              throw { code: "project_changed", recovery: "reopen_project" }
-                            if (store.owners[reference.projectID]?.epoch === epoch)
-                              setStore("owners", reference.projectID, {
-                                state: "ready",
-                                active: copyChat(result.active),
-                              })
+                            if (store.owners[reference.projectID]?.epoch !== epoch) return
+                            if (
+                              !validOwner(
+                                { projectID: reference.projectID, active: result.active },
+                                reference.projectID,
+                                [...store.membership, ...store.observedOwners],
+                              )
+                            ) {
+                              rejectOwner(reference.projectID)
+                              throw { code: "chat_session_conflict", recovery: "reopen_project" }
+                            }
+                            rememberOwner(result.active)
+                            setStore("owners", reference.projectID, {
+                              state: "ready",
+                              active: copyChat(result.active),
+                            })
                             return
                           }
                           if (result.receipt.sessionID !== reference.sessionID)
@@ -456,8 +498,21 @@ function copyProject(project: FtcProject.ProjectContext): FtcProject.ProjectCont
   })
 }
 
-function validOwner(status: FtcProject.OwnerStatus, projectID: FtcProject.ProjectContext["projectID"]) {
-  return status.projectID === projectID && (!status.active || status.active.projectID === projectID)
+function conflicts(known: readonly FtcProject.ChatRef[], chat: FtcProject.ChatRef) {
+  return known.some(
+    (item) => (item.chatID === chat.chatID || item.sessionID === chat.sessionID) && chatKey(item) !== chatKey(chat),
+  )
+}
+
+function validOwner(
+  status: FtcProject.OwnerStatus,
+  projectID: FtcProject.ProjectContext["projectID"],
+  known: readonly FtcProject.ChatRef[],
+) {
+  return (
+    status.projectID === projectID &&
+    (!status.active || (status.active.projectID === projectID && !conflicts(known, status.active)))
+  )
 }
 
 function failure(cause: unknown, send: boolean): Failure {

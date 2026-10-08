@@ -1,0 +1,309 @@
+bun test v1.3.14 (0d9b296a)
+
+test-browser/ftc/desktop-workspace/m1-01.test.ts:
+(pass) busy project identifies active chat without submitting drafts [12.86ms]
+(pass) idle transitions retain drafts and only an explicit send admits once [5.05ms]
+(pass) project and chat selection restore independent drafts and exact Session presentation [8.26ms]
+(pass) same owner can deliberately submit with canonical delivery options [4.42ms]
+(pass) stop captures the displayed owner and never infers idle on completion [5.82ms]
+(pass) raced busy submission preserves original draft and never retries on idle [4.22ms]
+(pass) deferred admission clears only unchanged original text despite later selection [6.75ms]
+(pass) edit and revert while admission waits still preserves the user's edit [4.29ms]
+(pass) deferred failure belongs to the original chat and leaves the later chat untouched [6.22ms]
+(pass) structured project_changed retains draft and requests explicit reopen [2.79ms]
+(pass) structured session_mismatch retains draft and requests explicit reopen [2.72ms]
+(pass) structured chat_session_conflict retains draft and requests explicit reopen [3.90ms]
+(pass) execution unavailable retains input with localized recovery [2.86ms]
+(pass) owner event supersedes an older initial snapshot [2.85ms]
+(pass) obsolete target queries abort and late data or rejection cannot replace current view [3.88ms]
+(pass) active failure is not idle and explicit retry only rechecks [2.69ms]
+(pass) listChats failure is not idle and explicit retry only rechecks [2.59ms]
+(pass) invalid chat or owner membership is never presented as a runnable identity [2.97ms]
+(pass) explicit create forwards exact selected folder then canonical context [2.71ms]
+(pass) explicit open forwards exact selected folder then canonical context [2.48ms]
+(pass) new chat uses association ID and selects only canonical success [2.58ms]
+(pass) create rejection does not fabricate success or lose drafts [2.65ms]
+(pass) open rejection does not fabricate success or lose drafts [2.54ms]
+(pass) createChat rejection does not fabricate success or lose drafts [3.87ms]
+(pass) stop rejection does not fabricate success or lose drafts [2.72ms]
+(pass) late new-chat success cannot retarget a later project selection [3.83ms]
+(pass) language switching localizes controls, ownership, guidance and accessibility without resetting draft [2.63ms]
+(pass) unmount cancels observations and pending commands without stopping execution [3.83ms]
+(pass) fresh component scopes have independent drafts and subscriptions [3.74ms]
+(pass) unmount before scheduled invocation retires the pending submit [2.72ms]
+(pass) reopen recovery sends the displayed canonical folder without choosing a different target [3.93ms]
+(pass) mutable supplied project and owner records cannot retarget presentation or stop [2.68ms]
+(pass) newer owner event wins over an older busy submit result [2.70ms]
+(pass) foreign busy result or admission receipt retains original draft and membership [5.42ms]
+(pass) conflicting new-chat mapping retains selected identity [4.04ms]
+(pass) cancelled folder selection performs no association command [2.72ms]
+(pass) folder selection finishing after unmount cannot open an association [3.77ms]
+(pass) Chinese failures and recovery use complete phrases [5.33ms]
+(pass) supplied chat stop handler targets the displayed owner and retires with its view [3.75ms]
+(pass) structured list membership failure retains prior presentation and offers exact reopen [4.05ms]
+(pass) an empty project catalog still displays association failure and allows explicit retry [2.63ms]
+(pass) a successful owner event recovers failed observation without sending its draft [2.66ms]
+846 |   await flush()
+847 |   expect(view.host.querySelector("article")?.getAttribute("data-chat")).toBe(a2.chatID)
+848 |   view.draft("new chat draft")
+849 |   list.resolve([a1])
+850 |   await flush()
+851 |   expect(view.host.querySelector("article")?.getAttribute("data-chat")).toBe(a2.chatID)
+                                                                              ^
+error: expect(received).toBe(expected)
+
+Expected: "chat_a2"
+Received: "chat_a1"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:851:73)
+(fail) a pre-create list snapshot preserves the new canonical chat selection and draft [4.77ms]
+866 |   view.draft("valid selected draft")
+867 |   view.listeners.get(a.projectID)!({ projectID: a.projectID, active: reference })
+868 |   await flush()
+869 |   view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+870 |   await flush()
+871 |   expect(view.stopped).toEqual([])
+                             ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   {
++     "chatID": "chat_a2",
++     "projectID": "project_a",
++     "sessionID": "ses_b1",
++   },
++ ]
+
+- Expected  - 1
++ Received  + 7
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:871:24)
+(fail) chat-to-Session conflict in an owner event cannot become a stop target [6.36ms]
+866 |   view.draft("valid selected draft")
+867 |   view.listeners.get(a.projectID)!({ projectID: a.projectID, active: reference })
+868 |   await flush()
+869 |   view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+870 |   await flush()
+871 |   expect(view.stopped).toEqual([])
+                             ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   {
++     "chatID": "chat_different",
++     "projectID": "project_a",
++     "sessionID": "ses_a2",
++   },
++ ]
+
+- Expected  - 1
++ Received  + 7
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:871:24)
+(fail) Session-to-chat conflict in an owner event cannot become a stop target [4.10ms]
+882 |   view.draft("snapshot draft")
+883 |   active.resolve({ projectID: a.projectID, active: reference })
+884 |   await flush()
+885 |   view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+886 |   await flush()
+887 |   expect(view.stopped).toEqual([])
+                             ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   {
++     "chatID": "chat_a2",
++     "projectID": "project_a",
++     "sessionID": "ses_b1",
++   },
++ ]
+
+- Expected  - 1
++ Received  + 7
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:887:24)
+(fail) chat-to-Session conflict in a later owner snapshot is quarantined [3.95ms]
+882 |   view.draft("snapshot draft")
+883 |   active.resolve({ projectID: a.projectID, active: reference })
+884 |   await flush()
+885 |   view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+886 |   await flush()
+887 |   expect(view.stopped).toEqual([])
+                             ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   {
++     "chatID": "chat_different",
++     "projectID": "project_a",
++     "sessionID": "ses_a2",
++   },
++ ]
+
+- Expected  - 1
++ Received  + 7
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:887:24)
+(fail) Session-to-chat conflict in a later owner snapshot is quarantined [3.77ms]
+896 |   list.resolve([a1, a2])
+897 |   await flush()
+898 |   view.draft("canonical list draft")
+899 |   view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+900 |   await flush()
+901 |   expect(view.stopped).toEqual([])
+                             ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   {
++     "chatID": "chat_a2",
++     "projectID": "project_a",
++     "sessionID": "ses_b1",
++   },
++ ]
+
+- Expected  - 1
++ Received  + 7
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:901:24)
+(fail) list arrival after a chat-to-Session owner conflict preserves canonical presentation and blocks stop [3.88ms]
+896 |   list.resolve([a1, a2])
+897 |   await flush()
+898 |   view.draft("canonical list draft")
+899 |   view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+900 |   await flush()
+901 |   expect(view.stopped).toEqual([])
+                             ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   {
++     "chatID": "chat_different",
++     "projectID": "project_a",
++     "sessionID": "ses_a2",
++   },
++ ]
+
+- Expected  - 1
++ Received  + 7
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:901:24)
+(fail) list arrival after a Session-to-chat owner conflict preserves canonical presentation and blocks stop [5.02ms]
+911 |   view.draft("busy result draft")
+912 |   view.button('[data-action="send"]').click()
+913 |   await flush()
+914 |   view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+915 |   await flush()
+916 |   expect(view.stopped).toEqual([])
+                             ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   {
++     "chatID": "chat_a2",
++     "projectID": "project_a",
++     "sessionID": "ses_b1",
++   },
++ ]
+
+- Expected  - 1
++ Received  + 7
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:916:24)
+(fail) chat-to-Session conflict in a busy-submit result retains input and blocks stop [3.93ms]
+911 |   view.draft("busy result draft")
+912 |   view.button('[data-action="send"]').click()
+913 |   await flush()
+914 |   view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+915 |   await flush()
+916 |   expect(view.stopped).toEqual([])
+                             ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   {
++     "chatID": "chat_different",
++     "projectID": "project_a",
++     "sessionID": "ses_a2",
++   },
++ ]
+
+- Expected  - 1
++ Received  + 7
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:916:24)
+(fail) Session-to-chat conflict in a busy-submit result retains input and blocks stop [3.73ms]
+(pass) nonconflicting unlisted owner remains an exact supplied-port stop target [2.65ms]
+(pass) nonconflicting busy owner remains valid before and after a compatible list observation [3.83ms]
+955 |   active.resolve({ projectID: a.projectID })
+956 |   await flush()
+957 |   view.draft("event-before-list")
+958 |   view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+959 |   await flush()
+960 |   expect(view.stopped).toEqual([])
+                             ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   {
++     "chatID": "chat_a2",
++     "projectID": "project_a",
++     "sessionID": "ses_b1",
++   },
++ ]
+
+- Expected  - 1
++ Received  + 7
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:960:24)
+(fail) an owner event preceding the canonical list is reconciled when membership arrives [5.42ms]
+971 |   await flush()
+972 |   view.draft("a remains selected")
+973 |   view.listeners.get(a.projectID)!({ projectID: a.projectID, active: { ...a2, sessionID: b1.sessionID } })
+974 |   view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+975 |   await flush()
+976 |   expect(view.stopped).toEqual([])
+                             ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   {
++     "chatID": "chat_a2",
++     "projectID": "project_a",
++     "sessionID": "ses_b1",
++   },
++ ]
+
+- Expected  - 1
++ Received  + 7
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:976:24)
+(fail) a Session already mapped to another supplied project cannot become this project's owner [5.43ms]
+
+11 tests failed:
+(fail) a pre-create list snapshot preserves the new canonical chat selection and draft [4.77ms]
+(fail) chat-to-Session conflict in an owner event cannot become a stop target [6.36ms]
+(fail) Session-to-chat conflict in an owner event cannot become a stop target [4.10ms]
+(fail) chat-to-Session conflict in a later owner snapshot is quarantined [3.95ms]
+(fail) Session-to-chat conflict in a later owner snapshot is quarantined [3.77ms]
+(fail) list arrival after a chat-to-Session owner conflict preserves canonical presentation and blocks stop [3.88ms]
+(fail) list arrival after a Session-to-chat owner conflict preserves canonical presentation and blocks stop [5.02ms]
+(fail) chat-to-Session conflict in a busy-submit result retains input and blocks stop [3.93ms]
+(fail) Session-to-chat conflict in a busy-submit result retains input and blocks stop [3.73ms]
+(fail) an owner event preceding the canonical list is reconciled when membership arrives [5.42ms]
+(fail) a Session already mapped to another supplied project cannot become this project's owner [5.43ms]
+
+ 44 pass
+ 11 fail
+ 173 expect() calls
+Ran 55 tests across 1 file. [704.00ms]

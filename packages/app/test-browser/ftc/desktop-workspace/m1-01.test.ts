@@ -836,3 +836,194 @@ test("a successful owner event recovers failed observation without sending its d
   expect(view.host.querySelector("textarea")?.value).toBe("never automatic")
   expect(view.submittedDrafts).toEqual([])
 })
+
+test("a pre-create list snapshot preserves the new canonical chat selection and draft", async () => {
+  const list = Promise.withResolvers<readonly FtcProject.ChatRef[]>()
+  const view = fixture({ listChats: () => list.promise, active: idle, createChat: async () => a2 })
+  await flush()
+  expect(view.button('[data-action="new-chat"]').disabled).toBe(false)
+  view.button('[data-action="new-chat"]').click()
+  await flush()
+  expect(view.host.querySelector("article")?.getAttribute("data-chat")).toBe(a2.chatID)
+  view.draft("new chat draft")
+  list.resolve([a1])
+  await flush()
+  expect(view.host.querySelector("article")?.getAttribute("data-chat")).toBe(a2.chatID)
+  expect(view.host.querySelector("textarea")?.value).toBe("new chat draft")
+  expect(view.host.querySelector<HTMLButtonElement>(`[data-chat-id="${a1.chatID}"]`)).not.toBeNull()
+  expect(view.button('[data-action="send"]').disabled).toBe(false)
+  expect(view.submittedDrafts).toEqual([])
+})
+
+const conflictingOwners = [
+  { kind: "chat-to-Session", reference: { ...a2, sessionID: b1.sessionID } },
+  { kind: "Session-to-chat", reference: { ...a2, chatID: chat(a, "different").chatID } },
+]
+
+test.each(conflictingOwners)("$kind conflict in an owner event cannot become a stop target", async ({ reference }) => {
+  const view = fixture()
+  await flush()
+  view.draft("valid selected draft")
+  view.listeners.get(a.projectID)!({ projectID: a.projectID, active: reference })
+  await flush()
+  view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+  await flush()
+  expect(view.stopped).toEqual([])
+  expect(view.host.querySelector("article")?.getAttribute("data-chat")).toBe(a1.chatID)
+  expect(view.host.querySelector("textarea")?.value).toBe("valid selected draft")
+  expect(view.host.textContent).toContain("The project or session changed.")
+  expect(view.button('[data-action="send"]').disabled).toBe(true)
+})
+
+test.each(conflictingOwners)("$kind conflict in a later owner snapshot is quarantined", async ({ reference }) => {
+  const active = Promise.withResolvers<FtcProject.OwnerStatus>()
+  const view = fixture({ active: () => active.promise })
+  await flush()
+  view.draft("snapshot draft")
+  active.resolve({ projectID: a.projectID, active: reference })
+  await flush()
+  view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+  await flush()
+  expect(view.stopped).toEqual([])
+  expect(view.host.querySelector("textarea")?.value).toBe("snapshot draft")
+  expect(view.host.textContent).toContain("The project or session changed.")
+})
+
+test.each(conflictingOwners)(
+  "list arrival after a $kind owner conflict preserves canonical presentation and blocks stop",
+  async ({ reference }) => {
+    const list = Promise.withResolvers<readonly FtcProject.ChatRef[]>()
+    const view = fixture({
+      listChats: () => list.promise,
+      active: async () => ({ projectID: a.projectID, active: reference }),
+    })
+    await flush()
+    list.resolve([a1, a2])
+    await flush()
+    view.draft("canonical list draft")
+    view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+    await flush()
+    expect(view.stopped).toEqual([])
+    expect(view.host.querySelector("output")?.getAttribute("data-history")).toBe(a1.sessionID)
+    expect(view.host.querySelector("textarea")?.value).toBe("canonical list draft")
+    expect(view.host.textContent).toContain("The project or session changed.")
+    expect(view.button('[data-action="send"]').disabled).toBe(true)
+  },
+)
+
+test.each(conflictingOwners)(
+  "$kind conflict in a busy-submit result retains input and blocks stop",
+  async ({ reference }) => {
+    const view = fixture({ active: idle, submit: async () => ({ kind: "busy", active: reference }) })
+    await flush()
+    view.draft("busy result draft")
+    view.button('[data-action="send"]').click()
+    await flush()
+    view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+    await flush()
+    expect(view.stopped).toEqual([])
+    expect(view.host.querySelector("textarea")?.value).toBe("busy result draft")
+    expect(view.host.querySelector("article")?.getAttribute("data-chat")).toBe(a1.chatID)
+    expect(view.host.textContent).toContain("The project or session changed.")
+    expect(view.button('[data-action="send"]').disabled).toBe(true)
+  },
+)
+
+test("nonconflicting unlisted owner remains an exact supplied-port stop target", async () => {
+  const reference = chat(a, "unlisted")
+  const view = fixture({ active: async () => ({ projectID: a.projectID, active: reference }) })
+  await flush()
+  expect(view.host.querySelector("article")?.getAttribute("data-active-chat")).toBe(reference.chatID)
+  view.button('[data-action="stop"]').click()
+  await flush()
+  expect(view.stopped).toEqual([reference])
+  expect(view.host.querySelector("article")?.getAttribute("data-chat")).toBe(a1.chatID)
+})
+
+test("nonconflicting unlisted busy owner retains its draft and exact stop target", async () => {
+  const reference = chat(a, "busy-new")
+  const view = fixture({ active: idle, submit: async () => ({ kind: "busy", active: reference }) })
+  await flush()
+  view.draft("retained unknown owner")
+  view.button('[data-action="send"]').click()
+  await flush()
+  expect(view.host.querySelector("article")?.getAttribute("data-active-chat")).toBe(reference.chatID)
+  view.button('[data-action="stop"]').click()
+  await flush()
+  expect(view.stopped).toEqual([reference])
+  expect(view.host.querySelector("textarea")?.value).toBe("retained unknown owner")
+})
+
+test("an owner event preceding the canonical list is reconciled when membership arrives", async () => {
+  const list = Promise.withResolvers<readonly FtcProject.ChatRef[]>()
+  const active = Promise.withResolvers<FtcProject.OwnerStatus>()
+  const view = fixture({ listChats: () => list.promise, active: () => active.promise })
+  await flush()
+  view.listeners.get(a.projectID)!({ projectID: a.projectID, active: { ...a2, sessionID: b1.sessionID } })
+  list.resolve([a1, a2])
+  active.resolve({ projectID: a.projectID })
+  await flush()
+  view.draft("event-before-list")
+  view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+  await flush()
+  expect(view.stopped).toEqual([])
+  expect(view.host.querySelector("textarea")?.value).toBe("event-before-list")
+  expect(view.host.textContent).toContain("The project or session changed.")
+})
+
+test("a Session already mapped to another supplied project cannot become this project's owner", async () => {
+  const view = fixture({ active: idle })
+  await flush()
+  view.button(`[data-project-id="${b.projectID}"]`).click()
+  await flush()
+  view.button(`[data-project-id="${a.projectID}"]`).click()
+  await flush()
+  view.draft("a remains selected")
+  view.listeners.get(a.projectID)!({ projectID: a.projectID, active: { ...a2, sessionID: b1.sessionID } })
+  view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+  await flush()
+  expect(view.stopped).toEqual([])
+  expect(view.host.querySelector("textarea")?.value).toBe("a remains selected")
+  expect(view.host.textContent).toContain("The project or session changed.")
+})
+
+test.each(["chat", "Session"] as const)(
+  "successive unlisted owner observations cannot remap a known %s identity",
+  async (identity) => {
+    const first = chat(a, "first-unlisted")
+    const second =
+      identity === "chat"
+        ? { ...first, sessionID: chat(a, "second-unlisted").sessionID }
+        : { ...first, chatID: chat(a, "second-unlisted").chatID }
+    const view = fixture({ active: idle })
+    await flush()
+    view.draft("known owner draft")
+    view.listeners.get(a.projectID)!({ projectID: a.projectID, active: first })
+    view.listeners.get(a.projectID)!({ projectID: a.projectID })
+    view.listeners.get(a.projectID)!({ projectID: a.projectID, active: second })
+    view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+    await flush()
+    expect(view.stopped).toEqual([])
+    expect(view.host.querySelector("textarea")?.value).toBe("known owner draft")
+    expect(view.host.textContent).toContain("The project or session changed.")
+  },
+)
+
+test("canonical list membership supersedes an earlier incompatible owner observation and permits recovery", async () => {
+  const list = Promise.withResolvers<readonly FtcProject.ChatRef[]>()
+  const view = fixture({
+    listChats: () => list.promise,
+    active: async () => ({ projectID: a.projectID, active: { ...a2, sessionID: b1.sessionID } }),
+  })
+  await flush()
+  list.resolve([a1, a2])
+  await flush()
+  view.draft("still canonical")
+  view.listeners.get(a.projectID)!({ projectID: a.projectID, active: a2 })
+  await flush()
+  expect(view.host.textContent).not.toContain("The project or session changed.")
+  view.button('[data-action="stop"]').click()
+  await flush()
+  expect(view.stopped).toEqual([a2])
+  expect(view.host.querySelector("textarea")?.value).toBe("still canonical")
+})

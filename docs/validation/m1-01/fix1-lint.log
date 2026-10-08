@@ -1,0 +1,3 @@
+$ oxlint packages/app/src/ftc/workspace.tsx "packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts"
+Found 0 warnings and 0 errors.
+Finished in 592ms on 2 files with 130 rules using 10 threads.

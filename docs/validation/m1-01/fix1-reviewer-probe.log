@@ -1,0 +1,10 @@
+bun test v1.3.14 (0d9b296a)
+
+../../docs/validation/m1-01/reviewer-probe.test.ts:
+(pass) review: pending list cannot erase a successfully created selected chat [13.88ms]
+(pass) review: conflicting owner mapping must not become a stop target [4.68ms]
+
+ 2 pass
+ 0 fail
+ 4 expect() calls
+Ran 2 tests across 1 file. [289.00ms]

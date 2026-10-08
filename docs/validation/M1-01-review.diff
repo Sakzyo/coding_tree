@@ -1,0 +1,1570 @@
+# M1-01 complete product/exclusion diff 00a6067cc..87fffe434fe1f6a4b1cf91bec7b5ba3e8a9eb97e
+87fffe434 feat(ftc): show project/chat selection and busy ownership
+
+ .gitignore                                         |   3 +
+ docs/validation/M1-01-brief.md                     |   2 +-
+ docs/validation/M1-01-implementation.md            |  98 ++-
+ docs/validation/m1-01/app-typecheck-final.log      |   1 +
+ docs/validation/m1-01/app-typecheck-initial.log    |   1 +
+ docs/validation/m1-01/behavioral-red.log           |  22 +
+ docs/validation/m1-01/browser-regression-final.log |  23 +
+ .../validation/m1-01/cancellation-recovery-red.log | 110 +++
+ .../m1-01/empty-recovery-red.excerpt.log           |  93 +++
+ .../m1-01/empty-recovery-red.provenance.json       |  20 +
+ docs/validation/m1-01/expanded-red.log             | 330 ++++++++
+ docs/validation/m1-01/final-source-sha256.txt      |   6 +
+ docs/validation/m1-01/focused-final.log            |  50 ++
+ docs/validation/m1-01/format-final.log             |   2 +
+ docs/validation/m1-01/green1.log                   |  37 +
+ docs/validation/m1-01/green2.log                   |  72 ++
+ docs/validation/m1-01/green3.log                   |  46 ++
+ docs/validation/m1-01/green4.log                   |  48 ++
+ docs/validation/m1-01/initial-green.log            | 127 ++++
+ docs/validation/m1-01/inspect-runtime-imports.ts   |  25 +
+ docs/validation/m1-01/lint-final.log               |   3 +
+ docs/validation/m1-01/lint-initial.log             |  44 ++
+ docs/validation/m1-01/localization-final.log       |  15 +
+ docs/validation/m1-01/preparation-report.md        |  57 ++
+ docs/validation/m1-01/report-format-final.log      |   2 +
+ docs/validation/m1-01/runtime-imports-final.log    |   2 +
+ docs/validation/m1-01/slot-membership-red.log      |  70 ++
+ .../m1-01/source-freeze-verification.log           |   6 +
+ docs/validation/m1-01/whitespace-final.log         |   1 +
+ packages/app/src/ftc/facades.ts                    |  40 +
+ packages/app/src/ftc/workspace.tsx                 | 472 ++++++++++++
+ packages/app/src/i18n/en.ts                        |   8 +
+ packages/app/src/i18n/parity.test.ts               |  24 +-
+ packages/app/src/i18n/zh.ts                        |   7 +
+ .../ftc/desktop-workspace/m1-01.test.ts            | 838 +++++++++++++++++++++
+ 35 files changed, 2669 insertions(+), 36 deletions(-)
+
+diff --git a/.gitignore b/.gitignore
+index 006cab8c2..fbd284e8e 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -25,10 +25,13 @@ a.out
+ target
+ .scripts
+ .direnv/
+ 
+ # Local dev files
+ opencode-dev
+ UPCOMING_CHANGELOG.md
+ logs/
+ *.bun-build
+ tsconfig.tsbuildinfo
++
++# Retain the full oversized Happy DOM failure locally; commit its bounded excerpt and provenance.
++/docs/validation/m1-01/empty-recovery-red.log
+diff --git a/packages/app/src/ftc/facades.ts b/packages/app/src/ftc/facades.ts
+new file mode 100644
+index 000000000..0e4758020
+--- /dev/null
++++ b/packages/app/src/ftc/facades.ts
+@@ -0,0 +1,40 @@
++import type { FtcProject } from "@opencode-ai/schema/ftc-project"
++import type { JSX } from "solid-js"
++import type { useLanguage } from "../context/language"
++
++export type WorkspaceLanguage = Pick<ReturnType<typeof useLanguage>, "t">
++
++// The adapter supplies canonical records and unwraps structured domain failures.
++// Aborting a view request retires its observation, never the domain execution.
++export type WorkspacePorts = {
++  selectFolder: (action: "create" | "open", signal: AbortSignal) => Promise<FtcProject.FolderRequest | undefined>
++  create: (request: FtcProject.FolderRequest, signal: AbortSignal) => Promise<FtcProject.ProjectContext>
++  open: (request: FtcProject.FolderRequest, signal: AbortSignal) => Promise<FtcProject.ProjectContext>
++  listChats: (request: FtcProject.ProjectRequest, signal: AbortSignal) => Promise<readonly FtcProject.ChatRef[]>
++  createChat: (request: FtcProject.ProjectRequest, signal: AbortSignal) => Promise<FtcProject.ChatRef>
++  active: (request: FtcProject.ProjectRequest, signal: AbortSignal) => Promise<FtcProject.OwnerStatus>
++  subscribeOwner: (request: FtcProject.ProjectRequest, receive: (status: FtcProject.OwnerStatus) => void) => () => void
++  submit: (request: FtcProject.SubmitPrompt, signal: AbortSignal) => Promise<FtcProject.SubmitResult>
++  stop: (chat: FtcProject.ChatRef, signal: AbortSignal) => Promise<void>
++}
++
++// The host owns conversation presentation/history. This slot receives view state
++// and deliberate actions, without a second transcript or raw Session command API.
++export type WorkspaceChatView = {
++  project: FtcProject.ProjectContext
++  chat: FtcProject.ChatRef
++  draft: string
++  activeChatID: FtcProject.ChatID | undefined
++  canSubmit: boolean
++  submitting: boolean
++  onDraft: (text: string) => void
++  onSubmit: (options?: Pick<FtcProject.SubmitPrompt, "delivery" | "resume" | "id">) => void
++  onStop: () => void
++}
++
++export type WorkspaceProps = {
++  projects: readonly FtcProject.ProjectContext[]
++  ports: WorkspacePorts
++  language: WorkspaceLanguage
++  chat: (view: WorkspaceChatView) => JSX.Element
++}
+diff --git a/packages/app/src/ftc/workspace.tsx b/packages/app/src/ftc/workspace.tsx
+new file mode 100644
+index 000000000..8486d3658
+--- /dev/null
++++ b/packages/app/src/ftc/workspace.tsx
+@@ -0,0 +1,472 @@
++import { createEffect, createMemo, For, onCleanup, Show, untrack } from "solid-js"
++import { createStore } from "solid-js/store"
++import type { FtcProject } from "@opencode-ai/schema/ftc-project"
++import type { WorkspaceProps } from "./facades"
++
++type Failure = { membership: boolean; send: boolean; reopen: boolean }
++type Owner = { state: "loading" | "ready" | "error"; active?: FtcProject.ChatRef; epoch: number }
++
++export function FtcWorkspace(props: WorkspaceProps) {
++  const [store, setStore] = createStore({
++    projects: props.projects.map(copyProject),
++    projectID: props.projects[0]?.projectID,
++    selections: {} as Record<string, FtcProject.ChatRef | undefined>,
++    chats: {} as Record<string, readonly FtcProject.ChatRef[]>,
++    lists: {} as Record<string, "loading" | "ready" | "error">,
++    owners: {} as Record<string, Owner>,
++    drafts: {} as Record<string, { text: string; revision: number }>,
++    pending: {} as Record<string, boolean>,
++    errors: {} as Record<string, Failure | undefined>,
++    selectionRevision: 0,
++    refresh: 0,
++  })
++  const scope = { live: true, commands: new Set<AbortController>() }
++  onCleanup(() => {
++    scope.live = false
++    scope.commands.forEach((controller) => controller.abort())
++    scope.commands.clear()
++  })
++  const project = createMemo(() => store.projects.find((item) => item.projectID === store.projectID))
++  const selected = createMemo(() => {
++    const context = project()
++    if (!context) return undefined
++    const selection = store.selections[context.projectID]
++    return store.chats[context.projectID]?.find((item) => selection && chatKey(item) === chatKey(selection))
++  })
++  const owner = createMemo(() => store.projectID && store.owners[store.projectID])
++  const queryFailed = createMemo(
++    () => owner()?.state === "error" || (store.projectID && store.lists[store.projectID] === "error"),
++  )
++  const error = createMemo(() => {
++    const current = selected()
++    const active = owner()?.active
++    return (
++      (store.projectID && store.errors[`query:${store.projectID}`]) ||
++      (current && store.errors[chatKey(current)]) ||
++      (active && store.errors[`stop:${chatKey(active)}`]) ||
++      (store.projectID && store.errors[store.projectID]) ||
++      store.errors.association
++    )
++  })
++
++  createEffect(() => {
++    const context = project()
++    store.refresh
++    if (!context) return
++    untrack(() => {
++      const controller = new AbortController()
++      const request = Object.freeze({ projectID: context.projectID })
++      const observation = { live: true, event: false }
++      const current = () => scope.live && observation.live
++      setStore("errors", `query:${request.projectID}`, undefined)
++      setStore("lists", request.projectID, "loading")
++      setStore("owners", request.projectID, {
++        state: "loading",
++        active: undefined,
++        epoch: store.owners[request.projectID]?.epoch ?? 0,
++      })
++      const receive = (status: FtcProject.OwnerStatus) => {
++        if (!current()) return
++        observation.event = true
++        if (validOwner(status, request.projectID) && store.lists[request.projectID] !== "error")
++          setStore("errors", `query:${request.projectID}`, undefined)
++        if (!validOwner(status, request.projectID))
++          setStore(
++            "errors",
++            `query:${request.projectID}`,
++            failure({ code: "project_changed", recovery: "reopen_project" }, false),
++          )
++        setStore("owners", request.projectID, {
++          state: validOwner(status, request.projectID) ? "ready" : "error",
++          active: validOwner(status, request.projectID) && status.active ? copyChat(status.active) : undefined,
++          epoch: store.owners[request.projectID].epoch + 1,
++        })
++      }
++      const unsubscribe = props.ports.subscribeOwner(request, receive)
++      onCleanup(() => {
++        observation.live = false
++        controller.abort()
++        unsubscribe()
++      })
++      void Promise.resolve()
++        .then(() => {
++          controller.signal.throwIfAborted()
++          return props.ports.active(request, controller.signal)
++        })
++        .then(
++          (status) => {
++            if (!current() || observation.event) return
++            if (!validOwner(status, request.projectID))
++              setStore(
++                "errors",
++                `query:${request.projectID}`,
++                failure({ code: "project_changed", recovery: "reopen_project" }, false),
++              )
++            setStore("owners", request.projectID, {
++              state: validOwner(status, request.projectID) ? "ready" : "error",
++              active: validOwner(status, request.projectID) && status.active ? copyChat(status.active) : undefined,
++            })
++          },
++          (cause: unknown) => {
++            if (!current() || observation.event) return
++            setStore("owners", request.projectID, "state", "error")
++            setStore("errors", `query:${request.projectID}`, failure(cause, false))
++          },
++        )
++      void Promise.resolve()
++        .then(() => {
++          controller.signal.throwIfAborted()
++          return props.ports.listChats(request, controller.signal)
++        })
++        .then(
++          (chats) => {
++            if (!current()) return
++            if (
++              chats.some((chat) => chat.projectID !== request.projectID) ||
++              new Set(chats.map((chat) => chat.chatID)).size !== chats.length ||
++              new Set(chats.map((chat) => chat.sessionID)).size !== chats.length
++            ) {
++              setStore("lists", request.projectID, "error")
++              setStore(
++                "errors",
++                `query:${request.projectID}`,
++                failure({ code: "chat_session_conflict", recovery: "reopen_project" }, false),
++              )
++              return
++            }
++            setStore("chats", request.projectID, chats.map(copyChat))
++            setStore("lists", request.projectID, "ready")
++            const previous = store.selections[request.projectID]
++            const next = chats.find((chat) => previous && chatKey(chat) === chatKey(previous)) ?? chats[0]
++            setStore("selections", request.projectID, next ? copyChat(next) : undefined)
++          },
++          (cause: unknown) => {
++            if (!current()) return
++            setStore("lists", request.projectID, "error")
++            setStore("errors", `query:${request.projectID}`, failure(cause, false))
++          },
++        )
++    })
++  })
++
++  function selectProject(context: FtcProject.ProjectContext) {
++    setStore({ projectID: context.projectID, selectionRevision: store.selectionRevision + 1 })
++  }
++
++  function command<T>(
++    key: string,
++    execute: (signal: AbortSignal) => Promise<T>,
++    accept: (result: T) => void,
++    send = false,
++  ) {
++    if (!scope.live || store.pending[key]) return
++    const controller = new AbortController()
++    scope.commands.add(controller)
++    setStore("pending", key, true)
++    setStore("errors", key, undefined)
++    void Promise.resolve()
++      .then(() => {
++        controller.signal.throwIfAborted()
++        return execute(controller.signal)
++      })
++      .then((result) => {
++        if (scope.live) accept(result)
++      })
++      .catch((cause: unknown) => {
++        if (scope.live) setStore("errors", key, failure(cause, send))
++      })
++      .finally(() => {
++        scope.commands.delete(controller)
++        if (scope.live) setStore("pending", key, false)
++      })
++  }
++
++  function associate(action: "create" | "open") {
++    const revision = store.selectionRevision
++    command(
++      "association",
++      async (signal) => {
++        const folder = await props.ports.selectFolder(action, signal)
++        if (!folder || signal.aborted) return undefined
++        return props.ports[action](Object.freeze({ root: folder.root }), signal)
++      },
++      (result) => {
++        if (!result) return
++        const context = copyProject(result)
++        setStore("projects", (projects) => [
++          ...projects.filter((item) => item.projectID !== context.projectID),
++          context,
++        ])
++        if (store.selectionRevision === revision) selectProject(context)
++      },
++    )
++  }
++
++  function newChat() {
++    const context = project()
++    if (!context) return
++    const request = Object.freeze({ projectID: context.projectID })
++    const revision = store.selectionRevision
++    command(
++      request.projectID,
++      (signal) => props.ports.createChat(request, signal),
++      (result) => {
++        if (
++          result.projectID !== request.projectID ||
++          store.chats[request.projectID]?.some(
++            (chat) =>
++              (chat.chatID === result.chatID || chat.sessionID === result.sessionID) &&
++              chatKey(chat) !== chatKey(result),
++          )
++        ) {
++          throw { code: "chat_session_conflict", recovery: "reopen_project" }
++        }
++        const reference = copyChat(result)
++        setStore("chats", request.projectID, (chats = []) => [
++          ...chats.filter((chat) => chatKey(chat) !== chatKey(reference)),
++          reference,
++        ])
++        if (store.selectionRevision === revision) setStore("selections", request.projectID, reference)
++      },
++    )
++  }
++
++  function reopen() {
++    const context = project()
++    if (!context) return
++    const reference = selected()
++    const request = Object.freeze({ root: context.canonicalRoot })
++    command(
++      context.projectID,
++      (signal) => props.ports.open(request, signal),
++      (result) => {
++        if (result.projectID !== context.projectID || result.canonicalRoot !== context.canonicalRoot)
++          throw { code: "project_changed", recovery: "reopen_project" }
++        if (reference) setStore("errors", chatKey(reference), undefined)
++        setStore("projects", (projects) =>
++          projects.map((item) => (item.projectID === context.projectID ? copyProject(result) : item)),
++        )
++      },
++    )
++  }
++
++  function stop() {
++    const active = owner()?.active
++    if (!active || owner()?.state !== "ready") return
++    const reference = copyChat(active)
++    command(
++      `stop:${chatKey(reference)}`,
++      (signal) => props.ports.stop(reference, signal),
++      () => {},
++    )
++  }
++
++  function canSubmit(chat: FtcProject.ChatRef) {
++    const status = store.owners[chat.projectID]
++    return (
++      status?.state === "ready" &&
++      store.lists[chat.projectID] === "ready" &&
++      (!status.active || chatKey(status.active) === chatKey(chat)) &&
++      !store.pending[chatKey(chat)]
++    )
++  }
++
++  return (
++    <section aria-label={props.language.t("sidebar.nav.projectsAndSessions")}>
++      <nav aria-label={props.language.t("sidebar.nav.projectsAndSessions")}>
++        <button data-action="create" disabled={store.pending.association} onClick={() => associate("create")}>
++          {props.language.t("session.new.project.new")}
++        </button>
++        <button data-action="open" disabled={store.pending.association} onClick={() => associate("open")}>
++          {props.language.t("command.project.open")}
++        </button>
++        <For each={store.projects}>
++          {(context) => (
++            <button
++              data-project-id={context.projectID}
++              aria-pressed={store.projectID === context.projectID}
++              onClick={() => selectProject(context)}
++            >
++              {context.canonicalRoot}
++            </button>
++          )}
++        </For>
++      </nav>
++      <Show when={!project() && store.errors.association}>
++        <p role="alert">{props.language.t("common.requestFailed")}</p>
++      </Show>
++      <Show when={project()}>
++        {(context) => (
++          <>
++            <button data-action="new-chat" disabled={store.pending[context().projectID]} onClick={newChat}>
++              {props.language.t("command.session.new")}
++            </button>
++            <For each={store.chats[context().projectID]}>
++              {(chat) => (
++                <button
++                  data-chat-id={chat.chatID}
++                  aria-pressed={selected()?.chatID === chat.chatID}
++                  onClick={() =>
++                    setStore({
++                      selections: { ...store.selections, [chat.projectID]: copyChat(chat) },
++                      selectionRevision: store.selectionRevision + 1,
++                    })
++                  }
++                >
++                  {chat.chatID}
++                </button>
++              )}
++            </For>
++            <Show when={owner()?.state === "loading" || store.lists[context().projectID] === "loading"}>
++              <p role="status">{props.language.t("common.loading")}</p>
++            </Show>
++            <Show when={queryFailed()}>
++              <p role="alert">{props.language.t("ftc.workspace.queryFailed")}</p>
++            </Show>
++            <Show when={owner()?.active}>
++              {(active) => (
++                <>
++                  <p role="status">{props.language.t("ftc.workspace.activeChat", { chatID: active().chatID })}</p>
++                  <button
++                    data-action="stop"
++                    disabled={owner()?.state !== "ready" || store.pending[`stop:${chatKey(active())}`]}
++                    onClick={stop}
++                  >
++                    {props.language.t("prompt.action.stop")}
++                  </button>
++                  <Show when={selected() && chatKey(selected()!) !== chatKey(active())}>
++                    <p>{props.language.t("ftc.workspace.busyDraft")}</p>
++                  </Show>
++                </>
++              )}
++            </Show>
++            <Show when={error()}>
++              {(issue) => (
++                <p role="alert">
++                  {props.language.t(
++                    issue().membership
++                      ? "ftc.workspace.membershipFailed"
++                      : issue().send
++                        ? "ftc.workspace.sendFailed"
++                        : "common.requestFailed",
++                  )}
++                </p>
++              )}
++            </Show>
++            <Show when={error()?.reopen}>
++              <button data-action="reopen" disabled={store.pending[context().projectID]} onClick={reopen}>
++                {props.language.t("ftc.workspace.reopen")}
++              </button>
++            </Show>
++            <Show when={queryFailed() || (error() && !error()?.reopen)}>
++              <button
++                data-action="retry"
++                onClick={() => {
++                  // Recovery rechecks observation only; it never retries a submitted draft.
++                  setStore("refresh", store.refresh + 1)
++                }}
++              >
++                {props.language.t("ftc.workspace.retry")}
++              </button>
++            </Show>
++            <Show when={selected()} keyed>
++              {(chat) => {
++                const reference = copyChat(chat)
++                const key = chatKey(reference)
++                const view = { live: true }
++                onCleanup(() => {
++                  view.live = false
++                })
++                return (
++                  <props.chat
++                    project={copyProject(context())}
++                    chat={reference}
++                    draft={store.drafts[key]?.text ?? ""}
++                    activeChatID={store.owners[reference.projectID]?.active?.chatID}
++                    canSubmit={canSubmit(reference)}
++                    submitting={store.pending[key] ?? false}
++                    onStop={() => {
++                      if (scope.live && view.live) stop()
++                    }}
++                    onDraft={(text) => {
++                      if (scope.live && view.live)
++                        setStore("drafts", key, { text, revision: (store.drafts[key]?.revision ?? 0) + 1 })
++                    }}
++                    onSubmit={(options) => {
++                      if (!scope.live || !view.live || !canSubmit(reference)) return
++                      const draft = store.drafts[key]
++                      if (!draft?.text.trim()) return
++                      const captured = { text: draft.text, revision: draft.revision }
++                      const epoch = store.owners[reference.projectID].epoch
++                      const request = Object.freeze({
++                        chat: reference,
++                        prompt: Object.freeze({ text: captured.text }),
++                        ...options,
++                      })
++                      command(
++                        key,
++                        (signal) => props.ports.submit(request, signal),
++                        (result) => {
++                          if (result.kind === "busy") {
++                            if (result.active.projectID !== reference.projectID)
++                              throw { code: "project_changed", recovery: "reopen_project" }
++                            if (store.owners[reference.projectID]?.epoch === epoch)
++                              setStore("owners", reference.projectID, {
++                                state: "ready",
++                                active: copyChat(result.active),
++                              })
++                            return
++                          }
++                          if (result.receipt.sessionID !== reference.sessionID)
++                            throw { code: "session_mismatch", recovery: "reopen_project" }
++                          if (store.drafts[key]?.revision === captured.revision)
++                            setStore("drafts", key, { text: "", revision: captured.revision + 1 })
++                        },
++                        true,
++                      )
++                    }}
++                  />
++                )
++              }}
++            </Show>
++          </>
++        )}
++      </Show>
++    </section>
++  )
++}
++
++function chatKey(chat: FtcProject.ChatRef) {
++  return JSON.stringify([chat.projectID, chat.chatID, chat.sessionID])
++}
++
++function copyChat(chat: FtcProject.ChatRef): FtcProject.ChatRef {
++  return Object.freeze({ projectID: chat.projectID, chatID: chat.chatID, sessionID: chat.sessionID })
++}
++
++function copyProject(project: FtcProject.ProjectContext): FtcProject.ProjectContext {
++  return Object.freeze({
++    projectID: project.projectID,
++    canonicalRoot: project.canonicalRoot,
++    location: Object.freeze({
++      directory: project.location.directory,
++      workspaceID: project.location.workspaceID,
++      project: Object.freeze({ id: project.location.project.id, directory: project.location.project.directory }),
++    }),
++  })
++}
++
++function validOwner(status: FtcProject.OwnerStatus, projectID: FtcProject.ProjectContext["projectID"]) {
++  return status.projectID === projectID && (!status.active || status.active.projectID === projectID)
++}
++
++function failure(cause: unknown, send: boolean): Failure {
++  const code = typeof cause === "object" && cause !== null && "code" in cause ? cause.code : undefined
++  const reopen =
++    typeof cause === "object" && cause !== null && "recovery" in cause && cause.recovery === "reopen_project"
++  return {
++    membership: code === "project_changed" || code === "session_mismatch" || code === "chat_session_conflict",
++    send,
++    reopen,
++  }
++}
+diff --git a/packages/app/src/i18n/en.ts b/packages/app/src/i18n/en.ts
+index 9166d7d59..5a8070d5b 100644
+--- a/packages/app/src/i18n/en.ts
++++ b/packages/app/src/i18n/en.ts
+@@ -1,13 +1,21 @@
+ import { DESKTOP_NATIVE_ENGLISH } from "./desktop-native"
+ 
+ export const dict = {
++  "ftc.workspace.activeChat": "Active session: {{chatID}}",
++  "ftc.workspace.busyDraft":
++    "Wait for the active session to finish or stop it before sending. Your draft will not be sent automatically.",
++  "ftc.workspace.queryFailed": "Could not load project status or sessions. Retry to check again.",
++  "ftc.workspace.retry": "Retry",
++  "ftc.workspace.reopen": "Reopen project",
++  "ftc.workspace.membershipFailed": "The project or session changed. Reopen the project; your draft is still here.",
++  "ftc.workspace.sendFailed": "Could not send. Your draft is still here.",
+   ...DESKTOP_NATIVE_ENGLISH,
+   "command.category.suggested": "Suggested",
+   "command.category.view": "View",
+   "command.category.project": "Project",
+   "command.category.provider": "Provider",
+   "command.category.server": "Server",
+   "command.category.session": "Session",
+   "command.category.theme": "Theme",
+   "command.category.language": "Language",
+   "command.category.file": "File",
+diff --git a/packages/app/src/i18n/parity.test.ts b/packages/app/src/i18n/parity.test.ts
+index 25431b367..15bdf0bab 100644
+--- a/packages/app/src/i18n/parity.test.ts
++++ b/packages/app/src/i18n/parity.test.ts
+@@ -5,20 +5,30 @@ import { desktopNativePluralCategories } from "./desktop-native"
+ // Keep every pre-existing key covered across all locales.
+ const guidedSetupKeys = new Set([
+   "ftc.setup.install",
+   "ftc.setup.permission",
+   "ftc.setup.review",
+   "ftc.setup.recheck",
+   "ftc.setup.verify",
+   "ftc.setup.available",
+ ])
+ 
++const workspaceKeys = new Set([
++  "ftc.workspace.activeChat",
++  "ftc.workspace.busyDraft",
++  "ftc.workspace.queryFailed",
++  "ftc.workspace.retry",
++  "ftc.workspace.reopen",
++  "ftc.workspace.membershipFailed",
++  "ftc.workspace.sendFailed",
++])
++
+ const appLocales = [
+   "ar",
+   "br",
+   "bs",
+   "da",
+   "de",
+   "es",
+   "fr",
+   "ja",
+   "ko",
+@@ -108,21 +118,22 @@ const domains = [
+ ] as const
+ 
+ describe("i18n parity", () => {
+   test("non-English locales have every English key and required plural variants", async () => {
+     for (const domain of domains) {
+       const source = await dictionary(domain.source)
+       for (const locale of domain.locales) {
+         const target = await dictionary(domain.target(locale))
+         const missing = Object.keys(source).filter(
+           (key) =>
+-            !(domain.name === "app" && locale !== "zh" && guidedSetupKeys.has(key)) && !Object.hasOwn(target, key),
++            !(domain.name === "app" && locale !== "zh" && (guidedSetupKeys.has(key) || workspaceKeys.has(key))) &&
++            !Object.hasOwn(target, key),
+         )
+         const extra = Object.keys(target)
+           .filter((key) => !Object.hasOwn(source, key))
+           .sort()
+         const expected = pluralFamilies(source)
+           .flatMap((key) => (pluralCategories.get(locale) ?? []).map((category) => `${key}.${category}`))
+           .sort()
+         expect({ domain: domain.name, locale, missing, extra }).toEqual({
+           domain: domain.name,
+           locale,
+@@ -137,20 +148,31 @@ describe("i18n parity", () => {
+     const source = await dictionary("./en.ts")
+     const target = await dictionary("./zh.ts")
+     for (const key of guidedSetupKeys) {
+       expect(source[key]?.trim()).toBeTruthy()
+       expect(target[key]?.trim()).toBeTruthy()
+       expect(target[key]).not.toBe(source[key])
+       expect(placeholders(target[key])).toEqual(placeholders(source[key]))
+     }
+   })
+ 
++  test("workspace has seven complete English and Chinese phrases with matching placeholders", async () => {
++    const source = await dictionary("./en.ts")
++    const target = await dictionary("./zh.ts")
++    for (const key of workspaceKeys) {
++      expect(source[key]?.trim()).toBeTruthy()
++      expect(target[key]?.trim()).toBeTruthy()
++      expect(target[key]).not.toBe(source[key])
++      expect(placeholders(target[key])).toEqual(placeholders(source[key]))
++    }
++  })
++
+   test("non-English locales preserve English placeholders", async () => {
+     for (const domain of domains) {
+       const source = await dictionary(domain.source)
+       for (const locale of domain.locales) {
+         const target = await dictionary(domain.target(locale))
+         const mismatched = Object.keys(source).filter(
+           (key) => Object.hasOwn(target, key) && placeholders(source[key]).join() !== placeholders(target[key]).join(),
+         )
+         const pluralMismatched = pluralFamilies(source).flatMap((key) =>
+           (pluralCategories.get(locale) ?? [])
+diff --git a/packages/app/src/i18n/zh.ts b/packages/app/src/i18n/zh.ts
+index 43871e985..3120fed7a 100644
+--- a/packages/app/src/i18n/zh.ts
++++ b/packages/app/src/i18n/zh.ts
+@@ -1,15 +1,22 @@
+ import { dict as en } from "./en"
+ 
+ type Keys = keyof typeof en
+ 
+ export const dict = {
++  "ftc.workspace.activeChat": "正在运行的会话：{{chatID}}",
++  "ftc.workspace.busyDraft": "请等待正在运行的会话结束或将其停止后再发送。草稿不会自动发送。",
++  "ftc.workspace.queryFailed": "无法加载项目状态或会话。请重试。",
++  "ftc.workspace.retry": "重试",
++  "ftc.workspace.reopen": "重新打开项目",
++  "ftc.workspace.membershipFailed": "项目或会话已更改。请重新打开项目；草稿仍保留在此处。",
++  "ftc.workspace.sendFailed": "无法发送。草稿仍保留在此处。",
+   "desktop.menu.app": "OpenCode",
+   "desktop.menu.file": "文件",
+   "desktop.menu.edit": "编辑",
+   "desktop.menu.view": "视图",
+   "desktop.menu.go": "转到",
+   "desktop.menu.window": "窗口",
+   "desktop.menu.help": "帮助",
+   "desktop.menu.checkForUpdates": "检查更新...",
+   "desktop.menu.settings": "设置",
+   "desktop.menu.reloadWebview": "重新加载 Webview",
+diff --git a/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts b/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts
+new file mode 100644
+index 000000000..a1a3e00bb
+--- /dev/null
++++ b/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts
+@@ -0,0 +1,838 @@
++import { afterEach, expect, test } from "bun:test"
++import { createRequire } from "node:module"
++import { createComponent, render } from "solid-js/web"
++import { createEffect, onCleanup } from "solid-js"
++import { createStore } from "solid-js/store"
++import { FtcProject } from "@opencode-ai/schema/ftc-project"
++import { Project } from "@opencode-ai/schema/project"
++import { Session } from "@opencode-ai/schema/session"
++import { SessionInput } from "@opencode-ai/schema/session-input"
++import { SessionMessage } from "@opencode-ai/schema/session-message"
++import { DateTime } from "effect"
++import { Location } from "@opencode-ai/schema/location"
++import { AbsolutePath } from "@opencode-ai/schema/schema"
++import type { WorkspaceChatView, WorkspaceLanguage, WorkspacePorts } from "../../../src/ftc/facades"
++import { dict } from "../../../src/i18n/en"
++const zh = await import("../../../src/i18n/zh")
++
++const compiler = createRequire(import.meta.resolve("vite-plugin-solid"))
++const babel = compiler("@babel/core")
++Bun.plugin({
++  name: "m1-01-solid-dom",
++  setup(build) {
++    build.onLoad({ filter: /\/packages\/app\/src\/ftc\/workspace\.tsx$/ }, async (args) => {
++      const result = babel.transformSync(await Bun.file(args.path).text(), {
++        filename: args.path,
++        babelrc: false,
++        configFile: false,
++        presets: [
++          [compiler.resolve("babel-preset-solid"), { generate: "dom", hydratable: false }],
++          compiler.resolve("@babel/preset-typescript"),
++        ],
++      })
++      if (!result?.code) throw new Error("Missing compiled workspace")
++      return { contents: result.code, loader: "js" }
++    })
++  },
++})
++const { FtcWorkspace } = await import("../../../src/ftc/workspace")
++
++const project = (name: string) =>
++  FtcProject.ProjectContext.make({
++    projectID: Project.ID.make(`project_${name}`),
++    canonicalRoot: AbsolutePath.make(`/prepared/${name}`),
++    location: new Location.Info({
++      directory: AbsolutePath.make(`/prepared/${name}`),
++      project: { id: Project.ID.make(`host_${name}`), directory: AbsolutePath.make(`/prepared/${name}`) },
++    }),
++  })
++const a = project("a")
++const b = project("b")
++const chat = (context: FtcProject.ProjectContext, name: string) =>
++  FtcProject.ChatRef.make({
++    projectID: context.projectID,
++    chatID: FtcProject.ChatID.make(`chat_${name}`),
++    sessionID: Session.ID.make(`ses_${name}`),
++  })
++const a1 = chat(a, "a1")
++const a2 = chat(a, "a2")
++const b1 = chat(b, "b1")
++const flush = async () => {
++  await new Promise((resolve) => setTimeout(resolve, 0))
++}
++const cleanups: (() => void)[] = []
++afterEach(() => cleanups.splice(0).forEach((dispose) => dispose()))
++
++function fixture(options: Partial<WorkspacePorts> = {}, projects = [a, b]) {
++  const submittedDrafts: FtcProject.SubmitPrompt[] = []
++  const stopped: FtcProject.ChatRef[] = []
++  const listeners = new Map<string, (status: FtcProject.OwnerStatus) => void>()
++  const histories: string[] = []
++  const disposed: string[] = []
++  const views: WorkspaceChatView[] = []
++  const [locale, setLocale] = createStore({ chinese: false })
++  const language: WorkspaceLanguage = {
++    t: (key, params) => {
++      const source: Record<string, string> = locale.chinese ? zh.dict : dict
++      const value = source[key] ?? key
++      return Object.entries(params ?? {}).reduce(
++        (text, [name, value]) => text.replaceAll(`{{${name}}}`, String(value)),
++        value,
++      )
++    },
++  }
++  const ports: WorkspacePorts = {
++    selectFolder: async () => ({ root: b.canonicalRoot }),
++    create: async () => b,
++    open: async () => b,
++    listChats: async (request) => (request.projectID === a.projectID ? [a1, a2] : [b1]),
++    createChat: async () => a2,
++    active: async (request) => ({
++      projectID: request.projectID,
++      active: request.projectID === a.projectID ? a2 : undefined,
++    }),
++    subscribeOwner: (request, receive) => {
++      listeners.set(request.projectID, receive)
++      return () => listeners.delete(request.projectID)
++    },
++    submit: async (request) => {
++      submittedDrafts.push(request)
++      return { kind: "busy", active: a2 }
++    },
++    stop: async (target) => {
++      stopped.push(target)
++    },
++    ...options,
++  }
++  const host = document.createElement("div")
++  document.body.append(host)
++  const slot = (view: WorkspaceChatView) => {
++    views.push(view)
++    histories.push(view.chat.sessionID)
++    onCleanup(() => disposed.push(view.chat.sessionID))
++    const region = document.createElement("article")
++    const textarea = document.createElement("textarea")
++    textarea.addEventListener("input", () => view.onDraft(textarea.value))
++    const send = document.createElement("button")
++    send.dataset.action = "send"
++    send.addEventListener("click", () => view.onSubmit())
++    const history = document.createElement("output")
++    history.dataset.history = view.chat.sessionID
++    history.textContent = `history:${view.chat.sessionID}`
++    createEffect(() => {
++      textarea.value = view.draft
++      textarea.setAttribute("aria-label", language.t("prompt.placeholder.simple"))
++      send.textContent = language.t("prompt.action.send")
++      send.disabled = !view.canSubmit
++      view.activeChatID
++        ? region.setAttribute("data-active-chat", view.activeChatID)
++        : region.removeAttribute("data-active-chat")
++      region.dataset.chat = view.chat.chatID
++      region.dataset.project = view.project.projectID
++    })
++    region.append(textarea, send, history)
++    return region
++  }
++  const dispose = render(() => createComponent(FtcWorkspace, { projects, ports, language, chat: slot }), host)
++  const close = () => {
++    dispose()
++    host.remove()
++  }
++  cleanups.push(close)
++  return {
++    host,
++    ports,
++    listeners,
++    histories,
++    disposed,
++    views,
++    submittedDrafts,
++    stopped,
++    close,
++    setChinese: () => setLocale("chinese", true),
++    button: (selector: string) => host.querySelector<HTMLButtonElement>(selector)!,
++    draft: (text: string) => {
++      const textarea = host.querySelector("textarea")!
++      textarea.value = text
++      textarea.dispatchEvent(new Event("input", { bubbles: true }))
++    },
++  }
++}
++
++test("busy project identifies active chat without submitting drafts", async () => {
++  const view = fixture()
++  await flush()
++  expect(view.host.querySelector("article")?.getAttribute("data-active-chat")).toBe(a2.chatID)
++  view.draft("unsent")
++  expect(view.submittedDrafts).toEqual([])
++  expect(view.button(`[data-project-id="${b.projectID}"]`).disabled).toBe(false)
++  expect(view.button('[data-action="send"]').disabled).toBe(true)
++  view.button(`[data-project-id="${b.projectID}"]`).click()
++  await flush()
++  expect(view.button('[data-action="send"]').disabled).toBe(false)
++  expect(view.host.querySelector("output")?.getAttribute("data-history")).toBe(b1.sessionID)
++})
++
++const idle: WorkspacePorts["active"] = async (request) => ({ projectID: request.projectID })
++const admitted = (request: FtcProject.SubmitPrompt): FtcProject.SubmitResult => ({
++  kind: "admitted",
++  receipt: SessionInput.Admitted.make({
++    admittedSeq: 1,
++    id: SessionMessage.ID.make("msg_admitted"),
++    sessionID: request.chat.sessionID,
++    prompt: { text: request.prompt.text },
++    delivery: "steer",
++    timeCreated: DateTime.makeUnsafe(0),
++  }),
++})
++
++test("idle transitions retain drafts and only an explicit send admits once", async () => {
++  const requests: FtcProject.SubmitPrompt[] = []
++  const view = fixture({
++    submit: async (request) => {
++      requests.push(request)
++      return admitted(request)
++    },
++  })
++  await flush()
++  view.draft("local draft")
++  view.listeners.get(a.projectID)!({ projectID: a.projectID })
++  await flush()
++  expect(view.host.querySelector("textarea")?.value).toBe("local draft")
++  expect(requests).toEqual([])
++  view.button('[data-action="send"]').click()
++  await flush()
++  expect(requests).toEqual([{ chat: a1, prompt: { text: "local draft" } }])
++  expect(view.host.querySelector("textarea")?.value).toBe("")
++})
++
++test("project and chat selection restore independent drafts and exact Session presentation", async () => {
++  const view = fixture({ active: idle })
++  await flush()
++  view.draft("first")
++  view.button(`[data-chat-id="${a2.chatID}"]`).click()
++  view.draft("second")
++  expect(view.host.querySelector("output")?.textContent).toBe(`history:${a2.sessionID}`)
++  view.button(`[data-project-id="${b.projectID}"]`).click()
++  await flush()
++  view.draft("other")
++  expect(view.host.querySelector("output")?.textContent).toBe(`history:${b1.sessionID}`)
++  expect(view.host.querySelectorAll("output")).toHaveLength(1)
++  view.button(`[data-project-id="${a.projectID}"]`).click()
++  await flush()
++  expect(view.host.querySelector("textarea")?.value).toBe("second")
++  view.button(`[data-chat-id="${a1.chatID}"]`).click()
++  expect(view.host.querySelector("textarea")?.value).toBe("first")
++  expect(view.disposed).toContain(b1.sessionID)
++  expect(view.submittedDrafts).toEqual([])
++})
++
++test("same owner can deliberately submit with canonical delivery options", async () => {
++  const requests: FtcProject.SubmitPrompt[] = []
++  const view = fixture({
++    submit: async (request) => {
++      requests.push(request)
++      return admitted(request)
++    },
++  })
++  await flush()
++  view.button(`[data-chat-id="${a2.chatID}"]`).click()
++  view.draft("steer")
++  view.views.at(-1)!.onSubmit({ delivery: "queue", resume: false, id: SessionMessage.ID.make("msg_exact") })
++  await flush()
++  expect(requests).toEqual([{ chat: a2, prompt: { text: "steer" }, delivery: "queue", resume: false, id: "msg_exact" }])
++  expect(requests[0].chat.projectID).not.toBe(a.location.project.id)
++})
++
++test("stop captures the displayed owner and never infers idle on completion", async () => {
++  const stop = Promise.withResolvers<void>()
++  const targets: FtcProject.ChatRef[] = []
++  const view = fixture({
++    stop: (target) => {
++      targets.push(target)
++      return stop.promise
++    },
++  })
++  await flush()
++  view.button('[data-action="stop"]').click()
++  view.button(`[data-project-id="${b.projectID}"]`).click()
++  await flush()
++  stop.resolve()
++  await flush()
++  expect(targets).toEqual([a2])
++  view.button(`[data-project-id="${a.projectID}"]`).click()
++  await flush()
++  expect(view.host.querySelector("article")?.getAttribute("data-active-chat")).toBe(a2.chatID)
++  expect(view.button('[data-action="send"]').disabled).toBe(true)
++})
++
++test("raced busy submission preserves original draft and never retries on idle", async () => {
++  const view = fixture({ active: idle })
++  await flush()
++  view.draft("raced")
++  view.button('[data-action="send"]').click()
++  await flush()
++  expect(view.submittedDrafts).toEqual([{ chat: a1, prompt: { text: "raced" } }])
++  expect(view.host.querySelector("textarea")?.value).toBe("raced")
++  expect(view.host.querySelector("article")?.getAttribute("data-active-chat")).toBe(a2.chatID)
++  view.listeners.get(a.projectID)!({ projectID: a.projectID })
++  await flush()
++  expect(view.submittedDrafts).toHaveLength(1)
++})
++
++test("deferred admission clears only unchanged original text despite later selection", async () => {
++  const submit = Promise.withResolvers<FtcProject.SubmitResult>()
++  const requests: FtcProject.SubmitPrompt[] = []
++  const view = fixture({
++    active: idle,
++    submit: (request) => {
++      requests.push(request)
++      return submit.promise
++    },
++  })
++  await flush()
++  view.draft("original")
++  view.button('[data-action="send"]').click()
++  view.button('[data-action="send"]').click()
++  view.draft("edited")
++  view.button(`[data-project-id="${b.projectID}"]`).click()
++  await flush()
++  view.draft("b draft")
++  submit.resolve(admitted(requests[0]))
++  await flush()
++  expect(requests).toEqual([{ chat: a1, prompt: { text: "original" } }])
++  expect(view.host.querySelector("textarea")?.value).toBe("b draft")
++  expect(view.host.querySelector("article")?.getAttribute("data-project")).toBe(b.projectID)
++  view.button(`[data-project-id="${a.projectID}"]`).click()
++  await flush()
++  expect(view.host.querySelector("textarea")?.value).toBe("edited")
++})
++
++test("edit and revert while admission waits still preserves the user's edit", async () => {
++  const submit = Promise.withResolvers<FtcProject.SubmitResult>()
++  const requests: FtcProject.SubmitPrompt[] = []
++  const view = fixture({
++    active: idle,
++    submit: (request) => {
++      requests.push(request)
++      return submit.promise
++    },
++  })
++  await flush()
++  view.draft("same")
++  view.button('[data-action="send"]').click()
++  view.draft("changed")
++  view.draft("same")
++  await flush()
++  submit.resolve(admitted(requests[0]))
++  await flush()
++  expect(view.host.querySelector("textarea")?.value).toBe("same")
++})
++
++test("deferred failure belongs to the original chat and leaves the later chat untouched", async () => {
++  const submit = Promise.withResolvers<FtcProject.SubmitResult>()
++  const view = fixture({ active: idle, submit: () => submit.promise })
++  await flush()
++  view.draft("original")
++  view.button('[data-action="send"]').click()
++  view.button(`[data-project-id="${b.projectID}"]`).click()
++  await flush()
++  view.draft("other")
++  submit.reject(new Error("untrusted backend detail"))
++  await flush()
++  expect(view.host.querySelector('[role="alert"]')).toBeNull()
++  expect(view.host.querySelector("textarea")?.value).toBe("other")
++  view.button(`[data-project-id="${a.projectID}"]`).click()
++  await flush()
++  expect(view.host.querySelector("textarea")?.value).toBe("original")
++  expect(view.host.textContent).toContain("Could not send. Your draft is still here.")
++  expect(view.host.textContent).not.toContain("untrusted backend detail")
++})
++
++test.each(["project_changed", "session_mismatch", "chat_session_conflict"] as const)(
++  "structured %s retains draft and requests explicit reopen",
++  async (code) => {
++    const view = fixture({
++      active: idle,
++      submit: async () => {
++        throw FtcProject.ChatError.make({ code, projectID: a.projectID, recovery: "reopen_project" })
++      },
++    })
++    await flush()
++    view.draft("retained")
++    view.button('[data-action="send"]').click()
++    await flush()
++    expect(view.host.querySelector("textarea")?.value).toBe("retained")
++    expect(view.host.textContent).toContain("The project or session changed.")
++    expect(view.button('[data-action="reopen"]').textContent).toBe("Reopen project")
++    expect(view.host.querySelector("output")?.getAttribute("data-history")).toBe(a1.sessionID)
++  },
++)
++
++test("execution unavailable retains input with localized recovery", async () => {
++  const view = fixture({
++    active: idle,
++    submit: async () => {
++      throw new FtcProject.ExecutionUnavailable({ code: "execution_disabled" })
++    },
++  })
++  await flush()
++  view.draft("disabled")
++  view.button('[data-action="send"]').click()
++  await flush()
++  expect(view.host.querySelector("textarea")?.value).toBe("disabled")
++  expect(view.host.textContent).toContain("Could not send.")
++  expect(view.button('[data-action="retry"]').textContent).toBe("Retry")
++})
++
++test("owner event supersedes an older initial snapshot", async () => {
++  const active = Promise.withResolvers<FtcProject.OwnerStatus>()
++  const view = fixture({ active: () => active.promise })
++  await flush()
++  expect(view.button('[data-action="send"]').disabled).toBe(true)
++  expect(view.host.textContent).toContain("Loading")
++  view.listeners.get(a.projectID)!({ projectID: a.projectID, active: a2 })
++  active.resolve({ projectID: a.projectID })
++  await flush()
++  expect(view.host.querySelector("article")?.getAttribute("data-active-chat")).toBe(a2.chatID)
++  expect(view.button('[data-action="send"]').disabled).toBe(true)
++})
++
++test("obsolete target queries abort and late data or rejection cannot replace current view", async () => {
++  const list = Promise.withResolvers<readonly FtcProject.ChatRef[]>()
++  const active = Promise.withResolvers<FtcProject.OwnerStatus>()
++  const signals: AbortSignal[] = []
++  const view = fixture({
++    listChats: (request, signal) => {
++      signals.push(signal)
++      return request.projectID === a.projectID ? list.promise : Promise.resolve([b1])
++    },
++    active: (request, signal) => {
++      signals.push(signal)
++      return request.projectID === a.projectID ? active.promise : Promise.resolve({ projectID: b.projectID })
++    },
++  })
++  await flush()
++  view.button(`[data-project-id="${b.projectID}"]`).click()
++  await flush()
++  expect(signals.slice(0, 2).every((signal) => signal.aborted)).toBe(true)
++  list.resolve([a1, a2])
++  active.reject(new Error("obsolete"))
++  await flush()
++  expect(view.host.querySelector("article")?.getAttribute("data-chat")).toBe(b1.chatID)
++  expect(view.host.querySelector('[role="alert"]')).toBeNull()
++  expect(view.submittedDrafts).toEqual([])
++})
++
++test.each(["active", "listChats"] as const)(
++  "%s failure is not idle and explicit retry only rechecks",
++  async (method) => {
++    const calls: string[] = []
++    const view = fixture({
++      active: idle,
++      [method]: async () => {
++        calls.push(method)
++        throw new Error("private query detail")
++      },
++    })
++    await flush()
++    expect(view.host.textContent).toContain("Could not load project status or sessions.")
++    expect(view.host.textContent).not.toContain("private query detail")
++    expect(view.host.querySelector<HTMLButtonElement>('[data-action="send"]')?.disabled ?? true).toBe(true)
++    view.button('[data-action="retry"]').click()
++    await flush()
++    expect(calls).toHaveLength(2)
++    expect(view.submittedDrafts).toEqual([])
++  },
++)
++
++test("invalid chat or owner membership is never presented as a runnable identity", async () => {
++  const view = fixture({ listChats: async () => [b1], active: async () => ({ projectID: a.projectID, active: b1 }) })
++  await flush()
++  expect(view.host.querySelector("article")).toBeNull()
++  expect(view.host.textContent).toContain("Could not load project status or sessions.")
++  expect(view.submittedDrafts).toEqual([])
++})
++
++test.each(["create", "open"] as const)(
++  "explicit %s forwards exact selected folder then canonical context",
++  async (action) => {
++    const calls: unknown[] = []
++    const view = fixture(
++      {
++        selectFolder: async (kind) => {
++          calls.push(kind)
++          return { root: b.canonicalRoot }
++        },
++        [action]: async (request) => {
++          calls.push(request)
++          return b
++        },
++      },
++      [a],
++    )
++    await flush()
++    expect(calls).toEqual([])
++    view.button(`[data-action="${action}"]`).click()
++    await flush()
++    expect(calls).toEqual([action, { root: b.canonicalRoot }])
++    expect(view.host.querySelector("article")?.getAttribute("data-project")).toBe(b.projectID)
++    expect(view.submittedDrafts).toEqual([])
++  },
++)
++
++test("new chat uses association ID and selects only canonical success", async () => {
++  const calls: FtcProject.ProjectRequest[] = []
++  const view = fixture({
++    active: idle,
++    createChat: async (request) => {
++      calls.push(request)
++      return a2
++    },
++  })
++  await flush()
++  view.button('[data-action="new-chat"]').click()
++  await flush()
++  expect(calls).toEqual([{ projectID: a.projectID }])
++  expect(view.host.querySelector("article")?.getAttribute("data-chat")).toBe(a2.chatID)
++  expect(a1.chatID).toBe("chat_a1")
++  expect(a1.sessionID).toBe("ses_a1")
++  expect(view.submittedDrafts).toEqual([])
++})
++
++test.each(["create", "open", "createChat", "stop"] as const)(
++  "%s rejection does not fabricate success or lose drafts",
++  async (method) => {
++    const view = fixture({
++      [method]: async () => {
++        throw new Error("backend-private")
++      },
++    })
++    await flush()
++    view.draft("keep")
++    view.button(`[data-action="${method === "createChat" ? "new-chat" : method}"]`).click()
++    await flush()
++    expect(view.host.querySelector("textarea")?.value).toBe("keep")
++    expect(view.host.querySelector("article")?.getAttribute("data-project")).toBe(a.projectID)
++    expect(view.host.textContent).toContain("Request failed")
++    expect(view.host.textContent).not.toContain("backend-private")
++  },
++)
++
++test("late new-chat success cannot retarget a later project selection", async () => {
++  const result = Promise.withResolvers<FtcProject.ChatRef>()
++  const view = fixture({ createChat: () => result.promise })
++  await flush()
++  view.button('[data-action="new-chat"]').click()
++  view.button(`[data-project-id="${b.projectID}"]`).click()
++  await flush()
++  result.resolve(a2)
++  await flush()
++  expect(view.host.querySelector("article")?.getAttribute("data-chat")).toBe(b1.chatID)
++})
++
++test("language switching localizes controls, ownership, guidance and accessibility without resetting draft", async () => {
++  const view = fixture()
++  await flush()
++  view.draft("unchanged")
++  view.setChinese()
++  await flush()
++  expect(view.host.textContent).toContain("正在运行的会话：chat_a2")
++  expect(view.host.textContent).toContain("草稿不会自动发送")
++  expect(view.button('[data-action="open"]').textContent).toBe("打开项目")
++  expect(view.host.querySelector("textarea")?.getAttribute("aria-label")).toBe("随便问点什么...")
++  expect(view.host.querySelector("textarea")?.value).toBe("unchanged")
++  expect(view.submittedDrafts).toEqual([])
++})
++
++test("unmount cancels observations and pending commands without stopping execution", async () => {
++  const submit = Promise.withResolvers<FtcProject.SubmitResult>()
++  const owner = Promise.withResolvers<FtcProject.OwnerStatus>()
++  const signals: AbortSignal[] = []
++  const view = fixture({
++    active: (request, signal) => {
++      signals.push(signal)
++      return owner.promise
++    },
++    submit: (_request, signal) => {
++      signals.push(signal)
++      return submit.promise
++    },
++  })
++  await flush()
++  const lateEvent = view.listeners.get(a.projectID)!
++  lateEvent({ projectID: a.projectID })
++  view.draft("pending")
++  view.button('[data-action="send"]').click()
++  const oldView = view.views.at(-1)!
++  await flush()
++  view.close()
++  expect(view.listeners.size).toBe(0)
++  expect(signals.every((signal) => signal.aborted)).toBe(true)
++  expect(view.disposed).toEqual([a1.sessionID])
++  lateEvent({ projectID: a.projectID, active: a2 })
++  owner.reject(new Error("retired owner"))
++  submit.reject(new Error("retired submit"))
++  oldView.onSubmit()
++  await flush()
++  expect(view.stopped).toEqual([])
++  expect(view.host.textContent).toBe("")
++})
++
++test("fresh component scopes have independent drafts and subscriptions", async () => {
++  const first = fixture()
++  await flush()
++  first.draft("first only")
++  first.close()
++  const second = fixture()
++  await flush()
++  expect(second.host.querySelector("textarea")?.value).toBe("")
++  expect(first.listeners.size).toBe(0)
++  expect(second.listeners.size).toBe(1)
++  expect(second.submittedDrafts).toEqual([])
++})
++
++test("unmount before scheduled invocation retires the pending submit", async () => {
++  const requests: FtcProject.SubmitPrompt[] = []
++  const view = fixture({
++    active: idle,
++    submit: async (request) => {
++      requests.push(request)
++      return admitted(request)
++    },
++  })
++  await flush()
++  view.draft("pending")
++  view.button('[data-action="send"]').click()
++  view.close()
++  await flush()
++  expect(requests).toEqual([])
++  expect(view.stopped).toEqual([])
++})
++
++test("reopen recovery sends the displayed canonical folder without choosing a different target", async () => {
++  const roots: FtcProject.FolderRequest[] = []
++  const selectedFolders: string[] = []
++  const view = fixture({
++    active: idle,
++    submit: async () => {
++      throw FtcProject.ChatError.make({ code: "project_changed", projectID: a.projectID, recovery: "reopen_project" })
++    },
++    selectFolder: async (action) => {
++      selectedFolders.push(action)
++      return { root: b.canonicalRoot }
++    },
++    open: async (request) => {
++      roots.push(request)
++      return a
++    },
++  })
++  await flush()
++  view.draft("kept")
++  view.button('[data-action="send"]').click()
++  await flush()
++  view.button('[data-action="reopen"]').click()
++  await flush()
++  expect(roots).toEqual([{ root: a.canonicalRoot }])
++  expect(selectedFolders).toEqual([])
++  expect(view.host.querySelector("textarea")?.value).toBe("kept")
++})
++
++test("mutable supplied project and owner records cannot retarget presentation or stop", async () => {
++  const context = {
++    ...a,
++    location: {
++      directory: a.location.directory,
++      workspaceID: a.location.workspaceID,
++      project: { ...a.location.project },
++    },
++  }
++  const view = fixture({}, [context, b])
++  await flush()
++  context.canonicalRoot = b.canonicalRoot
++  context.location.project.id = b.location.project.id
++  const event = { projectID: a.projectID, active: { ...a2 } }
++  view.listeners.get(a.projectID)!(event)
++  event.active.sessionID = b1.sessionID
++  expect(view.button(`[data-project-id="${a.projectID}"]`).textContent).toBe(a.canonicalRoot)
++  view.button('[data-action="stop"]').click()
++  await flush()
++  expect(view.stopped).toEqual([a2])
++})
++
++test("newer owner event wins over an older busy submit result", async () => {
++  const response = Promise.withResolvers<FtcProject.SubmitResult>()
++  const view = fixture({ active: idle, submit: () => response.promise })
++  await flush()
++  view.draft("old busy result")
++  view.button('[data-action="send"]').click()
++  view.listeners.get(a.projectID)!({ projectID: a.projectID })
++  response.resolve({ kind: "busy", active: a2 })
++  await flush()
++  expect(view.host.querySelector("article")?.getAttribute("data-active-chat")).toBeNull()
++  expect(view.host.querySelector("textarea")?.value).toBe("old busy result")
++})
++
++test("foreign busy result or admission receipt retains original draft and membership", async () => {
++  const foreign = fixture({ active: idle, submit: async () => ({ kind: "busy", active: b1 }) })
++  await flush()
++  foreign.draft("foreign busy")
++  foreign.button('[data-action="send"]').click()
++  await flush()
++  expect(foreign.host.querySelector("textarea")?.value).toBe("foreign busy")
++  expect(foreign.host.textContent).toContain("The project or session changed.")
++  const receipt = fixture({ active: idle, submit: async (request) => admitted({ ...request, chat: b1 }) })
++  await flush()
++  receipt.draft("foreign receipt")
++  receipt.button('[data-action="send"]').click()
++  await flush()
++  expect(receipt.host.querySelector("textarea")?.value).toBe("foreign receipt")
++  expect(receipt.host.textContent).toContain("The project or session changed.")
++})
++
++test("conflicting new-chat mapping retains selected identity", async () => {
++  const view = fixture({ createChat: async () => ({ ...a1, sessionID: a2.sessionID }) })
++  await flush()
++  view.draft("same identity")
++  view.button('[data-action="new-chat"]').click()
++  await flush()
++  expect(view.host.querySelector("article")?.getAttribute("data-chat")).toBe(a1.chatID)
++  expect(view.host.querySelector("textarea")?.value).toBe("same identity")
++  expect(view.host.textContent).toContain("The project or session changed.")
++})
++
++test("cancelled folder selection performs no association command", async () => {
++  const calls: string[] = []
++  const view = fixture({
++    selectFolder: async () => undefined,
++    create: async () => {
++      calls.push("create")
++      return b
++    },
++  })
++  await flush()
++  view.button('[data-action="create"]').click()
++  await flush()
++  expect(calls).toEqual([])
++  expect(view.host.querySelector("article")?.getAttribute("data-project")).toBe(a.projectID)
++})
++
++test("folder selection finishing after unmount cannot open an association", async () => {
++  const folder = Promise.withResolvers<FtcProject.FolderRequest | undefined>()
++  const calls: FtcProject.FolderRequest[] = []
++  const view = fixture({
++    selectFolder: () => folder.promise,
++    open: async (request) => {
++      calls.push(request)
++      return b
++    },
++  })
++  await flush()
++  view.button('[data-action="open"]').click()
++  await flush()
++  view.close()
++  folder.resolve({ root: b.canonicalRoot })
++  await flush()
++  expect(calls).toEqual([])
++})
++
++test("Chinese failures and recovery use complete phrases", async () => {
++  const view = fixture({
++    active: idle,
++    submit: async () => {
++      throw FtcProject.ChatError.make({ code: "session_mismatch", projectID: a.projectID, recovery: "reopen_project" })
++    },
++  })
++  await flush()
++  view.setChinese()
++  view.draft("保留")
++  view.button('[data-action="send"]').click()
++  await flush()
++  expect(view.host.textContent).toContain("项目或会话已更改。请重新打开项目；草稿仍保留在此处。")
++  expect(view.button('[data-action="reopen"]').textContent).toBe("重新打开项目")
++  const query = fixture({
++    active: async () => {
++      throw new Error("failed")
++    },
++  })
++  await flush()
++  query.setChinese()
++  await flush()
++  expect(query.host.textContent).toContain("无法加载项目状态或会话。请重试。")
++  expect(query.button('[data-action="retry"]').textContent).toBe("重试")
++})
++
++test("supplied chat stop handler targets the displayed owner and retires with its view", async () => {
++  const view = fixture()
++  await flush()
++  const slot = view.views.at(-1)!
++  slot.onStop()
++  await flush()
++  expect(view.stopped).toEqual([a2])
++  view.close()
++  slot.onStop()
++  await flush()
++  expect(view.stopped).toEqual([a2])
++})
++
++test("structured list membership failure retains prior presentation and offers exact reopen", async () => {
++  const calls: string[] = []
++  const view = fixture({
++    listChats: async (request) => {
++      calls.push(request.projectID)
++      if (calls.length > 1)
++        throw FtcProject.ChatError.make({
++          code: "project_changed",
++          projectID: request.projectID,
++          recovery: "reopen_project",
++        })
++      return [a1, a2]
++    },
++  })
++  await flush()
++  view.draft("prior draft")
++  view.listeners.get(a.projectID)!({ projectID: a.projectID, active: b1 })
++  view.button('[data-action="retry"]').click()
++  await flush()
++  expect(view.host.querySelector("textarea")?.value).toBe("prior draft")
++  expect(view.host.querySelector("output")?.getAttribute("data-history")).toBe(a1.sessionID)
++  expect(view.button('[data-action="reopen"]').textContent).toBe("Reopen project")
++  expect(view.button('[data-action="send"]').disabled).toBe(true)
++})
++
++test("an empty project catalog still displays association failure and allows explicit retry", async () => {
++  const calls: string[] = []
++  const view = fixture(
++    {
++      create: async () => {
++        calls.push("create")
++        throw new Error("private")
++      },
++    },
++    [],
++  )
++  view.button('[data-action="create"]').click()
++  await flush()
++  expect(view.host.textContent).toContain("Request failed")
++  expect(view.button('[data-action="create"]').disabled).toBe(false)
++  view.button('[data-action="create"]').click()
++  await flush()
++  expect(calls).toEqual(["create", "create"])
++})
++
++test("a successful owner event recovers failed observation without sending its draft", async () => {
++  const view = fixture({
++    active: async () => {
++      throw new Error("owner query failed")
++    },
++  })
++  await flush()
++  view.draft("never automatic")
++  expect(view.host.querySelector('[role="alert"]')).not.toBeNull()
++  view.listeners.get(a.projectID)!({ projectID: a.projectID })
++  await flush()
++  expect(view.host.querySelector('[role="alert"]')).toBeNull()
++  expect(view.button('[data-action="send"]').disabled).toBe(false)
++  expect(view.host.querySelector("textarea")?.value).toBe("never automatic")
++  expect(view.submittedDrafts).toEqual([])
++})
