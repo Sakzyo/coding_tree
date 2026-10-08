@@ -1,0 +1,102 @@
+bun test v1.3.14 (0d9b296a)
+
+test/session/prompt.test.ts:
+[10:23:47.611] ERROR (#2): 2524 |     const admission = yield* prompt.prompt(input).pipe(Effect.forkChild, Effect.tap(() => Effect.yieldNow))
+2525 |     input.sessionID = managed.id
+2526 |     yield* Deferred.succeed(unlock, undefined)
+2527 |     yield* Fiber.join(lock)
+2528 |     yield* Fiber.join(admission)
+2529 |     expect(yield* sessions.messages({ sessionID: managed.id })).toEqual([])
+       ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   {
++     "info": {
++       "agent": "build",
++       "id": "msg_11b0a6092001Wo0C1t90tLQsEs",
++       "model": {
++         "modelID": "test-model",
++         "providerID": "test",
++       },
++       "role": "user",
++       "sessionID": "ses_ee4f59f8affehB8Djt2gm8Mz2L",
++       "time": {
++         "created": 1791455027346,
++       },
++     },
++     "parts": [
++       {
++         "id": "prt_11b0a60960016qCFcD8ViXmu4P",
++         "messageID": "msg_11b0a6092001Wo0C1t90tLQsEs",
++         "sessionID": "ses_ee4f59f8affehB8Djt2gm8Mz2L",
++         "text": "captured",
++         "type": "text",
++       },
++     ],
++   },
++ ]
+
+- Expected  - 1
++ Received  + 26
+
+      at toEqual (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/opencode/test/session/prompt.test.ts:2529:65
+
+2524 |     const admission = yield* prompt.prompt(input).pipe(Effect.forkChild, Effect.tap(() => Effect.yieldNow))
+2525 |     input.sessionID = managed.id
+2526 |     yield* Deferred.succeed(unlock, undefined)
+2527 |     yield* Fiber.join(lock)
+2528 |     yield* Fiber.join(admission)
+2529 |     expect(yield* sessions.messages({ sessionID: managed.id })).toEqual([])
+       ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   {
++     "info": {
++       "agent": "build",
++       "id": "msg_11b0a6092001Wo0C1t90tLQsEs",
++       "model": {
++         "modelID": "test-model",
++         "providerID": "test",
++       },
++       "role": "user",
++       "sessionID": "ses_ee4f59f8affehB8Djt2gm8Mz2L",
++       "time": {
++         "created": 1791455027346,
++       },
++     },
++     "parts": [
++       {
++         "id": "prt_11b0a60960016qCFcD8ViXmu4P",
++         "messageID": "msg_11b0a6092001Wo0C1t90tLQsEs",
++         "sessionID": "ses_ee4f59f8affehB8Djt2gm8Mz2L",
++         "text": "captured",
++         "type": "text",
++       },
++     ],
++   },
++ ]
+
+- Expected  - 1
++ Received  + 26
+
+      at toEqual (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/opencode/test/session/prompt.test.ts:2529:65
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:910:23)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at processTicksAndRejections (unknown:7:39)
+(fail) internal prompt captures Session identity before suspended admission [731.87ms]
+
+ 0 pass
+ 60 filtered out
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [2.41s]

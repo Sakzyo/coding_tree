@@ -1,0 +1,55 @@
+bun test v1.3.14 (0d9b296a)
+
+test/server/httpapi-ftc-project.test.ts:
+(pass) actual OpenCode host activates an idle root and denies all managed legacy execution entrances [1986.17ms]
+(pass) actual AppRuntime and fresh listener graph exclude association while web handler keeps its owner [299.87ms]
+
+test/session/prompt.test.ts:
+[10:20:07.436] ERROR (#60901): 2495 |     const cancel = yield* Fiber.interrupt(command).pipe(Effect.forkChild)
+2496 |     yield* pollWithTimeout(afs.existsSafe(stopping).pipe(Effect.map((found) => found ? true : undefined)), "template process never received termination")
+2497 |     expect(yield* associate.pipe(Effect.flip)).toMatchObject({ code: "activation_unavailable" })
+2498 |     yield* writeText(release, "release")
+2499 |     yield* Fiber.join(cancel)
+2500 |     const pid = Number(yield* afs.readText(pidFile))
+                                         ^
+TypeError: afs.readText is not a function. (In 'afs.readText(pidFile)', 'afs.readText' is undefined)
+      at /Users/dylanxu/coding_tree/packages/opencode/test/session/prompt.test.ts:2500:35
+
+2495 |     const cancel = yield* Fiber.interrupt(command).pipe(Effect.forkChild)
+2496 |     yield* pollWithTimeout(afs.existsSafe(stopping).pipe(Effect.map((found) => found ? true : undefined)), "template process never received termination")
+2497 |     expect(yield* associate.pipe(Effect.flip)).toMatchObject({ code: "activation_unavailable" })
+2498 |     yield* writeText(release, "release")
+2499 |     yield* Fiber.join(cancel)
+2500 |     const pid = Number(yield* afs.readText(pidFile))
+                                         ^
+TypeError: afs.readText is not a function. (In 'afs.readText(pidFile)', 'afs.readText' is undefined)
+      at /Users/dylanxu/coding_tree/packages/opencode/test/session/prompt.test.ts:2500:35
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:910:23)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at loop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:533:4)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:531:9
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at onExit (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1009:2)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1028:5
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at doneUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Deferred.js:657:20)
+      at /Users/dylanxu/coding_tree/packages/core/src/cross-spawn-spawner.ts:398:21
+      at emit (node:events:98:22)
+      at #maybeClose (node:child_process:766:16)
+      at #handleOnExit (node:child_process:520:72)
+      at processTicksAndRejections (unknown:7:39)
+(fail) command template cancellation holds root until real child cleanup [469.13ms]
+
+ 2 pass
+ 59 filtered out
+ 1 fail
+ 29 expect() calls
+Ran 3 tests across 2 files. [5.62s]

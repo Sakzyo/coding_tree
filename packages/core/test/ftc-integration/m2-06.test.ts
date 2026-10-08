@@ -133,14 +133,14 @@ const fixture = (
         Effect.sync(() => {
           statuses.push(status)
         }).pipe(Effect.andThen(options.changed ? options.changed(status) : Effect.void)),
-      activate: (request) =>
+      activate: (request, commit) =>
         options.unavailable
           ? Effect.fail({
               code: "activation_unavailable",
-              root: request.root,
+              root: request.canonicalRoot,
               recovery: "retry",
             } satisfies FtcProject.AssociationError)
-          : Effect.void,
+          : commit,
     })
     const sessionLocations = yield* LayerMap.make((_: Location.Ref) =>
       Layer.effectContext<LocationServices, never, never>(

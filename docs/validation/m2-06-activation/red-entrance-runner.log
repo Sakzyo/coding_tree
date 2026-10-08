@@ -1,0 +1,65 @@
+bun test v1.3.14 (0d9b296a)
+
+test/effect/runner.test.ts:
+[10:04:43.317] ERROR (#2): 529 |   yield* Effect.gen(function* () {
+530 |     const caller = yield* runner.ensureRunning(Effect.never.pipe(
+531 |       Effect.ensuring(Deferred.succeed(closing, undefined).pipe(Effect.andThen(Deferred.await(cleanup)))),
+532 |     )).pipe(Effect.forkChild)
+533 |     yield* waitForState(runner, "Running")
+534 |     expect(held.size).toBe(1)
+      ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at toBe (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/opencode/test/effect/runner.test.ts:534:23
+
+529 |   yield* Effect.gen(function* () {
+530 |     const caller = yield* runner.ensureRunning(Effect.never.pipe(
+531 |       Effect.ensuring(Deferred.succeed(closing, undefined).pipe(Effect.andThen(Deferred.await(cleanup)))),
+532 |     )).pipe(Effect.forkChild)
+533 |     yield* waitForState(runner, "Running")
+534 |     expect(held.size).toBe(1)
+      ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at toBe (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/opencode/test/effect/runner.test.ts:534:23
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:910:23)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at onExit (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1009:2)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1028:5
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) accepted Runner ownership survives a cancelled joiner and idle cleanup [11.34ms]
+
+test/server/httpapi-ftc-project.test.ts:
+28 |       }),
+29 |       context,
+30 |     )
+31 |   try {
+32 |     const opening = await call("/api/ftc/project/open", { root: tmp.path })
+33 |     expect(opening.status).toBe(200)
+                                ^
+error: expect(received).toBe(expected)
+
+Expected: 200
+Received: 409
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/opencode/test/server/httpapi-ftc-project.test.ts:33:28)
+(fail) actual OpenCode host activates an idle root and denies all managed legacy execution entrances [333.17ms]
+
+ 0 pass
+ 25 filtered out
+ 2 fail
+ 2 expect() calls
+Ran 2 tests across 2 files. [2.53s]

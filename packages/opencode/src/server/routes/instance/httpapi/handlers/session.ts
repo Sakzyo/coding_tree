@@ -1,3 +1,5 @@
+import { LegacyActivity } from "@/session/legacy-activity"
+import { Database } from "@opencode-ai/core/database/database"
 import { FtcComposition } from "@opencode-ai/core/ftc/composition"
 import { AbsolutePath } from "@opencode-ai/core/schema"
 import { PermissionV1 } from "@opencode-ai/core/v1/permission"
@@ -63,6 +65,9 @@ export const sessionHandlers = HttpApiBuilder.group(InstanceHttpApi, "session", 
     const summary = yield* SessionSummary.Service
     const events = yield* EventV2Bridge.Service
     const scope = yield* Scope.Scope
+    const owner = yield* LegacyActivity.Service
+    const database = yield* Database.Service
+    const activity = LegacyActivity.sessions(owner, session, database)
 
     const list = Effect.fn("SessionHttpApi.list")(function* (ctx: { query: typeof ListQuery.Type }) {
       const directory = ctx.query.directory ? yield* InstanceState.directory : undefined
@@ -291,25 +296,27 @@ export const sessionHandlers = HttpApiBuilder.group(InstanceHttpApi, "session", 
       params: { sessionID: SessionID }
       payload: typeof SummarizePayload.Type
     }) {
-      yield* revertSvc.cleanup(yield* requireExecutable(ctx.params.sessionID))
-      const messages = yield* SessionError.mapStorageNotFound(session.messages({ sessionID: ctx.params.sessionID }))
+      const sessionID = ctx.params.sessionID
+      yield* activity.scoped(sessionID).pipe(Effect.mapError(() => new HttpApiError.BadRequest({})))
+      yield* revertSvc.cleanup(yield* requireExecutable(sessionID))
+      const messages = yield* SessionError.mapStorageNotFound(session.messages({ sessionID }))
       const defaultAgent = yield* agentSvc.defaultAgent()
       const currentAgent = messages.findLast((message) => message.info.role === "user")?.info.agent ?? defaultAgent
 
-      yield* compactSvc.create({
-        sessionID: ctx.params.sessionID,
-        agent: currentAgent,
-        model: {
-          providerID: ctx.payload.providerID,
-          modelID: ctx.payload.modelID,
-        },
-        auto: ctx.payload.auto ?? false,
-      })
-      yield* promptSvc
-        .loop({ sessionID: ctx.params.sessionID })
+      yield* compactSvc
+        .create({
+          sessionID,
+          agent: currentAgent,
+          model: {
+            providerID: ctx.payload.providerID,
+            modelID: ctx.payload.modelID,
+          },
+          auto: ctx.payload.auto ?? false,
+        })
         .pipe(Effect.mapError(() => new HttpApiError.BadRequest({})))
+      yield* promptSvc.loop({ sessionID }).pipe(Effect.mapError(() => new HttpApiError.BadRequest({})))
       return true
-    })
+    }, Effect.scoped)
 
     const prompt = Effect.fn("SessionHttpApi.prompt")(function* (ctx: {
       params: { sessionID: SessionID }
@@ -331,19 +338,25 @@ export const sessionHandlers = HttpApiBuilder.group(InstanceHttpApi, "session", 
       params: { sessionID: SessionID }
       payload: typeof PromptPayload.Type
     }) {
-      yield* requireExecutable(ctx.params.sessionID)
-      yield* promptSvc.prompt({ ...ctx.payload, sessionID: ctx.params.sessionID }).pipe(
-        Effect.catchCause((cause) =>
-          Effect.gen(function* () {
-            yield* Effect.logError("prompt_async failed", { sessionID: ctx.params.sessionID, cause })
-            yield* events.publish(Session.Event.Error, {
-              sessionID: ctx.params.sessionID,
-              error: new NamedError.Unknown({ message: Cause.pretty(cause) }).toObject(),
-            })
-          }),
-        ),
-        Effect.forkIn(scope, { startImmediately: true }),
-      )
+      const sessionID = ctx.params.sessionID
+      yield* requireExecutable(sessionID)
+      yield* activity
+        .fork(
+          sessionID,
+          promptSvc.prompt({ ...ctx.payload, sessionID }).pipe(
+            Effect.catchCause((cause) =>
+              Effect.gen(function* () {
+                yield* Effect.logError("prompt_async failed", { sessionID, cause })
+                yield* events.publish(Session.Event.Error, {
+                  sessionID,
+                  error: new NamedError.Unknown({ message: Cause.pretty(cause) }).toObject(),
+                })
+              }),
+            ),
+          ),
+          scope,
+        )
+        .pipe(Effect.mapError(() => new HttpApiError.BadRequest({})))
       return HttpApiSchema.NoContent.make()
     })
 

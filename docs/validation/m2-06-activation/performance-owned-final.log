@@ -1,0 +1,39 @@
+{
+  "measurement": "1000 actual Runner ensureRunning/completion cycles and 1000 actual BackgroundJob start/wait cycles including owner-scope close; 2 warmup and 10 alternating samples",
+  "environment": {
+    "bun": "1.3.14",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "samples_ms": {
+    "runner": [
+      11.491584000000017,
+      11.203540999999973,
+      11.663583000000017,
+      13.98804100000001,
+      14.314791000000014,
+      11.483542,
+      13.571374999999989,
+      12.72625000000005,
+      11.898082999999929,
+      10.033457999999996
+    ],
+    "background": [
+      36.076291,
+      30.310625000000016,
+      31.27883300000002,
+      30.458958000000052,
+      34.08749999999998,
+      31.935666999999967,
+      30.140166999999963,
+      31.804625000000044,
+      34.83170800000005,
+      31.23762499999998
+    ]
+  },
+  "medians_ms": {
+    "runner": 11.780832999999973,
+    "background": 31.541729000000032
+  },
+  "limits": "Local process microbenchmark only; no provider, shell, robot, UI, or production throughput claim. Uses real LegacyActivity acquire/release for accepted Runner cycles and exact retained claims for BackgroundJob cycles; verification port succeeds synchronously. Excludes filesystem canonicalization and SQLite lookup costs; this is not a before/after owned baseline."
+}

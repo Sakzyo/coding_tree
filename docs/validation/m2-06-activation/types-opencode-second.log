@@ -1,0 +1,4 @@
+$ tsgo --noEmit
+src/session/prompt.ts(1094,11): error TS2322: Type '(sessionID: string & Brand<"SessionID">) => Effect<WithParts, ExecutionUnavailable, never>' is not assignable to type '(sessionID: string & Brand<"SessionID">) => Effect<WithParts, never, never>'.
+  Type 'Effect<WithParts, ExecutionUnavailable, never>' is not assignable to type 'Effect<WithParts, never, never>'.
+    Type 'ExecutionUnavailable' is not assignable to type 'never'.

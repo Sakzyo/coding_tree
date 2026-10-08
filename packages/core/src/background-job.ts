@@ -18,10 +18,17 @@ export type Info = {
   metadata?: Record<string, unknown>
 }
 
+export interface Ownership {
+  readonly release: Effect.Effect<void>
+  readonly retain: Effect.Effect<Ownership>
+}
+
 type Active = {
   info: Info
   done: Deferred.Deferred<Info>
   scope: Scope.Closeable
+  lifetime: Scope.Closeable
+  ownership: Ownership[]
   token: object
   pending: number
   next: number
@@ -43,6 +50,7 @@ type FinishResult = {
 }
 
 type PromoteResult = {
+  release?: Effect.Effect<void>
   info?: Info
   promoted?: Deferred.Deferred<Info>
   onPromote?: Effect.Effect<void>
@@ -67,12 +75,14 @@ export type StartInput = {
   title?: string
   metadata?: Record<string, unknown>
   onPromote?: Effect.Effect<void>
-  run: Effect.Effect<string, unknown>
+  ownership?: Effect.Effect<Ownership>
+  run: Effect.Effect<string, unknown, Scope.Scope>
 }
 
 export type ExtendInput = {
   id: string
-  run: Effect.Effect<string, unknown>
+  ownership?: Effect.Effect<Ownership>
+  run: Effect.Effect<string, unknown, Scope.Scope>
 }
 
 export type WaitInput = {
@@ -161,7 +171,7 @@ export const make = Effect.gen(function* () {
           ...(Exit.isFailure(exit) ? { error: errorText(Cause.squash(exit.cause)) } : {}),
         },
       }
-      return [{ info: snapshot(next), done: job.done, scope: job.scope }, new Map(jobs).set(id, next)]
+      return [{ info: snapshot(next), done: job.done, scope: job.lifetime }, new Map(jobs).set(id, next)]
     })
     if (result.info && result.done) yield* Deferred.succeed(result.done, result.info).pipe(Effect.ignore)
     if (result.scope) {
@@ -175,9 +185,10 @@ export const make = Effect.gen(function* () {
     id: string,
     token: object,
     sequence: number,
-    run: Effect.Effect<string, unknown>,
+    run: Effect.Effect<string, unknown, Scope.Scope>,
   ) {
     return yield* run.pipe(
+      Scope.provide(scope),
       Effect.matchCauseEffect({
         onSuccess: (output) => settle(id, token, sequence, Exit.succeed(output)),
         onFailure: (cause) => settle(id, token, sequence, Exit.failCause(cause)),
@@ -214,7 +225,14 @@ export const make = Effect.gen(function* () {
             if (existing?.info.status === "running") {
               return [{ info: snapshot(existing) }, jobs] as readonly [StartResult, Map<string, Active>]
             }
-            const scope = yield* Scope.fork(state.scope, "parallel")
+            const ownership: Ownership[] = input.ownership ? [yield* input.ownership] : []
+            const lifetime = yield* Scope.fork(state.scope, "sequential")
+            yield* Scope.addFinalizer(
+              lifetime,
+              Effect.suspend(() => Effect.forEach(ownership, (held) => held.release, { discard: true })),
+            )
+            // Child work and its parallel finalizers close before the outer ownership finalizer.
+            const scope = yield* Scope.fork(lifetime, "parallel")
             const token = {}
             const job = {
               info: {
@@ -227,6 +245,8 @@ export const make = Effect.gen(function* () {
               },
               done,
               scope,
+              lifetime,
+              ownership,
               token,
               pending: 1,
               next: 1,
@@ -257,11 +277,12 @@ export const make = Effect.gen(function* () {
     return yield* Effect.uninterruptibleMask((restore) =>
       Effect.gen(function* () {
         const tail = yield* Deferred.make<void>()
-        const result = yield* SynchronizedRef.modify(
+        const result = yield* SynchronizedRef.modifyEffect(
           state.jobs,
-          (jobs): readonly [ExtendResult, Map<string, Active>] => {
+          Effect.fnUntraced(function* (jobs): Effect.fn.Return<readonly [ExtendResult, Map<string, Active>]> {
             const job = jobs.get(input.id)
             if (!job || job.info.status !== "running") return [{ extended: false }, jobs]
+            if (input.ownership) job.ownership.push(yield* input.ownership)
             return [
               { extended: true, previous: job.tail, scope: job.scope, tail, token: job.token, sequence: job.next },
               new Map(jobs).set(input.id, {
@@ -271,7 +292,7 @@ export const make = Effect.gen(function* () {
                 tail,
               }),
             ]
-          },
+          }),
         )
         if (!result.extended) return false
         yield* fork(
@@ -307,32 +328,46 @@ export const make = Effect.gen(function* () {
     return yield* Deferred.await(job.promoted)
   })
 
-  const promote: Interface["promote"] = Effect.fn("BackgroundJob.promote")(function* (id) {
-    const result = yield* SynchronizedRef.modifyEffect(
-      state.jobs,
-      Effect.fnUntraced(function* (jobs) {
-        const job = jobs.get(id)
-        if (!job || job.info.status !== "running") return [{}, jobs] as readonly [PromoteResult, Map<string, Active>]
-        if (job.info.metadata?.background === true)
-          return [{ info: snapshot(job) }, jobs] as readonly [PromoteResult, Map<string, Active>]
-        const next = {
-          ...job,
-          onPromote: undefined,
-          info: {
-            ...job.info,
-            metadata: { ...job.info.metadata, background: true },
-          },
-        }
-        return [
-          { info: snapshot(next), onPromote: job.onPromote, promoted: job.promoted },
-          new Map(jobs).set(id, next),
-        ] as readonly [PromoteResult, Map<string, Active>]
+  const promote: Interface["promote"] = Effect.fn("BackgroundJob.promote")((id) =>
+    Effect.uninterruptibleMask((restore) =>
+      Effect.gen(function* () {
+        const result = yield* SynchronizedRef.modifyEffect(
+          state.jobs,
+          Effect.fnUntraced(function* (jobs) {
+            const job = jobs.get(id)
+            if (!job || job.info.status !== "running")
+              return [{}, jobs] as readonly [PromoteResult, Map<string, Active>]
+            if (job.info.metadata?.background === true)
+              return [{ info: snapshot(job) }, jobs] as readonly [PromoteResult, Map<string, Active>]
+            const retained = yield* Effect.forEach(job.ownership, (held) => held.retain)
+            const next = {
+              ...job,
+              onPromote: undefined,
+              info: {
+                ...job.info,
+                metadata: { ...job.info.metadata, background: true },
+              },
+            }
+            return [
+              {
+                info: snapshot(next),
+                onPromote: job.onPromote,
+                promoted: job.promoted,
+                release: Effect.forEach(retained, (held) => held.release, { discard: true }),
+              },
+              new Map(jobs).set(id, next),
+            ] as readonly [PromoteResult, Map<string, Active>]
+          }),
+        )
+        if (result.info && result.promoted) yield* Deferred.succeed(result.promoted, result.info).pipe(Effect.ignore)
+        yield* restore(result.onPromote ?? Effect.void).pipe(
+          Effect.ignore,
+          Effect.ensuring(result.release ?? Effect.void),
+        )
+        return result.info
       }),
-    )
-    if (result.info && result.promoted) yield* Deferred.succeed(result.promoted, result.info).pipe(Effect.ignore)
-    if (result.onPromote) yield* result.onPromote.pipe(Effect.ignore)
-    return result.info
-  })
+    ),
+  )
 
   const cancel: Interface["cancel"] = Effect.fn("BackgroundJob.cancel")(function* (id) {
     const completed_at = yield* Clock.currentTimeMillis
@@ -350,7 +385,7 @@ export const make = Effect.gen(function* () {
           completed_at,
         },
       }
-      return [{ info: snapshot(next), done: job.done, scope: job.scope }, new Map(jobs).set(id, next)]
+      return [{ info: snapshot(next), done: job.done, scope: job.lifetime }, new Map(jobs).set(id, next)]
     })
     if (result.info && result.done) yield* Deferred.succeed(result.done, result.info).pipe(Effect.ignore)
     if (result.scope) yield* Scope.close(result.scope, Exit.void)

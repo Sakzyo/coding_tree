@@ -1,3 +1,9 @@
+import { tmpdirScoped, provideInstance } from "../fixture/fixture"
+import { LegacyActivity } from "../../src/session/legacy-activity"
+import { FtcProjectAdapters } from "@opencode-ai/core/ftc/projects/adapters"
+import { ProjectAssociations } from "@opencode-ai/core/ftc/projects/sql"
+import { ProjectV2 } from "@opencode-ai/core/project"
+import { AbsolutePath } from "@opencode-ai/core/schema"
 import { ConfigV1 } from "@opencode-ai/core/v1/config/config"
 import { SessionV1 } from "@opencode-ai/core/v1/session"
 import { Database } from "@opencode-ai/core/database/database"
@@ -6,7 +12,7 @@ import { SessionProjector } from "@opencode-ai/core/session/projector"
 import { eq } from "drizzle-orm"
 import { EventV2Bridge } from "@/event-v2-bridge"
 import { expect } from "bun:test"
-import { Cause, Deferred, Duration, Effect, Exit, Fiber, Layer } from "effect"
+import { Cause, Context, Deferred, Duration, Effect, Exit, Fiber, Layer, Stream } from "effect"
 import path from "path"
 import { fileURLToPath } from "url"
 import { NamedError } from "@opencode-ai/core/util/error"
@@ -169,6 +175,7 @@ const runtimeFlags = RuntimeFlags.layer({ experimentalEventSystem: true })
 const testLLMServerNode = LayerNode.make({ service: TestLLMServer, layer: TestLLMServer.layer, deps: [] })
 
 const promptRoot = LayerNode.group([
+  LegacyActivity.node,
   SessionPrompt.node,
   Session.node,
   SessionProjector.node,
@@ -2468,3 +2475,225 @@ noLLMServer.instance(
     }),
   30_000,
 )
+
+unixNoLLMServer(
+  "command template cancellation holds root until real child cleanup",
+  () =>
+    Effect.gen(function* () {
+      const { directory } = yield* TestInstance
+      const ready = path.join(directory, "template-ready")
+      const stopping = path.join(directory, "template-stopping")
+      const release = path.join(directory, "template-release")
+      const pidFile = path.join(directory, "template-pid")
+      yield* writeConfig(directory, {
+        ...cfg,
+        shell: "/bin/bash",
+        command: {
+          probe: {
+            template:
+              "!`" +
+              `trap 'touch "${stopping}"; while [ ! -e "${release}" ]; do sleep 0.02; done; exit' TERM; echo $$ > "${pidFile}"; touch "${ready}"; while :; do sleep 0.02; done` +
+              "`",
+          },
+        },
+      })
+      const { prompt, chat } = yield* boot()
+      const afs = yield* FSUtil.Service
+      const owner = yield* LegacyActivity.Service
+      const database = yield* Database.Service
+      const folder = yield* FtcProjectAdapters.folders({
+        resolve: () =>
+          Effect.succeed({ id: ProjectV2.ID.global, directory: AbsolutePath.make(path.parse(directory).root) }),
+      }).resolve({ root: AbsolutePath.make(directory) })
+      const associate = FtcProjectAdapters.activation(
+        ProjectAssociations.make(database.db),
+        owner.withAssociation,
+      ).associate(folder)
+      yield* Effect.gen(function* () {
+        const command = yield* prompt
+          .command({ sessionID: chat.id, command: "probe", arguments: "" })
+          .pipe(Effect.forkChild)
+        yield* pollWithTimeout(
+          afs.existsSafe(ready).pipe(Effect.map((found) => (found ? true : undefined))),
+          "template process never started",
+        )
+        const cancel = yield* Fiber.interrupt(command).pipe(Effect.forkChild)
+        yield* pollWithTimeout(
+          afs.existsSafe(stopping).pipe(Effect.map((found) => (found ? true : undefined))),
+          "template process never received termination",
+        )
+        expect(yield* associate.pipe(Effect.flip)).toMatchObject({ code: "activation_unavailable" })
+        yield* writeText(release, "release")
+        yield* Fiber.join(cancel)
+        const pid = Number(yield* Effect.promise(() => Bun.file(pidFile).text()))
+        expect(() => process.kill(pid, 0)).toThrow()
+        expect((yield* associate).canonicalRoot).toBe(AbsolutePath.make(directory))
+      }).pipe(Effect.ensuring(writeText(release, "release").pipe(Effect.orDie)))
+    }),
+  { git: true },
+  15000,
+)
+
+noLLMServer.instance(
+  "internal prompt captures Session identity before suspended admission",
+  () =>
+    Effect.gen(function* () {
+      const { directory } = yield* TestInstance
+      const { prompt, sessions, chat } = yield* boot()
+      const other = yield* tmpdirScoped()
+      const managed = yield* sessions.create({ title: "managed" }).pipe(provideInstance(other))
+      const database = yield* Database.Service
+      const owner = yield* LegacyActivity.Service
+      const identity = FtcProjectAdapters.folders({
+        resolve: () => Effect.succeed({ id: ProjectV2.ID.global, directory: AbsolutePath.make("/") }),
+      })
+      const folder = yield* identity.resolve({ root: AbsolutePath.make(directory) })
+      yield* ProjectAssociations.make(database.db).associate(
+        yield* identity.resolve({ root: AbsolutePath.make(other) }),
+      )
+      const entered = yield* Deferred.make<void>()
+      const unlock = yield* Deferred.make<void>()
+      const lock = yield* owner
+        .withAssociation(
+          folder,
+          Deferred.succeed(entered, undefined).pipe(
+            Effect.andThen(Deferred.await(unlock)),
+            Effect.andThen(Effect.fail({ code: "association_store_failed", recovery: "retry" } as const)),
+          ),
+        )
+        .pipe(Effect.exit, Effect.forkChild)
+      yield* Deferred.await(entered)
+      const input = {
+        sessionID: chat.id,
+        noReply: true,
+        model: ref,
+        parts: [{ type: "text" as const, text: "captured" }],
+      }
+      yield* Effect.gen(function* () {
+        const admission = yield* prompt.prompt(input).pipe(
+          Effect.forkChild,
+          Effect.tap(() => Effect.yieldNow),
+        )
+        input.sessionID = managed.id
+        yield* Deferred.succeed(unlock, undefined)
+        yield* Fiber.join(lock)
+        yield* Fiber.join(admission)
+        expect(yield* sessions.messages({ sessionID: managed.id })).toEqual([])
+        expect(yield* sessions.messages({ sessionID: chat.id })).toHaveLength(1)
+      }).pipe(Effect.ensuring(Deferred.succeed(unlock, undefined)))
+    }),
+  { config: cfg },
+)
+
+class DetachedActivityProbe extends Context.Service<
+  DetachedActivityProbe,
+  { started: Deferred.Deferred<void>; finish: Deferred.Deferred<void> }
+>()("test/DetachedActivityProbe") {}
+for (const producer of ["title", "summary", "prune"] as const) {
+  const probe = Layer.effect(
+    DetachedActivityProbe,
+    Effect.gen(function* () {
+      return { started: yield* Deferred.make<void>(), finish: yield* Deferred.make<void>() }
+    }),
+  )
+  const pause = Effect.gen(function* () {
+    const gates = yield* DetachedActivityProbe
+    yield* Deferred.succeed(gates.started, undefined)
+    yield* Deferred.await(gates.finish)
+  })
+  const probes = [
+    [
+      SessionSummary.node,
+      Layer.effect(
+        SessionSummary.Service,
+        Effect.gen(function* () {
+          const captured = yield* Effect.context<DetachedActivityProbe>()
+          return SessionSummary.Service.of({
+            summarize: () => (producer === "summary" ? pause.pipe(Effect.provide(captured)) : Effect.void),
+            diff: () => Effect.succeed([]),
+            computeDiff: () => Effect.succeed([]),
+          })
+        }),
+      ).pipe(Layer.provide(probe)),
+    ],
+    [
+      SessionCompaction.node,
+      Layer.effect(
+        SessionCompaction.Service,
+        Effect.gen(function* () {
+          const captured = yield* Effect.context<DetachedActivityProbe>()
+          return SessionCompaction.Service.of({
+            isOverflow: () => Effect.succeed(false),
+            create: () => Effect.void,
+            process: () => Effect.succeed("stop"),
+            prune: () => (producer === "prune" ? pause.pipe(Effect.provide(captured)) : Effect.void),
+          })
+        }),
+      ).pipe(Layer.provide(probe)),
+    ],
+    [
+      LLM.node,
+      Layer.effect(
+        LLM.Service,
+        Effect.gen(function* () {
+          const captured = yield* Effect.context<DetachedActivityProbe>()
+          return LLM.Service.of({
+            stream: () => Stream.fromEffect(pause.pipe(Effect.provide(captured))).pipe(Stream.drain),
+          })
+        }),
+      ).pipe(Layer.provide(probe)),
+    ],
+    [
+      SessionProcessor.node,
+      Layer.succeed(
+        SessionProcessor.Service,
+        SessionProcessor.Service.of({
+          create: (input) =>
+            Effect.succeed({
+              message: input.assistantMessage,
+              updateToolCall: () => Effect.succeed(undefined),
+              completeToolCall: () => Effect.void,
+              process: () => Effect.succeed("stop"),
+            }),
+        }),
+      ),
+    ],
+    [LSP.node, lsp],
+    [MCP.node, makeMcp()],
+    [RuntimeFlags.node, runtimeFlags],
+  ] as const
+  const detached = testEffect(LayerNode.compile(promptRoot, probes).pipe(Layer.provideMerge(probe)))
+  detached.instance(
+    `detached ${producer} keeps activation excluded after foreground ends`,
+    () =>
+      Effect.gen(function* () {
+        const { directory } = yield* TestInstance
+        const gates = yield* DetachedActivityProbe
+        const database = yield* Database.Service
+        const owner = yield* LegacyActivity.Service
+        const sessions = yield* Session.Service
+        const prompt = yield* SessionPrompt.Service
+        const chat = yield* sessions.create(producer === "title" ? {} : { title: "Pinned" })
+        const folder = yield* FtcProjectAdapters.folders({
+          resolve: () => Effect.succeed({ id: ProjectV2.ID.global, directory: AbsolutePath.make("/") }),
+        }).resolve({ root: AbsolutePath.make(directory) })
+        const associate = FtcProjectAdapters.activation(
+          ProjectAssociations.make(database.db),
+          owner.withAssociation,
+        ).associate(folder)
+        yield* Effect.gen(function* () {
+          yield* prompt.prompt({
+            sessionID: chat.id,
+            model: ref,
+            parts: [{ type: "text", text: "hello" }],
+            noReply: true,
+          })
+          yield* prompt.loop({ sessionID: chat.id })
+          yield* Deferred.await(gates.started)
+          expect(yield* associate.pipe(Effect.flip)).toMatchObject({ code: "activation_unavailable" })
+          yield* Deferred.succeed(gates.finish, undefined)
+        }).pipe(Effect.ensuring(Deferred.succeed(gates.finish, undefined)))
+      }),
+    { config: cfg },
+  )
+}

@@ -1,0 +1,14 @@
+bun test v1.3.14 (0d9b296a)
+
+test/session/legacy-activity.test.ts:
+(pass) legacy first excludes real association through symlink aliases and exact stale releases [37.60ms]
+(pass) association holds exclusion across the actual commit and a waiting legacy check observes it [9.87ms]
+(pass) failed and cancelled association commits release exclusion without losing durable reconciliation [12.93ms]
+(pass) narrow live layer shares fresh memo graphs until the final borrower closes; explicit factories isolate [7.40ms]
+(pass) shutdown waits for an in-flight association commit before retiring root exclusion [5.88ms]
+(pass) association snapshots canonical root and Location before a suspended commit [11.57ms]
+
+ 6 pass
+ 0 fail
+ 19 expect() calls
+Ran 6 tests across 1 file. [1.71s]

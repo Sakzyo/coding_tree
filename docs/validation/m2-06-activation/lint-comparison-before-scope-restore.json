@@ -1,0 +1,16 @@
+{
+  "baseline": "5b8618d0f",
+  "baseline_diagnostics": 31,
+  "candidate_diagnostics": 30,
+  "candidate_exit": 0,
+  "comparison": "filename, rule code, message, severity; ignore source line shifts",
+  "new": [],
+  "removed": [
+    [
+      "packages/opencode/test/tool/task.test.ts",
+      "eslint(no-unused-vars)",
+      "Identifier 'Layer' is imported but never used.",
+      "warning"
+    ]
+  ]
+}

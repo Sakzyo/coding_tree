@@ -1,0 +1,28 @@
+bun test v1.3.14 (0d9b296a)
+
+test/effect/runner.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+189 |   run: Effect.Effect<string, unknown, Scope.Scope>,
+        ^
+error: Expected ")" but found "run"
+    at /Users/dylanxu/coding_tree/packages/core/src/background-job.ts:189:3
+
+189 |   run: Effect.Effect<string, unknown, Scope.Scope>,
+                                                        ^
+error: Expected "{" but found ","
+    at /Users/dylanxu/coding_tree/packages/core/src/background-job.ts:189:51
+
+190 |   ) {
+        ^
+error: Unexpected )
+    at /Users/dylanxu/coding_tree/packages/core/src/background-job.ts:190:3
+-------------------------------
+
+(fail) (unnamed) [0.14ms]
+
+ 0 pass
+ 2 fail
+ 1 error
+Ran 2 tests across 1 file. [1242.00ms]

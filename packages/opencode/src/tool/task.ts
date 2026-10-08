@@ -1,3 +1,4 @@
+import { LegacyActivity } from "@/session/legacy-activity"
 import * as Tool from "./tool"
 import DESCRIPTION from "./task.txt"
 import { ToolJsonSchema } from "./json-schema"
@@ -88,11 +89,16 @@ export const TaskTool = Tool.define(
     const scope = yield* Scope.Scope
     const flags = yield* RuntimeFlags.Service
     const database = yield* Database.Service
+    const owner = yield* LegacyActivity.Service
+    const activity = LegacyActivity.sessions(owner, sessions, database)
 
     const run = Effect.fn("TaskTool.execute")(function* (
-      params: Schema.Schema.Type<typeof Parameters>,
-      ctx: Tool.Context,
+      request: Schema.Schema.Type<typeof Parameters>,
+      context: Tool.Context,
     ) {
+      const params = { ...request }
+      const ctx = { ...context }
+      const parentClaim = yield* activity.scoped(ctx.sessionID)
       const cfg = yield* config.get()
       const runInBackground = params.background === true
       if (runInBackground && !flags.experimentalBackgroundSubagents) {
@@ -171,6 +177,9 @@ export const TaskTool = Tool.define(
           ],
         }))
 
+      const childClaim = yield* activity.scoped(nextSession.id)
+      const ownership = LegacyActivity.ownership(owner, [parentClaim, childClaim])
+
       const msg = yield* MessageV2.get({ sessionID: ctx.sessionID, messageID: ctx.messageID }).pipe(
         Effect.provideService(Database.Service, database),
         Effect.orDie,
@@ -229,42 +238,53 @@ export const TaskTool = Tool.define(
         text: string,
       ) {
         const currentParent = yield* sessions.get(ctx.sessionID)
-        yield* ops
-          .prompt({
-            sessionID: ctx.sessionID,
-            agent: currentParent.agent ?? ctx.agent,
-            variant,
-            parts: [
-              {
-                type: "text",
-                synthetic: true,
-                text: renderOutput({
-                  sessionID: nextSession.id,
-                  state,
-                  summary:
-                    state === "completed"
-                      ? `Background task completed: ${params.description}`
-                      : `Background task failed: ${params.description}`,
-                  text,
-                }),
-              },
-            ],
-          })
-          .pipe(Effect.ignore, Effect.forkIn(scope, { startImmediately: true }))
+        yield* activity
+          .fork(
+            ctx.sessionID,
+            ops
+              .prompt({
+                sessionID: ctx.sessionID,
+                agent: currentParent.agent ?? ctx.agent,
+                variant,
+                parts: [
+                  {
+                    type: "text",
+                    synthetic: true,
+                    text: renderOutput({
+                      sessionID: nextSession.id,
+                      state,
+                      summary:
+                        state === "completed"
+                          ? `Background task completed: ${params.description}`
+                          : `Background task failed: ${params.description}`,
+                      text,
+                    }),
+                  },
+                ],
+              })
+              .pipe(Effect.ignore),
+            scope,
+          )
+          .pipe(Effect.orDie)
       })
 
       const notify = Effect.fn("TaskTool.notifyBackgroundResult")(function* (jobID: string) {
-        yield* background.wait({ id: jobID }).pipe(
-          Effect.flatMap((result) => {
-            if (result.info?.status === "completed") return inject("completed", result.info.output ?? "")
-            if (result.info?.status === "error") return inject("error", result.info.error ?? "")
-            return Effect.void
-          }),
-          Effect.forkIn(scope, { startImmediately: true }),
-        )
+        yield* activity
+          .fork(
+            ctx.sessionID,
+            background.wait({ id: jobID }).pipe(
+              Effect.flatMap((result) => {
+                if (result.info?.status === "completed") return inject("completed", result.info.output ?? "")
+                if (result.info?.status === "error") return inject("error", result.info.error ?? "")
+                return Effect.void
+              }),
+            ),
+            scope,
+          )
+          .pipe(Effect.orDie)
       })
 
-      if (yield* background.extend({ id: nextSession.id, run: runTask() })) {
+      if (yield* background.extend({ id: nextSession.id, ownership, run: runTask() })) {
         return {
           title: params.description,
           metadata: {
@@ -283,6 +303,7 @@ export const TaskTool = Tool.define(
 
       const info = yield* background.start({
         id: nextSession.id,
+        ownership,
         type: id,
         title: params.description,
         metadata,
@@ -356,7 +377,7 @@ export const TaskTool = Tool.define(
             ),
           ),
       )
-    })
+    }, Effect.scoped)
 
     return {
       description: flags.experimentalBackgroundSubagents

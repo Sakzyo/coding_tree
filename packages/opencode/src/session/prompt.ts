@@ -1,6 +1,5 @@
+import { LegacyActivity } from "./legacy-activity"
 import { FtcProjects } from "@opencode-ai/core/ftc/projects"
-import { FtcProjectAdapters } from "@opencode-ai/core/ftc/projects/adapters"
-import { AbsolutePath } from "@opencode-ai/core/schema"
 import { LayerNode } from "@opencode-ai/core/effect/layer-node"
 import { PermissionV1 } from "@opencode-ai/core/v1/permission"
 import path from "path"
@@ -44,7 +43,6 @@ import { FSUtil } from "@opencode-ai/core/fs-util"
 import { Truncate } from "@/tool/truncate"
 import { Image } from "@/image/image"
 import { decodeDataUrl } from "@/util/data-url"
-import { Process } from "@/util/process"
 import { Cause, Effect, Exit, Latch, Layer, Option, Scope, Context, Schema, Types } from "effect"
 import { InstanceState } from "@/effect/instance-state"
 import { TaskTool, type TaskPromptOps } from "@/tool/task"
@@ -149,11 +147,8 @@ const layer = Layer.effect(
     const events = yield* EventV2Bridge.Service
     const flags = yield* RuntimeFlags.Service
     const database = yield* Database.Service
-    const requireUnmanaged = FtcProjectAdapters.legacy(database.db)
-    const requireExecutable = Effect.fn("SessionPrompt.requireExecutable")(function* (sessionID: SessionID) {
-      const session = yield* sessions.get(sessionID).pipe(Effect.orDie)
-      yield* requireUnmanaged({ root: AbsolutePath.make(session.directory) })
-    })
+    const owner = yield* LegacyActivity.Service
+    const activity = LegacyActivity.sessions(owner, sessions, database)
     const { db } = database
     const ops = Effect.fn("SessionPrompt.ops")(function* () {
       return {
@@ -646,7 +641,8 @@ const layer = Layer.effect(
       return yield* provider.defaultModel().pipe(Effect.orDie)
     })
 
-    const createUserMessage = Effect.fn("SessionPrompt.createUserMessage")(function* (input: PromptInput) {
+    const createUserMessage = Effect.fn("SessionPrompt.createUserMessage")(function* (request: PromptInput) {
+      const input = { ...request }
       const agentName = input.agent
       const ag = agentName ? yield* agents.get(agentName) : yield* agents.defaultInfo()
       if (!ag) {
@@ -1067,8 +1063,9 @@ const layer = Layer.effect(
       input: PromptInput,
     ) => Effect.Effect<SessionV1.WithParts, Image.Error | FtcProjects.ExecutionUnavailable> = Effect.fn(
       "SessionPrompt.prompt",
-    )(function* (input: PromptInput) {
-      yield* requireExecutable(input.sessionID)
+    )(function* (request: PromptInput) {
+      const input = { ...request }
+      yield* activity.scoped(input.sessionID)
       const session = yield* sessions.get(input.sessionID).pipe(Effect.orDie)
       yield* revert.cleanup(session)
       const message = yield* createUserMessage(input)
@@ -1085,7 +1082,7 @@ const layer = Layer.effect(
 
       if (input.noReply === true) return message
       return yield* loop({ sessionID: input.sessionID })
-    })
+    }, Effect.scoped)
 
     const lastAssistant = Effect.fnUntraced(function* (sessionID: SessionID) {
       const match = yield* sessions.findMessage(sessionID, (m) => m.info.role !== "user").pipe(Effect.orDie)
@@ -1148,12 +1145,18 @@ const layer = Layer.effect(
 
           step++
           if (step === 1)
-            yield* title({
-              session,
-              modelID: lastUser.model.modelID,
-              providerID: lastUser.model.providerID,
-              history: msgs,
-            }).pipe(Effect.ignore, Effect.forkIn(scope))
+            yield* activity
+              .fork(
+                sessionID,
+                title({
+                  session,
+                  modelID: lastUser.model.modelID,
+                  providerID: lastUser.model.providerID,
+                  history: msgs,
+                }).pipe(Effect.ignore),
+                scope,
+              )
+              .pipe(Effect.orDie)
 
           const model = yield* getModel(lastUser.model.providerID, lastUser.model.modelID, sessionID)
           const task = tasks.pop()
@@ -1164,13 +1167,15 @@ const layer = Layer.effect(
           }
 
           if (task?.type === "compaction") {
-            const result = yield* compaction.process({
-              messages: msgs,
-              parentID: lastUser.id,
-              sessionID,
-              auto: task.auto,
-              overflow: task.overflow,
-            })
+            const result = yield* compaction
+              .process({
+                messages: msgs,
+                parentID: lastUser.id,
+                sessionID,
+                auto: task.auto,
+                overflow: task.overflow,
+              })
+              .pipe(Effect.orDie)
             if (result === "stop") break
             continue
           }
@@ -1180,7 +1185,9 @@ const layer = Layer.effect(
             lastFinished.summary !== true &&
             (yield* compaction.isOverflow({ tokens: lastFinished.tokens, model }))
           ) {
-            yield* compaction.create({ sessionID, agent: lastUser.agent, model: lastUser.model, auto: true })
+            yield* compaction
+              .create({ sessionID, agent: lastUser.agent, model: lastUser.model, auto: true })
+              .pipe(Effect.orDie)
             continue
           }
 
@@ -1267,7 +1274,9 @@ const layer = Layer.effect(
             }
 
             if (step === 1)
-              yield* summary.summarize({ sessionID, messageID: lastUser.id }).pipe(Effect.ignore, Effect.forkIn(scope))
+              yield* activity
+                .fork(sessionID, summary.summarize({ sessionID, messageID: lastUser.id }).pipe(Effect.ignore), scope)
+                .pipe(Effect.orDie)
 
             yield* plugin.trigger("experimental.chat.messages.transform", {}, { messages: msgs })
 
@@ -1335,13 +1344,15 @@ const layer = Layer.effect(
 
             if (result === "stop") return "break" as const
             if (result === "compact") {
-              yield* compaction.create({
-                sessionID,
-                agent: lastUser.agent,
-                model: lastUser.model,
-                auto: true,
-                overflow: !handle.message.finish,
-              })
+              yield* compaction
+                .create({
+                  sessionID,
+                  agent: lastUser.agent,
+                  model: lastUser.model,
+                  auto: true,
+                  overflow: !handle.message.finish,
+                })
+                .pipe(Effect.orDie)
             }
             return "continue" as const
           }).pipe(
@@ -1352,30 +1363,33 @@ const layer = Layer.effect(
           continue
         }
 
-        yield* compaction.prune({ sessionID }).pipe(Effect.ignore, Effect.forkIn(scope))
+        yield* activity.fork(sessionID, compaction.prune({ sessionID }).pipe(Effect.ignore), scope).pipe(Effect.orDie)
         return yield* lastAssistant(sessionID)
       },
     )
 
     const loop: (input: LoopInput) => Effect.Effect<SessionV1.WithParts, FtcProjects.ExecutionUnavailable> = Effect.fn(
       "SessionPrompt.loop",
-    )(function* (input: LoopInput) {
-      yield* requireExecutable(input.sessionID)
+    )(function* (request: LoopInput) {
+      const input = new LoopInput(request)
+      yield* activity.scoped(input.sessionID)
       return yield* state.ensureRunning(input.sessionID, lastAssistant(input.sessionID), runLoop(input.sessionID))
-    })
+    }, Effect.scoped)
 
     const shell: (
       input: ShellInput,
     ) => Effect.Effect<SessionV1.WithParts, Session.BusyError | FtcProjects.ExecutionUnavailable> = Effect.fn(
       "SessionPrompt.shell",
-    )(function* (input: ShellInput) {
-      yield* requireExecutable(input.sessionID)
+    )(function* (request: ShellInput) {
+      const input = { ...request }
+      yield* activity.scoped(input.sessionID)
       const ready = yield* Latch.make()
       return yield* state.startShell(input.sessionID, lastAssistant(input.sessionID), shellImpl(input, ready), ready)
-    })
+    }, Effect.scoped)
 
-    const command = Effect.fn("SessionPrompt.command")(function* (input: CommandInput) {
-      yield* requireExecutable(input.sessionID)
+    const command = Effect.fn("SessionPrompt.command")(function* (request: CommandInput) {
+      const input = { ...request }
+      yield* activity.scoped(input.sessionID)
       yield* Effect.logInfo("command", {
         "session.id": input.sessionID,
         command: input.command,
@@ -1420,10 +1434,22 @@ const layer = Layer.effect(
       if (shellMatches.length > 0) {
         const cfg = yield* config.get()
         const sh = Shell.preferred(cfg.shell)
-        const results = yield* Effect.promise(() =>
-          Promise.all(
-            shellMatches.map(async ([, cmd]) => (await Process.text([cmd], { shell: sh, nothrow: true })).text),
-          ),
+        const results = yield* Effect.forEach(
+          shellMatches,
+          ([, command]) =>
+            Effect.gen(function* () {
+              const handle = yield* spawner.spawn(
+                ChildProcess.make(sh, ["-c", command], {
+                  stdin: "ignore",
+                  extendEnv: true,
+                  forceKillAfter: "3 seconds",
+                }),
+              )
+              const output = yield* Stream.mkString(Stream.decodeText(handle.all))
+              yield* handle.exitCode
+              return output
+            }).pipe(Effect.scoped, Effect.orDie),
+          { concurrency: "unbounded" },
         )
         let index = 0
         template = template.replace(bashRegex, () => results[index++])
@@ -1500,7 +1526,7 @@ const layer = Layer.effect(
         messageID: result.info.id,
       })
       return result
-    })
+    }, Effect.scoped)
 
     return Service.of({
       cancel,
@@ -1621,6 +1647,7 @@ export const node = LayerNode.make({
   service: Service,
   layer: layer,
   deps: [
+    LegacyActivity.node,
     SessionStatus.node,
     Session.node,
     Agent.node,

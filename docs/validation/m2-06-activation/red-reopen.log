@@ -1,0 +1,141 @@
+bun test v1.3.14 (0d9b296a)
+
+test/session/legacy-activity.test.ts:
+[10:24:03.915] ERROR (#2):  95 |   expect(closing.pollUnsafe()).toBeUndefined()
+ 96 |   const nextScope = yield* Scope.make()
+ 97 |   yield* Effect.addFinalizer(() => first.release(lease))
+ 98 |   const reopening = yield* Layer.buildWithMemoMap(LegacyActivity.live, Layer.makeMemoMapUnsafe(), nextScope).pipe(Effect.forkChild)
+ 99 |   yield* Effect.yieldNow
+100 |   expect(reopening.pollUnsafe()).toBeUndefined()
+      ^
+error: expect(received).toBeUndefined()
+
+Received: {
+  _id: "Exit",
+  _tag: "Success",
+  value: {
+    _id: "Context",
+    services: [
+      {
+        key: "@opencode/LegacyActivity",
+        value: {
+          acquire: [Function: acquire],
+          retain: [Function: retain],
+          release: [Function: release],
+          withAssociation: [Function: withAssociation],
+        },
+      }, {
+        key: "effect/Layer/CurrentMemoMap",
+        value: MemoMapImpl {
+          parent: undefined,
+          map: Map(1) {
+            {
+              build: [Function],
+              "~effect/Layer": {
+                _ROut: [Function: identity],
+                _E: [Function: identity],
+                _RIn: [Function: identity],
+              },
+              pipe: [Function: pipe],
+            }: {
+              observers: 1,
+              effect: {
+                _id: "Exit",
+                _tag: "Success",
+                value: {
+                  _id: "Context",
+                  services: [
+                    [Object ...]
+                  ],
+                },
+              },
+              finalizer: [Function: finalizer],
+            },
+          },
+          "~effect/Layer/MemoMap": [Getter],
+          get: [Function: get],
+          getOrElseMemoize: [Function: getOrElseMemoize],
+        },
+      }
+    ],
+  },
+}
+
+      at toBeUndefined (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/opencode/test/session/legacy-activity.test.ts:100:34
+
+ 95 |   expect(closing.pollUnsafe()).toBeUndefined()
+ 96 |   const nextScope = yield* Scope.make()
+ 97 |   yield* Effect.addFinalizer(() => first.release(lease))
+ 98 |   const reopening = yield* Layer.buildWithMemoMap(LegacyActivity.live, Layer.makeMemoMapUnsafe(), nextScope).pipe(Effect.forkChild)
+ 99 |   yield* Effect.yieldNow
+100 |   expect(reopening.pollUnsafe()).toBeUndefined()
+      ^
+error: expect(received).toBeUndefined()
+
+Received: {
+  _id: "Exit",
+  _tag: "Success",
+  value: {
+    _id: "Context",
+    services: [
+      {
+        key: "@opencode/LegacyActivity",
+        value: {
+          acquire: [Function: acquire],
+          retain: [Function: retain],
+          release: [Function: release],
+          withAssociation: [Function: withAssociation],
+        },
+      }, {
+        key: "effect/Layer/CurrentMemoMap",
+        value: MemoMapImpl {
+          parent: undefined,
+          map: Map(1) {
+            {
+              build: [Function],
+              "~effect/Layer": {
+                _ROut: [Function: identity],
+                _E: [Function: identity],
+                _RIn: [Function: identity],
+              },
+              pipe: [Function: pipe],
+            }: {
+              observers: 1,
+              effect: {
+                _id: "Exit",
+                _tag: "Success",
+                value: {
+                  _id: "Context",
+                  services: [
+                    [Object ...]
+                  ],
+                },
+              },
+              finalizer: [Function: finalizer],
+            },
+          },
+          "~effect/Layer/MemoMap": [Getter],
+          get: [Function: get],
+          getOrElseMemoize: [Function: getOrElseMemoize],
+        },
+      }
+    ],
+  },
+}
+
+      at toBeUndefined (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/opencode/test/session/legacy-activity.test.ts:100:34
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:910:23)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) narrow live layer shares fresh memo graphs until the final borrower closes; explicit factories isolate [40.08ms]
+
+ 0 pass
+ 3 filtered out
+ 1 fail
+ 5 expect() calls
+Ran 1 test across 1 file. [1.66s]

@@ -1,0 +1,11 @@
+bun test v1.3.14 (0d9b296a)
+
+test/server/httpapi-ftc-project.test.ts:
+(pass) actual OpenCode host activates an idle root and denies all managed legacy execution entrances [655.70ms]
+(pass) actual AppRuntime and fresh listener graph exclude association while web handler keeps its owner [110.63ms]
+(pass) actual prompt_async holds accepted work through paused admission and noReply completion [241.31ms]
+
+ 3 pass
+ 0 fail
+ 32 expect() calls
+Ran 3 tests across 1 file. [2.55s]

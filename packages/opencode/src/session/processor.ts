@@ -1,3 +1,4 @@
+import { LegacyActivity } from "./legacy-activity"
 import { LayerNode } from "@opencode-ai/core/effect/layer-node"
 import { PermissionV1 } from "@opencode-ai/core/v1/permission"
 import { Image } from "@/image/image"
@@ -94,6 +95,8 @@ const layer = Layer.effect(
     const image = yield* Image.Service
     const events = yield* EventV2Bridge.Service
     const database = yield* Database.Service
+    const owner = yield* LegacyActivity.Service
+    const activity = LegacyActivity.sessions(owner, session, database)
 
     const create = Effect.fn("SessionProcessor.create")(function* (input: Input) {
       // Pre-capture snapshot before the LLM stream starts. The AI SDK
@@ -482,12 +485,18 @@ const layer = Layer.effect(
               }
               ctx.snapshot = undefined
             }
-            yield* summary
-              .summarize({
-                sessionID: ctx.sessionID,
-                messageID: ctx.assistantMessage.parentID,
-              })
-              .pipe(Effect.ignore, Effect.forkIn(scope))
+            yield* activity
+              .fork(
+                ctx.sessionID,
+                summary
+                  .summarize({
+                    sessionID: ctx.sessionID,
+                    messageID: ctx.assistantMessage.parentID,
+                  })
+                  .pipe(Effect.ignore),
+                scope,
+              )
+              .pipe(Effect.orDie)
             if (
               !ctx.assistantMessage.summary &&
               isOverflow({ cfg: yield* config.get(), tokens: usage.tokens, model: ctx.model })
@@ -714,6 +723,7 @@ export const node = LayerNode.make({
   service: Service,
   layer: layer,
   deps: [
+    LegacyActivity.node,
     Session.node,
     Config.node,
     Snapshot.node,

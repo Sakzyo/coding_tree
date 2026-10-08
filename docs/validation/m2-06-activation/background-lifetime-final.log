@@ -1,0 +1,16 @@
+bun test v1.3.14 (0d9b296a)
+
+test/background-job.test.ts:
+(pass) BackgroundJob > tracks process-local work through explicit observation [4.88ms]
+(pass) BackgroundJob > publishes jobs before starting immediately settling work [8.56ms]
+(pass) BackgroundJob > increments pending work before starting immediately settling extensions [8.96ms]
+(pass) BackgroundJob > interrupts live work without promising settlement after the owning process-local scope closes [0.48ms]
+(pass) ownership outlives completed publication and parallel job finalizers [0.49ms]
+(pass) promotion retains ownership outside a completed job and cancellation settles the callback [1.08ms]
+(pass) accepted extension owns waiting work, duplicate/rejected work owns nothing, and shutdown releases all [1.23ms]
+(pass) old generation cleanup cannot release a replacement job's ownership [0.93ms]
+
+ 8 pass
+ 0 fail
+ 420 expect() calls
+Ran 8 tests across 1 file. [81.00ms]

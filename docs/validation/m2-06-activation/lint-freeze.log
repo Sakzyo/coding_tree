@@ -1,0 +1,329 @@
+
+  ! eslint(no-unneeded-ternary): Unnecessary use of boolean literals in conditional expression
+     ,-[packages/opencode/src/tool/registry.ts:416:9]
+ 415 |           .filter((entry) =>
+ 416 | ,->         (entry[0] === "exclusiveMaximum" || entry[0] === "exclusiveMinimum") && typeof entry[1] === "boolean"
+ 417 | |             ? false
+ 418 | `->           : true,
+ 419 |           )
+     `----
+  help: Remove this ternary operator
+
+  ! eslint(no-unused-vars): Identifier 'ChildProcessSpawner' is imported but never used.
+    ,-[packages/opencode/src/tool/registry.ts:37:10]
+ 36 | import { Effect, Layer, Context } from "effect"
+ 37 | import { ChildProcessSpawner } from "effect/unstable/process/ChildProcessSpawner"
+    :          ^^^^^^^^^|^^^^^^^^^
+    :                   `-- 'ChildProcessSpawner' is imported here
+ 38 | import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
+    `----
+  help: Consider removing this import.
+
+  ! eslint-plugin-unicorn(no-thenable): Do not add `then` to an object.
+     ,-[packages/opencode/test/session/prompt.test.ts:349:3]
+ 348 | const deferredAsPromise = <A>(deferred: Deferred.Deferred<A>): PromiseLike<A> => ({
+ 349 |   then: (onfulfilled, onrejected) => {
+     :   ^^^^
+ 350 |     Effect.runFork(
+     `----
+  help: If an object is defined as 'thenable', once it's accidentally used in an await expression, it may cause problems
+
+  ! typescript-eslint(consistent-return): Function expected no return value.
+     ,-[packages/core/src/background-job.ts:210:5]
+ 209 |     if (!job) return
+ 210 |     return snapshot(job)
+     :     ^^^^^^^^^^^^^^^^^^^^
+ 211 |   })
+     `----
+
+  ! typescript-eslint(consistent-return): Function expected a return value.
+     ,-[packages/opencode/src/effect/runner.ts:134:25]
+ 133 |           ref,
+ 134 | ,->       Effect.fnUntraced(function* (st) {
+ 135 | |           switch (st._tag) {
+ 136 | |             case "Running":
+ 137 | |             case "ShellThenRun":
+ 138 | |               return [awaitDone(st.run.done), st] as const
+ 139 | |             case "Shell": {
+ 140 | |               const run = {
+ 141 | |                 id: next(),
+ 142 | |                 done: yield* Deferred.make<A, E | Cancelled>(),
+ 143 | |                 work,
+ 144 | |                 scope: yield* accept,
+ 145 | |               } satisfies PendingHandle<A, E>
+ 146 | |               return [awaitDone(run.done), { _tag: "ShellThenRun", shell: st.shell, run }] as const
+ 147 | |             }
+ 148 | |             case "Idle": {
+ 149 | |               const done = yield* Deferred.make<A, E | Cancelled>()
+ 150 | |               const run = yield* startRun(work, done, yield* accept)
+ 151 | |               return [awaitDone(done), { _tag: "Running", run }] as const
+ 152 | |             }
+ 153 | |           }
+ 154 | `->       }),
+ 155 |         ).pipe(Effect.flatten)
+     `----
+
+  ! typescript-eslint(consistent-return): Function expected a return value.
+     ,-[packages/opencode/src/effect/runner.ts:193:46]
+ 192 |     
+ 193 | ,->   const cancel = SynchronizedRef.modify(ref, (st) => {
+ 194 | |       switch (st._tag) {
+ 195 | |         case "Idle":
+ 196 | |           return [Effect.void, st] as const
+ 197 | |         case "Running":
+ 198 | |           return [
+ 199 | |             Effect.gen(function* () {
+ 200 | |               yield* Fiber.interrupt(st.run.fiber)
+ 201 | |               yield* Deferred.fail(st.run.done, new Cancelled()).pipe(Effect.asVoid)
+ 202 | |               yield* idleIfCurrent()
+ 203 | |             }),
+ 204 | |             { _tag: "Idle" } as const,
+ 205 | |           ] as const
+ 206 | |         case "Shell":
+ 207 | |           return [
+ 208 | |             Effect.gen(function* () {
+ 209 | |               yield* stopShell(st.shell)
+ 210 | |               yield* idleIfCurrent()
+ 211 | |             }),
+ 212 | |             { _tag: "Idle" } as const,
+ 213 | |           ] as const
+ 214 | |         case "ShellThenRun":
+ 215 | |           return [
+ 216 | |             Effect.gen(function* () {
+ 217 | |               yield* stopShell(st.shell)
+ 218 | |               yield* Scope.close(st.run.scope, Exit.void)
+ 219 | |               yield* Deferred.fail(st.run.done, new Cancelled()).pipe(Effect.asVoid)
+ 220 | |               yield* idleIfCurrent()
+ 221 | |             }),
+ 222 | |             { _tag: "Idle" } as const,
+ 223 | |           ] as const
+ 224 | |       }
+ 225 | `->   }).pipe(Effect.flatten)
+ 226 |     
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/opencode/src/session/compaction.ts:161:34]
+ 160 |         start,
+ 161 |         id: input.messages[start]!.info.id,
+     :            ^^^^^^^^^^^|^^^^^^^^^^^
+     :                       `-- This expression already has the type 'WithParts'
+ 162 |       } satisfies Tail
+     `----
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'TaskPromptOps' is more narrow than the original type.
+     ,-[packages/opencode/src/tool/task.ts:206:19]
+ 205 | 
+ 206 |       const ops = ctx.extra?.promptOps as TaskPromptOps
+     :                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 207 |       if (!ops) return yield* Effect.fail(new Error("TaskTool requires promptOps in ctx.extra"))
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/opencode/src/session/compaction.ts:244:31]
+ 243 |       for (let i = recent.length - 1; i >= 0; i--) {
+ 244 |         const turn = recent[i]!
+     :                     ^^^^^|^^^^^
+     :                          `-- This expression already has the type 'Turn'
+ 245 |         // estimate lazily so cost stays proportional to the retained tail, not the whole session
+     `----
+
+  ! typescript-eslint(unbound-method): Avoid referencing unbound methods which may cause unintentional scoping of `this`.
+     ,-[packages/opencode/src/session/compaction.ts:288:30]
+ 287 |         .messages({ sessionID: input.sessionID })
+ 288 |         .pipe(Effect.catchIf(NotFoundError.isInstance, () => Effect.succeed(undefined)))
+     :                              ^^^^^^^^^^^^^^^^^^^^^^^^|
+     :                                          |           `-- This reference may be unbound and lose `this` context
+ 289 |       if (!msgs) return
+     `----
+  help: If your function does not access `this`, you can annotate it with `this: void`, or consider using an arrow function instead.
+
+  ! typescript-eslint(no-unnecessary-type-arguments): This value can be trivially inferred for this type parameter, so it can be omitted.
+     ,-[packages/opencode/src/session/processor.ts:403:47]
+ 402 |                   )
+ 403 |                 : Effect.succeed(Exit.succeed<SessionV1.FilePart>(attachment)),
+     :                                               ^^^^^^^^^^^^^^^^^^
+ 404 |             )
+     `----
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe assertion to `any` detected: consider using a more specific type to ensure safety.
+     ,-[packages/opencode/src/tool/registry.ts:155:72]
+ 154 |                 }
+ 155 |                 const result = yield* Effect.promise(() => def.execute(args as any, pluginCtx))
+     :                                                                        ^^^^^^^^^^^
+ 156 |                 const output = typeof result === "string" ? result : result.output
+     `----
+
+  ! typescript-eslint(consistent-return): Function expected no return value.
+     ,-[packages/opencode/src/tool/registry.ts:289:7]
+ 288 |       if (Object.keys(tools).length === 0) return
+ 289 |       return codeMode.describeCatalog(tools, Object.keys(yield* mcp.clients()).map(McpCatalog.sanitize))
+     :       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 290 |     })
+     `----
+
+  ! typescript-eslint(unbound-method): Avoid referencing unbound methods which may cause unintentional scoping of `this`.
+     ,-[packages/opencode/src/tool/registry.ts:335:22]
+ 334 |             jsonSchema,
+ 335 |             execute: tool.execute,
+     :                      ^^^^^^^^^^^^|
+     :                            |     `-- This reference may be unbound and lose `this` context
+ 336 |             formatValidationError: tool.formatValidationError,
+     `----
+  help: If your function does not access `this`, you can annotate it with `this: void`, or consider using an arrow function instead.
+
+  ! typescript-eslint(unbound-method): Avoid referencing unbound methods which may cause unintentional scoping of `this`.
+     ,-[packages/opencode/src/tool/registry.ts:336:36]
+ 335 |             execute: tool.execute,
+ 336 |             formatValidationError: tool.formatValidationError,
+     :                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^|
+     :                                                 |            `-- This reference may be unbound and lose `this` context
+ 337 |           }
+     `----
+  help: If your function does not access `this`, you can annotate it with `this: void`, or consider using an arrow function instead.
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type '{ [key: string]: JSONSchema7Definition; } | undefined' is more narrow than the original type.
+     ,-[packages/opencode/src/tool/registry.ts:380:66]
+ 379 |   return (
+ 380 |     $defs && isJsonSchemaObject($defs) ? { ...rest, definitions: $defs as JSONSchema7["definitions"] } : rest
+     :                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 381 |   ) as JSONSchema7
+     `----
+
+  ! typescript-eslint(unbound-method): Avoid referencing unbound methods which may cause unintentional scoping of `this`.
+     ,-[packages/opencode/src/session/prompt.ts:662:36]
+ 661 |               .getModel(model.providerID, model.modelID)
+ 662 |               .pipe(Effect.catchIf(Provider.ModelNotFoundError.isInstance, () => Effect.succeed(undefined)))
+     :                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+     :                                                       |                  `-- This reference may be unbound and lose `this` context
+ 663 |           : undefined
+     `----
+  help: If your function does not access `this`, you can annotate it with `this: void`, or consider using an arrow function instead.
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'never' is more narrow than the original type.
+     ,-[packages/opencode/src/effect/app-runtime.ts:118:60]
+ 117 | export type AppServices = ManagedRuntime.ManagedRuntime.Services<typeof rt>
+ 118 | const wrap = (effect: Parameters<typeof rt.runSync>[0]) => attach(effect as never) as never
+     :                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 119 | 
+     `----
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'never' is more narrow than the original type.
+     ,-[packages/opencode/src/effect/app-runtime.ts:118:67]
+ 117 | export type AppServices = ManagedRuntime.ManagedRuntime.Services<typeof rt>
+ 118 | const wrap = (effect: Parameters<typeof rt.runSync>[0]) => attach(effect as never) as never
+     :                                                                   ^^^^^^^^^^^^^^^
+ 119 | 
+     `----
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'CompletedToolPart' is more narrow than the original type.
+     ,-[packages/opencode/test/session/prompt.test.ts:109:48]
+ 108 |   expect(part?.state.status).toBe("completed")
+ 109 |   return part?.state.status === "completed" ? (part as CompletedToolPart) : undefined
+     :                                                ^^^^^^^^^^^^^^^^^^^^^^^^^
+ 110 | }
+     `----
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'ErrorToolPart' is more narrow than the original type.
+     ,-[packages/opencode/test/session/prompt.test.ts:115:44]
+ 114 |   expect(part?.state.status).toBe("error")
+ 115 |   return part?.state.status === "error" ? (part as ErrorToolPart) : undefined
+     :                                            ^^^^^^^^^^^^^^^^^^^^^
+ 116 | }
+     `----
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'PromiseLike<never>' is more narrow than the original type.
+     ,-[packages/opencode/test/session/prompt.test.ts:362:12]
+ 361 |     )
+ 362 |     return deferredAsPromise(deferred) as PromiseLike<never>
+     :            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 363 |   },
+     `----
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type '{ readonly sessionID?: (string & Brand<"SessionID">) | undefined; readonly error?: { readonly name: "ProviderAuthError"; readonly data: { readonly providerID: string; readonly message: string; }; } | ... 8 more ... | undefined; }' is more narrow than the original type.
+     ,-[packages/opencode/test/session/prompt.test.ts:652:20]
+ 651 |       if (event.type !== Session.Event.Error.type) return Effect.void
+ 652 |       const data = event.data as typeof Session.Event.Error.data.Type
+     :                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 653 |       if (data.sessionID === chat.id && data.error) errors.push(data.error)
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+      ,-[packages/opencode/test/session/prompt.test.ts:1016:26]
+ 1015 |     expect(kids).toHaveLength(1)
+ 1016 |     const child = kids[0]!
+      :                  ^^^^|^^^^
+      :                      `-- This expression already has the type '{ id: string & Brand<"SessionID">; slug: string; projectID: string & Brand<"Project.ID">; workspaceID?: (string & Brand<"WorkspaceV2.ID">) | undefined; directory: string; ... 13 more ...; revert?: { ...; } | undefined; }'
+ 1017 |     const rules = child.permission ?? []
+      `----
+
+  ! typescript-eslint(consistent-return): Function expected a return value.
+      ,-[packages/opencode/test/session/prompt.test.ts:1068:20]
+ 1067 |           const tool = yield* pollWithTimeout(
+ 1068 | ,->         Effect.gen(function* () {
+ 1069 | |             const msgs = yield* MessageV2.filterCompactedEffect(chat.id)
+ 1070 | |             const taskMsg = msgs.find((item) => item.info.role === "assistant" && item.info.agent === "general")
+ 1071 | |             const tool = taskMsg?.parts.find((part): part is SessionV1.ToolPart => part.type === "tool")
+ 1072 | |             if (tool?.state.status === "running" && tool.state.metadata?.sessionId) return tool
+ 1073 | `->         }),
+ 1074 |             "timed out waiting for running subtask metadata",
+      `----
+
+  ! typescript-eslint(consistent-return): Function expected a return value.
+      ,-[packages/opencode/test/session/prompt.test.ts:1110:20]
+ 1109 |           const tool = yield* pollWithTimeout(
+ 1110 | ,->         Effect.gen(function* () {
+ 1111 | |             const msgs = yield* MessageV2.filterCompactedEffect(chat.id)
+ 1112 | |             const assistant = msgs.findLast((item) => item.info.role === "assistant" && item.info.agent === "build")
+ 1113 | |             const tool = assistant?.parts.find(
+ 1114 | |               (part): part is SessionV1.ToolPart => part.type === "tool" && part.tool === "task",
+ 1115 | |             )
+ 1116 | |             if (tool?.state.status === "running" && tool.state.metadata?.sessionId) return tool
+ 1117 | `->         }),
+ 1118 |             "timed out waiting for running task metadata",
+      `----
+
+  ! typescript-eslint(unbound-method): Avoid referencing unbound methods which may cause unintentional scoping of `this`.
+      ,-[packages/opencode/test/session/prompt.test.ts:1303:24]
+ 1302 |       const { task } = yield* registry.named()
+ 1303 |       const original = task.execute
+      :                        ^^^^^^^^^^^^|
+      :                              |     `-- This reference may be unbound and lose `this` context
+ 1304 |       task.execute = (_args, ctx) =>
+      `----
+  help: If your function does not access `this`, you can annotate it with `this: void`, or consider using an arrow function instead.
+
+  ! typescript-eslint(consistent-return): Function expected a return value.
+      ,-[packages/opencode/test/session/prompt.test.ts:1728:22]
+ 1727 |             yield* pollWithTimeout(
+ 1728 | ,->           Effect.gen(function* () {
+ 1729 | |               const msgs = yield* MessageV2.filterCompactedEffect(chat.id)
+ 1730 | |               const taskMsg = msgs.find((item) => item.info.role === "assistant")
+ 1731 | |               const tool = taskMsg ? toolPart(taskMsg.parts) : undefined
+ 1732 | |               if (tool?.state.status === "running" && tool.state.metadata?.output.includes("first")) return true
+ 1733 | `->           }),
+ 1734 |               "timed out waiting for running shell metadata",
+      `----
+
+  ! typescript-eslint(consistent-return): Function expected a return value.
+      ,-[packages/opencode/test/session/prompt.test.ts:1967:20]
+ 1966 |           yield* pollWithTimeout(
+ 1967 | ,->         Effect.gen(function* () {
+ 1968 | |             const msgs = yield* MessageV2.filterCompactedEffect(chat.id)
+ 1969 | |             const assistant = msgs.findLast((item) => item.info.role === "assistant")
+ 1970 | |             const tool = assistant ? toolPart(assistant.parts) : undefined
+ 1971 | |             if (tool?.state.status === "running" && tool.state.metadata?.output.includes("truncation-ready")) return true
+ 1972 | `->         }),
+ 1973 |             "timed out waiting for truncated shell output",
+      `----
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'Part' is more narrow than the original type.
+     ,-[packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts:437:23]
+ 436 |       yield* requireSession(ctx.params.sessionID)
+ 437 |       const payload = ctx.payload as SessionV1.Part
+     :                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 438 |       if (
+     `----
+
+Found 30 warnings and 0 errors.
+Finished in 6.1s on 22 files with 130 rules using 10 threads.

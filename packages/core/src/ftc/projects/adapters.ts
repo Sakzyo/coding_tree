@@ -11,7 +11,7 @@ import { FtcProjects } from "../projects"
 import { ProjectAssociations } from "./sql"
 import type { EffectDrizzleSqlite } from "@opencode-ai/effect-drizzle-sqlite"
 
-const canonical = (input: FtcProject.FolderRequest) =>
+export const canonical = (input: FtcProject.FolderRequest) =>
   Effect.tryPromise({
     try: async () => {
       const root = await fs.realpath(input.root)
@@ -70,21 +70,34 @@ export const membership = (input: {
   return { ...read, resolve }
 }
 
+export type Association = (
+  folder: Effect.Success<ReturnType<FtcProjects.FolderIdentity["resolve"]>>,
+  commit: Effect.Effect<FtcProject.ProjectContext, FtcProject.AssociationError>,
+) => Effect.Effect<FtcProject.ProjectContext, FtcProject.AssociationError>
+
+/** Hold host exclusion around the actual repository commit, never a prior idle snapshot. */
 export const activation = (
-  identity: FtcProjects.FolderIdentity,
   repository: ProjectAssociations.Lookup,
-  activate: (request: FtcProject.FolderRequest) => Effect.Effect<void, FtcProject.AssociationError>,
-): FtcProjects.FolderIdentity => ({
-  resolve: (request) =>
+  associate: Association,
+): ProjectAssociations.Lookup => ({
+  ...repository,
+  associate: (input) =>
     Effect.gen(function* () {
-      const folder = yield* identity.resolve(request)
+      const folder = {
+        canonicalRoot: input.canonicalRoot,
+        location: new Location.Info({
+          directory: input.location.directory,
+          workspaceID: input.location.workspaceID,
+          project: { ...input.location.project },
+        }),
+      }
       const existing = yield* repository
         .findRoot(folder.canonicalRoot)
         .pipe(
           Effect.mapError((): FtcProject.AssociationError => ({ code: "association_store_failed", recovery: "retry" })),
         )
-      if (!existing) yield* activate({ root: folder.canonicalRoot })
-      return folder
+      if (existing) return yield* repository.associate(folder)
+      return yield* associate(folder, repository.associate(folder))
     }),
 })
 

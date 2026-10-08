@@ -1,3 +1,4 @@
+import { LegacyActivity } from "@/session/legacy-activity"
 import { Layer, ManagedRuntime } from "effect"
 import { attach } from "./run-service"
 import * as Observability from "@opencode-ai/core/observability"
@@ -88,6 +89,7 @@ export const AppLayer = AppNodeBuilderV1.build(
     SessionRevert.node,
     SessionSummary.node,
     SessionPrompt.node,
+    LegacyActivity.node,
     Instruction.node,
     LLM.node,
     LSP.node,

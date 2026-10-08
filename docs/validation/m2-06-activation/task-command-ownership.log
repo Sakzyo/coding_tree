@@ -1,0 +1,14 @@
+bun test v1.3.14 (0d9b296a)
+
+test/tool/task.test.ts:
+(pass) task notification and injected parent work retain activation exclusion after job completion [530.14ms]
+(pass) reused task resolves the stored child root and refuses managed child before acceptance [70.29ms]
+
+test/session/prompt.test.ts:
+(pass) command template cancellation holds root until real child cleanup [287.15ms]
+
+ 3 pass
+ 81 filtered out
+ 0 fail
+ 8 expect() calls
+Ran 3 tests across 2 files. [2.67s]

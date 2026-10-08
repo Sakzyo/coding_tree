@@ -1,0 +1,22 @@
+packages/opencode/src/session/legacy-activity.ts 44ms
+packages/opencode/src/effect/runner.ts 15ms
+packages/opencode/src/session/run-state.ts 8ms
+packages/opencode/src/session/prompt.ts 64ms
+packages/opencode/src/session/processor.ts 21ms
+packages/opencode/src/session/compaction.ts 17ms (unchanged)
+packages/opencode/src/tool/task.ts 16ms
+packages/opencode/src/tool/registry.ts 16ms (unchanged)
+packages/opencode/src/effect/app-runtime.ts 3ms (unchanged)
+packages/core/src/background-job.ts 13ms
+packages/core/src/ftc/projects/adapters.ts 4ms
+packages/core/src/ftc/composition.ts 2ms
+packages/server/src/routes.ts 3ms (unchanged)
+packages/opencode/src/server/routes/instance/httpapi/server.ts 7ms
+packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts 13ms
+packages/opencode/test/session/legacy-activity.test.ts 6ms
+packages/opencode/test/effect/runner.test.ts 16ms
+packages/opencode/test/session/prompt.test.ts 58ms
+packages/opencode/test/tool/task.test.ts 21ms
+packages/opencode/test/server/httpapi-ftc-project.test.ts 6ms
+packages/core/test/background-job.test.ts 7ms
+packages/core/test/ftc-integration/m2-06.test.ts 20ms (unchanged)

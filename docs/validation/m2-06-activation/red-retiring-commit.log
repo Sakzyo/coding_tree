@@ -1,0 +1,51 @@
+bun test v1.3.14 (0d9b296a)
+
+test/session/legacy-activity.test.ts:
+[10:29:37.299] ERROR (#2): 120 |   yield* Effect.gen(function* () {
+121 |     const write = yield* owner.withAssociation(f.folder, Deferred.succeed(entered, undefined).pipe(Effect.andThen(Deferred.await(finish)), Effect.andThen(f.repository.associate(f.folder)))).pipe(Effect.forkChild)
+122 |     yield* Deferred.await(entered)
+123 |     const close = yield* Scope.close(scope, Exit.void).pipe(Effect.forkChild)
+124 |     yield* Effect.yieldNow
+125 |     expect(close.pollUnsafe()).toBeUndefined()
+      ^
+error: expect(received).toBeUndefined()
+
+Received: {
+  _id: "Exit",
+  _tag: "Success",
+  value: undefined,
+}
+
+      at toBeUndefined (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/opencode/test/session/legacy-activity.test.ts:125:32
+
+120 |   yield* Effect.gen(function* () {
+121 |     const write = yield* owner.withAssociation(f.folder, Deferred.succeed(entered, undefined).pipe(Effect.andThen(Deferred.await(finish)), Effect.andThen(f.repository.associate(f.folder)))).pipe(Effect.forkChild)
+122 |     yield* Deferred.await(entered)
+123 |     const close = yield* Scope.close(scope, Exit.void).pipe(Effect.forkChild)
+124 |     yield* Effect.yieldNow
+125 |     expect(close.pollUnsafe()).toBeUndefined()
+      ^
+error: expect(received).toBeUndefined()
+
+Received: {
+  _id: "Exit",
+  _tag: "Success",
+  value: undefined,
+}
+
+      at toBeUndefined (unknown:1:1)
+      at /Users/dylanxu/coding_tree/packages/opencode/test/session/legacy-activity.test.ts:125:32
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:910:23)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) shutdown waits for an in-flight association commit before retiring root exclusion [40.65ms]
+
+ 0 pass
+ 4 filtered out
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [1.67s]

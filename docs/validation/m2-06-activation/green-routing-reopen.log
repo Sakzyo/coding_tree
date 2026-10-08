@@ -1,0 +1,13 @@
+bun test v1.3.14 (0d9b296a)
+
+test/session/legacy-activity.test.ts:
+(pass) narrow live layer shares fresh memo graphs until the final borrower closes; explicit factories isolate [94.85ms]
+
+test/session/prompt.test.ts:
+(pass) internal prompt captures Session identity before suspended admission [1202.25ms]
+
+ 2 pass
+ 63 filtered out
+ 0 fail
+ 8 expect() calls
+Ran 2 tests across 2 files. [3.43s]

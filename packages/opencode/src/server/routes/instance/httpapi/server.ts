@@ -1,3 +1,4 @@
+import { LegacyActivity } from "@/session/legacy-activity"
 import { Config as EffectConfig, Context, Effect, Layer } from "effect"
 import { HttpApiBuilder, OpenApi } from "effect/unstable/httpapi"
 import { HttpClient, HttpMiddleware, HttpRouter, HttpServer, HttpServerResponse } from "effect/unstable/http"
@@ -65,7 +66,6 @@ import { Ripgrep } from "@opencode-ai/core/ripgrep"
 import { SessionProjector } from "@opencode-ai/core/session/projector"
 import { SessionV2 } from "@opencode-ai/core/session"
 import { ftcHost } from "@opencode-ai/server/routes"
-import { FtcProjects } from "@opencode-ai/core/ftc/projects"
 import { lazy } from "@/util/lazy"
 import { CorsConfig, isAllowedCorsOrigin, type CorsOptions } from "@opencode-ai/server/cors"
 import { serveUIEffect } from "@/server/shared/ui"
@@ -244,6 +244,7 @@ const app = LayerNode.group([
   SessionRevert.node,
   SessionSummary.node,
   SessionPrompt.node,
+  LegacyActivity.node,
   Instruction.node,
   LLM.node,
   LSP.node,
@@ -272,13 +273,11 @@ export function createRoutes(
   corsOptions?: CorsOptions,
 ): Layer.Layer<never, EffectConfig.ConfigError, RouteRequirements> {
   const locationServiceMapV2 = buildLocationServiceMap()
-  // Legacy execution has no authoritative process-wide activation fence yet.
-  const ftc = ftcHost((request) =>
-    Effect.fail({
-      code: "activation_unavailable",
-      root: request.root,
-      recovery: "retry",
-    } satisfies FtcProjects.AssociationError),
+  const ftc = ftcHost(
+    Effect.gen(function* () {
+      const context = yield* Layer.build(LegacyActivity.live)
+      return Context.get(context, LegacyActivity.Service).withAssociation
+    }),
   )
 
   return Layer.mergeAll(

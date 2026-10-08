@@ -1,3 +1,4 @@
+import { LegacyActivity } from "@/session/legacy-activity"
 import { LayerNode } from "@opencode-ai/core/effect/layer-node"
 import { httpClient } from "@opencode-ai/core/effect/app-node-platform"
 import { Ripgrep } from "@opencode-ai/core/ripgrep"
@@ -428,6 +429,7 @@ export const node = LayerNode.make({
   service: Service,
   layer,
   deps: [
+    LegacyActivity.node,
     Config.node,
     Plugin.node,
     Question.node,

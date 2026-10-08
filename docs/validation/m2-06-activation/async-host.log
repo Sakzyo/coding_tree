@@ -1,0 +1,10 @@
+bun test v1.3.14 (0d9b296a)
+
+test/server/httpapi-ftc-project.test.ts:
+(fail) actual prompt_async holds accepted work through paused admission and noReply completion [15013.27ms]
+  ^ this test timed out after 15000ms.
+
+ 0 pass
+ 2 filtered out
+ 1 fail
+Ran 1 test across 1 file. [16.97s]

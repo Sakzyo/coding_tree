@@ -1,3 +1,6 @@
+import { LegacyActivity } from "./legacy-activity"
+import { Database } from "@opencode-ai/core/database/database"
+import { FtcProjects } from "@opencode-ai/core/ftc/projects"
 import { LayerNode } from "@opencode-ai/core/effect/layer-node"
 import { SessionV1 } from "@opencode-ai/core/v1/session"
 import { ConfigV1 } from "@opencode-ai/core/v1/config/config"
@@ -167,21 +170,21 @@ export interface Interface {
     tokens: SessionV1.Assistant["tokens"]
     model: Provider.Model
   }) => Effect.Effect<boolean>
-  readonly prune: (input: { sessionID: SessionID }) => Effect.Effect<void>
+  readonly prune: (input: { sessionID: SessionID }) => Effect.Effect<void, FtcProjects.ExecutionUnavailable>
   readonly process: (input: {
     parentID: MessageID
     messages: SessionV1.WithParts[]
     sessionID: SessionID
     auto: boolean
     overflow?: boolean
-  }) => Effect.Effect<"continue" | "stop">
+  }) => Effect.Effect<"continue" | "stop", FtcProjects.ExecutionUnavailable>
   readonly create: (input: {
     sessionID: SessionID
     agent: string
     model: { providerID: ProviderV2.ID; modelID: ModelV2.ID }
     auto: boolean
     overflow?: boolean
-  }) => Effect.Effect<void>
+  }) => Effect.Effect<void, FtcProjects.ExecutionUnavailable>
 }
 
 export class Service extends Context.Service<Service, Interface>()("@opencode/SessionCompaction") {}
@@ -193,6 +196,9 @@ const layer = Layer.effect(
   Effect.gen(function* () {
     const config = yield* Config.Service
     const session = yield* Session.Service
+    const database = yield* Database.Service
+    const owner = yield* LegacyActivity.Service
+    const activity = LegacyActivity.sessions(owner, session, database)
     const agents = yield* Agent.Service
     const plugin = yield* Plugin.Service
     const processors = yield* SessionProcessor.Service
@@ -270,7 +276,9 @@ const layer = Layer.effect(
 
     // goes backwards through parts until there are PRUNE_PROTECT tokens worth of tool
     // calls, then erases output of older tool calls to free context space
-    const prune = Effect.fn("SessionCompaction.prune")(function* (input: { sessionID: SessionID }) {
+    const prune = Effect.fn("SessionCompaction.prune")(function* (request: { sessionID: SessionID }) {
+      const input = { ...request }
+      yield* activity.scoped(input.sessionID)
       const cfg = yield* config.get()
       if (!cfg.compaction?.prune) return
       yield* Effect.logInfo("pruning")
@@ -314,15 +322,17 @@ const layer = Layer.effect(
         }
         yield* Effect.logInfo("pruned", { count: toPrune.length })
       }
-    })
+    }, Effect.scoped)
 
-    const processCompaction = Effect.fn("SessionCompaction.process")(function* (input: {
+    const processCompaction = Effect.fn("SessionCompaction.process")(function* (request: {
       parentID: MessageID
       messages: SessionV1.WithParts[]
       sessionID: SessionID
       auto: boolean
       overflow?: boolean
     }) {
+      const input = { ...request }
+      yield* activity.scoped(input.sessionID)
       const parent = input.messages.findLast((m) => m.info.id === input.parentID)
       if (!parent || parent.info.role !== "user") {
         throw new Error(`Compaction parent must be a user message: ${input.parentID}`)
@@ -554,15 +564,17 @@ const layer = Layer.effect(
         yield* events.publish(Event.Compacted, { sessionID: input.sessionID })
       }
       return result
-    })
+    }, Effect.scoped)
 
-    const create = Effect.fn("SessionCompaction.create")(function* (input: {
+    const create = Effect.fn("SessionCompaction.create")(function* (request: {
       sessionID: SessionID
       agent: string
       model: { providerID: ProviderV2.ID; modelID: ModelV2.ID }
       auto: boolean
       overflow?: boolean
     }) {
+      const input = { ...request }
+      yield* activity.scoped(input.sessionID)
       const msg = yield* session.updateMessage({
         id: MessageID.ascending(),
         role: "user",
@@ -579,7 +591,7 @@ const layer = Layer.effect(
         auto: input.auto,
         overflow: input.overflow,
       })
-    })
+    }, Effect.scoped)
 
     return Service.of({
       isOverflow,
@@ -594,6 +606,8 @@ export const node = LayerNode.make({
   service: Service,
   layer: layer,
   deps: [
+    LegacyActivity.node,
+    Database.node,
     Config.node,
     Session.node,
     Agent.node,

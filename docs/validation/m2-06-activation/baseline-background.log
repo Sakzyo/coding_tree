@@ -1,0 +1,12 @@
+bun test v1.3.14 (0d9b296a)
+
+test/background-job.test.ts:
+(pass) BackgroundJob > tracks process-local work through explicit observation [9.92ms]
+(pass) BackgroundJob > publishes jobs before starting immediately settling work [14.24ms]
+(pass) BackgroundJob > increments pending work before starting immediately settling extensions [15.58ms]
+(pass) BackgroundJob > interrupts live work without promising settlement after the owning process-local scope closes [2.70ms]
+
+ 4 pass
+ 0 fail
+ 404 expect() calls
+Ran 4 tests across 1 file. [152.00ms]

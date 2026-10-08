@@ -1,3 +1,4 @@
+import type { Scope } from "effect"
 import { Database } from "@opencode-ai/core/database/database"
 import { LayerNode } from "@opencode-ai/core/effect/layer-node"
 import { httpClient } from "@opencode-ai/core/effect/app-node-platform"
@@ -59,7 +60,7 @@ export function createEmbeddedRoutes() {
 }
 
 function makeRoutes<AuthError, AuthServices>(auth: Layer.Layer<ServerAuth.Config, AuthError, AuthServices>) {
-  const ftc = ftcHost(() => Effect.void)
+  const ftc = ftcHost(Effect.succeed((_, commit) => commit))
   const serviceLayer = AppNodeBuilder.build(applicationServices(ftc), ftc.replacements)
 
   return HttpApiBuilder.layer(Api, { openapiPath: "/openapi.json" }).pipe(
@@ -79,12 +80,13 @@ export const webHandler = () =>
   HttpRouter.toWebHandler(routes.pipe(Layer.provide(HttpServer.layerServices)), { disableLogger: true })
 
 /** Shared graph constructor for standalone/SDK and OpenCode's independent V2 host. */
-export function ftcHost(activate: FtcComposition.Ports["activate"]) {
+export function ftcHost(activation: Effect.Effect<FtcComposition.Ports["activate"], never, Scope.Scope>) {
   const runtime = makeGlobalNode({
     service: FtcComposition.Service,
     layer: Layer.effect(
       FtcComposition.Service,
       Effect.gen(function* () {
+        const activate = yield* activation
         const database = yield* Database.Service
         const project = yield* ProjectV2.Service
         const store = yield* SessionStore.Service

@@ -1,0 +1,41 @@
+bun test v1.3.14 (0d9b296a)
+
+test/session/legacy-activity.test.ts:
+[10:25:42.272] ERROR (#2): 1464 | /** @internal */
+1465 | export const timeoutOrElse = /*#__PURE__*/dual(2, (self, options) => raceFirst(self, flatMap(sleep(options.duration), options.orElse)));
+1466 | /** @internal */
+1467 | export const timeout = /*#__PURE__*/dual(2, (self, duration) => timeoutOrElse(self, {
+1468 |   duration,
+1469 |   orElse: () => fail(new TimeoutError())
+                            ^
+TimeoutError: TimeoutError
+       _tag: "TimeoutError",
+ ~effect/Cause/TimeoutError: "~effect/Cause/TimeoutError",
+
+      at orElse (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1469:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+
+1464 | /** @internal */
+1465 | export const timeoutOrElse = /*#__PURE__*/dual(2, (self, options) => raceFirst(self, flatMap(sleep(options.duration), options.orElse)));
+1466 | /** @internal */
+1467 | export const timeout = /*#__PURE__*/dual(2, (self, duration) => timeoutOrElse(self, {
+1468 |   duration,
+1469 |   orElse: () => fail(new TimeoutError())
+                            ^
+error: undefined
+       _tag: "TimeoutError",
+ ~effect/Cause/TimeoutError: "~effect/Cause/TimeoutError",
+
+      at orElse (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1469:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+(fail) narrow live layer shares fresh memo graphs until the final borrower closes; explicit factories isolate [552.53ms]
+
+ 0 pass
+ 3 filtered out
+ 1 fail
+ 4 expect() calls
+Ran 1 test across 1 file. [2.19s]

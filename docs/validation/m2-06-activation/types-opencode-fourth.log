@@ -1,0 +1,13 @@
+$ tsgo --noEmit
+test/session/prompt.test.ts(2479,86): error TS2345: Argument of type '() => Effect.Effect<void, unknown, unknown>' is not assignable to parameter of type 'Body<void, unknown, ChildProcessSpawner | Scope | FSUtil.Service | Service | Service | Service | Service | Service | ... 31 more ... | TestInstance>'.
+  Type '() => Effect.Effect<void, unknown, unknown>' is not assignable to type '() => Effect<void, unknown, ChildProcessSpawner | Scope | FSUtil.Service | Service | Service | Service | Service | Service | ... 31 more ... | TestInstance>'.
+    Type 'Effect<void, unknown, unknown>' is not assignable to type 'Effect<void, unknown, ChildProcessSpawner | Scope | FSUtil.Service | Service | Service | Service | Service | Service | ... 31 more ... | TestInstance>'.
+      Type 'unknown' is not assignable to type 'ChildProcessSpawner | Scope | FSUtil.Service | Service | Service | Service | Service | Service | ... 31 more ... | TestInstance'.
+test/session/prompt.test.ts(2500,35): error TS2339: Property 'readText' does not exist on type 'Interface'.
+test/session/prompt.test.ts(2502,51): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'string & Brand<"AbsolutePath">'.
+      Type 'string' is not assignable to type 'Brand<"AbsolutePath">'.
+test/session/prompt.test.ts(2503,27): error TS2345: Argument of type 'Effect<void, Error, Service>' is not assignable to parameter of type 'Effect<void, never, Service>'.
+  Type 'Error' is not assignable to type 'never'.
+    Type 'FileSystemError' is not assignable to type 'never'.

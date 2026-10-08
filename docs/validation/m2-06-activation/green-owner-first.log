@@ -1,0 +1,120 @@
+bun test v1.3.14 (0d9b296a)
+
+test/session/legacy-activity.test.ts:
+[10:13:40.417] ERROR (#2): 439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: effect/process/ChildProcessSpawner (defined at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/unstable/process/ChildProcessSpawner.js:75:63)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: effect/process/ChildProcessSpawner (defined at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/unstable/process/ChildProcessSpawner.js:75:63)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) legacy first excludes real association through symlink aliases and exact stale releases [29.22ms]
+[10:13:40.424] ERROR (#18): 439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: effect/process/ChildProcessSpawner (defined at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/unstable/process/ChildProcessSpawner.js:75:63)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: effect/process/ChildProcessSpawner (defined at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/unstable/process/ChildProcessSpawner.js:75:63)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) association holds exclusion across the actual commit and a waiting legacy check observes it [6.40ms]
+[10:13:40.429] ERROR (#34): 439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: effect/process/ChildProcessSpawner (defined at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/unstable/process/ChildProcessSpawner.js:75:63)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: effect/process/ChildProcessSpawner (defined at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/unstable/process/ChildProcessSpawner.js:75:63)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) failed and cancelled association commits release exclusion without losing durable reconciliation [5.04ms]
+[10:13:40.435] ERROR (#50): 439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: effect/process/ChildProcessSpawner (defined at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/unstable/process/ChildProcessSpawner.js:75:63)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+
+439 |         if (!yielding && !this.currentPreventYield && this.currentScheduler.shouldYield(this)) {
+440 |           yielding = true;
+441 |           const prev = current;
+442 |           current = flatMap(yieldNow, () => prev);
+443 |         }
+444 |         current = this.currentTracerContext ? this.currentTracerContext(current, this) : current[evaluate](this);
+                                                                                                       ^
+error: Service not found: effect/process/ChildProcessSpawner (defined at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/unstable/process/ChildProcessSpawner.js:75:63)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) narrow live layer shares fresh memo graphs until the final borrower closes; explicit factories isolate [5.39ms]
+
+ 0 pass
+ 4 fail
+ 2 expect() calls
+Ran 4 tests across 1 file. [1.68s]

@@ -512,3 +512,89 @@ describe("Runner", () => {
     }),
   )
 })
+
+it.live(
+  "accepted Runner ownership survives a cancelled joiner and idle cleanup",
+  Effect.gen(function* () {
+    const scope = yield* Scope.Scope
+    const cleanup = yield* Deferred.make<void>()
+    const closing = yield* Deferred.make<void>()
+    const held = new Set<object>()
+    const runner = Runner.make<string>(scope, {
+      ownership: Effect.sync(() => {
+        const token = {}
+        held.add(token)
+        return Effect.sync(() => {
+          held.delete(token)
+        })
+      }),
+    })
+    yield* Effect.gen(function* () {
+      const caller = yield* runner
+        .ensureRunning(
+          Effect.never.pipe(
+            Effect.ensuring(Deferred.succeed(closing, undefined).pipe(Effect.andThen(Deferred.await(cleanup)))),
+          ),
+        )
+        .pipe(Effect.forkChild)
+      yield* waitForState(runner, "Running")
+      expect(held.size).toBe(1)
+      yield* Fiber.interrupt(caller)
+      expect(held.size).toBe(1)
+      const cancel = yield* runner.cancel.pipe(Effect.forkChild)
+      yield* Deferred.await(closing)
+      expect(runner.state._tag).toBe("Idle")
+      expect(held.size).toBe(1)
+      yield* Deferred.succeed(cleanup, undefined)
+      yield* Fiber.join(cancel)
+      expect(held.size).toBe(0)
+    }).pipe(Effect.ensuring(Deferred.succeed(cleanup, undefined)))
+  }),
+)
+
+it.live(
+  "accepted queued ownership survives waiter cancellation and releases only its generation",
+  Effect.gen(function* () {
+    const scope = yield* Scope.Scope
+    const releaseShell = yield* Deferred.make<void>()
+    const entered = yield* Deferred.make<void>()
+    const finish = yield* Deferred.make<void>()
+    const held = new Set<object>()
+    const runner = Runner.make<string>(scope, {
+      ownership: Effect.sync(() => {
+        const token = {}
+        held.add(token)
+        return Effect.sync(() => {
+          held.delete(token)
+        })
+      }),
+    })
+    yield* Effect.gen(function* () {
+      const shell = yield* runner
+        .startShell(Deferred.await(releaseShell).pipe(Effect.as("shell")))
+        .pipe(Effect.forkChild)
+      yield* waitForState(runner, "Shell")
+      const queued = yield* runner
+        .ensureRunning(
+          Deferred.succeed(entered, undefined).pipe(Effect.andThen(Deferred.await(finish)), Effect.as("run")),
+        )
+        .pipe(Effect.forkChild)
+      yield* waitForState(runner, "ShellThenRun")
+      expect(held.size).toBe(2)
+      yield* Fiber.interrupt(queued)
+      expect(held.size).toBe(2)
+      yield* Deferred.succeed(releaseShell, undefined)
+      yield* Deferred.await(entered)
+      yield* Fiber.join(shell)
+      expect(held.size).toBe(1)
+      yield* runner.cancel
+      expect(held.size).toBe(0)
+      expect(yield* runner.ensureRunning(Effect.succeed("new"))).toBe("new")
+      expect(held.size).toBe(0)
+    }).pipe(
+      Effect.ensuring(
+        Effect.all([Deferred.succeed(releaseShell, undefined), Deferred.succeed(finish, undefined)], { discard: true }),
+      ),
+    )
+  }),
+)

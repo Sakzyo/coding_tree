@@ -3,8 +3,8 @@ import { Cause, Deferred, Effect, Exit, Fiber, Latch, Schema, Scope, Synchronize
 export interface Runner<A, E = never> {
   readonly state: State<A, E>
   readonly busy: boolean
-  readonly ensureRunning: (work: Effect.Effect<A, E>) => Effect.Effect<A, E>
-  readonly startShell: (work: Effect.Effect<A, E>, ready?: Latch.Latch) => Effect.Effect<A, E | Busy>
+  readonly ensureRunning: (work: Effect.Effect<A, E, Scope.Scope>) => Effect.Effect<A, E>
+  readonly startShell: (work: Effect.Effect<A, E, Scope.Scope>, ready?: Latch.Latch) => Effect.Effect<A, E | Busy>
   readonly cancel: Effect.Effect<void>
 }
 
@@ -27,7 +27,8 @@ interface ShellHandle<A, E> {
 interface PendingHandle<A, E> {
   id: number
   done: Deferred.Deferred<A, E | Cancelled>
-  work: Effect.Effect<A, E>
+  work: Effect.Effect<A, E, Scope.Scope>
+  scope: Scope.Closeable
 }
 
 export type State<A, E> =
@@ -39,6 +40,7 @@ export type State<A, E> =
 export const make = <A, E = never>(
   scope: Scope.Scope,
   opts?: {
+    ownership?: Effect.Effect<Effect.Effect<void>, E>
     onIdle?: Effect.Effect<void>
     onBusy?: Effect.Effect<void>
     onInterrupt?: Effect.Effect<A, E>
@@ -80,11 +82,25 @@ export const make = <A, E = never>(
         ] as const,
     ).pipe(Effect.flatten)
 
-  const startRun = (work: Effect.Effect<A, E>, done: Deferred.Deferred<A, E | Cancelled>) =>
+  const accept = Effect.uninterruptible(
+    Effect.gen(function* () {
+      const release = yield* opts?.ownership ?? Effect.succeed(Effect.void)
+      const owned = yield* Scope.fork(scope, "sequential")
+      yield* Scope.addFinalizer(owned, release)
+      return owned
+    }),
+  )
+
+  const startRun = (
+    work: Effect.Effect<A, E, Scope.Scope>,
+    done: Deferred.Deferred<A, E | Cancelled>,
+    owned: Scope.Closeable,
+  ) =>
     Effect.gen(function* () {
       const id = next()
       const fiber = yield* work.pipe(
-        Effect.onExit((exit) => finishRun(id, done, exit)),
+        Scope.provide(owned),
+        Effect.onExit((exit) => Scope.close(owned, exit).pipe(Effect.ensuring(finishRun(id, done, exit)))),
         Effect.forkIn(scope),
       )
       return { id, done, fiber } satisfies RunHandle<A, E>
@@ -98,7 +114,7 @@ export const make = <A, E = never>(
           return [idle, { _tag: "Idle" }] as const
         }
         if (st._tag === "ShellThenRun" && st.shell.id === id) {
-          const run = yield* startRun(st.run.work, st.run.done)
+          const run = yield* startRun(st.run.work, st.run.done, st.run.scope)
           return [Effect.void, { _tag: "Running", run }] as const
         }
         return [Effect.void, st] as const
@@ -112,7 +128,7 @@ export const make = <A, E = never>(
       yield* Fiber.interrupt(shell.fiber)
     })
 
-  const ensureRunning = (work: Effect.Effect<A, E>) =>
+  const ensureRunning = (work: Effect.Effect<A, E, Scope.Scope>) =>
     SynchronizedRef.modifyEffect(
       ref,
       Effect.fnUntraced(function* (st) {
@@ -125,19 +141,20 @@ export const make = <A, E = never>(
               id: next(),
               done: yield* Deferred.make<A, E | Cancelled>(),
               work,
+              scope: yield* accept,
             } satisfies PendingHandle<A, E>
             return [awaitDone(run.done), { _tag: "ShellThenRun", shell: st.shell, run }] as const
           }
           case "Idle": {
             const done = yield* Deferred.make<A, E | Cancelled>()
-            const run = yield* startRun(work, done)
+            const run = yield* startRun(work, done, yield* accept)
             return [awaitDone(done), { _tag: "Running", run }] as const
           }
         }
       }),
     ).pipe(Effect.flatten)
 
-  const startShell = (work: Effect.Effect<A, E>, ready?: Latch.Latch): Effect.Effect<A, E | Busy> =>
+  const startShell = (work: Effect.Effect<A, E, Scope.Scope>, ready?: Latch.Latch): Effect.Effect<A, E | Busy> =>
     SynchronizedRef.modifyEffect(
       ref,
       Effect.fnUntraced(function* (st) {
@@ -145,10 +162,15 @@ export const make = <A, E = never>(
           const reject: Effect.Effect<A, E | Busy> = Effect.fail(new Busy())
           return [reject, st] as const
         }
+        const owned = yield* accept
         yield* onBusy
         const id = next()
         const cancelled = yield* Deferred.make<void>()
-        const fiber = yield* work.pipe(Effect.ensuring(finishShell(id)), Effect.forkChild)
+        const fiber = yield* work.pipe(
+          Scope.provide(owned),
+          Effect.onExit((exit) => Scope.close(owned, exit).pipe(Effect.ensuring(finishShell(id)))),
+          Effect.forkChild,
+        )
         const shell = { id, cancelled, ready, fiber } satisfies ShellHandle<A, E>
         return [
           Effect.gen(function* () {
@@ -193,6 +215,7 @@ export const make = <A, E = never>(
         return [
           Effect.gen(function* () {
             yield* stopShell(st.shell)
+            yield* Scope.close(st.run.scope, Exit.void)
             yield* Deferred.fail(st.run.done, new Cancelled()).pipe(Effect.asVoid)
             yield* idleIfCurrent()
           }),

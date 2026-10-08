@@ -1,3 +1,10 @@
+import { FtcProjectAdapters } from "@opencode-ai/core/ftc/projects/adapters"
+import { ProjectAssociations } from "@opencode-ai/core/ftc/projects/sql"
+import { ProjectV2 } from "@opencode-ai/core/project"
+import { AbsolutePath } from "@opencode-ai/core/schema"
+import { TestInstance, tmpdirScoped, provideInstance } from "../fixture/fixture"
+import path from "node:path"
+import { LegacyActivity } from "../../src/session/legacy-activity"
 import { afterEach, describe, expect } from "bun:test"
 import { SessionV1 } from "@opencode-ai/core/v1/session"
 import { Database } from "@opencode-ai/core/database/database"
@@ -38,6 +45,7 @@ const layer = (flags: Partial<RuntimeFlags.Info> = {}) =>
   LayerNode.compile(
     LayerNode.group([
       Agent.node,
+      LegacyActivity.node,
       BackgroundJob.node,
       EventV2Bridge.node,
       Config.node,
@@ -1099,3 +1107,94 @@ describe("tool.task", () => {
     }),
   )
 })
+
+background.instance("task notification and injected parent work retain activation exclusion after job completion", () =>
+  Effect.gen(function* () {
+    const { directory } = yield* TestInstance
+    const database = yield* Database.Service
+    const owner = yield* LegacyActivity.Service
+    const { chat, assistant } = yield* seed()
+    const tool = yield* TaskTool
+    const def = yield* tool.init()
+    const injected = yield* Deferred.make<void>()
+    const finish = yield* Deferred.make<void>()
+    const jobs = yield* BackgroundJob.Service
+    const folder = yield* FtcProjectAdapters.folders({
+      resolve: () =>
+        Effect.succeed({ id: ProjectV2.ID.global, directory: AbsolutePath.make(path.parse(directory).root) }),
+    }).resolve({ root: AbsolutePath.make(directory) })
+    const associate = FtcProjectAdapters.activation(
+      ProjectAssociations.make(database.db),
+      owner.withAssociation,
+    ).associate(folder)
+    yield* Effect.gen(function* () {
+      const result = yield* def.execute(
+        { description: "controlled", prompt: "controlled", subagent_type: "general", background: true },
+        {
+          sessionID: chat.id,
+          messageID: assistant.id,
+          agent: "build",
+          abort: new AbortController().signal,
+          extra: {
+            promptOps: {
+              ...stubOps(),
+              prompt: (input) =>
+                input.sessionID === chat.id
+                  ? Deferred.succeed(injected, undefined).pipe(
+                      Effect.andThen(Deferred.await(finish)),
+                      Effect.as(reply(input, "injected")),
+                    )
+                  : Effect.succeed(reply(input, "child done")),
+            } satisfies TaskPromptOps,
+          },
+          messages: [],
+          metadata: () => Effect.void,
+          ask: () => Effect.void,
+        },
+      )
+      yield* Deferred.await(injected)
+      expect((yield* jobs.wait({ id: result.metadata.sessionId })).info?.status).toBe("completed")
+      expect(yield* associate.pipe(Effect.flip)).toMatchObject({ code: "activation_unavailable" })
+      yield* Deferred.succeed(finish, undefined)
+    }).pipe(Effect.ensuring(Deferred.succeed(finish, undefined)))
+  }),
+)
+
+it.instance("reused task resolves the stored child root and refuses managed child before acceptance", () =>
+  Effect.gen(function* () {
+    const database = yield* Database.Service
+    const owner = yield* LegacyActivity.Service
+    const sessions = yield* Session.Service
+    const { chat, assistant } = yield* seed()
+    const other = yield* tmpdirScoped()
+    const child = yield* sessions.create({ title: "foreign" }).pipe(provideInstance(other))
+    const folder = yield* FtcProjectAdapters.folders({
+      resolve: () => Effect.succeed({ id: ProjectV2.ID.global, directory: AbsolutePath.make(path.parse(other).root) }),
+    }).resolve({ root: AbsolutePath.make(other) })
+    yield* FtcProjectAdapters.activation(ProjectAssociations.make(database.db), owner.withAssociation).associate(folder)
+    const tool = yield* TaskTool
+    const def = yield* tool.init()
+    const accepted: string[] = []
+    const exit = yield* def
+      .execute(
+        { description: "foreign", prompt: "must refuse", subagent_type: "general", task_id: child.id },
+        {
+          sessionID: chat.id,
+          messageID: assistant.id,
+          agent: "build",
+          abort: new AbortController().signal,
+          extra: { promptOps: stubOps({ onPrompt: () => accepted.push("prompt") }) },
+          messages: [],
+          metadata: () =>
+            Effect.sync(() => {
+              accepted.push("metadata")
+            }),
+          ask: () => Effect.void,
+        },
+      )
+      .pipe(Effect.exit)
+    expect(Exit.isFailure(exit)).toBe(true)
+    expect(accepted).toEqual([])
+    expect(yield* sessions.messages({ sessionID: child.id })).toEqual([])
+  }),
+)

@@ -1,0 +1,2482 @@
+bun test v1.3.14 (0d9b296a)
+
+test/session/prompt.test.ts:
+(pass) loop exits immediately when last assistant has stop finish [231.95ms]
+(pass) loop exits for a completed parent turn with nonmonotonic message IDs [128.67ms]
+[10:14:23.078] ERROR (#24970): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) loop exits without an LLM request for interrupted orphan tool calls [85.06ms]
+[10:14:23.160] ERROR (#37345): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) loop calls LLM and returns assistant message [80.88ms]
+[10:14:23.233] ERROR (#49720): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) loop includes MCP instructions in model system context [73.55ms]
+[10:14:23.317] ERROR (#62095): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) legacy prompt emits message events without session.next events [83.19ms]
+[10:14:23.404] ERROR (#74470): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) loop surfaces content-filter finishes as session errors [87.53ms]
+[10:14:23.498] ERROR (#86845): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) loop stops provider overflow instead of auto-compacting when disabled [94.20ms]
+(skip) prompt emits v2 prompted and synthetic events (v2 projector disabled)
+[10:14:23.592] ERROR (#99220): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) static loop returns assistant text through local provider [93.76ms]
+[10:14:23.674] ERROR (#111595): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) static loop consumes queued replies across turns [81.55ms]
+[10:14:23.758] ERROR (#123970): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) loop continues when finish is tool-calls [84.37ms]
+[10:14:23.824] ERROR (#136345): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) loop continues when finish is unknown [65.87ms]
+[10:14:23.890] ERROR (#148720): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) glob tool keeps instance context during prompt runs [65.68ms]
+[10:14:23.954] ERROR (#161095): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) loop continues when finish is stop but assistant has tool parts [64.06ms]
+[10:14:24.022] ERROR (#173470): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) failed subtask preserves metadata on error tool state [67.92ms]
+[10:14:24.091] ERROR (#185845): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) subtask child inherits parent session external_directory allow [69.13ms]
+(pass) prompt tools replace previous prompt tool rules [1045.06ms]
+[10:14:25.211] ERROR (#210707): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) running subtask preserves metadata after tool-call transition [75.26ms]
+[10:14:25.302] ERROR (#223082): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) running task tool preserves metadata after tool-call transition [90.69ms]
+[10:14:25.364] ERROR (#235457): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) loop sets status to busy then idle [61.92ms]
+[10:14:25.431] ERROR (#247832): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) cancel interrupts loop and resolves with an assistant message [66.91ms]
+[10:14:25.494] ERROR (#260207): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) cancel records MessageAbortedError on interrupted process [63.34ms]
+(pass) finalizes assistant when cancelled before processor creation completes [269.13ms]
+(pass) cancel finalizes subtask tool state [260.76ms]
+[10:14:26.092] ERROR (#293033): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) cancel propagates from slash command subtask to child session [67.51ms]
+[10:14:26.163] ERROR (#305408): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) cancel with queued callers resolves all cleanly [71.76ms]
+(pass) concurrent loop callers get same result [97.87ms]
+[10:14:26.331] ERROR (#330270): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) concurrent loop callers all receive same error result [69.89ms]
+[10:14:26.404] ERROR (#342645): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) prompt submitted during an active run is included in the next LLM input [72.49ms]
+[10:14:26.476] ERROR (#355020): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) assertNotBusy fails with BusyError when loop running [71.74ms]
+(pass) assertNotBusy succeeds when idle [76.59ms]
+[10:14:26.622] ERROR (#379877): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) shell rejects with BusyError when loop running [70.05ms]
+(pass) shell captures stdout and stderr in completed tool output [1213.62ms]
+(pass) shell completes a fast command on the preferred shell [818.74ms]
+(pass) shell uses configured shell over env shell [255.29ms]
+(pass) shell commands can change directory after startup [246.69ms]
+(pass) shell lists files from the project directory [811.61ms]
+(pass) shell captures stderr from a failing command [816.57ms]
+(pass) shell updates running metadata before process exit [471.81ms]
+[10:14:31.327] ERROR (#479658): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) loop waits while shell runs and starts after shell exits [70.52ms]
+[10:14:31.396] ERROR (#492033): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) shell completion resumes queued loop callers [68.63ms]
+[10:14:31.469] ERROR (#504408): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) command ! expansion uses configured shell over env shell [73.26ms]
+(pass) cancel interrupts shell and resolves cleanly [426.43ms]
+(pass) cancel persists aborted shell result when shell ignores TERM [3406.09ms]
+[10:14:35.364] ERROR (#541795): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) cancel finalizes interrupted bash tool output through normal truncation [62.37ms]
+(pass) cancel interrupts loop queued behind shell [403.21ms]
+(pass) shell rejects when another shell is already running [368.34ms]
+(pass) interrupt propagates abort signal to read tool via file part (text/plain) [240.12ms]
+(pass) interrupt propagates abort signal to read tool via file part (directory) [247.44ms]
+(pass) does not fail the prompt when a file part is missing [240.40ms]
+(pass) keeps stored part order stable when file resolution is async [236.56ms]
+(pass) handles filenames with # character [377.43ms]
+[10:14:37.549] ERROR (#641629): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) does not loop empty assistant turns for a simple reply [70.38ms]
+[10:14:37.621] ERROR (#654004): 69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+ServeError: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+
+69 |     orElse: () => Effect.void
+70 |   });
+71 |   yield* Scope.addFinalizer(scope, shutdown);
+72 |   yield* Effect.callback(resume => {
+73 |     function onError(cause) {
+74 |       resume(Effect.fail(new ServeError({
+                                  ^
+Error: 
+ _tag: "ServeError",
+
+      at onError (/Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:74:30)
+      at emitError (node:events:43:23)
+
+74 |       resume(Effect.fail(new ServeError({
+75 |         cause
+76 |       })));
+77 |     }
+78 |     server.on("error", onError);
+79 |     server.listen(options, () => {
+     ^
+error: Failed to start server. Is port 0 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at serve (unknown:1:1)
+      at node:_http_server:281:39
+      at node:_http_server:258:33
+      at /Users/dylanxu/coding_tree/node_modules/.bun/@effect+platform-node@4.0.0-beta.83+4eb9af1649c03d06/node_modules/@effect/platform-node/dist/NodeHttpServer.js:79:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2537:8)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2314:9)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2302:12
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:730:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) records aborted errors when prompt is cancelled mid-stream [72.40ms]
+(pass) applies agent variant only when using agent model [256.90ms]
+(pass) unknown agent throws typed error [78.83ms]
+(pass) unknown agent error includes available agent names [79.73ms]
+(pass) unknown command throws typed error with available names [84.17ms]
+
+test/session/compaction.test.ts:
+(pass) session.compaction.isOverflow > returns true when token count exceeds usable context [14.46ms]
+(pass) session.compaction.isOverflow > returns false when token count within usable context [26.30ms]
+(pass) session.compaction.isOverflow > includes cache.read in token count [22.96ms]
+(pass) session.compaction.isOverflow > respects input limit for input caps [22.48ms]
+(pass) session.compaction.isOverflow > returns false when input/output are within input caps [21.46ms]
+(pass) session.compaction.isOverflow > returns false when output within limit with input caps [21.23ms]
+(pass) session.compaction.isOverflow > BUG: no headroom when limit.input is set — compaction should trigger near boundary but does not [21.10ms]
+(pass) session.compaction.isOverflow > BUG: without limit.input, same token count correctly triggers compaction [22.21ms]
+(pass) session.compaction.isOverflow > BUG: asymmetry — limit.input model allows 30K more usage before compaction than equivalent model without it [22.34ms]
+(pass) session.compaction.isOverflow > returns false when model context limit is 0 [21.75ms]
+(pass) session.compaction.isOverflow > returns false when compaction.auto is disabled [24.67ms]
+(pass) session.compaction.create > creates a compaction user message and part [24.03ms]
+(skip) session.compaction.create > projects a compaction message to v2 (v2 projector disabled)
+(pass) session.compaction.prune > compacts old completed tool output [30.67ms]
+(pass) session.compaction.prune > skips protected skill tool output [37.77ms]
+(pass) session.compaction.process > throws when parent is not a user message [24.26ms]
+(pass) session.compaction.process > publishes compacted event on continue [31.14ms]
+(pass) session.compaction.process > marks summary message as errored on compact result [41.72ms]
+(pass) session.compaction.process > adds synthetic continue prompt when auto is enabled [33.10ms]
+(pass) session.compaction.process > persists tail_start_id for retained recent turns [28.21ms]
+(pass) session.compaction.process > shrinks retained tail to fit preserve token budget [34.26ms]
+(pass) session.compaction.process > falls back to full summary when even one recent turn exceeds preserve token budget [345.86ms]
+(pass) session.compaction.process > falls back to full summary when retained tail media exceeds preserve token budget [334.30ms]
+(pass) session.compaction.process > retains a split turn suffix when a later message fits the preserve token budget [358.11ms]
+(pass) session.compaction.process > allows plugins to disable synthetic continue prompt [28.41ms]
+(pass) session.compaction.process > replays the prior user turn on overflow when earlier context exists [38.75ms]
+(pass) session.compaction.process > falls back to overflow guidance when no replayable turn exists [30.12ms]
+(pass) session.compaction.process > stops quickly when aborted during retry backoff [358.60ms]
+(pass) session.compaction.process > does not leave a summary assistant when aborted before processor setup [156.05ms]
+(pass) session.compaction.process > silently drops reasoning-delta arriving without prior reasoning-start [350.35ms]
+(pass) session.compaction.process > does not allow tool calls while generating the summary [319.17ms]
+(pass) session.compaction.process > summarizes only the head while keeping recent tail out of summary input [329.93ms]
+(pass) session.compaction.process > anchors repeated compactions with the previous summary [450.25ms]
+(pass) session.compaction.process > keeps plugin context outside the serialized conversation [341.11ms]
+(pass) session.compaction.process > serializes repeated compaction history as one user message [331.86ms]
+(pass) session.compaction.process > keeps recent pre-compaction turns across repeated compactions [47.04ms]
+(pass) session.compaction.process > ignores previous summaries when sizing the retained tail [35.49ms]
+(pass) util.token.estimate > estimates tokens from text (4 chars per token) [0.12ms]
+(pass) util.token.estimate > estimates tokens from larger text [0.03ms]
+(pass) util.token.estimate > returns 0 for empty string [0.02ms]
+(pass) SessionNs.getUsage > normalizes standard usage to token format [0.13ms]
+(pass) SessionNs.getUsage > extracts cached tokens to cache.read [0.07ms]
+(pass) SessionNs.getUsage > handles anthropic cache write metadata [0.06ms]
+(pass) SessionNs.getUsage > subtracts cached tokens for anthropic provider [0.05ms]
+(pass) SessionNs.getUsage > separates reasoning tokens from output tokens [0.06ms]
+(pass) SessionNs.getUsage > does not double count reasoning tokens in cost [0.20ms]
+(pass) SessionNs.getUsage > handles undefined optional values gracefully [0.06ms]
+(pass) SessionNs.getUsage > ignores malformed cost fields [0.14ms]
+(pass) SessionNs.getUsage > calculates cost correctly [0.06ms]
+(pass) SessionNs.getUsage > uses authoritative Copilot billed cost when provided [0.08ms]
+(pass) SessionNs.getUsage > uses matching context cost tier before over-200k fallback [0.14ms]
+(pass) SessionNs.getUsage > falls back to over-200k pricing when no cost tier matches [0.07ms]
+(pass) SessionNs.getUsage > computes total from components for @ai-sdk/anthropic models [0.09ms]
+(pass) SessionNs.getUsage > computes total from components for @ai-sdk/amazon-bedrock models [0.02ms]
+(pass) SessionNs.getUsage > computes total from components for @ai-sdk/google-vertex/anthropic models [0.02ms]
+(pass) SessionNs.getUsage > extracts cache write tokens from vertex metadata key [0.05ms]
+
+test/tool/task.test.ts:
+(pass) tool.task > description sorts subagents by name and is stable across calls [95.63ms]
+(pass) tool.task > description hides denied subagents for the caller [54.30ms]
+(pass) tool.task > execute resumes an existing task session from task_id [51.43ms]
+(pass) tool.task > execute surfaces child errors with a resumable task_id [37.20ms]
+(pass) tool.task > execute surfaces terminal child tool errors with a resumable task_id [45.11ms]
+(pass) tool.task > execute asks by default and skips checks when bypassed [49.98ms]
+(pass) tool.task > execute cancels child session when abort signal fires [38.94ms]
+(pass) tool.task > execute creates a child when task_id does not exist [47.04ms]
+(pass) tool.task > prevents subagents from launching subagents by default [36.83ms]
+(pass) tool.task > allows nested subagents up to the configured depth [50.73ms]
+(pass) tool.task > execute shapes child permissions for task, todowrite, and primary tools [47.40ms]
+(pass) tool.task > rejects background execution when the experiment is disabled [36.27ms]
+(pass) tool.task > promotes a running foreground task without restarting it [48.80ms]
+(pass) tool.task > execute launches background tasks without waiting for completion [46.28ms]
+(pass) tool.task > background task completion waits for running updates [48.88ms]
+(pass) tool.task > background tasks complete through the background job service [44.96ms]
+(pass) tool.task > background task completion does not wait for the parent async prompt [45.75ms]
+(pass) tool.task > removing the parent session cancels running background tasks [47.57ms]
+(pass) tool.task > removing the child task session cancels its running background task [45.56ms]
+(pass) tool.task > cancelling the parent run cancels running background tasks [34.72ms]
+(pass) tool.task > cancelling a child run cancels its own pre-runner task job [54.29ms]
+(pass) tool.task > cancelling a parent run recursively cancels descendant background tasks [32.67ms]
+
+2 tests skipped:
+(skip) prompt emits v2 prompted and synthetic events (v2 projector disabled)
+(skip) session.compaction.create > projects a compaction message to v2 (v2 projector disabled)
+
+
+31 tests failed:
+(fail) loop exits without an LLM request for interrupted orphan tool calls [85.06ms]
+(fail) loop calls LLM and returns assistant message [80.88ms]
+(fail) loop includes MCP instructions in model system context [73.55ms]
+(fail) legacy prompt emits message events without session.next events [83.19ms]
+(fail) loop surfaces content-filter finishes as session errors [87.53ms]
+(fail) loop stops provider overflow instead of auto-compacting when disabled [94.20ms]
+(fail) static loop returns assistant text through local provider [93.76ms]
+(fail) static loop consumes queued replies across turns [81.55ms]
+(fail) loop continues when finish is tool-calls [84.37ms]
+(fail) loop continues when finish is unknown [65.87ms]
+(fail) glob tool keeps instance context during prompt runs [65.68ms]
+(fail) loop continues when finish is stop but assistant has tool parts [64.06ms]
+(fail) failed subtask preserves metadata on error tool state [67.92ms]
+(fail) subtask child inherits parent session external_directory allow [69.13ms]
+(fail) running subtask preserves metadata after tool-call transition [75.26ms]
+(fail) running task tool preserves metadata after tool-call transition [90.69ms]
+(fail) loop sets status to busy then idle [61.92ms]
+(fail) cancel interrupts loop and resolves with an assistant message [66.91ms]
+(fail) cancel records MessageAbortedError on interrupted process [63.34ms]
+(fail) cancel propagates from slash command subtask to child session [67.51ms]
+(fail) cancel with queued callers resolves all cleanly [71.76ms]
+(fail) concurrent loop callers all receive same error result [69.89ms]
+(fail) prompt submitted during an active run is included in the next LLM input [72.49ms]
+(fail) assertNotBusy fails with BusyError when loop running [71.74ms]
+(fail) shell rejects with BusyError when loop running [70.05ms]
+(fail) loop waits while shell runs and starts after shell exits [70.52ms]
+(fail) shell completion resumes queued loop callers [68.63ms]
+(fail) command ! expansion uses configured shell over env shell [73.26ms]
+(fail) cancel finalizes interrupted bash tool output through normal truncation [62.37ms]
+(fail) does not loop empty assistant turns for a simple reply [70.38ms]
+(fail) records aborted errors when prompt is cancelled mid-stream [72.40ms]
+
+ 104 pass
+ 2 skip
+ 31 fail
+ 335 expect() calls
+Ran 137 tests across 3 files. [22.85s]

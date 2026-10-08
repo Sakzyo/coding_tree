@@ -17,7 +17,7 @@ export interface Ports {
   readonly store: Parameters<typeof SessionExecutionLocal.make>[0]["store"]
   readonly locations: Parameters<typeof SessionExecutionLocal.make>[0]["locations"]
   readonly changed: (status: FtcProject.OwnerStatus) => Effect.Effect<void>
-  readonly activate: (root: FtcProject.FolderRequest) => Effect.Effect<void, FtcProject.AssociationError>
+  readonly activate: FtcProjectAdapters.Association
 }
 
 export interface Interface {
@@ -66,11 +66,10 @@ const make = (
       guard: runtime.guard,
       bind: runtime.bind,
       projects: (session) =>
-        FtcProjects.make(
-          FtcProjectAdapters.activation(input.folders, input.repository, input.activate),
-          input.repository,
-          { createSession: session.create, getSession: input.store.get },
-        ),
+        FtcProjects.make(input.folders, FtcProjectAdapters.activation(input.repository, input.activate), {
+          createSession: session.create,
+          getSession: input.store.get,
+        }),
       legacy: FtcProjectAdapters.guardLegacy(input.repository),
     }
   })
