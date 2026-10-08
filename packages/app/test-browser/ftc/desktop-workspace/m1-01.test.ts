@@ -1027,3 +1027,88 @@ test("canonical list membership supersedes an earlier incompatible owner observa
   expect(view.stopped).toEqual([a2])
   expect(view.host.querySelector("textarea")?.value).toBe("still canonical")
 })
+
+const lateOwnershipCases = [
+  { mode: "conflicting", conflict: true },
+  { mode: "nonconflicting", conflict: false },
+]
+
+test.each(lateOwnershipCases)(
+  "late A create reconciles B ownership ($mode) without retargeting its draft",
+  async (entry) => {
+    const conflict = entry.conflict
+    const member = chat(a, "fix2-created")
+    const owner = {
+      ...chat(b, "fix2-unlisted"),
+      sessionID: conflict ? member.sessionID : chat(b, "fix2-independent").sessionID,
+    }
+    const created = Promise.withResolvers<FtcProject.ChatRef>()
+    const view = fixture({ active: idle, createChat: () => created.promise })
+    await flush()
+    view.button('[data-action="new-chat"]').click()
+    await flush()
+    view.button(`[data-project-id="${b.projectID}"]`).click()
+    await flush()
+    view.draft("B remains selected")
+    view.listeners.get(b.projectID)!({ projectID: b.projectID, active: owner })
+    created.resolve(member)
+    await flush()
+    view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+    await flush()
+    expect(view.stopped).toEqual(conflict ? [] : [owner])
+    expect(view.host.querySelector("article")?.getAttribute("data-chat")).toBe(b1.chatID)
+    expect(view.host.querySelector("output")?.getAttribute("data-history")).toBe(b1.sessionID)
+    expect(view.host.querySelector("textarea")?.value).toBe("B remains selected")
+    expect(view.host.textContent?.includes("The project or session changed.")).toBe(conflict)
+    expect(view.submittedDrafts).toEqual([])
+  },
+)
+
+test.each(lateOwnershipCases)(
+  "late A list reconciles the cached B owner ($mode) and retains both drafts",
+  async (entry) => {
+    const conflict = entry.conflict
+    const member = chat(a, "fix2-listed")
+    const owner = {
+      ...chat(b, "fix2-cached"),
+      sessionID: conflict ? member.sessionID : chat(b, "fix2-valid-cached").sessionID,
+    }
+    const listed = Promise.withResolvers<readonly FtcProject.ChatRef[]>()
+    const reads = { a: 0 }
+    const view = fixture({
+      active: async (request) => ({
+        projectID: request.projectID,
+        active: request.projectID === b.projectID ? owner : undefined,
+      }),
+      listChats: (request) => {
+        if (request.projectID === b.projectID) return Promise.resolve([b1])
+        reads.a += 1
+        return reads.a === 1 ? Promise.resolve([a1, a2]) : listed.promise
+      },
+    })
+    await flush()
+    view.draft("A remains selected")
+    view.button(`[data-project-id="${b.projectID}"]`).click()
+    await flush()
+    view.draft("B cached draft")
+    const cachedB = view.views.at(-1)!
+    expect(cachedB.activeChatID).toBe(owner.chatID)
+    view.button(`[data-project-id="${a.projectID}"]`).click()
+    await flush()
+    listed.resolve([a1, a2, member])
+    await flush()
+    // This is the real supplied slot's reactive getter, retained after disposal;
+    // it observes B's cached owner while A's scoped list is the current query.
+    expect(cachedB.activeChatID).toBe(conflict ? undefined : owner.chatID)
+    expect(view.host.querySelector("article")?.getAttribute("data-chat")).toBe(a1.chatID)
+    expect(view.host.querySelector("textarea")?.value).toBe("A remains selected")
+    view.button(`[data-project-id="${b.projectID}"]`).click()
+    await flush()
+    view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+    await flush()
+    expect(view.stopped).toEqual(conflict ? [] : [owner])
+    expect(view.host.querySelector("textarea")?.value).toBe("B cached draft")
+    expect(view.host.textContent?.includes("The project or session changed.")).toBe(conflict)
+    expect(view.submittedDrafts).toEqual([])
+  },
+)

@@ -146,8 +146,6 @@ export function FtcWorkspace(props: WorkspaceProps) {
             remember(members)
             setStore("chats", request.projectID, members.map(copyChat))
             setStore("lists", request.projectID, "ready")
-            const active = store.owners[request.projectID]?.active
-            if (active && conflicts(store.membership, active)) rejectOwner(request.projectID)
             const previous = store.selections[request.projectID]
             const next = members.find((chat) => previous && chatKey(chat) === chatKey(previous)) ?? members[0]
             setStore("selections", request.projectID, next ? copyChat(next) : undefined)
@@ -173,6 +171,10 @@ export function FtcWorkspace(props: WorkspaceProps) {
     // Membership is canonical; a later list/create can expose an earlier owner
     // observation as inconsistent without discarding the valid member or draft.
     setStore("observedOwners", (owners) => owners.filter((chat) => !conflicts(store.membership, chat)))
+    Object.values(store.owners).forEach((status) => {
+      const active = status.active
+      if (active && conflicts(store.membership, active)) rejectOwner(active.projectID)
+    })
   }
 
   function rememberOwner(chat: FtcProject.ChatRef | undefined) {
@@ -257,8 +259,6 @@ export function FtcWorkspace(props: WorkspaceProps) {
           ...chats.filter((chat) => chatKey(chat) !== chatKey(reference)),
           reference,
         ])
-        const active = store.owners[request.projectID]?.active
-        if (active && conflicts(store.membership, active)) rejectOwner(request.projectID)
         if (store.selectionRevision === revision) setStore("selections", request.projectID, reference)
       },
     )

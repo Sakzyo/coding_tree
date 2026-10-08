@@ -1,0 +1,2 @@
+src/ftc/facades.ts []
+src/ftc/workspace.tsx [{"kind":"import-statement","path":"solid-js/web"},{"kind":"import-statement","path":"solid-js/web"},{"kind":"import-statement","path":"solid-js/web"},{"kind":"import-statement","path":"solid-js/web"},{"kind":"import-statement","path":"solid-js/web"},{"kind":"import-statement","path":"solid-js/web"},{"kind":"import-statement","path":"solid-js/web"},{"kind":"import-statement","path":"solid-js"},{"kind":"import-statement","path":"solid-js/store"}]

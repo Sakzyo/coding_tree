@@ -1,0 +1,72 @@
+[
+  {
+    "path": "docs/validation/m1-01/fix2-app-typecheck.log",
+    "bytes": 10,
+    "lines": 1
+  },
+  {
+    "path": "docs/validation/m1-01/fix2-browser-final.log",
+    "bytes": 1137,
+    "lines": 23
+  },
+  {
+    "path": "docs/validation/m1-01/fix2-focused-final.log",
+    "bytes": 5704,
+    "lines": 70
+  },
+  {
+    "path": "docs/validation/m1-01/fix2-format.log",
+    "bytes": 66,
+    "lines": 2
+  },
+  {
+    "path": "docs/validation/m1-01/fix2-freeze-verification.log",
+    "bytes": 246,
+    "lines": 6
+  },
+  {
+    "path": "docs/validation/m1-01/fix2-green-initial.log",
+    "bytes": 5699,
+    "lines": 70
+  },
+  {
+    "path": "docs/validation/m1-01/fix2-imports.log",
+    "bytes": 494,
+    "lines": 2
+  },
+  {
+    "path": "docs/validation/m1-01/fix2-lint.log",
+    "bytes": 201,
+    "lines": 3
+  },
+  {
+    "path": "docs/validation/m1-01/fix2-red.log",
+    "bytes": 7175,
+    "lines": 109
+  },
+  {
+    "path": "docs/validation/m1-01/fix2-report-format.log",
+    "bytes": 66,
+    "lines": 2
+  },
+  {
+    "path": "docs/validation/m1-01/fix2-review-evidence-unchanged.log",
+    "bytes": 102,
+    "lines": 1
+  },
+  {
+    "path": "docs/validation/m1-01/fix2-reviewer-probe.log",
+    "bytes": 272,
+    "lines": 9
+  },
+  {
+    "path": "docs/validation/m1-01/fix2-unchanged-source.log",
+    "bytes": 183,
+    "lines": 5
+  },
+  {
+    "path": "docs/validation/m1-01/fix2-whitespace.log",
+    "bytes": 73,
+    "lines": 1
+  }
+]

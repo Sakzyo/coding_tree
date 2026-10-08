@@ -1,0 +1,5 @@
+Four facade/locale/parity files match fix1 frozen hashes:
+packages/app/src/ftc/facades.ts
+packages/app/src/i18n/en.ts
+packages/app/src/i18n/zh.ts
+packages/app/src/i18n/parity.test.ts

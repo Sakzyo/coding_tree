@@ -1,0 +1,109 @@
+bun test v1.3.14 (0d9b296a)
+
+test-browser/ftc/desktop-workspace/m1-01.test.ts:
+(pass) busy project identifies active chat without submitting drafts [11.00ms]
+(pass) idle transitions retain drafts and only an explicit send admits once [9.77ms]
+(pass) project and chat selection restore independent drafts and exact Session presentation [7.77ms]
+(pass) same owner can deliberately submit with canonical delivery options [4.58ms]
+(pass) stop captures the displayed owner and never infers idle on completion [5.69ms]
+(pass) raced busy submission preserves original draft and never retries on idle [4.11ms]
+(pass) deferred admission clears only unchanged original text despite later selection [7.19ms]
+(pass) edit and revert while admission waits still preserves the user's edit [4.22ms]
+(pass) deferred failure belongs to the original chat and leaves the later chat untouched [6.15ms]
+(pass) structured project_changed retains draft and requests explicit reopen [2.83ms]
+(pass) structured session_mismatch retains draft and requests explicit reopen [2.74ms]
+(pass) structured chat_session_conflict retains draft and requests explicit reopen [3.95ms]
+(pass) execution unavailable retains input with localized recovery [2.79ms]
+(pass) owner event supersedes an older initial snapshot [2.82ms]
+(pass) obsolete target queries abort and late data or rejection cannot replace current view [4.14ms]
+(pass) active failure is not idle and explicit retry only rechecks [2.79ms]
+(pass) listChats failure is not idle and explicit retry only rechecks [2.58ms]
+(pass) invalid chat or owner membership is never presented as a runnable identity [1.43ms]
+(pass) explicit create forwards exact selected folder then canonical context [4.08ms]
+(pass) explicit open forwards exact selected folder then canonical context [2.67ms]
+(pass) new chat uses association ID and selects only canonical success [2.72ms]
+(pass) create rejection does not fabricate success or lose drafts [2.70ms]
+(pass) open rejection does not fabricate success or lose drafts [2.64ms]
+(pass) createChat rejection does not fabricate success or lose drafts [2.58ms]
+(pass) stop rejection does not fabricate success or lose drafts [2.65ms]
+(pass) late new-chat success cannot retarget a later project selection [5.42ms]
+(pass) language switching localizes controls, ownership, guidance and accessibility without resetting draft [2.83ms]
+(pass) unmount cancels observations and pending commands without stopping execution [4.01ms]
+(pass) fresh component scopes have independent drafts and subscriptions [2.83ms]
+(pass) unmount before scheduled invocation retires the pending submit [2.70ms]
+(pass) reopen recovery sends the displayed canonical folder without choosing a different target [5.08ms]
+(pass) mutable supplied project and owner records cannot retarget presentation or stop [2.75ms]
+(pass) newer owner event wins over an older busy submit result [2.71ms]
+(pass) foreign busy result or admission receipt retains original draft and membership [5.23ms]
+(pass) conflicting new-chat mapping retains selected identity [2.70ms]
+(pass) cancelled folder selection performs no association command [3.98ms]
+(pass) folder selection finishing after unmount cannot open an association [3.89ms]
+(pass) Chinese failures and recovery use complete phrases [5.35ms]
+(pass) supplied chat stop handler targets the displayed owner and retires with its view [3.89ms]
+(pass) structured list membership failure retains prior presentation and offers exact reopen [2.83ms]
+(pass) an empty project catalog still displays association failure and allows explicit retry [3.83ms]
+(pass) a successful owner event recovers failed observation without sending its draft [2.81ms]
+(pass) a pre-create list snapshot preserves the new canonical chat selection and draft [3.86ms]
+(pass) chat-to-Session conflict in an owner event cannot become a stop target [3.83ms]
+(pass) Session-to-chat conflict in an owner event cannot become a stop target [3.92ms]
+(pass) chat-to-Session conflict in a later owner snapshot is quarantined [5.06ms]
+(pass) Session-to-chat conflict in a later owner snapshot is quarantined [3.96ms]
+(pass) list arrival after a chat-to-Session owner conflict preserves canonical presentation and blocks stop [3.85ms]
+(pass) list arrival after a Session-to-chat owner conflict preserves canonical presentation and blocks stop [3.73ms]
+(pass) chat-to-Session conflict in a busy-submit result retains input and blocks stop [5.10ms]
+(pass) Session-to-chat conflict in a busy-submit result retains input and blocks stop [3.98ms]
+(pass) nonconflicting unlisted owner remains an exact supplied-port stop target [2.66ms]
+(pass) nonconflicting unlisted busy owner retains its draft and exact stop target [3.94ms]
+(pass) an owner event preceding the canonical list is reconciled when membership arrives [3.90ms]
+(pass) a Session already mapped to another supplied project cannot become this project's owner [6.80ms]
+(pass) successive unlisted owner observations cannot remap a known chat identity [2.95ms]
+(pass) successive unlisted owner observations cannot remap a known Session identity [2.89ms]
+(pass) canonical list membership supersedes an earlier incompatible owner observation and permits recovery [5.11ms]
+1042 |   view.listeners.get(b.projectID)!({ projectID: b.projectID, active: owner })
+1043 |   created.resolve(member)
+1044 |   await flush()
+1045 |   view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
+1046 |   await flush()
+1047 |   expect(view.stopped).toEqual(conflict ? [] : [owner])
+                              ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   {
++     "chatID": "chat_fix2-unlisted",
++     "projectID": "project_b",
++     "sessionID": "ses_fix2-created",
++   },
++ ]
+
+- Expected  - 1
++ Received  + 7
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:1047:24)
+(fail) late A create reconciles B ownership (conflict=%s) without retargeting its draft [10.02ms]
+(pass) late A create reconciles B ownership (conflict=%s) without retargeting its draft [6.54ms]
+1076 |   await flush()
+1077 |   listed.resolve([a1, a2, member])
+1078 |   await flush()
+1079 |   // This is the real supplied slot's reactive getter, retained after disposal;
+1080 |   // it observes B's cached owner while A's scoped list is the current query.
+1081 |   expect(cachedB.activeChatID).toBe(conflict ? undefined : owner.chatID)
+                                      ^
+error: expect(received).toBe(expected)
+
+Expected: undefined
+Received: "chat_fix2-cached"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts:1081:32)
+(fail) late A list reconciles the cached B owner (conflict=%s) and retains both drafts [5.46ms]
+(pass) late A list reconciles the cached B owner (conflict=%s) and retains both drafts [9.33ms]
+
+2 tests failed:
+(fail) late A create reconciles B ownership (conflict=%s) without retargeting its draft [10.02ms]
+(fail) late A list reconciles the cached B owner (conflict=%s) and retains both drafts [5.46ms]
+
+ 60 pass
+ 2 fail
+ 235 expect() calls
+Ran 62 tests across 1 file. [629.00ms]
