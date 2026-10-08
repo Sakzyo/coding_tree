@@ -47,7 +47,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 
 - [x] [M12-01 — Persist personal progress with project-linked attempts](#m12-01)
 - [x] [M12-02 — Select entry level and skip familiar lessons](#m12-02)
-- [ ] [M12-03 — Choose a track and return exercise requests](#m12-03)
+- [x] [M12-03 — Choose a track and return exercise requests](#m12-03)
 - [ ] [M12-04 — Validate submitted evidence and retain provenance](#m12-04)
 - [ ] [M12-05 — Evaluate both complete-robot capstones](#m12-05)
 - [ ] [M12-06 — Wire exercise evidence collection through normal workflows](#m12-06)
@@ -111,16 +111,18 @@ Verified 2026-10-07: candidate `181f495ee`, scoped I1 repair `088310368`; [imple
 
 **Interfaces:** Produces `requestExercise({ courseID, lessonID, projectSnapshot, configuration }): ExerciseRequest | { kind: 'pathing_required' }`; no editing or execution side effects.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/learning-and-progress/m12-03.test.ts`, add `neither permits foundations but blocks autonomous track`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/learning-and-progress/m12-03.test.ts`, add `neither permits foundations but blocks autonomous track`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(javaExercise.kind).toBe('exercise'); expect(autonomous.kind).toBe('pathing_required'); expect(operationCalls).toBe(0)
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/learning-and-progress/m12-03.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Use the supplied managed-pathing selection and version to choose Pedro/Road Runner exercises. Return a request to the caller; guide selection when neither, without changing project configuration or starting the agent.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/learning-and-progress/m12-03.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): choose a track and return exercise requests`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/learning-and-progress/m12-03.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Use the supplied managed-pathing selection and version to choose Pedro/Road Runner exercises. Return a request to the caller; guide selection when neither, without changing project configuration or starting the agent.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/learning-and-progress/m12-03.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): choose a track and return exercise requests`.
+
+Verified 2026-10-08: product `8f81bc5cc`, evidence correction `012996bac`; [implementation evidence](../validation/M12-03-implementation.md), [independent review](../validation/M12-03-review.md). Isolated exercise requests only; production binding, authored curricula, competence, composed/platform and physical gates remain separate.
 
 <a id="m12-04"></a>
 

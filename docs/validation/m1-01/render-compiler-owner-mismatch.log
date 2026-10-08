@@ -1,0 +1,27 @@
+bun test v1.3.14 (0d9b296a)
+
+../../../../../private/tmp/m1-01-preparation/render-compiled.test.ts:
+38 |   const textarea = host.querySelector("textarea")!
+39 |   textarea.value = "edited"
+40 |   textarea.dispatchEvent(new Event("input", { bubbles: true }))
+41 |   expect(host.querySelector("output")?.textContent).toBe("edited")
+42 |   dispose()
+43 |   expect(cleanup).toEqual(["disposed"])
+                       ^
+error: expect(received).toEqual(expected)
+
+- [
+-   "disposed",
+- ]
++ []
+
+- Expected  - 3
++ Received  + 1
+
+      at <anonymous> (/private/tmp/m1-01-preparation/render-compiled.test.ts:43:19)
+(fail) compiled TSX renders reactive DOM and disposes under the existing preload [11.80ms]
+
+ 0 pass
+ 1 fail
+ 5 expect() calls
+Ran 1 test across 1 file. [733.00ms]

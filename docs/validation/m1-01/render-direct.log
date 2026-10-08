@@ -1,0 +1,21 @@
+bun test v1.3.14 (0d9b296a)
+
+../../../../../private/tmp/m1-01-preparation/render-direct.test.ts:
+979 |   }
+980 | }
+981 | function handleError(err, owner = Owner) {
+982 |   const fns = ERROR && owner && owner.context && owner.context[ERROR];
+983 |   const error = castError(err);
+984 |   if (!fns) throw error;
+                        ^
+ReferenceError: React is not defined
+      at handleError (/Users/dylanxu/coding_tree/node_modules/.bun/solid-js@1.9.10/node_modules/solid-js/dist/solid.js:984:19)
+      at runUpdates (/Users/dylanxu/coding_tree/node_modules/.bun/solid-js@1.9.10/node_modules/solid-js/dist/solid.js:808:5)
+      at createRoot (/Users/dylanxu/coding_tree/node_modules/.bun/solid-js@1.9.10/node_modules/solid-js/dist/solid.js:189:12)
+      at render (/Users/dylanxu/coding_tree/node_modules/.bun/solid-js@1.9.10/node_modules/solid-js/web/dist/web.js:195:3)
+      at <anonymous> (/private/tmp/m1-01-preparation/render-direct.test.ts:7:19)
+(fail) plain TSX renders under the existing preload [0.89ms]
+
+ 0 pass
+ 1 fail
+Ran 1 test across 1 file. [126.00ms]

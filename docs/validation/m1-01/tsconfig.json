@@ -1,0 +1,4 @@
+{
+  "extends": "/Users/dylanxu/coding_tree/packages/app/tsconfig.json",
+  "include": ["./*.ts", "./*.tsx"]
+}

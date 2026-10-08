@@ -1,0 +1,9 @@
+bun test v1.3.14 (0d9b296a)
+
+test-browser/solid-router-cleanup.test.ts:
+(pass) route cleanup cannot invalidate an owner list being disposed [12.20ms]
+
+ 1 pass
+ 0 fail
+ 3 expect() calls
+Ran 1 test across 1 file. [269.00ms]
