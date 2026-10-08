@@ -1,0 +1,532 @@
+Base: 87fffe434
+Head: 0a0a23ed9069e50b8dd314ae14d54664aaa341ab
+Complete fix-only source diff below.
+
+diff --git a/packages/app/src/ftc/workspace.tsx b/packages/app/src/ftc/workspace.tsx
+index 8486d3658..da63dbeda 100644
+--- a/packages/app/src/ftc/workspace.tsx
++++ b/packages/app/src/ftc/workspace.tsx
+@@ -5,20 +5,23 @@ import type { WorkspaceProps } from "./facades"
+ 
+ type Failure = { membership: boolean; send: boolean; reopen: boolean }
+ type Owner = { state: "loading" | "ready" | "error"; active?: FtcProject.ChatRef; epoch: number }
+ 
+ export function FtcWorkspace(props: WorkspaceProps) {
+   const [store, setStore] = createStore({
+     projects: props.projects.map(copyProject),
+     projectID: props.projects[0]?.projectID,
+     selections: {} as Record<string, FtcProject.ChatRef | undefined>,
+     chats: {} as Record<string, readonly FtcProject.ChatRef[]>,
++    membership: [] as readonly FtcProject.ChatRef[],
++    observedOwners: [] as readonly FtcProject.ChatRef[],
++    membershipRevisions: {} as Record<string, number>,
+     lists: {} as Record<string, "loading" | "ready" | "error">,
+     owners: {} as Record<string, Owner>,
+     drafts: {} as Record<string, { text: string; revision: number }>,
+     pending: {} as Record<string, boolean>,
+     errors: {} as Record<string, Failure | undefined>,
+     selectionRevision: 0,
+     refresh: 0,
+   })
+   const scope = { live: true, commands: new Set<AbortController>() }
+   onCleanup(() => {
+@@ -49,117 +52,150 @@ export function FtcWorkspace(props: WorkspaceProps) {
+     )
+   })
+ 
+   createEffect(() => {
+     const context = project()
+     store.refresh
+     if (!context) return
+     untrack(() => {
+       const controller = new AbortController()
+       const request = Object.freeze({ projectID: context.projectID })
++      const membershipRevision = store.membershipRevisions[request.projectID] ?? 0
+       const observation = { live: true, event: false }
+       const current = () => scope.live && observation.live
+       setStore("errors", `query:${request.projectID}`, undefined)
+       setStore("lists", request.projectID, "loading")
+       setStore("owners", request.projectID, {
+         state: "loading",
+         active: undefined,
+         epoch: store.owners[request.projectID]?.epoch ?? 0,
+       })
+       const receive = (status: FtcProject.OwnerStatus) => {
+         if (!current()) return
+         observation.event = true
+-        if (validOwner(status, request.projectID) && store.lists[request.projectID] !== "error")
++        const valid = validOwner(status, request.projectID, [...store.membership, ...store.observedOwners])
++        if (valid) rememberOwner(status.active)
++        if (valid && store.lists[request.projectID] !== "error")
+           setStore("errors", `query:${request.projectID}`, undefined)
+-        if (!validOwner(status, request.projectID))
+-          setStore(
+-            "errors",
+-            `query:${request.projectID}`,
+-            failure({ code: "project_changed", recovery: "reopen_project" }, false),
+-          )
++        if (!valid) rejectOwner(request.projectID)
+         setStore("owners", request.projectID, {
+-          state: validOwner(status, request.projectID) ? "ready" : "error",
+-          active: validOwner(status, request.projectID) && status.active ? copyChat(status.active) : undefined,
++          state: valid ? "ready" : "error",
++          active: valid && status.active ? copyChat(status.active) : undefined,
+           epoch: store.owners[request.projectID].epoch + 1,
+         })
+       }
+       const unsubscribe = props.ports.subscribeOwner(request, receive)
+       onCleanup(() => {
+         observation.live = false
+         controller.abort()
+         unsubscribe()
+       })
+       void Promise.resolve()
+         .then(() => {
+           controller.signal.throwIfAborted()
+           return props.ports.active(request, controller.signal)
+         })
+         .then(
+           (status) => {
+             if (!current() || observation.event) return
+-            if (!validOwner(status, request.projectID))
+-              setStore(
+-                "errors",
+-                `query:${request.projectID}`,
+-                failure({ code: "project_changed", recovery: "reopen_project" }, false),
+-              )
++            const valid = validOwner(status, request.projectID, [...store.membership, ...store.observedOwners])
++            if (valid) rememberOwner(status.active)
++            if (!valid) rejectOwner(request.projectID)
+             setStore("owners", request.projectID, {
+-              state: validOwner(status, request.projectID) ? "ready" : "error",
+-              active: validOwner(status, request.projectID) && status.active ? copyChat(status.active) : undefined,
++              state: valid ? "ready" : "error",
++              active: valid && status.active ? copyChat(status.active) : undefined,
+             })
+           },
+           (cause: unknown) => {
+             if (!current() || observation.event) return
+             setStore("owners", request.projectID, "state", "error")
+             setStore("errors", `query:${request.projectID}`, failure(cause, false))
+           },
+         )
+       void Promise.resolve()
+         .then(() => {
+           controller.signal.throwIfAborted()
+           return props.ports.listChats(request, controller.signal)
+         })
+         .then(
+           (chats) => {
+             if (!current()) return
+             if (
+-              chats.some((chat) => chat.projectID !== request.projectID) ||
++              chats.some((chat) => chat.projectID !== request.projectID || conflicts(store.membership, chat)) ||
+               new Set(chats.map((chat) => chat.chatID)).size !== chats.length ||
+               new Set(chats.map((chat) => chat.sessionID)).size !== chats.length
+             ) {
+               setStore("lists", request.projectID, "error")
+               setStore(
+                 "errors",
+                 `query:${request.projectID}`,
+                 failure({ code: "chat_session_conflict", recovery: "reopen_project" }, false),
+               )
+               return
+             }
+-            setStore("chats", request.projectID, chats.map(copyChat))
++            // A list captured before a successful create cannot remove that new
++            // canonical member or change the user's more recent selection.
++            const members =
++              membershipRevision === (store.membershipRevisions[request.projectID] ?? 0)
++                ? chats
++                : [
++                    ...chats,
++                    ...(store.chats[request.projectID] ?? []).filter(
++                      (chat) => !chats.some((item) => chatKey(item) === chatKey(chat)),
++                    ),
++                  ]
++            remember(members)
++            setStore("chats", request.projectID, members.map(copyChat))
+             setStore("lists", request.projectID, "ready")
++            const active = store.owners[request.projectID]?.active
++            if (active && conflicts(store.membership, active)) rejectOwner(request.projectID)
+             const previous = store.selections[request.projectID]
+-            const next = chats.find((chat) => previous && chatKey(chat) === chatKey(previous)) ?? chats[0]
++            const next = members.find((chat) => previous && chatKey(chat) === chatKey(previous)) ?? members[0]
+             setStore("selections", request.projectID, next ? copyChat(next) : undefined)
+           },
+           (cause: unknown) => {
+             if (!current()) return
+             setStore("lists", request.projectID, "error")
+             setStore("errors", `query:${request.projectID}`, failure(cause, false))
+           },
+         )
+     })
+   })
+ 
+   function selectProject(context: FtcProject.ProjectContext) {
+     setStore({ projectID: context.projectID, selectionRevision: store.selectionRevision + 1 })
+   }
+ 
++  function remember(chats: readonly FtcProject.ChatRef[]) {
++    setStore("membership", (known) => [
++      ...known,
++      ...chats.filter((chat) => !known.some((item) => chatKey(item) === chatKey(chat))).map(copyChat),
++    ])
++    // Membership is canonical; a later list/create can expose an earlier owner
++    // observation as inconsistent without discarding the valid member or draft.
++    setStore("observedOwners", (owners) => owners.filter((chat) => !conflicts(store.membership, chat)))
++  }
++
++  function rememberOwner(chat: FtcProject.ChatRef | undefined) {
++    if (!chat || store.observedOwners.some((item) => chatKey(item) === chatKey(chat))) return
++    setStore("observedOwners", (owners) => [...owners, copyChat(chat)])
++  }
++
++  function rejectOwner(projectID: FtcProject.ProjectContext["projectID"]) {
++    setStore("owners", projectID, { state: "error", active: undefined })
++    setStore(
++      "errors",
++      `query:${projectID}`,
++      failure({ code: "chat_session_conflict", recovery: "reopen_project" }, false),
++    )
++  }
++
+   function command<T>(
+     key: string,
+     execute: (signal: AbortSignal) => Promise<T>,
+     accept: (result: T) => void,
+     send = false,
+   ) {
+     if (!scope.live || store.pending[key]) return
+     const controller = new AbortController()
+     scope.commands.add(controller)
+     setStore("pending", key, true)
+@@ -204,35 +240,32 @@ export function FtcWorkspace(props: WorkspaceProps) {
+ 
+   function newChat() {
+     const context = project()
+     if (!context) return
+     const request = Object.freeze({ projectID: context.projectID })
+     const revision = store.selectionRevision
+     command(
+       request.projectID,
+       (signal) => props.ports.createChat(request, signal),
+       (result) => {
+-        if (
+-          result.projectID !== request.projectID ||
+-          store.chats[request.projectID]?.some(
+-            (chat) =>
+-              (chat.chatID === result.chatID || chat.sessionID === result.sessionID) &&
+-              chatKey(chat) !== chatKey(result),
+-          )
+-        ) {
++        if (result.projectID !== request.projectID || conflicts(store.membership, result)) {
+           throw { code: "chat_session_conflict", recovery: "reopen_project" }
+         }
+         const reference = copyChat(result)
++        remember([reference])
++        setStore("membershipRevisions", request.projectID, (revision = 0) => revision + 1)
+         setStore("chats", request.projectID, (chats = []) => [
+           ...chats.filter((chat) => chatKey(chat) !== chatKey(reference)),
+           reference,
+         ])
++        const active = store.owners[request.projectID]?.active
++        if (active && conflicts(store.membership, active)) rejectOwner(request.projectID)
+         if (store.selectionRevision === revision) setStore("selections", request.projectID, reference)
+       },
+     )
+   }
+ 
+   function reopen() {
+     const context = project()
+     if (!context) return
+     const reference = selected()
+     const request = Object.freeze({ root: context.canonicalRoot })
+@@ -401,27 +434,36 @@ export function FtcWorkspace(props: WorkspaceProps) {
+                       const request = Object.freeze({
+                         chat: reference,
+                         prompt: Object.freeze({ text: captured.text }),
+                         ...options,
+                       })
+                       command(
+                         key,
+                         (signal) => props.ports.submit(request, signal),
+                         (result) => {
+                           if (result.kind === "busy") {
+-                            if (result.active.projectID !== reference.projectID)
+-                              throw { code: "project_changed", recovery: "reopen_project" }
+-                            if (store.owners[reference.projectID]?.epoch === epoch)
+-                              setStore("owners", reference.projectID, {
+-                                state: "ready",
+-                                active: copyChat(result.active),
+-                              })
++                            if (store.owners[reference.projectID]?.epoch !== epoch) return
++                            if (
++                              !validOwner(
++                                { projectID: reference.projectID, active: result.active },
++                                reference.projectID,
++                                [...store.membership, ...store.observedOwners],
++                              )
++                            ) {
++                              rejectOwner(reference.projectID)
++                              throw { code: "chat_session_conflict", recovery: "reopen_project" }
++                            }
++                            rememberOwner(result.active)
++                            setStore("owners", reference.projectID, {
++                              state: "ready",
++                              active: copyChat(result.active),
++                            })
+                             return
+                           }
+                           if (result.receipt.sessionID !== reference.sessionID)
+                             throw { code: "session_mismatch", recovery: "reopen_project" }
+                           if (store.drafts[key]?.revision === captured.revision)
+                             setStore("drafts", key, { text: "", revision: captured.revision + 1 })
+                         },
+                         true,
+                       )
+                     }}
+@@ -449,22 +491,35 @@ function copyProject(project: FtcProject.ProjectContext): FtcProject.ProjectCont
+     projectID: project.projectID,
+     canonicalRoot: project.canonicalRoot,
+     location: Object.freeze({
+       directory: project.location.directory,
+       workspaceID: project.location.workspaceID,
+       project: Object.freeze({ id: project.location.project.id, directory: project.location.project.directory }),
+     }),
+   })
+ }
+ 
+-function validOwner(status: FtcProject.OwnerStatus, projectID: FtcProject.ProjectContext["projectID"]) {
+-  return status.projectID === projectID && (!status.active || status.active.projectID === projectID)
++function conflicts(known: readonly FtcProject.ChatRef[], chat: FtcProject.ChatRef) {
++  return known.some(
++    (item) => (item.chatID === chat.chatID || item.sessionID === chat.sessionID) && chatKey(item) !== chatKey(chat),
++  )
++}
++
++function validOwner(
++  status: FtcProject.OwnerStatus,
++  projectID: FtcProject.ProjectContext["projectID"],
++  known: readonly FtcProject.ChatRef[],
++) {
++  return (
++    status.projectID === projectID &&
++    (!status.active || (status.active.projectID === projectID && !conflicts(known, status.active)))
++  )
+ }
+ 
+ function failure(cause: unknown, send: boolean): Failure {
+   const code = typeof cause === "object" && cause !== null && "code" in cause ? cause.code : undefined
+   const reopen =
+     typeof cause === "object" && cause !== null && "recovery" in cause && cause.recovery === "reopen_project"
+   return {
+     membership: code === "project_changed" || code === "session_mismatch" || code === "chat_session_conflict",
+     send,
+     reopen,
+diff --git a/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts b/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts
+index a1a3e00bb..e6e2e52ee 100644
+--- a/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts
++++ b/packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts
+@@ -829,10 +829,201 @@ test("a successful owner event recovers failed observation without sending its d
+   await flush()
+   view.draft("never automatic")
+   expect(view.host.querySelector('[role="alert"]')).not.toBeNull()
+   view.listeners.get(a.projectID)!({ projectID: a.projectID })
+   await flush()
+   expect(view.host.querySelector('[role="alert"]')).toBeNull()
+   expect(view.button('[data-action="send"]').disabled).toBe(false)
+   expect(view.host.querySelector("textarea")?.value).toBe("never automatic")
+   expect(view.submittedDrafts).toEqual([])
+ })
++
++test("a pre-create list snapshot preserves the new canonical chat selection and draft", async () => {
++  const list = Promise.withResolvers<readonly FtcProject.ChatRef[]>()
++  const view = fixture({ listChats: () => list.promise, active: idle, createChat: async () => a2 })
++  await flush()
++  expect(view.button('[data-action="new-chat"]').disabled).toBe(false)
++  view.button('[data-action="new-chat"]').click()
++  await flush()
++  expect(view.host.querySelector("article")?.getAttribute("data-chat")).toBe(a2.chatID)
++  view.draft("new chat draft")
++  list.resolve([a1])
++  await flush()
++  expect(view.host.querySelector("article")?.getAttribute("data-chat")).toBe(a2.chatID)
++  expect(view.host.querySelector("textarea")?.value).toBe("new chat draft")
++  expect(view.host.querySelector<HTMLButtonElement>(`[data-chat-id="${a1.chatID}"]`)).not.toBeNull()
++  expect(view.button('[data-action="send"]').disabled).toBe(false)
++  expect(view.submittedDrafts).toEqual([])
++})
++
++const conflictingOwners = [
++  { kind: "chat-to-Session", reference: { ...a2, sessionID: b1.sessionID } },
++  { kind: "Session-to-chat", reference: { ...a2, chatID: chat(a, "different").chatID } },
++]
++
++test.each(conflictingOwners)("$kind conflict in an owner event cannot become a stop target", async ({ reference }) => {
++  const view = fixture()
++  await flush()
++  view.draft("valid selected draft")
++  view.listeners.get(a.projectID)!({ projectID: a.projectID, active: reference })
++  await flush()
++  view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
++  await flush()
++  expect(view.stopped).toEqual([])
++  expect(view.host.querySelector("article")?.getAttribute("data-chat")).toBe(a1.chatID)
++  expect(view.host.querySelector("textarea")?.value).toBe("valid selected draft")
++  expect(view.host.textContent).toContain("The project or session changed.")
++  expect(view.button('[data-action="send"]').disabled).toBe(true)
++})
++
++test.each(conflictingOwners)("$kind conflict in a later owner snapshot is quarantined", async ({ reference }) => {
++  const active = Promise.withResolvers<FtcProject.OwnerStatus>()
++  const view = fixture({ active: () => active.promise })
++  await flush()
++  view.draft("snapshot draft")
++  active.resolve({ projectID: a.projectID, active: reference })
++  await flush()
++  view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
++  await flush()
++  expect(view.stopped).toEqual([])
++  expect(view.host.querySelector("textarea")?.value).toBe("snapshot draft")
++  expect(view.host.textContent).toContain("The project or session changed.")
++})
++
++test.each(conflictingOwners)(
++  "list arrival after a $kind owner conflict preserves canonical presentation and blocks stop",
++  async ({ reference }) => {
++    const list = Promise.withResolvers<readonly FtcProject.ChatRef[]>()
++    const view = fixture({
++      listChats: () => list.promise,
++      active: async () => ({ projectID: a.projectID, active: reference }),
++    })
++    await flush()
++    list.resolve([a1, a2])
++    await flush()
++    view.draft("canonical list draft")
++    view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
++    await flush()
++    expect(view.stopped).toEqual([])
++    expect(view.host.querySelector("output")?.getAttribute("data-history")).toBe(a1.sessionID)
++    expect(view.host.querySelector("textarea")?.value).toBe("canonical list draft")
++    expect(view.host.textContent).toContain("The project or session changed.")
++    expect(view.button('[data-action="send"]').disabled).toBe(true)
++  },
++)
++
++test.each(conflictingOwners)(
++  "$kind conflict in a busy-submit result retains input and blocks stop",
++  async ({ reference }) => {
++    const view = fixture({ active: idle, submit: async () => ({ kind: "busy", active: reference }) })
++    await flush()
++    view.draft("busy result draft")
++    view.button('[data-action="send"]').click()
++    await flush()
++    view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
++    await flush()
++    expect(view.stopped).toEqual([])
++    expect(view.host.querySelector("textarea")?.value).toBe("busy result draft")
++    expect(view.host.querySelector("article")?.getAttribute("data-chat")).toBe(a1.chatID)
++    expect(view.host.textContent).toContain("The project or session changed.")
++    expect(view.button('[data-action="send"]').disabled).toBe(true)
++  },
++)
++
++test("nonconflicting unlisted owner remains an exact supplied-port stop target", async () => {
++  const reference = chat(a, "unlisted")
++  const view = fixture({ active: async () => ({ projectID: a.projectID, active: reference }) })
++  await flush()
++  expect(view.host.querySelector("article")?.getAttribute("data-active-chat")).toBe(reference.chatID)
++  view.button('[data-action="stop"]').click()
++  await flush()
++  expect(view.stopped).toEqual([reference])
++  expect(view.host.querySelector("article")?.getAttribute("data-chat")).toBe(a1.chatID)
++})
++
++test("nonconflicting unlisted busy owner retains its draft and exact stop target", async () => {
++  const reference = chat(a, "busy-new")
++  const view = fixture({ active: idle, submit: async () => ({ kind: "busy", active: reference }) })
++  await flush()
++  view.draft("retained unknown owner")
++  view.button('[data-action="send"]').click()
++  await flush()
++  expect(view.host.querySelector("article")?.getAttribute("data-active-chat")).toBe(reference.chatID)
++  view.button('[data-action="stop"]').click()
++  await flush()
++  expect(view.stopped).toEqual([reference])
++  expect(view.host.querySelector("textarea")?.value).toBe("retained unknown owner")
++})
++
++test("an owner event preceding the canonical list is reconciled when membership arrives", async () => {
++  const list = Promise.withResolvers<readonly FtcProject.ChatRef[]>()
++  const active = Promise.withResolvers<FtcProject.OwnerStatus>()
++  const view = fixture({ listChats: () => list.promise, active: () => active.promise })
++  await flush()
++  view.listeners.get(a.projectID)!({ projectID: a.projectID, active: { ...a2, sessionID: b1.sessionID } })
++  list.resolve([a1, a2])
++  active.resolve({ projectID: a.projectID })
++  await flush()
++  view.draft("event-before-list")
++  view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
++  await flush()
++  expect(view.stopped).toEqual([])
++  expect(view.host.querySelector("textarea")?.value).toBe("event-before-list")
++  expect(view.host.textContent).toContain("The project or session changed.")
++})
++
++test("a Session already mapped to another supplied project cannot become this project's owner", async () => {
++  const view = fixture({ active: idle })
++  await flush()
++  view.button(`[data-project-id="${b.projectID}"]`).click()
++  await flush()
++  view.button(`[data-project-id="${a.projectID}"]`).click()
++  await flush()
++  view.draft("a remains selected")
++  view.listeners.get(a.projectID)!({ projectID: a.projectID, active: { ...a2, sessionID: b1.sessionID } })
++  view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
++  await flush()
++  expect(view.stopped).toEqual([])
++  expect(view.host.querySelector("textarea")?.value).toBe("a remains selected")
++  expect(view.host.textContent).toContain("The project or session changed.")
++})
++
++test.each(["chat", "Session"] as const)(
++  "successive unlisted owner observations cannot remap a known %s identity",
++  async (identity) => {
++    const first = chat(a, "first-unlisted")
++    const second =
++      identity === "chat"
++        ? { ...first, sessionID: chat(a, "second-unlisted").sessionID }
++        : { ...first, chatID: chat(a, "second-unlisted").chatID }
++    const view = fixture({ active: idle })
++    await flush()
++    view.draft("known owner draft")
++    view.listeners.get(a.projectID)!({ projectID: a.projectID, active: first })
++    view.listeners.get(a.projectID)!({ projectID: a.projectID })
++    view.listeners.get(a.projectID)!({ projectID: a.projectID, active: second })
++    view.host.querySelector<HTMLButtonElement>('[data-action="stop"]')?.click()
++    await flush()
++    expect(view.stopped).toEqual([])
++    expect(view.host.querySelector("textarea")?.value).toBe("known owner draft")
++    expect(view.host.textContent).toContain("The project or session changed.")
++  },
++)
++
++test("canonical list membership supersedes an earlier incompatible owner observation and permits recovery", async () => {
++  const list = Promise.withResolvers<readonly FtcProject.ChatRef[]>()
++  const view = fixture({
++    listChats: () => list.promise,
++    active: async () => ({ projectID: a.projectID, active: { ...a2, sessionID: b1.sessionID } }),
++  })
++  await flush()
++  list.resolve([a1, a2])
++  await flush()
++  view.draft("still canonical")
++  view.listeners.get(a.projectID)!({ projectID: a.projectID, active: a2 })
++  await flush()
++  expect(view.host.textContent).not.toContain("The project or session changed.")
++  view.button('[data-action="stop"]').click()
++  await flush()
++  expect(view.stopped).toEqual([a2])
++  expect(view.host.querySelector("textarea")?.value).toBe("still canonical")
++})

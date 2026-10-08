@@ -1,0 +1,20 @@
+{
+  "phase": "unchanged prerequisite baseline only",
+  "head": "87fffe434fe1f6a4b1cf91bec7b5ba3e8a9eb97e",
+  "command": [
+    "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+    "test",
+    "./test/ftc/java-development/m5-01.test.ts",
+    "./test/ftc/java-development/m5-02.test.ts"
+  ],
+  "cwd": "/Users/dylanxu/coding_tree/packages/core",
+  "exit": 0,
+  "environment": {
+    "OPENCODE_TEST_HOME": "/private/tmp/m5-05-home/opencode",
+    "XDG_CONFIG_HOME": "/private/tmp/m5-05-home/config",
+    "XDG_DATA_HOME": "/private/tmp/m5-05-home/data",
+    "XDG_CACHE_HOME": "/private/tmp/m5-05-home/cache",
+    "XDG_STATE_HOME": "/private/tmp/m5-05-home/state"
+  },
+  "sourceUnchanged": true
+}

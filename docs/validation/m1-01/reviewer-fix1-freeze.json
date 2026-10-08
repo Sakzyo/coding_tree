@@ -1,0 +1,66 @@
+{
+  "head": "0a0a23ed9069e50b8dd314ae14d54664aaa341ab",
+  "base": "87fffe434",
+  "source_manifest": "docs/validation/m1-01/fix1-source-sha256.txt",
+  "sources": [
+    {
+      "path": "packages/app/src/ftc/facades.ts",
+      "expected_sha256": "a1650462d436f59b7384182f1fcc48e60eed98866c590212fc24918a18d423cd",
+      "actual_sha256": "a1650462d436f59b7384182f1fcc48e60eed98866c590212fc24918a18d423cd",
+      "matches": true
+    },
+    {
+      "path": "packages/app/src/ftc/workspace.tsx",
+      "expected_sha256": "2638c645459fa61911c999ca6c8ec414ca3ac61c6a138424c7319e6606f362dc",
+      "actual_sha256": "2638c645459fa61911c999ca6c8ec414ca3ac61c6a138424c7319e6606f362dc",
+      "matches": true
+    },
+    {
+      "path": "packages/app/test-browser/ftc/desktop-workspace/m1-01.test.ts",
+      "expected_sha256": "881f3ddee91fd1850c38574b89fd0feb2056e4967ebb09f183bdaedf6e22d5f0",
+      "actual_sha256": "881f3ddee91fd1850c38574b89fd0feb2056e4967ebb09f183bdaedf6e22d5f0",
+      "matches": true
+    },
+    {
+      "path": "packages/app/src/i18n/en.ts",
+      "expected_sha256": "41e013b8bb83f8a2555f8e78b71492450ee7360c966bb15cc5da6c2be2843a9d",
+      "actual_sha256": "41e013b8bb83f8a2555f8e78b71492450ee7360c966bb15cc5da6c2be2843a9d",
+      "matches": true
+    },
+    {
+      "path": "packages/app/src/i18n/zh.ts",
+      "expected_sha256": "1bed34f5b3617833cda74b970d5dfa3694f9745cf26f1a7c1fba72afd0b3400b",
+      "actual_sha256": "1bed34f5b3617833cda74b970d5dfa3694f9745cf26f1a7c1fba72afd0b3400b",
+      "matches": true
+    },
+    {
+      "path": "packages/app/src/i18n/parity.test.ts",
+      "expected_sha256": "a16ee0cde6446de138fb488db59191d7610e275b9ca3a06d6a61d84eb7df98be",
+      "actual_sha256": "a16ee0cde6446de138fb488db59191d7610e275b9ca3a06d6a61d84eb7df98be",
+      "matches": true
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/validation/M1-01-fix1-review.md",
+      "sha256": "1ae973e430431eaed0970ecbf20c447f130b10a9c5d1755f241e0f8b74439c79"
+    },
+    {
+      "path": "docs/validation/m1-01/reviewer-fix1-probe.test.ts",
+      "sha256": "ebda8828cac54c6a659ed4a94301ada1d6e3bf405039b8e2bea104deba5e6a81"
+    },
+    {
+      "path": "docs/validation/m1-01/reviewer-fix1-probe.log",
+      "sha256": "4dcb90e6b6e4102cb87b389bdf6805a2ae631644ec6e5128c241ffa02325189d"
+    }
+  ],
+  "command": "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun test --conditions=browser --preload ./happydom.ts ../../docs/validation/m1-01/reviewer-fix1-probe.test.ts",
+  "cwd": "/Users/dylanxu/coding_tree/packages/app",
+  "exit_code": 1,
+  "tests": {
+    "pass": 0,
+    "fail": 1,
+    "assertions": 1
+  },
+  "log_provenance": "Copied verbatim from the sole completed exec_command tool output; no rerun to regenerate output."
+}

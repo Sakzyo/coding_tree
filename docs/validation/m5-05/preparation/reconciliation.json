@@ -1,0 +1,50 @@
+{
+  "head": "00a6067ccd4aaa341a951ccc1d81d5c1acd0efef",
+  "date": "2026-10-08",
+  "purpose": "read-only reconciliation, no product implementation or acceptance",
+  "latestM502": [
+    {
+      "path": "packages/core/src/ftc/java.ts",
+      "expected": "c4e6c2704a24b39bcb95c49d0e085f90ebd287499808c25d56397547d7ec830b",
+      "actual": "c4e6c2704a24b39bcb95c49d0e085f90ebd287499808c25d56397547d7ec830b",
+      "matches": true
+    },
+    {
+      "path": "packages/core/src/ftc/java/documents.ts",
+      "expected": "b33fbbd4711417f7dcf2c38a490de64802f059ce277ec12e30d96a47e88dfce7",
+      "actual": "b33fbbd4711417f7dcf2c38a490de64802f059ce277ec12e30d96a47e88dfce7",
+      "matches": true
+    },
+    {
+      "path": "packages/schema/src/ftc-java.ts",
+      "expected": "d88d6d719d8c32cf090e37cbb6fe757b1f1cf31c64b6b3d63b76ababdb059a13",
+      "actual": "d88d6d719d8c32cf090e37cbb6fe757b1f1cf31c64b6b3d63b76ababdb059a13",
+      "matches": true
+    },
+    {
+      "path": "packages/core/test/ftc/java-development/m5-02.test.ts",
+      "expected": "a17c5c86f805ddbe19bf7a84d2ef60995ef922245cc89307c4ab98d283312af4",
+      "actual": "a17c5c86f805ddbe19bf7a84d2ef60995ef922245cc89307c4ab98d283312af4",
+      "matches": true
+    },
+    {
+      "path": "packages/schema/test/ftc-java.test.ts",
+      "expected": "2879422b2d5f66283e8b59b50024b2944c7955b41137b43f3310b28b5c1c9a23",
+      "actual": "2879422b2d5f66283e8b59b50024b2944c7955b41137b43f3310b28b5c1c9a23",
+      "matches": true
+    }
+  ],
+  "unchangedM501FocusedTest": {
+    "path": "packages/core/test/ftc/java-development/m5-01.test.ts",
+    "expected": "eeee94aab9e4477d86a17c3b51ee93842d49fea78f9280e2f19f60c4c4f1247d",
+    "actual": "eeee94aab9e4477d86a17c3b51ee93842d49fea78f9280e2f19f60c4c4f1247d",
+    "matches": true
+  },
+  "newBuildFilesPresent": {
+    "packages/core/src/ftc/java/build.ts": false,
+    "packages/core/test/ftc/java-development/m5-05.test.ts": false,
+    "packages/core/test/ftc/java-development/m5-06.test.ts": false
+  },
+  "testsRun": [],
+  "testsNotRunReason": "Relevant document/edit bytes and focused tests match reviewed M5-02/M5-01 evidence; no new code or unresolved prerequisite behavior warrants repeating successful suites. M5-05 has no implementation/test selector yet."
+}

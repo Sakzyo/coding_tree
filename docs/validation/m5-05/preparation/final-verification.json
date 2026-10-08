@@ -1,0 +1,125 @@
+{
+  "allSourceHashesUnchanged": true,
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "matches": true
+    },
+    {
+      "path": "packages/schema/AGENTS.md",
+      "matches": true
+    },
+    {
+      "path": "docs/validation/M5-05-preflight.md",
+      "matches": true
+    },
+    {
+      "path": "docs/tasks/java-development.md",
+      "matches": true
+    },
+    {
+      "path": "docs/high-level-design.md",
+      "matches": true
+    },
+    {
+      "path": "docs/prompt.md",
+      "matches": true
+    },
+    {
+      "path": "packages/schema/src/ftc-java.ts",
+      "matches": true
+    },
+    {
+      "path": "packages/schema/src/ftc-environment.ts",
+      "matches": true
+    },
+    {
+      "path": "packages/schema/src/ftc-project.ts",
+      "matches": true
+    },
+    {
+      "path": "packages/core/src/ftc/java.ts",
+      "matches": true
+    },
+    {
+      "path": "packages/core/src/ftc/java/documents.ts",
+      "matches": true
+    },
+    {
+      "path": "packages/core/src/ftc/environment.ts",
+      "matches": true
+    },
+    {
+      "path": "packages/core/test/ftc/java-development/m5-01.test.ts",
+      "matches": true
+    },
+    {
+      "path": "packages/core/test/ftc/java-development/m5-02.test.ts",
+      "matches": true
+    },
+    {
+      "path": "packages/schema/test/ftc-java.test.ts",
+      "matches": true
+    },
+    {
+      "path": "docs/validation/M5-01-review.md",
+      "matches": true
+    },
+    {
+      "path": "docs/validation/M5-01-implementation.md",
+      "matches": true
+    },
+    {
+      "path": "docs/validation/M5-02-review.md",
+      "matches": true
+    }
+  ],
+  "reportWhitespaceClean": true,
+  "reportSha256": "739990124da4f2ef4f5e7c980977e6f4881460ee4fe03ec7584a7f153c475fe4",
+  "linkTargetsVerified": [
+    {
+      "target": "m5-05/preparation/reconciliation.json",
+      "exists": true
+    },
+    {
+      "target": "M5-05-preflight.md",
+      "exists": true
+    },
+    {
+      "target": "../tasks/java-development.md#m5-05",
+      "exists": true
+    },
+    {
+      "target": "M5-01-implementation.md",
+      "exists": true
+    },
+    {
+      "target": "m5-02/source-sha256.txt",
+      "exists": true
+    },
+    {
+      "target": "m5-05/preparation/reconciliation.json",
+      "exists": true
+    },
+    {
+      "target": "m5-05/preparation/source-sha256.txt",
+      "exists": true
+    },
+    {
+      "target": "../high-level-design.md",
+      "exists": true
+    },
+    {
+      "target": "../tasks/progress.md#contract-conventions",
+      "exists": true
+    },
+    {
+      "target": "m5-05/preparation/source-excerpts.txt",
+      "exists": true
+    },
+    {
+      "target": "../../packages/core/src/ftc/environment.ts:293",
+      "exists": true
+    }
+  ]
+}

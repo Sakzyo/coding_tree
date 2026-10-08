@@ -1,0 +1,675 @@
+### docs/tasks/java-development.md:31-43
+
+31: Planned owned files/responsibilities (create missing files; modify existing files in place):
+32: 
+33: - `packages/schema/src/ftc-java.ts` — document/edit/build/artifact records
+34: - `packages/core/src/ftc/java.ts` — document/build facade
+35: - `packages/core/src/ftc/java/documents.ts` — revision and save rules
+36: - `packages/core/src/ftc/java/language-service.ts` — scoped language-service adapter
+37: - `packages/core/src/ftc/java/build.ts` — build evidence and artifacts
+38: - `packages/app/src/ftc/editor.tsx` — Monaco view adapter
+39: 
+40: `DocumentSnapshot = { documentID, projectID, path, bufferRevision, diskRevision, text, dirty }`. `EditProposal = { projectID, edits: readonly { path, expectedRevision, replacement }[], explanation }`; revisions distinguish disk from buffer. `BuildEvidence = { buildID, projectID, sourceRevision, configurationRevision, inputChanged, exitCode, status, logs, artifact? }`; status is succeeded/failed/cancelled/outdated. `ArtifactRef = { buildID, projectID, sourceRevision, configurationRevision, digest, path }` is a local reference; public responses redact host paths where unnecessary. All evidence IDs resolve through an owner query, never an agent-supplied success flag.
+41: 
+42: Signatures below specify domain inputs/results; use the repository's Effect services and canonical Schema types as explained in [contract conventions](progress.md#contract-conventions). New API/file names are planning decisions, not claims that they exist.
+43: 
+
+### docs/tasks/java-development.md:64-109
+
+64: 
+65: <a id="m5-01"></a>
+66: 
+67: ### M5-01 — Own documents independently of editor views
+68: 
+69: **Prerequisites:** None; implement using supplied port fixtures.
+70: 
+71: **Files:** `packages/schema/src/ftc-java.ts`, `packages/core/src/ftc/java.ts`, `packages/core/src/ftc/java/documents.ts`, `packages/core/test/ftc/java-development/m5-01.test.ts`.
+72: 
+73: **Interfaces:** Produces `openDocument({ project, path }): DocumentSnapshot`, `changeDocument({ path, expectedRevision, text }): DocumentSnapshot`, `readDocument({ projectID, path }): DocumentSnapshot`.
+74: 
+75: - [x] **1. Write the focused test:** In `packages/core/test/ftc/java-development/m5-01.test.ts`, add `detaching a view preserves dirty buffer`. Use the real module and supplied port fixtures; core assertions:
+76: 
+77: ```ts
+78: expect(reopened.text).toBe('unsaved'); expect(reopened.dirty).toBe(true); expect(diskText).toBe('saved')
+79: ```
+80: 
+81: - [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/java-development/m5-01.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+82: - [x] **3. Implement the smallest behavior:** Use project-scoped canonical file identities; preserve dirty buffers separately from saved revisions and publish revisioned document events. Reject paths outside the authorized project scope, including symlink escapes.
+83: - [x] **4. Verify:** Re-run `bun test ./test/ftc/java-development/m5-01.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+84: - [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): own documents independently of editor views`.
+85: 
+86: Verified 2026-10-07 at `9bcb23ce6`: [implementation evidence](../validation/M5-01-implementation.md), [independent review](../validation/M5-01-review.md), [settled Core types](../validation/m5-01/core-types-settled.log). Actual editor/production/Windows acceptance remains separate.
+87: 
+88: <a id="m5-02"></a>
+89: 
+90: ### M5-02 — Save and apply edits with conflict checks
+91: 
+92: **Prerequisites:** [M5-01](java-development.md#m5-01).
+93: 
+94: **Files:** `packages/core/src/ftc/java/documents.ts`, `packages/core/src/ftc/java.ts`, `packages/core/test/ftc/java-development/m5-02.test.ts`.
+95: 
+96: **Interfaces:** Produces `saveDocument({ projectID, path, expectedRevision }): DocumentSnapshot` and `applyEdits({ proposal: EditProposal, authorization }): EditResult`; authorization is supplied by the trusted code-change adapter, not arbitrary tool JSON.
+97: 
+98: - [x] **1. Write the focused test:** In `packages/core/test/ftc/java-development/m5-02.test.ts`, add `dirty or externally changed files reject stale edits`. Use the real module and supplied port fixtures; core assertions:
+99: 
+100: ```ts
+101: expect(result.kind).toBe('conflict'); expect(bufferText).toBe('unsaved'); expect(externalDiskText).toBe('external')
+102: ```
+103: 
+104: - [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/java-development/m5-02.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+105: - [x] **3. Implement the smallest behavior:** Check buffer/disk revisions and authorized file scope before writing. Preserve the proposal and both versions; return save/merge/defer choices. Preflight every file in a multi-file proposal and report partial filesystem failure honestly; never silently discard changes.
+106: - [x] **4. Verify:** Re-run `bun test ./test/ftc/java-development/m5-02.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+107: - [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): save and apply edits with conflict checks`.
+108: 
+109: Verified 2026-10-07: candidate `23eed3535`, authorization repair `a82570d5f`; [implementation evidence](../validation/M5-02-implementation.md), [independent review and scoped re-review](../validation/M5-02-review.md). Actual auth/filesystem adapter composition and new-file/template creation remain separate.
+
+### docs/tasks/java-development.md:148-185
+
+148: <a id="m5-05"></a>
+149: 
+150: ### M5-05 — Build saved revisions and retain actual output
+151: 
+152: **Prerequisites:** [M5-01](java-development.md#m5-01).
+153: 
+154: **Files:** `packages/core/src/ftc/java/build.ts`, `packages/core/src/ftc/java.ts`, `packages/core/test/ftc/java-development/m5-05.test.ts`.
+155: 
+156: **Interfaces:** Produces `build({ project, toolchain: ToolchainDescriptor, configurationRevision }): BuildEvidence`; consumes a build process and saved input snapshot/hash port.
+157: 
+158: - [ ] **1. Write the focused test:** In `packages/core/test/ftc/java-development/m5-05.test.ts`, add `source change during build makes evidence outdated`. Use the real module and supplied port fixtures; core assertions:
+159: 
+160: ```ts
+161: expect(changed.status).toBe('outdated'); expect(changed.inputChanged).toBe(true); expect(cancelled.status).toBe('cancelled')
+162: ```
+163: 
+164: - [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/java-development/m5-05.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+165: - [ ] **3. Implement the smallest behavior:** Use the project's Gradle wrapper and build JDK. Build a stable saved snapshot or verify relevant input revisions before/after execution; show unsaved-buffer exclusion. Capture exit status/logs and terminate owned child processes on cancellation. Production process access remains subject to M9-08.
+166: - [ ] **4. Verify:** Re-run `bun test ./test/ftc/java-development/m5-05.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+167: - [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): build saved revisions and retain actual output`.
+168: 
+169: <a id="m5-06"></a>
+170: 
+171: ### M5-06 — Issue and revalidate immutable artifact references
+172: 
+173: **Prerequisites:** [M5-05](java-development.md#m5-05).
+174: 
+175: **Files:** `packages/core/src/ftc/java/build.ts`, `packages/schema/src/ftc-java.ts`, `packages/core/test/ftc/java-development/m5-06.test.ts`.
+176: 
+177: **Interfaces:** Produces `artifact({ buildID }): ArtifactRef | undefined` and `verifyArtifact({ ref, currentProject }): { valid: boolean, reason? }` for M9's live verification port.
+178: 
+179: - [ ] **1. Write the focused test:** In `packages/core/test/ftc/java-development/m5-06.test.ts`, add `failed or changed artifacts cannot authorize deployment`. Use the real module and supplied port fixtures; core assertions:
+180: 
+181: ```ts
+182: expect(failedArtifact).toBeUndefined(); expect(tampered.valid).toBe(false); expect(stale.valid).toBe(false)
+183: ```
+184: 
+185: - [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/java-development/m5-06.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+
+### docs/high-level-design.md:138-175
+
+138: Each row defines the real implementation exercised by that module's isolated tests. Interface names express domain operations, not finalized HTTP routes. Each public boundary validates its inputs and domain invariants; cross-module evidence carries its source and revision. Production approval events and artifact/state results enter through trusted adapters. An agent-provided record is not authorization. Tests supply contract values through isolated ports without weakening production checks.
+139: 
+140: | Module | Inputs and public outputs | Owned responsibility and state |
+141: | --- | --- | --- |
+142: | **M1 — Desktop workspace** | Receives view data, document facades, localized content, and status events. Emits user commands for projects/chats, setup, forms, layouts, lessons, and approvals. | UI composition, layout, open views, and editor view state. Displays dirty documents owned by M5. Never authorizes backend actions or owns domain records. |
+143: | **M2 — Projects and chats** | Accepts folder/project/chat identifiers and prompt/stop requests. Exposes `createProject`, `openProject`, `createChat`, `submitPrompt`, `stopRun`, `activeChat`, and the project execution gate. Returns associations, busy status, and execution ownership handles. | Local folder associations, chat-to-Session membership, and process-local project ownership. Session history and model execution belong to M3's existing Session services. |
+144: | **M3 — Agent and context** | Accepts Session IDs, prompt commands, mode settings, and domain context through registered sources. Returns admitted-input receipts, Session events, plans, tool results, and run outcomes. | Existing Session V2 admission/execution/history/context epochs, context assembly, and plan-first/direct coding policy. Domain facts and robot approval decisions remain with their owners. |
+145: | **M4 — Environment and compatibility** | Accepts host facts, project dependency snapshots, a compatibility catalog, setup choice, and requested asset checks. Exposes `inspectEnvironment`, `prepareEnvironment`, and `readiness`; returns toolchain descriptors and step results. | Compatibility resolution, setup/recovery decisions, tool inventory, and cached-asset readiness. Never opens a chat or silently upgrades an imported project. |
+146: | **M5 — Java development** | Accepts project-root/toolchain descriptors, document revisions, edit proposals with authorized scope, and build requests. Returns document facades, completion/definition results, diagnostic readiness, build evidence, and artifact references. | Documents, revision/conflict checks, language-service lifecycle, build runs/logs, and artifact identity. Does not install APKs or decide code approval. |
+147: | **M6 — FTC configuration and libraries** | Accepts manifest revisions, hardware changes, detected dependencies, pathing selection, and versioned references. Returns validated manifest updates, conflicts, mapping status, and proposed project edits. | Shared manifest, hardware validation, exclusive managed pathing selection, and mapping consistency. Proposes Java/Gradle changes for the code-change workflow; never bypasses it by writing code directly. |
+148: | **M7 — AI access and local inference** | Accepts mode/provider/model selection, resource facts, credential references, lifecycle commands, and model requests. Returns model capabilities, streamed model responses, runtime status, or typed failures. | Provider configuration, local model inventory, runtime lifecycle, resource checks, and local-only enforcement. No file, shell, or robot tool execution. |
+149: | **M8 — Controller connections** | Accepts discovery/connection requests and target identities. Exposes `discoverControllers`, `connect`, `selectTarget`, and `connectionStatus`; returns identity-bound connection descriptors and status events. | Controller identity, USB/Wi-Fi alias resolution, authorization state, endpoints, and connection generations. Discovery/connection never deploys or starts an OpMode. |
+150: | **M9 — Robot approvals and operations** | Accepts validated project/chat context, artifact references, target identity, action parameters, and user approval events. Exposes `prepareOperation`, `approveOperation`, `executeOperation`, and `operationStatus`. | Approval policy, context revalidation, per-controller operation ownership, and durable outcomes. This is the only authority for app-issued robot mutations. |
+151: | **M10 — Diagnostics and dashboard** | Accepts connection descriptors, timestamped raw observations/logs, build evidence, and dashboard capability results. Returns `telemetrySnapshot`, subscriptions, robot logs, and a validated dashboard descriptor. | Decoding/normalization, bounded buffers, provenance, freshness, and display availability. Does not create windows, call the model, or perform control actions. |
+152: | **M11 — FTC knowledge** | Accepts content ID or topic, SDK/library versions, language, and local-availability constraints. Returns applicable lesson/reference content, examples, comparisons, provenance, and explicit missing-content results. | Content manifests, local content lookup, version filtering, and bilingual knowledge. Never reads project configuration or diagnostics stores directly. |
+153: | **M12 — Learning** | Accepts entry level, course/lesson ID, language, project/configuration snapshots, and evidence-bearing attempts. Returns lessons, next-step guidance, exercise requests, and progress/completion state. | Personal cross-project progress, project-linked attempts, pathing tracks, and evidence-based completion rules. Does not run the agent, edit files, deploy, or operate a robot. |
+154: 
+155: ### Required ports and production bindings
+156: 
+157: The module on the left owns its consumed port definitions. The composition root connects these to the right-hand providers' public facades or technology adapters. Inject only the capabilities actually used; do not give every module a universal backend client.
+158: 
+159: | Consumer | Required ports or supplied values | Production binding |
+160: | --- | --- | --- |
+161: | M1 | Workspace command/query/events; document view facade; desktop window facilities; localization. | Typed client adapters, M5's public document contract, and narrow Electron IPC. |
+162: | M2 | Its project repository; folder identity; Session access; execution notifications. | Module-owned SQLite adapter, filesystem identity adapter, M3 public Session facade. A host adapter wires the project gate into every execution entry point. |
+163: | M3 | Session-owned repositories; model stream; registered Context Sources/tools; approval interaction; project execution gate. | Existing Session services; M7; adapters over M5/M6/M9/M10/M11 public contracts. The host binds the gate contract to M2 without an M3 implementation import of M2. |
+164: | M4 | Tool probing/process execution, artifact download/cache, inventory repository; supplied compatibility data; build verification. | OS/cache adapters and an adapter calling M5 with an already resolved toolchain descriptor. M5 never calls M4 to start setup, so setup/build do not recurse. |
+165: | M5 | Project-scoped files/document store; language service; build process; artifact store; supplied toolchain descriptor. | Filesystem/Monaco/JDT LS/Gradle adapters. M4 supplies the descriptor through application wiring; neither M2 nor M4 must run in a module test. |
+166: | M6 | Manifest repository; read-only project inspection; supplied compatibility/reference records. | Versioned JSON adapter, filesystem/dependency inspection adapter, and data obtained through M4/M11 public queries. Edit proposals are returned to the caller for M3/M5 to apply. |
+167: | M7 | Provider transport, protected credentials, runtime process control, model download/store; clock and resource probe. | Existing provider adapters, desktop credential facility, HTTP/filesystem/process adapters. User-managed runtimes remain externally owned. |
+168: | M8 | Device discovery/connection transport, identity resolver, connection event stream. | ADB and validated Panels connection adapters. It returns read capabilities to M10; mutation transport is bound only into M9. |
+169: | M9 | Approval input, current connection/state query, artifact verification, mutation transport, operation repository, clock. | Narrow user-action channel, M8 identity/connection queries, read-only robot-state adapter, M5 artifact queries, protected ADB/Panels command adapters, module-owned SQLite repository. No renderer or M3 is needed to evaluate policy. |
+170: | M10 | Read-only observation/log transport, protocol decoder, clock; supplied build evidence and dashboard capabilities. | Read-only M8/transport adapters and version-specific Panels decoders. M1/Electron consume its output; no UI dependency points back into M10. |
+171: | M11 | Content repository/search; supplied query/version/language values. | Local lesson/reference packages and ordinary text-search adapter. No M4/M6 runtime dependency. |
+172: | M12 | Lesson content lookup, progress repository; supplied project/configuration/evidence records. | M11 public content adapter and module-owned SQLite repository. A caller routes exercise requests through normal M3/M5/M9 workflows and returns actual evidence. |
+173: 
+174: Keep M4's readiness evaluation of other modules' assets based on inventory snapshots or narrow availability queries; it does not own their state or start those modules. Module repositories may share one production SQLite connection, but each adapter owns its queries and migrations. Session admission/event transactions remain inside the existing Session boundary. A cross-module workflow exchanges results and handles partial failure explicitly instead of opening a transaction over sibling tables.
+175: 
+
+### docs/high-level-design.md:274-282
+
+274: ### Edit, map hardware, and build
+275: 
+276: The hardware form follows Driver Station's recognizable hub, device-category, numbered-port, type, and name organization. Form edits and agent requests update M6's shared definitions through the same validation boundary. The agent inspects existing Java before proposing mapping changes and asks about missing names, ports, hardware, or measurements. Code generation follows the selected editing mode and explains the Driver Station configuration still required.
+277: 
+278: M5 preserves dirty editor buffers when switching layouts. Before an agent changes a dirty/conflicting file, show the conflict and require the user to save, merge, or defer; never implicitly discard it. Builds use identified saved input revisions. If unsaved buffers exist, make the build basis visible rather than implying the displayed unsaved program was compiled.
+279: 
+280: Build against a stable input snapshot or verify that relevant input revisions remained unchanged throughout the build. If a manual save or external edit changes them, mark the result as outdated instead of presenting its APK as the current project build.
+281: 
+282: Return structured evidence: project, operation ID, affected files/revisions, exit status, diagnostic availability, and artifact identity where produced. A build failure and an unavailable language server are different states.
+
+### docs/tasks/progress.md:61-92
+
+61: - Canonical Schema contracts contain serializable values, not runtime services. Keep Schema → Core/Protocol → Server dependencies; Client runtime can depend on Schema/Protocol but never Core/Server. `sdk-next` composes Client/Core/Server. Import namespaces through their existing self-export pattern; do not alias/star-import new code.
+62: - Each module consumes narrow ports/immutable records and owns its tables/files/maps. No sibling implementation imports, private-store access or bootstrap imports. Importing a module starts no I/O; scope construction/disposal owns processes and subscriptions.
+63: - Reuse Effect layers in Core. Services stay Location-scoped except the explicitly process-global Session execution/project/controller coordinators. Tests create independent instances without resetting globals.
+64: - Preserve Session durable admission before wake, exact retry/conflicting-ID behavior, steer/queue promotion, one stream per provider turn, current-history reload and separate Context Epoch ownership. No automatic provider-work replay after crash.
+65: - Preserve existing project files, SDKs, dependencies and unsaved edits. Canonical project roots identify execution ownership; a copied manifest does not copy chats or controller identity. At most one active chat per project, while separate projects may run concurrently; drafts never auto-execute.
+66: - Keep setup choice, layout, inference mode, code mode, robot mode and language independent. Plan/direct code permission never grants deployment, start or tuning.
+67: - Project `ftc-project.json` stores shared hardware definitions and exclusive managed pathing choice only. Personal progress/chats/credentials/approvals/telemetry/machine paths remain local and outside it.
+68: - PedroPathing, Road Runner or neither: at most one managed pathing library. Retain version-required Road Runner FTC Dashboard/tuning tools. Ask before resolving imported conflicts; do not silently remove team code.
+69: - M5 builds identify saved source/configuration revisions and APK digest. Dirty or changed inputs cannot be passed off as a current successful build. M9 refreshes target/generation/state/artifact at execution time.
+70: - M9 is the only app-issued robot mutation authority. Deliberate Deploy authorizes that exact deployment without redundant confirmation; it never authorizes a start. Agent observation mode blocks initialization/start/tuning. No command/build/extension/dashboard bypass; no replay after reconnect or restart.
+71: - Disconnection does not prove a robot stopped. Keep confirmed success, failure, cancelled and unknown outcomes distinct. Preserve missing/stale/disconnected/valid-zero diagnostics and verified versus unknown deployed-build association.
+72: - Offline inference is verified local-only, with no remote redirects/cloud proxy/fallback. Prepared offline use may still connect to the robot's local network. Missing cached models/tools/dependencies/content remain visible.
+73: - Protect credentials with the OS facility and expose references only. Dashboard pages have no privileged preload bridge; repository instructions, dashboard text, logs and references are not approval authority.
+74: - Monaco/JDT LS, llama.cpp, SQLite/JSON and exact versions are design recommendations pending their named evaluations. Pin tested versions and resource/platform support using evidence; do not select arbitrary latest releases or invent hardware minima.
+75: - All UI/native copy uses existing typed i18n. Preserve English source wording when touching existing keys, placeholders and code/API/device names. Follow package terminology/source-review instructions for translations; stable domain errors/lesson IDs are language-independent.
+76: - If Protocol or Server HttpApi changes, run `bun run generate` from `packages/client`; never hand-edit `src/generated` or `src/generated-effect`. If legacy JS SDK surfaces change, regenerate with `./packages/sdk/js/script/build.ts`.
+77: - Run tests and `bun typecheck` from package directories, never repository root or raw `tsc`. Follow touched package instructions, including session/timeline benchmark baselines and no restarting the user's app/server.
+78: - Keep scoped changes; no unrelated cleanup. Use short branch names without slashes (at most three hyphen-separated words) and conventional commit messages. The default comparison branch is `dev`/`origin/dev`.
+79: 
+80: <a id="contract-conventions"></a>
+81: 
+82: ## Contract conventions and shared wiring
+83: 
+84: Public signatures in module plans show domain inputs/results. Implement effectful Core methods as the existing `Effect.Effect<Result, DomainError>` service methods; observation/model streams use scoped Effect streams. Pure validators stay synchronous. Reuse canonical existing Project/Location/Session/model/stream/receipt types rather than copying them. New records are readonly validated Schema values; avoid `any`. Stable domain errors carry structured cause/recovery data and are localized only at presentation.
+85: 
+86: Source-facing schemas live at the exact `packages/schema/src/ftc-*.ts` path in the owning task. That module owns its payload definitions; consumers import the Schema contract or declare their minimal consumed port, never its implementation. The task that first introduces a public method also defines its request/result/error schemas and cancellation/cleanup contract. No task may leave a referenced type undefined.
+87: 
+88: `packages/core/src/ftc/composition.ts` is a **planned composition-only adapter**: it binds public Core facades to consumed ports, not Server/Protocol handlers or UI. Existing host roots register runtime wiring; `packages/protocol/src/api.ts` and `packages/server/src/handlers.ts` register new groups/handlers in their own layers. Module code never imports composition. Share this file deliberately across integration tasks, with each task adding only its wiring. Do not add an application event bus or workflow authority there.
+89: 
+90: Migrations use existing Core generation scripts and module-owned snake_case tables; do not hand-edit generated migration/schema registries. Each persisted record added in M2/M4/M7/M9/M12 needs reopen and migration checks in its owning task. Shared database connection does not grant cross-module transactions/table access.
+91: 
+92: Code-plan and robot-approval records describe decisions but are **not bearer authorization supplied by model JSON**. Production user approvals enter through authenticated narrow host/API adapters, with identity/revision/context revalidated by the owner. Read-only fixture ports cannot turn into stale production authorization.
+
+### docs/tasks/progress.md:744-749
+
+744: The user requested continuation to **32/94 completed tasks in total**, then to end the session and update this ledger; the edited active goal explicitly confirms the denominator. Reconciled clean `ftc-workspace` at `00a6067cc`, pinned Bun 1.3.14 and all **28/94** checked task entries. This revokes the interrupted stopping boundary for four additional completed/reviewed tasks only. Preserve all existing gates, source/evidence and current resource ownership.
+745: 
+746: - `/root/m1_01` is explicitly released now from the reconciled exact brief as sole product writer; nine unchanged preparation hashes match. Actual component RED/GREEN, DOM/lifecycle/locale/type/source checks and independent review remain required. No task credit from its preparation.
+747: - Intended next work is M5-05 saved builds, M5-06 artifacts and M9-02 exact single-use consent after their source-contract reconciliation and review gates. These are dependency-ready isolated module behaviors; unavailable production/platform/physical gates are retained. Read-only preparation may run alongside the sole writer. Root owns shared paths/Git/ledger/checklists.
+748: - Read-only `/root/m5_05_prepare` and `/root/m9_02_prepare` reconcile saved-build and exact approval boundaries in their named reports/owned baseline evidence only; neither can edit product/test code or enable host/toolchain/robot authority. M1 remains the only product writer.
+749: - Stop dispatching once **32/94** tasks are actually checked with required evidence and independent approval; audit counts/substeps/commits/working state, save the final checkpoint, mark the goal achieved and end. Do not start task 33 or claim all modules/release acceptance.
+
+### docs/prompt.md:90-129
+
+90: Each worker must:
+91: 
+92: 1. Inspect actual implementation and test conventions before editing. Treat planned paths and signatures as work to verify/create, not proof that code exists.
+93: 2. For new executable behavior, write a meaningful failing test, run it, and confirm that it fails for the intended reason. Existing invariant tests may already pass; preserve and reuse them without forcing an artificial failure. For evaluation tasks, follow their evaluation checklist: provision available prerequisites, run the actual probe, and record the decision and evidence. Do not force an artificial red/green cycle onto a source review or physical observation.
+94: 3. Implement the smallest change that satisfies the task. Run the focused tests, required package typechecks, lint/format checks, and applicable adapter/integration checks. Fix failures autonomously and rerun the affected checks.
+95: 4. Self-review the diff for scope, contracts, test validity, and cleanup. Make a focused conventional commit containing only assigned changes when the checkout supports it.
+96: 5. Write the report with changed files, commits or exact diff, commands and working directories, results, evidence paths, assumptions, and unresolved checks. A successful command with zero selected tests is not a pass.
+97: 
+98: After implementation, the main agent supplies a **different reviewer** with the task brief, constraints, report, and a stable diff spanning the complete task. Require separate verdicts for specification compliance and code quality. Inspect evidence rather than accepting a worker's success claim. Resolve any “cannot verify” item against the sources and current code.
+99: 
+100: A worker's `DONE` is a completion candidate, not permission to check a task automatically. Reconcile the actual files and tested revision with the report, confirm all required assertions and gates, and require the independent review before updating progress. `DONE_WITH_CONCERNS` never hides failed or missing mandatory evidence.
+101: 
+102: Send actionable findings back to the implementer. Verify repairs with covering tests and a scoped independent re-review. Follow the Superpowers bounded review/fix loop, recording each round and any adjudication. A review retry limit cannot convert a real requirement gap, failed test, or unavailable acceptance check into completion: keep the task blocked or incomplete, preserve the evidence, and advance other ready work. Finish with an independent review of the complete implementation diff and cross-module acceptance coverage.
+103: 
+104: ## Architecture and product constraints
+105: 
+106: All constraints in `docs/tasks/progress.md` and the module plans remain binding. Pay particular attention to these cross-module rules:
+107: 
+108: - Extend Electron, Solid, TypeScript/Bun, Effect, and OpenCode Session V2 within existing packages. Keep Java/FTC SDK robot development, macOS and Windows, English and Simplified Chinese, and all twelve independently testable modules in scope.
+109: - Schema contracts contain validated serializable records. Core and Protocol depend on Schema; Server composes Core and Protocol. Client runtime may depend on Schema/Protocol but never Core/Server; `sdk-next` composes Client/Core/Server. Modules consume narrow ports or immutable values, never sibling implementations, private stores, or production bootstrap.
+110: - Keep import-time code free of I/O and process startup. Scope initialization and disposal explicitly. Preserve Location-scoped services and the specified process-global Session, project, and controller coordinators.
+111: - Preserve durable prompt admission before wake, exact retry/conflicting-ID behavior, steer/queue boundaries, one `llm.stream(request)` per provider turn, history reload, and Context Epoch ownership. Do not add automatic post-crash provider replay or use the legacy prompt loop.
+112: - Canonical project roots enforce one active chat per project, including aliases, duplicate windows, prompt/resume/wake races, and interruption cleanup. Different projects remain independent. Drafts in a busy chat never become automatically runnable inputs.
+113: - Preserve imported project files, SDKs, dependencies, custom Java, dirty buffers, and external edits. Keep setup, layout, inference, code mode, robot mode, and language independent. Configuration and source edits use revision checks and the selected code-change workflow.
+114: - M6 owns one shareable `ftc-project.json` for hardware definitions and the managed pathing choice. Keep personal progress, chats, credentials, approvals, telemetry, and machine paths local. Allow PedroPathing, Road Runner, or neither, with at most one managed pathing library. Retain required Road Runner Dashboard/tuning dependencies. Never write or synchronize robot-side hardware configuration.
+115: - M5 binds build evidence to saved source/configuration revisions and the produced APK digest. Failed, dirty, or changed inputs cannot masquerade as a current successful build. Missing language tooling is distinct from zero diagnostics.
+116: - M9 alone authorizes app-issued robot mutations. Deployment, initialization/start, and tuning have separate exact-context consent. Revalidate project/chat, controller identity, connection generation, action parameters, observed state, and artifact immediately before dispatch. Prevent cross-project and USB/Wi-Fi-alias conflicts. No replay after reconnect/restart; disconnect does not prove a robot stopped.
+117: - Prove action isolation at actual command/build/extension/dashboard execution boundaries through M9-07/M9-08. Prompt instructions and command-name/PATH filtering alone are insufficient. Keep unproven execution paths disabled. Dashboard content has no privileged preload bridge; repository/log/reference text cannot approve actions.
+118: - Agent-readable telemetry remains independent of dashboard rendering and survives the agreed external-display fallback. Distinguish missing, stale, disconnected, malformed, and valid-zero observations; preserve controller and build provenance.
+119: - Offline inference is verified local-only, without remote redirects, cloud proxying, or fallback. Prepared offline work may use the robot's local network. Protect provider credentials with the OS facility; never expose them through ordinary renderer listings, context, logs, or project files.
+120: - Monaco/JDT LS, llama.cpp, storage choices, model profiles, exact versions, and hardware minima require their named evaluations. Use pinned, source-verified combinations and measured evidence. Do not convert synthetic test values or “latest” downloads into support claims.
+121: - Use existing typed i18n and package-required terminology review. Preserve existing English source wording, placeholders, code/API/device names, and stable lesson IDs. Learning completion requires the specified explanation, application, and physical evidence; page visits and builds alone are insufficient.
+122: 
+123: ## Automated verification
+124: 
+125: Own the full available test cycle: provision ordinary development dependencies, write tests, execute them, diagnose failures, implement repairs, and collect evidence without asking the user to run commands or interpret logs. Inspect scripts before running them and use the repository's pinned tooling and existing harnesses. Keep local test servers and data isolated; do not restart the user's existing app or server.
+126: 
+127: Complete unit coverage means every new or changed public behavior and applicable task assertion has tests covering normal inputs, invalid/conflicting inputs, failure, cancellation, persistence/reopen, concurrency, and cleanup as relevant. Add regression tests for discovered bugs. Do not duplicate production logic in tests, mock the module under test, weaken assertions, blanket-suppress typing/lint failures, or skip failing tests to make the suite green. Avoid global replacements; use real temporary files/databases and small explicit external ports.
+128: 
+129: Each isolated module suite must construct and test the actual module without booting a sibling module, full backend, Electron, real provider, downloaded model, FTC toolchain, or robot. Production adapter contracts, real-module composition, UI end-to-end tests, and real-system evaluations are additional layers. Construct and dispose fresh scopes repeatedly to detect leaks and hidden shared state.
+
+### packages/schema/src/ftc-environment.ts:157-178
+
+157: export interface ToolchainVersions extends Schema.Schema.Type<typeof ToolchainVersions> {}
+158: export const ToolchainVersions = Schema.Struct({
+159:   buildJdk: Version,
+160:   editorJdk: Version,
+161:   androidSdk: Version,
+162:   adb: Version,
+163:   gradleWrapper: Version,
+164:   ftcSdk: Version,
+165:   androidGradlePlugin: Version,
+166: }).annotate({ identifier: "FtcEnvironment.ToolchainVersions" })
+167: 
+168: // Discovery produces a candidate; only later build verification can establish setup readiness.
+169: export interface ToolchainDescriptor extends Schema.Schema.Type<typeof ToolchainDescriptor> {}
+170: export const ToolchainDescriptor = Schema.Struct({
+171:   profileID: Text,
+172:   buildJdk: LocalPath,
+173:   editorJdk: LocalPath,
+174:   androidSdk: LocalPath,
+175:   adb: LocalPath,
+176:   gradleWrapper: LocalPath,
+177:   versions: ToolchainVersions,
+178: }).annotate({ identifier: "FtcEnvironment.ToolchainDescriptor" })
+
+### packages/schema/src/ftc-environment.ts:330-364
+
+330: }).annotate({
+331:   identifier: "FtcEnvironment.ReadinessRequest",
+332: })
+333: 
+334: export interface SetupContext extends Schema.Schema.Type<typeof SetupContext> {}
+335: export const SetupContext = Schema.Struct({
+336:   inspection: InspectRequest,
+337:   sourceRevision: Text,
+338:   configurationRevision: Text,
+339:   dirty: Schema.Boolean,
+340: }).annotate({ identifier: "FtcEnvironment.SetupContext" })
+341: 
+342: export interface BuildRequest extends Schema.Schema.Type<typeof BuildRequest> {}
+343: export const BuildRequest = Schema.Struct({
+344:   projectID: Project.ID.check(Schema.isMinLength(1), Schema.isTrimmed()),
+345:   root: LocalPath,
+346:   toolchain: ToolchainDescriptor,
+347:   sourceRevision: Text,
+348:   configurationRevision: Text,
+349: }).annotate({ identifier: "FtcEnvironment.BuildRequest" })
+350: 
+351: export type BuildVerification = typeof BuildVerification.Type
+352: export const BuildVerification = Schema.Union([
+353:   Schema.Struct({
+354:     state: Schema.Literal("verified"),
+355:     projectID: Project.ID.check(Schema.isMinLength(1), Schema.isTrimmed()),
+356:     root: LocalPath,
+357:     toolchain: ToolchainDescriptor,
+358:     sourceRevision: Text,
+359:     configurationRevision: Text,
+360:     apkSha256: Text.check(Schema.isPattern(/^[a-fA-F0-9]{64}$/)),
+361:     current: Schema.Literal(true),
+362:   }),
+363:   Schema.Struct({ state: Schema.Literals(["failed", "stale"]), detail: optional(Text) }),
+364: ]).annotate({ identifier: "FtcEnvironment.BuildVerification" })
+
+### packages/core/src/ftc/environment.ts:293-300
+
+293: // Runtime handles are local to this scoped service; only their records cross the Schema boundary.
+294: export interface SetupRun {
+295:   readonly events: Stream.Stream<FtcEnvironment.SetupEvent>
+296:   readonly result: Effect.Effect<FtcEnvironment.SetupResult>
+297:   readonly recheck: () => Effect.Effect<FtcEnvironment.SetupResult, FtcEnvironment.SetupError>
+298:   readonly cancel: Effect.Effect<void>
+299: }
+300: 
+
+### packages/core/src/ftc/environment.ts:475-519
+
+475:               if (!readiness.candidateToolchain) return state.result
+476:               if (context.dirty) return failedSetup("build", "build_stale", readiness, context, profile)
+477:               const buildRequest = {
+478:                 projectID: request.projectID,
+479:                 root: context.inspection.project.root,
+480:                 toolchain: readiness.candidateToolchain,
+481:                 sourceRevision: context.sourceRevision,
+482:                 configurationRevision: context.configurationRevision,
+483:               }
+484:               const rawBuild = yield* ports.builds
+485:                 .verify(buildRequest)
+486:                 .pipe(Effect.match({ onFailure: (error) => ({ error }), onSuccess: (value) => ({ value }) }))
+487:               if ("error" in rawBuild) return failedSetup("build", "build_failed", readiness, context, profile)
+488:               const evidence = Schema.decodeUnknownOption(FtcEnvironment.BuildVerification, {
+489:                 onExcessProperty: "error",
+490:               })(rawBuild.value)
+491:               if (Option.isNone(evidence)) return failedSetup("build", "invalid_response", readiness, context, profile)
+492:               if (evidence.value.state !== "verified")
+493:                 return failedSetup(
+494:                   "build",
+495:                   evidence.value.state === "stale" ? "build_stale" : "build_failed",
+496:                   readiness,
+497:                   context,
+498:                   profile,
+499:                 )
+500:               const verified = evidence.value
+501:               if (
+502:                 verified.projectID !== request.projectID ||
+503:                 verified.root !== buildRequest.root ||
+504:                 verified.sourceRevision !== context.sourceRevision ||
+505:                 verified.configurationRevision !== context.configurationRevision ||
+506:                 !sameToolchain(verified.toolchain, buildRequest.toolchain)
+507:               )
+508:                 return failedSetup("build", "build_stale", readiness, context, profile)
+509:               const current = Schema.decodeUnknownOption(FtcEnvironment.SetupContext, { onExcessProperty: "error" })(
+510:                 yield* ports.context.read({ projectID: request.projectID }),
+511:               )
+512:               if (
+513:                 Option.isNone(current) ||
+514:                 current.value.dirty ||
+515:                 current.value.sourceRevision !== context.sourceRevision ||
+516:                 current.value.configurationRevision !== context.configurationRevision ||
+517:                 JSON.stringify(current.value.inspection) !== JSON.stringify(context.inspection)
+518:               )
+519:                 return failedSetup("build", "build_stale", readiness, context, profile)
+
+### packages/core/src/ftc/environment.ts:540-606
+
+540:           const start = Effect.uninterruptibleMask(() =>
+541:             Effect.gen(function* () {
+542:               if (lifetime.closed) return yield* Effect.fail({ code: "closed" as const })
+543:               if (state.cancelled) return yield* Effect.fail({ code: "cancelled" as const })
+544:               if (state.active) return yield* Effect.fail({ code: "busy" as const })
+545:               state.active = true
+546:               state.readiness = pendingReadiness
+547:               state.done = yield* Deferred.make<FtcEnvironment.SetupResult>()
+548:               state.fiber = yield* Effect.forkIn(
+549:                 check.pipe(
+550:                   Effect.onExit((exit) =>
+551:                     Effect.gen(function* () {
+552:                       state.active = false
+553:                       state.result = Exit.isSuccess(exit)
+554:                         ? exit.value
+555:                         : { state: "cancelled", readiness: state.readiness, steps: state.result.steps }
+556:                       if (Exit.isFailure(exit)) state.cancelled = true
+557:                       state.readiness = state.result.readiness
+558:                       const build = state.result.steps.find((step) => step.step.id === "build")
+559:                       if (build)
+560:                         yield* PubSub.publish(events, { projectID: request.projectID, type: "step", step: build })
+561:                       yield* PubSub.publish(events, {
+562:                         projectID: request.projectID,
+563:                         type: "settled",
+564:                         result: state.result,
+565:                       })
+566:                       yield* Deferred.succeed(state.done, state.result)
+567:                     }),
+568:                   ),
+569:                   Effect.exit,
+570:                   Effect.asVoid,
+571:                 ),
+572:                 runScope,
+573:                 { uninterruptible: false },
+574:               )
+575:               return state.done
+576:             }),
+577:           )
+578:           const cancel = Effect.gen(function* () {
+579:             if (state.cancelled) return
+580:             state.cancelled = true
+581:             if (state.fiber && state.active) {
+582:               yield* Fiber.interrupt(state.fiber)
+583:               return
+584:             }
+585:             state.readiness = pendingReadiness
+586:             state.result = { state: "cancelled", readiness: state.readiness, steps: [] }
+587:             yield* PubSub.publish(events, { projectID: request.projectID, type: "settled", result: state.result })
+588:           })
+589:           const run: SetupRun = {
+590:             events: Stream.fromPubSub(events),
+591:             result: Effect.suspend(() => (state.active ? Deferred.await(state.done) : Effect.succeed(state.result))),
+592:             recheck: () => start.pipe(Effect.flatMap(Deferred.await)),
+593:             cancel,
+594:           }
+595:           runs.set(request.projectID, {
+596:             run,
+597:             dispose: Scope.close(runScope, Exit.void),
+598:             get active() {
+599:               return state.active
+600:             },
+601:             get readiness() {
+602:               return state.readiness
+603:             },
+604:           })
+605:           yield* Effect.addFinalizer(() => cancel.pipe(Effect.andThen(PubSub.shutdown(events)))).pipe(
+606:             Scope.provide(runScope),
+
+### packages/core/src/ftc/java.ts:1-28
+
+1: export * as Java from "./java"
+2: 
+3: import { Context, Layer } from "effect"
+4: import { JavaDocuments } from "./java/documents"
+5: 
+6: export {
+7:   DocumentID,
+8:   DocumentSnapshot,
+9:   DocumentEvent,
+10:   DocumentError,
+11:   Revision,
+12:   SaveRequest,
+13:   EditProposal,
+14:   EditConflict,
+15:   EditResult,
+16: } from "@opencode-ai/schema/ftc-java"
+17: export type { Filesystem, Projects, CodeChanges, Ports, Interface } from "./java/documents"
+18: 
+19: export class Service extends Context.Service<Service, JavaDocuments.Interface>()("@opencode/FtcJava") {}
+20: 
+21: // Application wiring supplies authorized canonical project records and the filesystem port.
+22: export const layer = (ports: JavaDocuments.Ports) => Layer.effect(Service, JavaDocuments.make(ports))
+
+### packages/core/src/ftc/java/documents.ts:11-77
+
+11: export interface Filesystem {
+12:   readonly realpath: (path: string) => Effect.Effect<string, FtcJava.DocumentError>
+13:   readonly readText: (path: string) => Effect.Effect<string, FtcJava.DocumentError, Scope.Scope>
+14:   // Mutation-enabled owners capture original bytes on open. Read-only owners cannot save.
+15:   readonly readBytes?: (path: string) => Effect.Effect<Uint8Array, FtcJava.DocumentError, Scope.Scope>
+16:   // The adapter must recheck canonical root/target and compare exact bytes at its commit boundary.
+17:   // Conflict writes nothing; a failed write can have an unknown filesystem outcome.
+18:   readonly writeIfUnchanged?: (input: {
+19:     readonly path: string
+20:     readonly root: string
+21:     readonly expected: Uint8Array
+22:     readonly replacement: Uint8Array
+23:   }) => Effect.Effect<"written" | "conflict", FtcJava.DocumentError, Scope.Scope>
+24: }
+25: 
+26: export interface Projects {
+27:   // The supplied port is authorization authority; a caller's project record is not.
+28:   readonly resolve: (projectID: Project.ID) => Effect.Effect<FtcProject.ProjectContext, FtcJava.DocumentError>
+29: }
+30: 
+31: export interface CodeChanges {
+32:   // Only injected trusted code owns authorization; it binds the full immutable proposal and revisions.
+33:   readonly check: (input: { readonly proposal: FtcJava.EditProposal; readonly authorization: object }) => Effect.Effect<
+34:     {
+35:       readonly projectID: Project.ID
+36:       readonly canonicalRoot: AbsolutePath
+37:       readonly paths: readonly AbsolutePath[]
+38:     },
+39:     FtcJava.DocumentError,
+40:     Scope.Scope
+41:   >
+42: }
+43: 
+44: export interface Ports {
+45:   readonly filesystem: Filesystem
+46:   readonly projects: Projects
+47:   readonly codeChanges?: CodeChanges
+48: }
+49: 
+50: export interface Interface {
+51:   readonly openDocument: (input: {
+52:     readonly project: FtcProject.ProjectContext
+53:     readonly path: string
+54:   }) => Effect.Effect<FtcJava.DocumentSnapshot, FtcJava.DocumentError>
+55:   readonly changeDocument: (input: {
+56:     // Absolute opened-file identity avoids guessing a project from a relative path.
+57:     readonly path: string
+58:     readonly expectedRevision: number
+59:     readonly text: string
+60:   }) => Effect.Effect<FtcJava.DocumentSnapshot, FtcJava.DocumentError>
+61:   readonly readDocument: (input: {
+62:     readonly projectID: Project.ID
+63:     readonly path: string
+64:   }) => Effect.Effect<FtcJava.DocumentSnapshot, FtcJava.DocumentError>
+65:   readonly saveDocument: (input: FtcJava.SaveRequest) => Effect.Effect<FtcJava.DocumentSnapshot, FtcJava.DocumentError>
+66:   readonly applyEdits: (input: {
+67:     readonly proposal: FtcJava.EditProposal
+68:     readonly authorization: object
+69:   }) => Effect.Effect<FtcJava.EditResult, FtcJava.DocumentError>
+70:   readonly events: Stream.Stream<FtcJava.DocumentEvent>
+71: }
+72: 
+73: export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope> =>
+74:   Effect.gen(function* () {
+75:     const ownerScope = yield* Effect.scope
+76:     const documents = new Map<
+77:       string,
+
+### packages/core/src/ftc/java/documents.ts:98-127
+
+98:     const authorize = Effect.fn("JavaDocuments.authorize")(function* (projectID: Project.ID) {
+99:       yield* active()
+100:       const project = yield* ports.projects.resolve(projectID)
+101:       if (
+102:         !Schema.is(FtcProject.ProjectContext)(project) ||
+103:         project.projectID !== projectID ||
+104:         !path.isAbsolute(project.canonicalRoot) ||
+105:         project.location.directory !== project.canonicalRoot
+106:       )
+107:         return yield* Effect.fail({ code: "project_unauthorized", projectID } satisfies FtcJava.DocumentError)
+108:       const root = project.canonicalRoot
+109:       if ((yield* ports.filesystem.realpath(root)) !== root)
+110:         return yield* Effect.fail({ code: "project_unauthorized", projectID } satisfies FtcJava.DocumentError)
+111:       yield* active()
+112:       return { project, root }
+113:     })
+114:     const resolve = Effect.fn("JavaDocuments.resolve")(function* (root: string, value: string) {
+115:       if (typeof value !== "string" || !value || value.includes("\0"))
+116:         return yield* Effect.fail({ code: "invalid_document_input", path: value } satisfies FtcJava.DocumentError)
+117:       const filename = path.resolve(root, value)
+118:       if (!contained(root, filename))
+119:         return yield* Effect.fail({ code: "path_outside_project", path: value } satisfies FtcJava.DocumentError)
+120:       const canonical = yield* ports.filesystem.realpath(filename)
+121:       if (!contained(root, canonical))
+122:         return yield* Effect.fail({ code: "path_outside_project", path: value } satisfies FtcJava.DocumentError)
+123:       return AbsolutePath.make(canonical)
+124:     })
+125:     const owned = <A, E>(effect: Effect.Effect<A, E, Scope.Scope>) =>
+126:       Effect.acquireUseRelease(Effect.scoped(effect).pipe(Effect.forkIn(ownerScope)), Fiber.join, Fiber.interrupt)
+127:     const publish = (type: FtcJava.DocumentEvent["type"], snapshot: FtcJava.DocumentSnapshot) =>
+
+### packages/core/src/ftc/java/documents.ts:152-177
+
+152:     const observe = Effect.fn("JavaDocuments.observe")(function* (canonical: string) {
+153:       yield* active()
+154:       const current = documents.get(canonical)
+155:       if (!current)
+156:         return yield* Effect.fail({ code: "document_not_open", path: canonical } satisfies FtcJava.DocumentError)
+157:       if (!current.savedBytes)
+158:         return yield* Effect.fail({ code: "file_unavailable", path: canonical } satisfies FtcJava.DocumentError)
+159:       const bytes = yield* readDisk(canonical)
+160:       yield* checkScope(current.snapshot.projectID, current.root, canonical, canonical)
+161:       const text = yield* Effect.try({
+162:         try: () => decode(bytes),
+163:         catch: (): FtcJava.DocumentError => ({ code: "file_unavailable", path: canonical }),
+164:       })
+165:       yield* active()
+166:       if (sameBytes(bytes, current.savedBytes)) return { document: current, bytes, text, changed: false }
+167:       const snapshot = Object.freeze(
+168:         FtcJava.DocumentSnapshot.make({
+169:           ...current.snapshot,
+170:           diskRevision: current.snapshot.diskRevision + 1,
+171:           dirty: current.snapshot.text !== text,
+172:         }),
+173:       )
+174:       const document = { ...current, savedText: text, savedBytes: bytes, snapshot }
+175:       documents.set(canonical, document)
+176:       yield* publish("disk_changed", snapshot)
+177:       return { document, bytes, text, changed: true }
+
+### packages/core/src/ftc/java/documents.ts:253-329
+
+253:       openDocument: Effect.fn("JavaDocuments.openDocument")(function* (input) {
+254:         if (!Schema.is(FtcProject.ProjectContext)(input.project) || typeof input.path !== "string")
+255:           return yield* Effect.fail({ code: "invalid_document_input" } satisfies FtcJava.DocumentError)
+256:         // Capture the caller's identity before awaiting the authorizer.
+257:         const requested = FtcProject.ProjectContext.make({
+258:           ...input.project,
+259:           location: {
+260:             directory: input.project.location.directory,
+261:             workspaceID: input.project.location.workspaceID,
+262:             project: { ...input.project.location.project },
+263:           },
+264:         })
+265:         const value = input.path
+266:         const authorized = yield* authorize(requested.projectID)
+267:         if (
+268:           requested.canonicalRoot !== authorized.root ||
+269:           requested.location.directory !== authorized.project.location.directory ||
+270:           requested.location.workspaceID !== authorized.project.location.workspaceID ||
+271:           requested.location.project.id !== authorized.project.location.project.id ||
+272:           requested.location.project.directory !== authorized.project.location.project.directory
+273:         )
+274:           return yield* Effect.fail({
+275:             code: "project_unauthorized",
+276:             projectID: requested.projectID,
+277:           } satisfies FtcJava.DocumentError)
+278:         const canonical = yield* resolve(authorized.root, value)
+279:         return yield* locks.withLock(canonical)(
+280:           Effect.gen(function* () {
+281:             yield* active()
+282:             const current = documents.get(canonical)
+283:             if (current) {
+284:               if (current.snapshot.projectID !== requested.projectID || current.root !== authorized.root)
+285:                 return yield* Effect.fail({ code: "project_unauthorized" } satisfies FtcJava.DocumentError)
+286:               return current.snapshot
+287:             }
+288:             const savedBytes = ports.filesystem.readBytes
+289:               ? Uint8Array.from(yield* owned(ports.filesystem.readBytes(canonical)))
+290:               : undefined
+291:             const text = savedBytes
+292:               ? yield* Effect.try({
+293:                   try: () => decode(savedBytes),
+294:                   catch: (): FtcJava.DocumentError => ({ code: "file_unavailable", path: canonical }),
+295:                 })
+296:               : yield* owned(ports.filesystem.readText(canonical))
+297:             // Do not admit a read if a link changed while the filesystem port was reading.
+298:             if ((yield* resolve(authorized.root, value)) !== canonical)
+299:               return yield* Effect.fail({ code: "file_unavailable", path: value } satisfies FtcJava.DocumentError)
+300:             yield* active()
+301:             const snapshot = Object.freeze(
+302:               FtcJava.DocumentSnapshot.make({
+303:                 documentID: FtcJava.DocumentID.create(),
+304:                 projectID: requested.projectID,
+305:                 path: canonical,
+306:                 bufferRevision: 0,
+307:                 diskRevision: 0,
+308:                 text,
+309:                 dirty: false,
+310:               }),
+311:             )
+312:             documents.set(canonical, { root: authorized.root, savedText: text, savedBytes, snapshot })
+313:             yield* PubSub.publish(events, Object.freeze({ type: "opened", snapshot }))
+314:             return snapshot
+315:           }),
+316:         )
+317:       }),
+318:       readDocument: Effect.fn("JavaDocuments.readDocument")(function* (input) {
+319:         const projectID = input.projectID
+320:         const value = input.path
+321:         const authorized = yield* authorize(projectID)
+322:         const canonical = yield* resolve(authorized.root, value)
+323:         yield* active()
+324:         const document = documents.get(canonical)
+325:         if (!document)
+326:           return yield* Effect.fail({ code: "document_not_open", path: value } satisfies FtcJava.DocumentError)
+327:         if (document.snapshot.projectID !== projectID || document.root !== authorized.root)
+328:           return yield* Effect.fail({ code: "project_unauthorized", projectID } satisfies FtcJava.DocumentError)
+329:         return document.snapshot
+

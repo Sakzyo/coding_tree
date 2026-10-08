@@ -1,0 +1,28 @@
+# M5-05 implementation preparation
+
+2026-10-08. Read-only preparation at `87fffe434fe1f6a4b1cf91bec7b5ba3e8a9eb97e`; implementation has **not** been released. No product/test edits, Git/index changes, task credit, actual build, process fixture, provider, robot, network, host startup or App review-file inspection occurred. Root retains release, shared exports, Git and ledger ownership.
+
+The [brief](M5-05-brief.md) adopts the [preflight](M5-05-preflight.md) and [resume reconciliation](M5-05-resume-reconciliation.md) choices. Applicable root/Schema rules, M5 task/module, prompt/shared conventions, relevant proposal/design build/currency/ownership sections and Superpowers TDD/test-quality instructions were read. Memory lookup found no task-specific entry and was not used for implementation facts.
+
+## Verified current conventions and gaps
+
+- `FtcJava` has canonical readonly document/edit contracts, flat definitions plus its namespace projection; Core re-exports exact values. There are no build contracts, build owner or M5-05 test. Schema contracts use same-name Struct interfaces, stable identifiers, `optional(...)`, and prefix-validating generated IDs.
+- `Java.layer(documentPorts)` constructs only `JavaDocuments.make`; its current `Ports` and direct document types must remain available. The additive combined facade will preserve these document ports and add explicit `layerWithBuilds({ documents, builds })`. Document-only combined build methods fail typed `build_unavailable` and construction starts no build/acquisition.
+- JavaDocuments exposes only opened-file reads and revision/conflict methods. It has no complete saved-input or dirty-document enumeration. No private-map access or old document-source/test change is assigned.
+- `FtcProject.ProjectContext` binds local association ID, canonical root and complete Location. `FtcEnvironment.ToolchainDescriptor` is the canonical explicit paths/version record. Existing `SetupRun` demonstrates a scoped runtime result/cancel handle and Deferred publication, but is not a dependency or authority for this owner.
+- The complete saved inventory, immutable execution capability/fixed recipe, independent configuration identity, interval change identity (including A-B-A), initial/settlement dirty exclusions, actual process observations and typed joined cleanup must be supplied by narrow trusted Core ports. No production adapter, guessed Gradle task/JDK convention, tool discovery or supported profile is added. Fixture completeness is declared only for that fixture.
+- Effect beta.83 source iterates a mutable observer array while observer removal splices that array; `Fiber.await` registers a removal cleanup. A scoped owner-close regression with held async cleanup must characterize the resulting behavior after release. If reproduced, a local stable observation/join boundary will be implemented within the assigned owner; no sibling runtime import.
+
+## Intended scoped execution after root release
+
+1. Add callable minimal owner/contracts and the exact source-change behavioral test; verify an actual assertion failure from missing currency behavior. Broken imports or absent tests do not satisfy RED.
+2. Implement the narrow owner and canonical contracts: validate/copy/freeze ingress, authorize full context, acquire/retain a complete immutable lease, reject stale/incomplete/mismatched admission, reserve canonical-root ownership, retain the scoped run, collect actual output/termination, revalidate through settlement, join process/pipe/lease cleanup, then publish one immutable result. Long acquisition stays interruptible; only admission/publication bookkeeping is masked.
+3. Expose only build/startBuild/readBuild and Core-only `{buildID,result,cancel}`; preserve caller interruption while cancel/join settles queryable cancelled evidence. Unknown/foreign queries fail typed. Same roots reject busy; distinct roots remain independent. Owner disposal retires admissions and joins active work before clearing records.
+4. Add focused behavior tests for the adopted cancellation/change/failure precedence, fixture source/config/ABA/input-scope distinctions, untouched dirty real documents, immutable requests/port observations/history, authorization boundaries, actual partial logs/absent exits, errors and async cleanup, races, fresh owners, facade compatibility and Schema hygiene. Artifact/digest/deployment-current contracts remain M5-06.
+5. Run assigned Core/Schema focused tests, affected M5-01/02 regressions, both package typechecks and scoped lint/format/import/whitespace checks; freeze commands/counts/source/report hashes for independent review. Root performs commits and completion accounting.
+
+## Unchanged prerequisite baseline
+
+From `packages/core`, pinned `/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun test ./test/ftc/java-development/m5-01.test.ts ./test/ftc/java-development/m5-02.test.ts` with task-owned OPENCODE_TEST_HOME/XDG directories under `/private/tmp/m5-05-home`: **exit 0; 50 pass, 0 fail, 194 assertions, 2 files**. Source digests before/after match. [Command/environment](m5-05/preparation/current-baseline/command.json), [raw output](m5-05/preparation/current-baseline/core-m5-01-02.log), [source hashes](m5-05/preparation/current-baseline/source-sha256.json).
+
+This is unchanged prerequisite evidence, not M5-05 RED/GREEN or task credit. No comprehensive suite/typecheck was rerun during preparation. There is no unresolved source question that blocks isolated implementation under the adopted brief. Production inventory/dirty-document/recipe/process authority, actual Gradle/JDK/SDK/offline/platform execution, M4 composition, APK issuance and editor/robot/release acceptance remain unavailable/not run.
