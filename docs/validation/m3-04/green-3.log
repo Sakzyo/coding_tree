@@ -1,0 +1,169 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-04.test.ts:
+197 | /** Creates the immutable baseline and durable snapshot for a new generation. */
+198 | export function initialize(value: SystemContext): Effect.Effect<Generation, InitializationBlocked> {
+199 |   return observe(value).pipe(
+200 |     Effect.flatMap((entries) => {
+201 |       const unavailable = entries.flatMap((entry) => (entry._tag === "Unavailable" ? [entry.key] : []))
+202 |       if (unavailable.length > 0) return new InitializationBlocked({ keys: unavailable })
+                                               ^
+error: System context initialization blocked by unavailable sources: ftc/knowledge
+ keys: [ "ftc/knowledge" ],
+ _tag: "SystemContext.InitializationBlocked",
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/system-context/index.ts:202:42)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-04.test.ts:54:32)
+(fail) context projection sanitizes reference text before the durable snapshot [12.07ms]
+197 | /** Creates the immutable baseline and durable snapshot for a new generation. */
+198 | export function initialize(value: SystemContext): Effect.Effect<Generation, InitializationBlocked> {
+199 |   return observe(value).pipe(
+200 |     Effect.flatMap((entries) => {
+201 |       const unavailable = entries.flatMap((entry) => (entry._tag === "Unavailable" ? [entry.key] : []))
+202 |       if (unavailable.length > 0) return new InitializationBlocked({ keys: unavailable })
+                                               ^
+error: System context initialization blocked by unavailable sources: ftc/configuration, ftc/knowledge
+ keys: [ "ftc/configuration", "ftc/knowledge" ],
+ _tag: "SystemContext.InitializationBlocked",
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/system-context/index.ts:202:42)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-04.test.ts:96:35)
+(fail) context preserves project version freshness and missing facts [5.78ms]
+57 |         language: Effect.succeed(query.language), localOnly: Effect.succeed(query.localOnly),
+58 |       })
+59 |       const result = yield* source({ key: SystemContext.Key.make("ftc/knowledge"), service: input.service, query }).load
+60 |       if (result === SystemContext.unavailable) return yield* Effect.fail("context_observation_unavailable")
+61 |       if (result.kind === "missing" && !Schema.toEquivalence(FtcKnowledge.ContentQuery)(query, result.requested))
+62 |         return yield* Effect.die(new Error("context_query_mismatch"))
+                                          ^
+error: context_query_mismatch
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/knowledge/context.ts:62:38)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2079:11)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1926:25)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1914:28)
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:719:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-04.test.ts:132:35)
+(fail) missing manifest and offline reference remain explicit unknown observations [1.45ms]
+197 | /** Creates the immutable baseline and durable snapshot for a new generation. */
+198 | export function initialize(value: SystemContext): Effect.Effect<Generation, InitializationBlocked> {
+199 |   return observe(value).pipe(
+200 |     Effect.flatMap((entries) => {
+201 |       const unavailable = entries.flatMap((entry) => (entry._tag === "Unavailable" ? [entry.key] : []))
+202 |       if (unavailable.length > 0) return new InitializationBlocked({ keys: unavailable })
+                                               ^
+error: System context initialization blocked by unavailable sources: ftc/configuration, ftc/knowledge
+ keys: [ "ftc/configuration", "ftc/knowledge" ],
+ _tag: "SystemContext.InitializationBlocked",
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/system-context/index.ts:202:42)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-04.test.ts:141:29)
+(fail) sanitizer failure blocks first admission and preserves only previously safe snapshots [1.66ms]
+(pass) sensitive identifiers reject the source with a safe limit instead of rewriting names [1.12ms]
+197 | /** Creates the immutable baseline and durable snapshot for a new generation. */
+198 | export function initialize(value: SystemContext): Effect.Effect<Generation, InitializationBlocked> {
+199 |   return observe(value).pipe(
+200 |     Effect.flatMap((entries) => {
+201 |       const unavailable = entries.flatMap((entry) => (entry._tag === "Unavailable" ? [entry.key] : []))
+202 |       if (unavailable.length > 0) return new InitializationBlocked({ keys: unavailable })
+                                               ^
+error: System context initialization blocked by unavailable sources: ftc/configuration, ftc/knowledge
+ keys: [ "ftc/configuration", "ftc/knowledge" ],
+ _tag: "SystemContext.InitializationBlocked",
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/system-context/index.ts:202:42)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-04.test.ts:169:35)
+(fail) allowlisted projections exclude extra credential values and sanitize nested reference exercises [2.39ms]
+(pass) cross-project records and placement mismatches fail before source admission [4.08ms]
+197 | /** Creates the immutable baseline and durable snapshot for a new generation. */
+198 | export function initialize(value: SystemContext): Effect.Effect<Generation, InitializationBlocked> {
+199 |   return observe(value).pipe(
+200 |     Effect.flatMap((entries) => {
+201 |       const unavailable = entries.flatMap((entry) => (entry._tag === "Unavailable" ? [entry.key] : []))
+202 |       if (unavailable.length > 0) return new InitializationBlocked({ keys: unavailable })
+                                               ^
+error: System context initialization blocked by unavailable sources: ftc/configuration, ftc/knowledge
+ keys: [ "ftc/configuration", "ftc/knowledge" ],
+ _tag: "SystemContext.InitializationBlocked",
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/system-context/index.ts:202:42)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-04.test.ts:192:16)
+(fail) registry refreshes safe snapshots lazily and releases source registrations [3.49ms]
+197 | /** Creates the immutable baseline and durable snapshot for a new generation. */
+198 | export function initialize(value: SystemContext): Effect.Effect<Generation, InitializationBlocked> {
+199 |   return observe(value).pipe(
+200 |     Effect.flatMap((entries) => {
+201 |       const unavailable = entries.flatMap((entry) => (entry._tag === "Unavailable" ? [entry.key] : []))
+202 |       if (unavailable.length > 0) return new InitializationBlocked({ keys: unavailable })
+                                               ^
+error: System context initialization blocked by unavailable sources: ftc/configuration, ftc/knowledge
+ keys: [ "ftc/configuration", "ftc/knowledge" ],
+ _tag: "SystemContext.InitializationBlocked",
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/system-context/index.ts:202:42)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-04.test.ts:223:38)
+(fail) independent registry scopes preserve captured project language and inference selection [3.93ms]
+197 | /** Creates the immutable baseline and durable snapshot for a new generation. */
+198 | export function initialize(value: SystemContext): Effect.Effect<Generation, InitializationBlocked> {
+199 |   return observe(value).pipe(
+200 |     Effect.flatMap((entries) => {
+201 |       const unavailable = entries.flatMap((entry) => (entry._tag === "Unavailable" ? [entry.key] : []))
+202 |       if (unavailable.length > 0) return new InitializationBlocked({ keys: unavailable })
+                                                   ^
+error: System context initialization blocked by unavailable sources: ftc/configuration, ftc/knowledge
+ keys: [ "ftc/configuration", "ftc/knowledge" ],
+ _tag: "SystemContext.InitializationBlocked",
+
+      at /Users/dylanxu/coding_tree/packages/core/src/system-context/index.ts:202:46
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:420:66)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:380:20)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:734:14
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2356:7
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:397:14)
+      at /Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:653:9
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) real Session epochs retain the baseline and persist one safe ContextUpdated per change [70.33ms]
+(pass) diagnostics unavailable codec admits no invented controller measurements [0.21ms]
+
+ 3 pass
+ 8 fail
+ 8 expect() calls
+Ran 11 tests across 1 file. [644.00ms]

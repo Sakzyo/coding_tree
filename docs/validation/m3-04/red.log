@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-04.test.ts:
+18 |     key: SystemContext.Key.make("ftc/knowledge"), query,
+19 |     service: { lookup: () => Effect.succeed(FtcKnowledge.ContentResult.make({ kind: "found", records: [reference] })) },
+20 |     sanitize: { text: (text: string) => Effect.succeed(text.replaceAll(secret, "[redacted]")) },
+21 |   }
+22 |   const context = await Effect.runPromise(SystemContext.initialize(SystemContext.make(FtcKnowledgeContext.source(input))))
+23 |   expect(context.baseline).not.toContain(secret)
+                                    ^
+error: expect(received).not.toContain(expected)
+
+Expected to not contain: "fixture-private-token"
+Received: "{\"kind\":\"found\",\"records\":[{\"id\":\"motor\",\"version\":\"1\",\"language\":\"zh\",\"topic\":\"motor\",\"sdkRange\":\"11.x\",\"source\":\"https://example.com/motor\",\"license\":\"fixture\",\"localPath\":\"zh/motor.json\",\"digest\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"provenance\":\"synthetic\",\"codeTokens\":[\"`DcMotor`\"],\"locallyAvailable\":true,\"document\":{\"id\":\"motor\",\"version\":\"1\",\"language\":\"zh\",\"body\":\"电机 DcMotor fixture-private-token\"}}]}"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-04.test.ts:23:32)
+(fail) context projection sanitizes reference text before the durable snapshot [5.49ms]
+
+ 0 pass
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [115.00ms]

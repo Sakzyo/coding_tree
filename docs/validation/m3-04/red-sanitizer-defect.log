@@ -1,0 +1,58 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-04.test.ts:
+(pass) context projection sanitizes reference text before the durable snapshot [11.29ms]
+(pass) context preserves project version freshness and missing facts [5.31ms]
+(pass) missing manifest and offline reference remain explicit unknown observations [1.63ms]
+(pass) sanitizer failure blocks first admission and preserves only previously safe snapshots [3.84ms]
+(pass) sensitive identifiers reject the source with a safe limit instead of rewriting names [0.79ms]
+(pass) allowlisted projections exclude extra credential values and sanitize nested reference exercises [2.49ms]
+(pass) cross-project records and placement mismatches fail before source admission [3.53ms]
+(pass) registry refreshes safe snapshots lazily and releases source registrations [4.73ms]
+(pass) independent registry scopes preserve captured project language and inference selection [2.74ms]
+(pass) real Session epochs retain the baseline and persist one safe ContextUpdated per change [75.79ms]
+(pass) diagnostics unavailable codec admits no invented controller measurements [0.15ms]
+(pass) mutable caller selection cannot retarget a constructed source set [0.54ms]
+(pass) a later registration conflict rolls back newly registered FTC entries [0.89ms]
+(pass) malformed diagnostics observations cannot put arbitrary text in snapshots [0.41ms]
+305 |   const baseline = await Effect.runPromise(SystemContext.initialize(supplied.context))
+306 |   const failed = FtcAgentContext.source({ project, language: "zh", inference: "online", sanitize: { text: () => { throw new Error(secret) } }, observe: () => Effect.succeed(supplied.state.code) })
+307 |   const result = await Effect.runPromise(SystemContext.initialize(failed.context).pipe(Effect.exit))
+308 |   expect(Exit.isFailure(result)).toBe(true)
+309 |   if (Exit.isFailure(result)) {
+310 |     expect(Cause.squash(result.cause)).toBeInstanceOf(SystemContext.InitializationBlocked)
+                                             ^
+error: expect(received).toBeInstanceOf(expected)
+
+Expected constructor: [class InitializationBlocked extends out]
+Received value: 301 | })
+302 | 
+303 | test("a throwing sanitizer fails closed without exposing its cause or replacing safe context", async () => {
+304 |   const supplied = fixtures()
+305 |   const baseline = await Effect.runPromise(SystemContext.initialize(supplied.context))
+306 |   const failed = FtcAgentContext.source({ project, language: "zh", inference: "online", sanitize: { text: () => { throw new Error(secret) } }, observe: () => Effect.succeed(supplied.state.code) })
+                                                                                                                                  ^
+error: fixture-private-token
+      at text (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-04.test.ts:306:125)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/context-sanitizer.ts:24:41)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2079:11)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1926:25)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1914:28)
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:719:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-04.test.ts:307:31)
+
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/agent-and-context/m3-04.test.ts:310:40)
+(fail) a throwing sanitizer fails closed without exposing its cause or replacing safe context [1.99ms]
+
+ 14 pass
+ 1 fail
+ 65 expect() calls
+Ran 15 tests across 1 file. [582.00ms]

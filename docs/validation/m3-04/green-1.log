@@ -1,0 +1,17 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-04.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+99 |               },
+                   ^
+error: Unexpected }
+    at /Users/dylanxu/coding_tree/packages/core/src/ftc/knowledge/context.ts:99:15
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [357.00ms]

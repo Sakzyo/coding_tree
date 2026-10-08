@@ -1,0 +1,8 @@
+d79a78e54c4d9e7a7b298daf242cd2172a7c8e583e0648cbd89e44151a04a3f9  packages/core/src/ftc/agent/context.ts
+90af7bfbb1b1102aeb4f8e77b9356b7b4f9f6e9173283a440c03ae25223946cc  packages/core/src/ftc/configuration/context.ts
+61c3a0f413242821987d25e03394277e579c6de265989b691b12ba0d7177c19e  packages/core/src/ftc/knowledge/context.ts
+2611b92e619d969a07cea87432de7adc777507212f90d6e2a500a563180fe176  packages/core/src/ftc/diagnostics/context.ts
+7349f249de2d9ad86229c94137d929f7b43c3b12aca6db9711ab6c14ca11061d  packages/core/src/ftc/context-sanitizer.ts
+13433881346a4287ec62ee9e4b68b171627a1c72dfb78df67c1f4f53890e6dbc  packages/core/test/ftc/agent-and-context/m3-04.test.ts
+a7197b146880968a1c6b1107fbd6d4479be580d067f488aefbb7d89c66794810  packages/schema/src/ftc-diagnostics.ts
+09d782880467eb2ef0809005d8d73697813329cc56df1b0fbe08e3f92f609fcd  packages/schema/src/index.ts

@@ -1,0 +1,23 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/agent-and-context/m3-04.test.ts:
+(pass) context projection sanitizes reference text before the durable snapshot [5.78ms]
+(pass) context preserves project version freshness and missing facts [14.61ms]
+(pass) missing manifest and offline reference remain explicit unknown observations [1.58ms]
+(pass) sanitizer failure blocks first admission and preserves only previously safe snapshots [3.82ms]
+(pass) sensitive identifiers reject the source with a safe limit instead of rewriting names [0.75ms]
+(pass) allowlisted projections exclude extra credential values and sanitize nested reference exercises [2.01ms]
+(pass) cross-project records and placement mismatches fail before source admission [3.38ms]
+(pass) registry refreshes safe snapshots lazily and releases source registrations [4.91ms]
+(pass) independent registry scopes preserve captured project language and inference selection [2.97ms]
+(pass) real Session epochs retain the baseline and persist one safe ContextUpdated per change [68.06ms]
+(pass) diagnostics unavailable codec admits no invented controller measurements [0.15ms]
+(pass) mutable caller selection cannot retarget a constructed source set [0.51ms]
+(pass) a later registration conflict rolls back newly registered FTC entries [0.90ms]
+(pass) malformed diagnostics observations cannot put arbitrary text in snapshots [0.41ms]
+(pass) a throwing sanitizer fails closed without exposing its cause or replacing safe context [1.64ms]
+
+ 15 pass
+ 0 fail
+ 67 expect() calls
+Ran 15 tests across 1 file. [588.00ms]
