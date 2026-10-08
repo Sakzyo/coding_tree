@@ -1,0 +1,571 @@
+   1 export * as JavaBuild from "./build"
+   2 
+   3 import { FtcJava } from "@opencode-ai/schema/ftc-java"
+   4 import { FtcProject } from "@opencode-ai/schema/ftc-project"
+   5 import { FtcEnvironment } from "@opencode-ai/schema/ftc-environment"
+   6 import { Project } from "@opencode-ai/schema/project"
+   7 import { Location } from "@opencode-ai/schema/location"
+   8 import { WorkspaceID } from "@opencode-ai/schema/workspace-id"
+   9 import { ProjectSchema } from "../../project/schema"
+  10 import { Cause, Deferred, Effect, Exit, Fiber, Schema, Scope, Stream } from "effect"
+  11 
+  12 export interface SavedInputBasis {
+  13   readonly project: FtcProject.ProjectContext
+  14   readonly toolchain: FtcEnvironment.ToolchainDescriptor
+  15   readonly sourceRevision: string
+  16   readonly configurationRevision: string
+  17   readonly generation: string
+  18   readonly scope: "complete"
+  19   readonly mode: "immutable"
+  20   readonly recipe: {
+  21     readonly identity: string
+  22     readonly wrapper: string
+  23     readonly buildJdk: string
+  24     readonly androidSdk: string
+  25   }
+  26   readonly exclusions: readonly FtcJava.BuildExclusion[]
+  27 }
+  28 
+  29 export interface InputValidation {
+  30   readonly project: FtcProject.ProjectContext
+  31   readonly toolchain: FtcEnvironment.ToolchainDescriptor
+  32   readonly sourceRevision: string
+  33   readonly configurationRevision: string
+  34   readonly generation: string
+  35   readonly exclusions: readonly FtcJava.BuildExclusion[]
+  36 }
+  37 
+  38 export interface SavedInputLease {
+  39   readonly basis: SavedInputBasis
+  40   // The trusted adapter binds this capability to the complete immutable snapshot and fixed recipe.
+  41   readonly execution: object
+  42   // The producer covers complete live inputs/configuration and intervening changes, including A-B-A.
+  43   // It rechecks actual root/Location/tool authority, not just endpoint digest equality.
+  44   readonly revalidate: () => Effect.Effect<InputValidation, FtcJava.BuildError>
+  45   // Closes every lease resource and observes that same interval/authority through cleanup.
+  46   // Scope fallback release is idempotent and cannot silently hide an incomplete observation.
+  47   readonly release: Effect.Effect<InputValidation, FtcJava.BuildError>
+  48 }
+  49 
+  50 export interface Termination {
+  51   readonly exitCode?: number
+  52   readonly signal?: string
+  53 }
+  54 
+  55 export interface BuildProcess {
+  56   // Normal end guarantees complete ordered output. Capture failures/truncation fail the stream.
+  57   readonly output: Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError>
+  58   readonly termination: Effect.Effect<Termination, FtcJava.BuildError>
+  59   // The adapter cancels/reaps only its owned child/descendants and joins their pipes.
+  60   readonly cancelAndJoin: Effect.Effect<Termination, FtcJava.BuildError>
+  61   // Reports normal process/pipe cleanup before publication; fallback release is idempotent.
+  62   readonly release: Effect.Effect<void, FtcJava.BuildError>
+  63 }
+  64 
+  65 export interface Ports {
+  66   readonly projects: {
+  67     readonly resolve: (projectID: Project.ID) => Effect.Effect<FtcProject.ProjectContext, FtcJava.BuildError>
+  68   }
+  69   // Both ports must register idempotent fallback cleanup in the supplied Scope; release reports cleanup before publication.
+  70   readonly inputs: {
+  71     readonly acquire: (input: {
+  72       readonly project: FtcProject.ProjectContext
+  73       readonly toolchain: FtcEnvironment.ToolchainDescriptor
+  74     }) => Effect.Effect<SavedInputLease, FtcJava.BuildError, Scope.Scope>
+  75   }
+  76   readonly process: {
+  77     readonly start: (input: {
+  78       readonly lease: SavedInputLease
+  79       readonly toolchain: FtcEnvironment.ToolchainDescriptor
+  80     }) => Effect.Effect<BuildProcess, FtcJava.BuildError, Scope.Scope>
+  81   }
+  82 }
+  83 
+  84 export interface BuildRun {
+  85   readonly buildID: FtcJava.BuildID
+  86   readonly result: Effect.Effect<FtcJava.BuildEvidence>
+  87   readonly cancel: Effect.Effect<FtcJava.BuildEvidence>
+  88 }
+  89 
+  90 export interface Interface {
+  91   readonly build: (input: FtcJava.BuildRequest) => Effect.Effect<FtcJava.BuildEvidence, FtcJava.BuildError>
+  92   readonly startBuild: (input: FtcJava.BuildRequest) => Effect.Effect<BuildRun, FtcJava.BuildError>
+  93   readonly readBuild: (input: FtcJava.BuildQuery) => Effect.Effect<FtcJava.BuildRecord, FtcJava.BuildError>
+  94 }
+  95 
+  96 // The existing internal Location.Service carries explicit undefined workspace/vcs fields.
+  97 // Accept only that documented local representation, then project canonical wire fields.
+  98 const RuntimeProject = Schema.Struct({
+  99   ...FtcProject.ProjectContext.fields,
+ 100   location: Schema.Struct({
+ 101     ...Location.Info.fields,
+ 102     workspaceID: Schema.optional(WorkspaceID),
+ 103     vcs: Schema.optional(ProjectSchema.Vcs),
+ 104   }),
+ 105 })
+ 106 
+ 107 const Text = Schema.String.check(Schema.isMinLength(1))
+ 108 const Recipe = Schema.Struct({ identity: Text, wrapper: Text, buildJdk: Text, androidSdk: Text })
+ 109 const Basis = Schema.Struct({
+ 110   project: FtcProject.ProjectContext,
+ 111   toolchain: FtcEnvironment.ToolchainDescriptor,
+ 112   sourceRevision: Text,
+ 113   configurationRevision: Text,
+ 114   generation: Text,
+ 115   scope: Schema.Literal("complete"),
+ 116   mode: Schema.Literal("immutable"),
+ 117   recipe: Recipe,
+ 118   exclusions: Schema.Array(FtcJava.BuildExclusion),
+ 119 })
+ 120 const Validation = Schema.Struct({
+ 121   project: FtcProject.ProjectContext,
+ 122   toolchain: FtcEnvironment.ToolchainDescriptor,
+ 123   sourceRevision: Text,
+ 124   configurationRevision: Text,
+ 125   generation: Text,
+ 126   exclusions: Schema.Array(FtcJava.BuildExclusion),
+ 127 })
+ 128 const ObservedTermination = Schema.Struct({
+ 129   exitCode: Schema.optionalKey(Schema.Int),
+ 130   signal: Schema.optionalKey(Text),
+ 131 })
+ 132 
+ 133 export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope> =>
+ 134   Effect.gen(function* () {
+ 135     const lifetime = yield* Scope.make()
+ 136     const fibers = new Set<Fiber.Fiber<unknown, unknown>>()
+ 137     const roots = new Set<string>()
+ 138     const records = new Map<
+ 139       FtcJava.BuildID,
+ 140       {
+ 141         readonly request: FtcJava.BuildRequest
+ 142         readonly basis: SavedInputBasis
+ 143         readonly done: Deferred.Deferred<FtcJava.BuildEvidence>
+ 144         cancelled: boolean
+ 145         evidence?: FtcJava.BuildEvidence
+ 146         defect?: Cause.Cause<never>
+ 147         fiber?: Fiber.Fiber<void>
+ 148       }
+ 149     >()
+ 150     let closed = false
+ 151     const active = () =>
+ 152       Effect.suspend(() => (closed ? Effect.fail({ code: "owner_closed" } satisfies FtcJava.BuildError) : Effect.void))
+ 153     const fork = <A, E>(effect: Effect.Effect<A, E>) =>
+ 154       Effect.gen(function* () {
+ 155         const fiber = yield* Effect.forkIn(effect, lifetime, { uninterruptible: false, startImmediately: true })
+ 156         fibers.add(fiber)
+ 157         fiber.addObserver(() => fibers.delete(fiber))
+ 158         return fiber
+ 159       })
+ 160     yield* Effect.addFinalizer(() =>
+ 161       Effect.gen(function* () {
+ 162         closed = true
+ 163         records.forEach((state) => {
+ 164           if (!state.evidence) state.cancelled = true
+ 165         })
+ 166         yield* Effect.forEach([...fibers], (fiber) => interrupt(fiber), { concurrency: "unbounded" })
+ 167         yield* Scope.close(lifetime, Exit.void)
+ 168         records.clear()
+ 169         roots.clear()
+ 170       }),
+ 171     )
+ 172     const authorize = (project: FtcProject.ProjectContext) =>
+ 173       Effect.gen(function* () {
+ 174         yield* active()
+ 175         const actual = yield* ports.projects
+ 176           .resolve(project.projectID)
+ 177           .pipe(Effect.flatMap((value) => captureProject(value, "project_unauthorized")))
+ 178         if (
+ 179           !sameProject(actual, project) ||
+ 180           !absolute(actual.canonicalRoot) ||
+ 181           actual.location.directory !== actual.canonicalRoot
+ 182         )
+ 183           return yield* Effect.fail({ code: "project_unauthorized" } satisfies FtcJava.BuildError)
+ 184         yield* active()
+ 185         return actual
+ 186       })
+ 187     const startBuild = (input: FtcJava.BuildRequest) =>
+ 188       Effect.gen(function* () {
+ 189         // Capture before the first asynchronous authority/acquisition boundary.
+ 190         const project = yield* captureProject(input.project, "invalid_build_input")
+ 191         const request = yield* copy(FtcJava.BuildRequest, { ...input, project }, "invalid_build_input")
+ 192         yield* active()
+ 193         const delivered: { run?: BuildRun } = {}
+ 194         return yield* Effect.acquireUseRelease(
+ 195           fork(
+ 196             Effect.uninterruptibleMask((restore) =>
+ 197               Effect.gen(function* () {
+ 198                 const resourceScope = yield* Scope.make()
+ 199                 const transfer = { admitted: false, reserved: false }
+ 200                 return yield* Effect.gen(function* () {
+ 201                   yield* restore(authorize(request.project))
+ 202                   yield* active()
+ 203                   if (roots.has(request.project.canonicalRoot))
+ 204                     return yield* Effect.fail({ code: "busy" } satisfies FtcJava.BuildError)
+ 205                   roots.add(request.project.canonicalRoot)
+ 206                   transfer.reserved = true
+ 207                   const raw = yield* restore(
+ 208                     ports.inputs
+ 209                       .acquire({ project: request.project, toolchain: request.toolchain })
+ 210                       .pipe(Scope.provide(resourceScope)),
+ 211                   )
+ 212                   if (raw.basis?.scope !== "complete")
+ 213                     return yield* Effect.fail({ code: "incomplete_inputs" } satisfies FtcJava.BuildError)
+ 214                   const leaseProject = yield* captureProject(raw.basis.project, "lease_mismatch")
+ 215                   const basis = yield* copy(Basis, { ...raw.basis, project: leaseProject }, "lease_mismatch")
+ 216                   if (
+ 217                     !sameProject(basis.project, request.project) ||
+ 218                     !sameToolchain(basis.toolchain, request.toolchain) ||
+ 219                     basis.recipe.wrapper !== request.toolchain.gradleWrapper ||
+ 220                     basis.recipe.buildJdk !== request.toolchain.buildJdk ||
+ 221                     basis.recipe.androidSdk !== request.toolchain.androidSdk ||
+ 222                     !inside(request.project.canonicalRoot, basis.recipe.wrapper) ||
+ 223                     !raw.execution ||
+ 224                     typeof raw.execution !== "object" ||
+ 225                     typeof raw.revalidate !== "function" ||
+ 226                     !Effect.isEffect(raw.release)
+ 227                   )
+ 228                     return yield* Effect.fail({ code: "lease_mismatch" } satisfies FtcJava.BuildError)
+ 229                   if (basis.configurationRevision !== request.configurationRevision)
+ 230                     return yield* Effect.fail({ code: "stale_configuration" } satisfies FtcJava.BuildError)
+ 231                   yield* restore(authorize(request.project))
+ 232                   yield* active()
+ 233                   const lease: SavedInputLease = Object.freeze({
+ 234                     basis,
+ 235                     execution: raw.execution,
+ 236                     revalidate: raw.revalidate,
+ 237                     release: raw.release,
+ 238                   })
+ 239                   const buildID = FtcJava.BuildID.create()
+ 240                   const state = {
+ 241                     request,
+ 242                     basis,
+ 243                     done: yield* Deferred.make<FtcJava.BuildEvidence>(),
+ 244                     cancelled: false,
+ 245                     evidence: undefined as FtcJava.BuildEvidence | undefined,
+ 246                     defect: undefined as Cause.Cause<never> | undefined,
+ 247                     fiber: undefined as Fiber.Fiber<void> | undefined,
+ 248                   }
+ 249                   const worker = Effect.uninterruptibleMask((resume) =>
+ 250                     Effect.gen(function* () {
+ 251                       const logs: FtcJava.BuildLog[] = []
+ 252                       const errors: FtcJava.BuildError[] = []
+ 253                       const observed: {
+ 254                         process?: BuildProcess
+ 255                         termination?: Termination
+ 256                         outputComplete: boolean
+ 257                         validation?: InputValidation
+ 258                         settlement?: InputValidation
+ 259                         inputChanged: boolean
+ 260                       } = { outputComplete: false, inputChanged: false }
+ 261                       const note = (cause: Cause.Cause<FtcJava.BuildError>, fallback: FtcJava.BuildError["code"]) =>
+ 262                         Effect.gen(function* () {
+ 263                           const failures = cause.reasons.filter(Cause.isFailReason).map((reason) => reason.error)
+ 264                           const captured = yield* Effect.forEach(failures, (error) =>
+ 265                             copy(FtcJava.BuildError, error, fallback).pipe(
+ 266                               Effect.catch(() => Effect.succeed({ code: fallback } satisfies FtcJava.BuildError)),
+ 267                             ),
+ 268                           )
+ 269                           errors.push(
+ 270                             ...(captured.length
+ 271                               ? captured
+ 272                               : Cause.hasInterruptsOnly(cause)
+ 273                                 ? []
+ 274                                 : [{ code: fallback }]),
+ 275                           )
+ 276                           const defects = cause.reasons.filter(Cause.isDieReason)
+ 277                           if (defects.length) state.defect = Cause.fromReasons(defects)
+ 278                         })
+ 279                       const validate = (value: InputValidation) =>
+ 280                         Effect.gen(function* () {
+ 281                           const project = yield* captureProject(value.project, "input_verification_failed")
+ 282                           const validation = yield* copy(Validation, { ...value, project }, "input_verification_failed")
+ 283                           if (
+ 284                             !sameProject(validation.project, request.project) ||
+ 285                             !sameToolchain(validation.toolchain, request.toolchain)
+ 286                           )
+ 287                             return yield* Effect.fail({
+ 288                               code: "input_verification_failed",
+ 289                             } satisfies FtcJava.BuildError)
+ 290                           observed.validation = validation
+ 291                           if (
+ 292                             validation.sourceRevision !== basis.sourceRevision ||
+ 293                             validation.configurationRevision !== basis.configurationRevision ||
+ 294                             validation.generation !== basis.generation
+ 295                           )
+ 296                             observed.inputChanged = true
+ 297                           return yield* Effect.void
+ 298                         })
+ 299                       const execution = yield* resume(
+ 300                         Effect.gen(function* () {
+ 301                           yield* authorize(request.project)
+ 302                           yield* lease.revalidate().pipe(Effect.flatMap(validate))
+ 303                           yield* authorize(request.project)
+ 304                           const rawProcess = yield* ports.process
+ 305                             .start({ lease, toolchain: request.toolchain })
+ 306                             .pipe(Scope.provide(resourceScope))
+ 307                           if (
+ 308                             !rawProcess ||
+ 309                             !Stream.isStream(rawProcess.output) ||
+ 310                             !Effect.isEffect(rawProcess.termination) ||
+ 311                             !Effect.isEffect(rawProcess.cancelAndJoin) ||
+ 312                             !Effect.isEffect(rawProcess.release)
+ 313                           )
+ 314                             return yield* Effect.fail({ code: "process_start_failed" } satisfies FtcJava.BuildError)
+ 315                           const process: BuildProcess = Object.freeze({
+ 316                             output: rawProcess.output,
+ 317                             termination: rawProcess.termination,
+ 318                             cancelAndJoin: rawProcess.cancelAndJoin,
+ 319                             release: rawProcess.release,
+ 320                           })
+ 321                           observed.process = process
+ 322                           yield* Effect.all(
+ 323                             [
+ 324                               process.output.pipe(
+ 325                                 Stream.runForEach((value) =>
+ 326                                   copy(FtcJava.BuildLog, value, "output_failed").pipe(
+ 327                                     Effect.flatMap((log) =>
+ 328                                       logs.length && log.sequence <= logs[logs.length - 1].sequence
+ 329                                         ? Effect.fail({ code: "output_failed" } satisfies FtcJava.BuildError)
+ 330                                         : Effect.sync(() => {
+ 331                                             logs.push(log)
+ 332                                           }),
+ 333                                     ),
+ 334                                   ),
+ 335                                 ),
+ 336                                 Effect.andThen(
+ 337                                   Effect.sync(() => {
+ 338                                     observed.outputComplete = true
+ 339                                   }),
+ 340                                 ),
+ 341                               ),
+ 342                               process.termination.pipe(
+ 343                                 Effect.flatMap((value) => copy(ObservedTermination, value, "termination_failed")),
+ 344                                 Effect.tap((value) =>
+ 345                                   Effect.sync(() => {
+ 346                                     observed.termination = value
+ 347                                   }),
+ 348                                 ),
+ 349                               ),
+ 350                             ],
+ 351                             { concurrency: "unbounded" },
+ 352                           )
+ 353                           return yield* Effect.void
+ 354                         }),
+ 355                       ).pipe(Effect.exit)
+ 356                       if (Exit.isFailure(execution)) {
+ 357                         if (Cause.hasInterrupts(execution.cause)) state.cancelled = true
+ 358                         yield* note(execution.cause, "execution_defect")
+ 359                       }
+ 360                       if (observed.process) {
+ 361                         if (state.cancelled || Exit.isFailure(execution)) {
+ 362                           const cancelled = yield* observed.process.cancelAndJoin.pipe(
+ 363                             Effect.flatMap((value) => copy(ObservedTermination, value, "termination_failed")),
+ 364                             Effect.exit,
+ 365                           )
+ 366                           if (Exit.isSuccess(cancelled))
+ 367                             observed.termination = { ...observed.termination, ...cancelled.value }
+ 368                           if (Exit.isFailure(cancelled)) yield* note(cancelled.cause, "cleanup_failed")
+ 369                         }
+ 370                         const released = yield* Effect.exit(observed.process.release)
+ 371                         if (Exit.isFailure(released)) yield* note(released.cause, "cleanup_failed")
+ 372                       }
+ 373                       // Authorization and interval observations are refreshed after process/pipe cleanup.
+ 374                       const current = yield* Effect.exit(
+ 375                         authorize(request.project).pipe(Effect.andThen(lease.revalidate()), Effect.flatMap(validate)),
+ 376                       )
+ 377                       if (Exit.isFailure(current)) yield* note(current.cause, "input_verification_failed")
+ 378                       const released = yield* Effect.exit(
+ 379                         lease.release.pipe(
+ 380                           Effect.flatMap(validate),
+ 381                           Effect.tap(() =>
+ 382                             Effect.sync(() => {
+ 383                               observed.settlement = observed.validation
+ 384                             }),
+ 385                           ),
+ 386                         ),
+ 387                       )
+ 388                       if (Exit.isFailure(released)) yield* note(released.cause, "cleanup_failed")
+ 389                       const cleaned = yield* Effect.exit(Scope.close(resourceScope, Exit.void))
+ 390                       if (Exit.isFailure(cleaned)) yield* note(cleaned.cause, "cleanup_failed")
+ 391                       const evidence = freeze(
+ 392                         FtcJava.BuildEvidence.make({
+ 393                           buildID,
+ 394                           projectID: request.project.projectID,
+ 395                           sourceRevision: basis.sourceRevision,
+ 396                           configurationRevision: basis.configurationRevision,
+ 397                           inputChanged: observed.inputChanged,
+ 398                           ...observed.termination,
+ 399                           status: state.cancelled
+ 400                             ? "cancelled"
+ 401                             : observed.inputChanged
+ 402                               ? "outdated"
+ 403                               : observed.termination?.exitCode === 0 &&
+ 404                                   !observed.termination.signal &&
+ 405                                   observed.outputComplete &&
+ 406                                   !errors.length
+ 407                                 ? "succeeded"
+ 408                                 : "failed",
+ 409                           logs: [...logs],
+ 410                           outputComplete: observed.outputComplete,
+ 411                           savedInputsOnly: true,
+ 412                           exclusions: {
+ 413                             initial: basis.exclusions,
+ 414                             ...(observed.settlement ? { settlement: observed.settlement.exclusions } : {}),
+ 415                           },
+ 416                           errors,
+ 417                         }),
+ 418                       )
+ 419                       state.evidence = evidence
+ 420                       roots.delete(request.project.canonicalRoot)
+ 421                       yield* Deferred.succeed(state.done, evidence)
+ 422                     }),
+ 423                   )
+ 424                   records.set(buildID, state)
+ 425                   state.fiber = yield* fork(worker)
+ 426                   transfer.admitted = true
+ 427                   const result = Deferred.await(state.done).pipe(
+ 428                     Effect.flatMap((evidence) =>
+ 429                       state.defect ? Effect.failCause(state.defect) : Effect.succeed(evidence),
+ 430                     ),
+ 431                   )
+ 432                   const cancel = Effect.uninterruptible(
+ 433                     Effect.gen(function* () {
+ 434                       if (!state.evidence) {
+ 435                         state.cancelled = true
+ 436                         if (state.fiber) yield* interrupt(state.fiber)
+ 437                       }
+ 438                       return state.evidence ?? (yield* Deferred.await(state.done))
+ 439                     }),
+ 440                   )
+ 441                   delivered.run = Object.freeze({ buildID, result, cancel })
+ 442                   return delivered.run
+ 443                 }).pipe(
+ 444                   Effect.onExit(() =>
+ 445                     transfer.admitted
+ 446                       ? Effect.void
+ 447                       : Scope.close(resourceScope, Exit.void).pipe(
+ 448                           Effect.ensuring(
+ 449                             Effect.sync(() => {
+ 450                               if (transfer.reserved) roots.delete(request.project.canonicalRoot)
+ 451                             }),
+ 452                           ),
+ 453                         ),
+ 454                   ),
+ 455                 )
+ 456               }),
+ 457             ),
+ 458           ),
+ 459           join,
+ 460           interrupt,
+ 461         ).pipe(Effect.onInterrupt(() => (delivered.run ? delivered.run.cancel.pipe(Effect.asVoid) : Effect.void)))
+ 462       })
+ 463     const build = (input: FtcJava.BuildRequest) =>
+ 464       Effect.uninterruptibleMask((restore) =>
+ 465         Effect.gen(function* () {
+ 466           const run = yield* restore(startBuild(input))
+ 467           return yield* restore(run.result).pipe(Effect.onInterrupt(() => run.cancel.pipe(Effect.asVoid)))
+ 468         }),
+ 469       )
+ 470     const readBuild = (input: FtcJava.BuildQuery) =>
+ 471       Effect.gen(function* () {
+ 472         yield* active()
+ 473         const query = yield* copy(FtcJava.BuildQuery, input, "invalid_build_input")
+ 474         const state = records.get(query.buildID)
+ 475         if (!state || state.request.project.projectID !== query.projectID)
+ 476           return yield* Effect.fail({ code: "build_unknown" } satisfies FtcJava.BuildError)
+ 477         yield* authorize(state.request.project)
+ 478         return freeze(
+ 479           state.evidence
+ 480             ? {
+ 481                 state: "settled" as const,
+ 482                 buildID: query.buildID,
+ 483                 projectID: query.projectID,
+ 484                 evidence: state.evidence,
+ 485               }
+ 486             : { state: "running" as const, buildID: query.buildID, projectID: query.projectID },
+ 487         )
+ 488       })
+ 489     return { build, startBuild, readBuild }
+ 490   })
+ 491 
+ 492 function captureProject(value: unknown, code: FtcJava.BuildError["code"]) {
+ 493   return Effect.try({
+ 494     try: () => {
+ 495       const project = Schema.decodeUnknownSync(RuntimeProject, { onExcessProperty: "error" })(structuredClone(value))
+ 496       return freeze(
+ 497         FtcProject.ProjectContext.make({
+ 498           projectID: project.projectID,
+ 499           canonicalRoot: project.canonicalRoot,
+ 500           location: new Location.Info({
+ 501             directory: project.location.directory,
+ 502             ...(project.location.workspaceID !== undefined ? { workspaceID: project.location.workspaceID } : {}),
+ 503             project: project.location.project,
+ 504           }),
+ 505         }),
+ 506       )
+ 507     },
+ 508     catch: (): FtcJava.BuildError => ({ code }),
+ 509   })
+ 510 }
+ 511 
+ 512 function copy<A>(schema: Schema.Decoder<A>, value: unknown, code: FtcJava.BuildError["code"]) {
+ 513   return Effect.try({
+ 514     try: () => freeze(Schema.decodeUnknownSync(schema, { onExcessProperty: "error" })(structuredClone(value))),
+ 515     catch: (): FtcJava.BuildError => ({ code }),
+ 516   })
+ 517 }
+ 518 
+ 519 function freeze<A>(value: A): A {
+ 520   if (value && typeof value === "object") {
+ 521     Object.values(value).forEach(freeze)
+ 522     Object.freeze(value)
+ 523   }
+ 524   return value
+ 525 }
+ 526 
+ 527 function sameProject(left: FtcProject.ProjectContext, right: FtcProject.ProjectContext) {
+ 528   return (
+ 529     left.projectID === right.projectID &&
+ 530     left.canonicalRoot === right.canonicalRoot &&
+ 531     left.location.directory === right.location.directory &&
+ 532     left.location.workspaceID === right.location.workspaceID &&
+ 533     left.location.project.id === right.location.project.id &&
+ 534     left.location.project.directory === right.location.project.directory
+ 535   )
+ 536 }
+ 537 
+ 538 function sameToolchain(left: FtcEnvironment.ToolchainDescriptor, right: FtcEnvironment.ToolchainDescriptor) {
+ 539   return (
+ 540     JSON.stringify(Schema.encodeSync(FtcEnvironment.ToolchainDescriptor)(left)) ===
+ 541     JSON.stringify(Schema.encodeSync(FtcEnvironment.ToolchainDescriptor)(right))
+ 542   )
+ 543 }
+ 544 
+ 545 function absolute(value: string) {
+ 546   return /^(?:\/|[a-zA-Z]:[\\/]|\\\\)/.test(value)
+ 547 }
+ 548 function inside(root: string, value: string) {
+ 549   return value.replaceAll("\\", "/").startsWith(root.replaceAll("\\", "/").replace(/\/$/, "") + "/")
+ 550 }
+ 551 
+ 552 // beta.83 notifies a mutable observer array. Removing a completed observer can skip
+ 553 // another owner-close waiter; remove only cancelled waits, never during completion.
+ 554 function awaitFiber<A, E>(fiber: Fiber.Fiber<A, E>) {
+ 555   return Effect.callback<Exit.Exit<A, E>>((resume) => {
+ 556     const remove = fiber.addObserver((exit) => resume(Effect.succeed(exit)))
+ 557     return Effect.sync(() => {
+ 558       if (!fiber.pollUnsafe()) remove()
+ 559     })
+ 560   })
+ 561 }
+ 562 
+ 563 function join<A, E>(fiber: Fiber.Fiber<A, E>) {
+ 564   return awaitFiber(fiber).pipe(
+ 565     Effect.flatMap((exit) => (Exit.isSuccess(exit) ? Effect.succeed(exit.value) : Effect.failCause(exit.cause))),
+ 566   )
+ 567 }
+ 568 
+ 569 function interrupt<A, E>(fiber: Fiber.Fiber<A, E>) {
+ 570   return Effect.sync(() => fiber.interruptUnsafe()).pipe(Effect.andThen(awaitFiber(fiber)), Effect.asVoid)
+ 571 }

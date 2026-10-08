@@ -1,0 +1,152 @@
+   1 import { expect, test } from "bun:test"
+   2 import { Schema } from "effect"
+   3 import { FtcJava } from "../src/ftc-java"
+   4 
+   5 const request = {
+   6   project: {
+   7     projectID: "fixture",
+   8     canonicalRoot: "/fixture",
+   9     location: { directory: "/fixture", project: { id: "global", directory: "/" } },
+  10   },
+  11   toolchain: {
+  12     profileID: "fixture",
+  13     buildJdk: "/jdk",
+  14     editorJdk: "/editor",
+  15     androidSdk: "/sdk",
+  16     adb: "/adb",
+  17     gradleWrapper: "/fixture/gradlew",
+  18     versions: {
+  19       buildJdk: "17",
+  20       editorJdk: "21",
+  21       androidSdk: "fixture",
+  22       adb: "fixture",
+  23       gradleWrapper: "fixture",
+  24       ftcSdk: "fixture",
+  25       androidGradlePlugin: "fixture",
+  26     },
+  27   },
+  28   configurationRevision: "config-1",
+  29 }
+  30 const evidence = {
+  31   buildID: "build_fixture",
+  32   projectID: "fixture",
+  33   sourceRevision: "source-1",
+  34   configurationRevision: "config-1",
+  35   inputChanged: false,
+  36   status: "succeeded" as const,
+  37   logs: [{ sequence: 0, stream: "stdout" as const, text: "actual" }],
+  38   outputComplete: true,
+  39   savedInputsOnly: true as const,
+  40   exclusions: {
+  41     initial: [],
+  42     settlement: [{ path: "Main.java", documentID: "doc_fixture", bufferRevision: 1, diskRevision: 0 }],
+  43   },
+  44   errors: [],
+  45 }
+  46 
+  47 test("build request and evidence preserve canonical project, descriptor, saved basis and JSON", () => {
+  48   expect(Schema.encodeSync(FtcJava.BuildRequest)(Schema.decodeUnknownSync(FtcJava.BuildRequest)(request))).toEqual(
+  49     request,
+  50   )
+  51   expect(Schema.encodeSync(FtcJava.BuildEvidence)(Schema.decodeUnknownSync(FtcJava.BuildEvidence)(evidence))).toEqual(
+  52     evidence,
+  53   )
+  54   const settled = { state: "settled" as const, buildID: evidence.buildID, projectID: evidence.projectID, evidence }
+  55   expect(Schema.encodeSync(FtcJava.BuildRecord)(Schema.decodeUnknownSync(FtcJava.BuildRecord)(settled))).toEqual(
+  56     settled,
+  57   )
+  58 })
+  59 
+  60 test("optional actual exits and exclusion/error properties omit undefined while encoding", () => {
+  61   const decoded = Schema.decodeUnknownSync(FtcJava.BuildEvidence)(evidence)
+  62   expect(Schema.encodeSync(FtcJava.BuildEvidence)({ ...decoded, exitCode: undefined, signal: undefined })).toEqual(
+  63     evidence,
+  64   )
+  65   expect(
+  66     Schema.encodeSync(FtcJava.BuildError)({ code: "owner_closed", buildID: undefined, projectID: undefined }),
+  67   ).toEqual({ code: "owner_closed" })
+  68   expect(
+  69     Schema.encodeSync(FtcJava.BuildExclusion)({
+  70       path: "Main.java",
+  71       documentID: undefined,
+  72       bufferRevision: undefined,
+  73       diskRevision: undefined,
+  74     }),
+  75   ).toEqual({ path: "Main.java" })
+  76 })
+  77 
+  78 test("owner-generated build IDs validate exactly their emitted prefix and are distinct", () => {
+  79   const first = FtcJava.BuildID.create()
+  80   expect(Schema.decodeUnknownSync(FtcJava.BuildID)(first)).toBe(first)
+  81   expect(first).toStartWith("build_")
+  82   expect(first).not.toBe(FtcJava.BuildID.create())
+  83   for (const value of ["build", "builds_fixture", "doc_fixture"])
+  84     expect(() => Schema.decodeUnknownSync(FtcJava.BuildID)(value)).toThrow()
+  85 })
+  86 
+  87 test("build contracts have unique stable domain identifiers", () => {
+  88   const names = [
+  89     "BuildID",
+  90     "BuildRequest",
+  91     "BuildExclusion",
+  92     "BuildLog",
+  93     "BuildEvidence",
+  94     "BuildError",
+  95     "BuildQuery",
+  96     "BuildRecord",
+  97   ] as const
+  98   const identifiers = names.map((name) =>
+  99     "identifier" in FtcJava[name] ? FtcJava[name].identifier : FtcJava[name].ast.annotations?.identifier,
+ 100   )
+ 101   expect(identifiers).toEqual(names.map((name) => `FtcJava.${name}`))
+ 102   expect(new Set(identifiers).size).toBe(names.length)
+ 103 })
+ 104 
+ 105 test("strict request decoding rejects capability/command/output and invented successful records", () => {
+ 106   const decode = Schema.decodeUnknownSync(FtcJava.BuildRequest, { onExcessProperty: "error" })
+ 107   for (const extra of [
+ 108     { command: "gradle" },
+ 109     { task: "assemble" },
+ 110     { env: {} },
+ 111     { output: "/foreign" },
+ 112     { execution: {} },
+ 113     { configurationRevision: "" },
+ 114   ])
+ 115     expect(() => decode({ ...request, ...extra })).toThrow()
+ 116   expect(() => Schema.decodeUnknownSync(FtcJava.BuildEvidence)({ ...evidence, status: "verified" })).toThrow()
+ 117   expect(() => Schema.decodeUnknownSync(FtcJava.BuildError)({ code: "success" })).toThrow()
+ 118   expect(() =>
+ 119     Schema.decodeUnknownSync(FtcJava.BuildRecord, { onExcessProperty: "error" })({
+ 120       state: "running",
+ 121       buildID: evidence.buildID,
+ 122       projectID: evidence.projectID,
+ 123       evidence,
+ 124     }),
+ 125   ).toThrow()
+ 126 })
+ 127 
+ 128 test.each(["", "../outside", "nested/../outside", "/outside", "C:\\outside"])(
+ 129   "unsaved exclusion rejects escaped/empty path %s",
+ 130   (value) => {
+ 131     expect(() => Schema.decodeUnknownSync(FtcJava.BuildExclusion)({ path: value })).toThrow()
+ 132   },
+ 133 )
+ 134 
+ 135 test("actual integer exit/log sequences and text-free exclusion records reject malformed wire values", () => {
+ 136   expect(() => Schema.decodeUnknownSync(FtcJava.BuildEvidence)({ ...evidence, exitCode: 1.5 })).toThrow()
+ 137   expect(() =>
+ 138     Schema.decodeUnknownSync(FtcJava.BuildLog)({ sequence: -1, stream: "stdout" as const, text: "actual" }),
+ 139   ).toThrow()
+ 140   expect(() =>
+ 141     Schema.decodeUnknownSync(FtcJava.BuildLog)({ sequence: 0, stream: "combined", text: "actual" }),
+ 142   ).toThrow()
+ 143   expect(() =>
+ 144     Schema.decodeUnknownSync(FtcJava.BuildExclusion, { onExcessProperty: "error" })({
+ 145       path: "Main.java",
+ 146       text: "secret unsaved",
+ 147     }),
+ 148   ).toThrow()
+ 149   expect(() =>
+ 150     Schema.decodeUnknownSync(FtcJava.BuildEvidence, { onExcessProperty: "error" })({ ...evidence, artifact: {} }),
+ 151   ).toThrow()
+ 152 })

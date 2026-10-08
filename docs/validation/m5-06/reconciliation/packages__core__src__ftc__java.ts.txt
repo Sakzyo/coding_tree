@@ -1,0 +1,56 @@
+   1 export * as Java from "./java"
+   2 
+   3 import { Context, Effect, Layer } from "effect"
+   4 import { JavaDocuments } from "./java/documents"
+   5 import { JavaBuild } from "./java/build"
+   6 
+   7 export {
+   8   DocumentID,
+   9   DocumentSnapshot,
+  10   DocumentEvent,
+  11   DocumentError,
+  12   Revision,
+  13   SaveRequest,
+  14   EditProposal,
+  15   EditConflict,
+  16   EditResult,
+  17   BuildID,
+  18   BuildRequest,
+  19   BuildExclusion,
+  20   BuildLog,
+  21   BuildEvidence,
+  22   BuildError,
+  23   BuildQuery,
+  24   BuildRecord,
+  25 } from "@opencode-ai/schema/ftc-java"
+  26 export type { Filesystem, Projects, CodeChanges, Ports } from "./java/documents"
+  27 export type { BuildRun } from "./java/build"
+  28 
+  29 export interface Interface extends JavaDocuments.Interface, JavaBuild.Interface {}
+  30 export class Service extends Context.Service<Service, Interface>()("@opencode/FtcJava") {}
+  31 
+  32 // Application wiring supplies authorized canonical project records and the filesystem port.
+  33 export const layer = (ports: JavaDocuments.Ports) =>
+  34   Layer.effect(
+  35     Service,
+  36     JavaDocuments.make(ports).pipe(
+  37       Effect.map((documents) => ({
+  38         ...documents,
+  39         build: unavailable,
+  40         startBuild: unavailable,
+  41         readBuild: unavailable,
+  42       })),
+  43     ),
+  44   )
+  45 
+  46 const unavailable = () => Effect.fail({ code: "build_unavailable" as const })
+  47 
+  48 export const layerWithBuilds = (ports: { readonly documents: JavaDocuments.Ports; readonly builds: JavaBuild.Ports }) =>
+  49   Layer.effect(
+  50     Service,
+  51     Effect.gen(function* () {
+  52       const documents = yield* JavaDocuments.make(ports.documents)
+  53       const builds = yield* JavaBuild.make(ports.builds)
+  54       return { ...documents, ...builds }
+  55     }),
+  56   )

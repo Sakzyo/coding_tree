@@ -1,0 +1,11 @@
+{
+  "read_revision": "03fd63ebd9bdd310ee56edad538ec7a774893169",
+  "five_sources_manifest_match": true,
+  "producer_report_manifest_match": true,
+  "report_sha256": "a2e8eb0f4a013ca0fa6389cda11dec6469e574119f6ec22487c3b4a7169cb528",
+  "trailing_whitespace_lines": [],
+  "missing_local_link_targets": [],
+  "local_link_count": 9,
+  "tests_or_typechecks_run": 0,
+  "initial_metadata_probe": "JSONDecodeError from incorrectly stripping saved line-number prefix; corrected regex strips only that prefix; immutable source evidence unchanged"
+}

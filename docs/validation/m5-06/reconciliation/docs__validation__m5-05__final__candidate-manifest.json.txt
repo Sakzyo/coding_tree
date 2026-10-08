@@ -1,0 +1,160 @@
+   1 {
+   2   "status": "DONE candidate only; root commit/independent review/task credit pending",
+   3   "head": "928066c85735c6145f6bc7d3789511edee790a03",
+   4   "frozenAt": "2026-10-08T16:00:30.412806+00:00",
+   5   "source": {
+   6     "packages/core/src/ftc/java/build.ts": "02ad95b5e59b8d8602fb2300d03530c3708992b16376148df7b487ea8dd143d9",
+   7     "packages/core/src/ftc/java.ts": "44f7c5810f506a97fd213f96743d559d50bc7212c064d45cf097af2d9ef2f6b3",
+   8     "packages/core/test/ftc/java-development/m5-05.test.ts": "02bf37061a5ac19f732498f5685c60401ce3953068eea5d2e81a1baecf5ae7d7",
+   9     "packages/schema/src/ftc-java.ts": "85bebc90f9f1841e4974ce619f5d9099b0e63c343df6ed528b0ec86a1029101d",
+  10     "packages/schema/test/ftc-java-build.test.ts": "063f914d0fdeda70b694982d8d1d5bbde8701656187a549e00c177c31caeec9b"
+  11   },
+  12   "report": {
+  13     "path": "docs/validation/M5-05-implementation.md",
+  14     "sha256": "153f3a6105ca9aba4665f9dc52da8c69f812113754ffa713a603183b8493dff9"
+  15   },
+  16   "checks": {
+  17     "core-focused": {
+  18       "command": [
+  19         "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+  20         "test",
+  21         "./test/ftc/java-development/m5-05.test.ts"
+  22       ],
+  23       "cwd": "/Users/dylanxu/coding_tree/packages/core",
+  24       "exit": 0,
+  25       "metadataSha256": "41df5e75cdf448e85e697ddc2d78ff9e35b1fdfd0ae47a4f45205e733a148ff8",
+  26       "logSha256": "a3c6f62a3f2ddcd00d196fe0e138dd79d930c68c7f40d677f396f8b88aed7602",
+  27       "pass": 62,
+  28       "fail": 0,
+  29       "assertions": 373,
+  30       "files": 1
+  31     },
+  32     "core-m5-regression": {
+  33       "command": [
+  34         "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+  35         "test",
+  36         "./test/ftc/java-development/m5-01.test.ts",
+  37         "./test/ftc/java-development/m5-02.test.ts"
+  38       ],
+  39       "cwd": "/Users/dylanxu/coding_tree/packages/core",
+  40       "exit": 0,
+  41       "metadataSha256": "bbe1c9c90d24fa4e5c6a51f674d063cc9ffe22275be7f6ba72f127baa69a2c89",
+  42       "logSha256": "6b751d48360ebeed4d2f03df64816abe2b0cdfde90085cf8451ac2f961c0b856",
+  43       "pass": 50,
+  44       "fail": 0,
+  45       "assertions": 194,
+  46       "files": 2
+  47     },
+  48     "schema-focused": {
+  49       "command": [
+  50         "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+  51         "test",
+  52         "./test/ftc-java-build.test.ts",
+  53         "./test/ftc-java.test.ts",
+  54         "./test/contract-hygiene.test.ts"
+  55       ],
+  56       "cwd": "/Users/dylanxu/coding_tree/packages/schema",
+  57       "exit": 0,
+  58       "metadataSha256": "1e107cb315fee86637163928db16efa685a960e07473904fbec8abc8034fd8c6",
+  59       "logSha256": "49df1df3dac0a55a35f58905219e9929a221075e97287739834ee8130ae409ae",
+  60       "pass": 34,
+  61       "fail": 0,
+  62       "assertions": 85,
+  63       "files": 3
+  64     },
+  65     "core-types": {
+  66       "command": [
+  67         "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+  68         "typecheck"
+  69       ],
+  70       "cwd": "/Users/dylanxu/coding_tree/packages/core",
+  71       "exit": 0,
+  72       "metadataSha256": "9674848925a760ed5e2e9dd8b0982f531330d72a00fff60cbc84ac6f75b9b79c",
+  73       "logSha256": "ae47736bb2a9401aa9743893f2f64b9a605e65a99d78cd991a8021e0f7722d87"
+  74     },
+  75     "schema-types": {
+  76       "command": [
+  77         "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+  78         "typecheck"
+  79       ],
+  80       "cwd": "/Users/dylanxu/coding_tree/packages/schema",
+  81       "exit": 0,
+  82       "metadataSha256": "a5d42bd58f86a783d761a7080c10e9676ab1213277dc1a8cba071bce985c8f2a",
+  83       "logSha256": "ae47736bb2a9401aa9743893f2f64b9a605e65a99d78cd991a8021e0f7722d87"
+  84     },
+  85     "lint": {
+  86       "command": [
+  87         "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+  88         "run",
+  89         "lint",
+  90         "--",
+  91         "packages/core/src/ftc/java/build.ts",
+  92         "packages/core/src/ftc/java.ts",
+  93         "packages/core/test/ftc/java-development/m5-05.test.ts",
+  94         "packages/schema/src/ftc-java.ts",
+  95         "packages/schema/test/ftc-java-build.test.ts"
+  96       ],
+  97       "cwd": "/Users/dylanxu/coding_tree",
+  98       "exit": 0,
+  99       "metadataSha256": "6c2cfb3010a3f0cb6e8ae9834b5eef4fb91689bc9544dde32dbb0a8713fbe8a6",
+ 100       "logSha256": "0b38b477cb40dceeac92cb2fc0f30ba644d6c07d92dcc4d7bba12815bd798d7b"
+ 101     },
+ 102     "format": {
+ 103       "command": [
+ 104         "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+ 105         "x",
+ 106         "--no-install",
+ 107         "prettier",
+ 108         "--check",
+ 109         "packages/core/src/ftc/java/build.ts",
+ 110         "packages/core/src/ftc/java.ts",
+ 111         "packages/core/test/ftc/java-development/m5-05.test.ts",
+ 112         "packages/schema/src/ftc-java.ts",
+ 113         "packages/schema/test/ftc-java-build.test.ts"
+ 114       ],
+ 115       "cwd": "/Users/dylanxu/coding_tree",
+ 116       "exit": 0,
+ 117       "metadataSha256": "3d1ed8c567f5c22e1d04edc9be8ec7fa5f994a307a4730695d9ef7a79201fa09",
+ 118       "logSha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+ 119     },
+ 120     "imports": {
+ 121       "command": [
+ 122         "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+ 123         "-e",
+ 124         "import { Java } from \"./src/ftc/java\"; import { JavaBuild } from \"./src/ftc/java/build\"; import { FtcJava } from \"@opencode-ai/schema/ftc-java\"; for (const name of [\"BuildID\", \"BuildRequest\", \"BuildExclusion\", \"BuildLog\", \"BuildEvidence\", \"BuildError\", \"BuildQuery\", \"BuildRecord\"]) { if (Java[name] !== FtcJava[name]) throw new Error(name); } if (typeof JavaBuild.make !== \"function\" || typeof Java.layer !== \"function\" || typeof Java.layerWithBuilds !== \"function\") throw new Error(\"facade missing\"); console.log(\"actual imports and eight exact canonical identities passed; no owner or process started\")"
+ 125       ],
+ 126       "cwd": "/Users/dylanxu/coding_tree/packages/core",
+ 127       "exit": 0,
+ 128       "metadataSha256": "12ff65b5a0afebad9661a3a41da8849cd66eb9d3fdc771910bd24bbe813d361c",
+ 129       "logSha256": "daf747aab86e058cc57ee1f09d23032a6a05a8c0d9be3d86c701b091c5b6125b"
+ 130     },
+ 131     "location-producer-green": {
+ 132       "command": [
+ 133         "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+ 134         "test",
+ 135         "./test/ftc/java-development/m5-05.test.ts",
+ 136         "--test-name-pattern",
+ 137         "real internal Location.Service shape"
+ 138       ],
+ 139       "cwd": "/Users/dylanxu/coding_tree/packages/core",
+ 140       "exit": 0,
+ 141       "metadataSha256": "decd417daaead86ab4a265e9eff52bb9dc699a4d84fe2dddee8924080ae9e51f",
+ 142       "logSha256": "4cf73eef11da8848ea956af8a347ca94a70d099e1825f1b5e7ab6c482f7e53b4",
+ 143       "pass": 1,
+ 144       "fail": 0,
+ 145       "assertions": 10
+ 146     }
+ 147   },
+ 148   "patchSha256": "f085844e5420bb8a019a55b3aedd96e73ab8c26ccb7f8517e82000aa249dd8b2",
+ 149   "scopeWhitespaceSha256": "c35b068ae78cca21468827259ec62c58ed7c185c91aa37a7b57c3a84c90019d7",
+ 150   "protectedBaselineSha256": "2ef31963a0b758ad2a48c873d346eab3f79af0f84822ff995a87906757f68f2a",
+ 151   "priorFinalArchive": "docs/validation/m5-05/prior-final-before-location-projection",
+ 152   "preservedFailedFullRun": "docs/validation/m5-05/core-focused-fixture-lint-iteration.log",
+ 153   "notRun": [
+ 154     "production complete saved-input/dirty/recipe/process bindings",
+ 155     "Gradle/JDK/SDK/tool download/provider/robot/host startup",
+ 156     "native descendant isolation and Windows",
+ 157     "M4 composition and M5-06 artifact/deployment-current",
+ 158     "comprehensive package/integration/editor/platform/release acceptance"
+ 159   ]
+ 160 }

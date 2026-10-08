@@ -1,0 +1,10 @@
+02ad95b5e59b8d8602fb2300d03530c3708992b16376148df7b487ea8dd143d9  packages/core/src/ftc/java/build.ts
+44f7c5810f506a97fd213f96743d559d50bc7212c064d45cf097af2d9ef2f6b3  packages/core/src/ftc/java.ts
+02bf37061a5ac19f732498f5685c60401ce3953068eea5d2e81a1baecf5ae7d7  packages/core/test/ftc/java-development/m5-05.test.ts
+85bebc90f9f1841e4974ce619f5d9099b0e63c343df6ed528b0ec86a1029101d  packages/schema/src/ftc-java.ts
+063f914d0fdeda70b694982d8d1d5bbde8701656187a549e00c177c31caeec9b  packages/schema/test/ftc-java-build.test.ts
+8b744874f6715da99b7594f61ac706d3320d646264d132a9f43912d4295e6320  docs/validation/M5-05-brief.md
+153f3a6105ca9aba4665f9dc52da8c69f812113754ffa713a603183b8493dff9  docs/validation/M5-05-implementation.md
+8329751da619d5aece53a86ec41b0fe3a8914d5d4e2e548718191aa69f76bc13  docs/validation/m5-05/final/candidate-manifest.json
+845d4e6e032da8c0e5b94fd7a53c9d932300bb68a663495b55f111fc2e853d85  docs/validation/m5-05/final/source-sha256.txt
+25bf75eb671d3cbf6bd42734db94749e3694c38e5f5eb768edcd96c0ddaaad67  docs/validation/M5-06-preflight.md

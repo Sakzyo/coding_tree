@@ -1,0 +1,194 @@
+   1 export * as FtcJava from "./ftc-java"
+   2 
+   3 import { Schema } from "effect"
+   4 import { Project } from "./project"
+   5 import { FtcProject } from "./ftc-project"
+   6 import { FtcEnvironment } from "./ftc-environment"
+   7 import { AbsolutePath, NonNegativeInt, optional, statics } from "./schema"
+   8 import { ascending } from "./identifier"
+   9 
+  10 export const DocumentID = Schema.String.check(Schema.isStartsWith("doc_"))
+  11   .pipe(Schema.brand("FtcJava.DocumentID"))
+  12   .annotate({ identifier: "FtcJava.DocumentID" })
+  13   .pipe(statics((schema) => ({ create: () => schema.make(`doc_${ascending()}`) })))
+  14 export type DocumentID = typeof DocumentID.Type
+  15 
+  16 export interface DocumentSnapshot extends Schema.Schema.Type<typeof DocumentSnapshot> {}
+  17 export const DocumentSnapshot = Schema.Struct({
+  18   documentID: DocumentID,
+  19   projectID: Project.ID,
+  20   path: AbsolutePath.check(Schema.isPattern(/^(?:\/|[a-zA-Z]:[\\/]|\\\\)/)),
+  21   bufferRevision: NonNegativeInt,
+  22   // Revision of the most recently observed disk bytes; buffer revisions are independent.
+  23   diskRevision: NonNegativeInt,
+  24   text: Schema.String,
+  25   dirty: Schema.Boolean,
+  26 }).annotate({ identifier: "FtcJava.DocumentSnapshot" })
+  27 
+  28 export interface DocumentEvent extends Schema.Schema.Type<typeof DocumentEvent> {}
+  29 export const DocumentEvent = Schema.Struct({
+  30   type: Schema.Literals(["opened", "changed", "saved", "disk_changed"]),
+  31   snapshot: DocumentSnapshot,
+  32 }).annotate({ identifier: "FtcJava.DocumentEvent" })
+  33 
+  34 export interface Revision extends Schema.Schema.Type<typeof Revision> {}
+  35 export const Revision = Schema.Struct({
+  36   documentID: DocumentID,
+  37   bufferRevision: NonNegativeInt,
+  38   diskRevision: NonNegativeInt,
+  39 }).annotate({ identifier: "FtcJava.Revision" })
+  40 
+  41 export interface SaveRequest extends Schema.Schema.Type<typeof SaveRequest> {}
+  42 export const SaveRequest = Schema.Struct({
+  43   projectID: Project.ID,
+  44   path: Schema.String,
+  45   expectedRevision: Revision,
+  46 }).annotate({ identifier: "FtcJava.SaveRequest" })
+  47 
+  48 export interface EditProposal extends Schema.Schema.Type<typeof EditProposal> {}
+  49 export const EditProposal = Schema.Struct({
+  50   projectID: Project.ID,
+  51   edits: Schema.Array(
+  52     Schema.Struct({ path: Schema.String, expectedRevision: Revision, replacement: Schema.String }),
+  53   ).check(Schema.isMinLength(1)),
+  54   explanation: Schema.String,
+  55 }).annotate({ identifier: "FtcJava.EditProposal" })
+  56 
+  57 // Authorization is an opaque runtime capability supplied to Core, never a serializable proposal field.
+  58 export interface EditConflict extends Schema.Schema.Type<typeof EditConflict> {}
+  59 export const EditConflict = Schema.Struct({
+  60   path: Schema.String,
+  61   reason: Schema.Literals(["revision", "dirty", "disk_changed"]),
+  62   current: DocumentSnapshot,
+  63   diskText: Schema.String,
+  64   choices: Schema.Array(Schema.Literals(["save", "merge", "defer"])),
+  65 }).annotate({ identifier: "FtcJava.EditConflict" })
+  66 
+  67 export interface DocumentError extends Schema.Schema.Type<typeof DocumentError> {}
+  68 export const DocumentError = Schema.Struct({
+  69   code: Schema.Literals([
+  70     "project_unauthorized",
+  71     "path_outside_project",
+  72     "file_unavailable",
+  73     "document_not_open",
+  74     "revision_conflict",
+  75     "invalid_document_input",
+  76     "owner_closed",
+  77     "edit_unauthorized",
+  78   ]),
+  79   projectID: optional(Project.ID),
+  80   path: optional(Schema.String),
+  81   expectedRevision: optional(NonNegativeInt),
+  82   actualRevision: optional(NonNegativeInt),
+  83   conflict: optional(EditConflict),
+  84   outcome: optional(Schema.Literals(["unknown"])),
+  85 }).annotate({ identifier: "FtcJava.DocumentError" })
+  86 
+  87 export const EditResult = Schema.Union([
+  88   Schema.Struct({
+  89     kind: Schema.Literal("applied"),
+  90     proposal: EditProposal,
+  91     applied: Schema.Array(DocumentSnapshot),
+  92   }),
+  93   Schema.Struct({
+  94     kind: Schema.Literal("conflict"),
+  95     proposal: EditProposal,
+  96     applied: Schema.Array(DocumentSnapshot),
+  97     conflicts: Schema.Array(EditConflict).check(Schema.isMinLength(1)),
+  98   }),
+  99   Schema.Struct({
+ 100     kind: Schema.Literal("failed"),
+ 101     proposal: EditProposal,
+ 102     applied: Schema.Array(DocumentSnapshot),
+ 103     error: DocumentError,
+ 104     uncertainPaths: Schema.Array(Schema.String),
+ 105   }),
+ 106 ]).annotate({ identifier: "FtcJava.EditResult" })
+ 107 export type EditResult = typeof EditResult.Type
+ 108 
+ 109 export const BuildID = Schema.String.check(Schema.isStartsWith("build_"))
+ 110   .pipe(Schema.brand("FtcJava.BuildID"))
+ 111   .annotate({ identifier: "FtcJava.BuildID" })
+ 112   .pipe(statics((schema) => ({ create: () => schema.make(`build_${ascending()}`) })))
+ 113 export type BuildID = typeof BuildID.Type
+ 114 
+ 115 const BuildRevision = Schema.String.check(Schema.isMinLength(1))
+ 116 
+ 117 export interface BuildRequest extends Schema.Schema.Type<typeof BuildRequest> {}
+ 118 export const BuildRequest = Schema.Struct({
+ 119   project: FtcProject.ProjectContext,
+ 120   toolchain: FtcEnvironment.ToolchainDescriptor,
+ 121   configurationRevision: BuildRevision,
+ 122 }).annotate({ identifier: "FtcJava.BuildRequest" })
+ 123 
+ 124 export interface BuildExclusion extends Schema.Schema.Type<typeof BuildExclusion> {}
+ 125 export const BuildExclusion = Schema.Struct({
+ 126   path: Schema.String.check(Schema.isPattern(/^(?![\\/]|[a-zA-Z]:|.*(?:^|[\\/])\.\.(?:[\\/]|$)).+$/)),
+ 127   documentID: optional(DocumentID),
+ 128   bufferRevision: optional(NonNegativeInt),
+ 129   diskRevision: optional(NonNegativeInt),
+ 130 }).annotate({ identifier: "FtcJava.BuildExclusion" })
+ 131 
+ 132 export interface BuildLog extends Schema.Schema.Type<typeof BuildLog> {}
+ 133 export const BuildLog = Schema.Struct({
+ 134   sequence: NonNegativeInt,
+ 135   stream: Schema.Literals(["stdout", "stderr"]),
+ 136   text: Schema.String,
+ 137 }).annotate({ identifier: "FtcJava.BuildLog" })
+ 138 
+ 139 export interface BuildError extends Schema.Schema.Type<typeof BuildError> {}
+ 140 export const BuildError = Schema.Struct({
+ 141   code: Schema.Literals([
+ 142     "invalid_build_input",
+ 143     "build_unavailable",
+ 144     "project_unauthorized",
+ 145     "inputs_unavailable",
+ 146     "incomplete_inputs",
+ 147     "stale_configuration",
+ 148     "lease_mismatch",
+ 149     "busy",
+ 150     "build_unknown",
+ 151     "owner_closed",
+ 152     "process_start_failed",
+ 153     "output_failed",
+ 154     "termination_failed",
+ 155     "input_verification_failed",
+ 156     "cleanup_failed",
+ 157     "execution_defect",
+ 158   ]),
+ 159   projectID: optional(Project.ID),
+ 160   buildID: optional(BuildID),
+ 161 }).annotate({ identifier: "FtcJava.BuildError" })
+ 162 
+ 163 // Success describes only the captured saved basis; exclusions never authorize a displayed dirty program.
+ 164 export interface BuildEvidence extends Schema.Schema.Type<typeof BuildEvidence> {}
+ 165 export const BuildEvidence = Schema.Struct({
+ 166   buildID: BuildID,
+ 167   projectID: Project.ID,
+ 168   sourceRevision: BuildRevision,
+ 169   configurationRevision: BuildRevision,
+ 170   inputChanged: Schema.Boolean,
+ 171   exitCode: optional(Schema.Int),
+ 172   signal: optional(BuildRevision),
+ 173   status: Schema.Literals(["succeeded", "failed", "cancelled", "outdated"]),
+ 174   logs: Schema.Array(BuildLog),
+ 175   outputComplete: Schema.Boolean,
+ 176   savedInputsOnly: Schema.Literal(true),
+ 177   // Absence of settlement exclusions means final observation was unavailable, never an observed clean state.
+ 178   exclusions: Schema.Struct({
+ 179     initial: Schema.Array(BuildExclusion),
+ 180     settlement: optional(Schema.Array(BuildExclusion)),
+ 181   }),
+ 182   errors: Schema.Array(BuildError),
+ 183 }).annotate({ identifier: "FtcJava.BuildEvidence" })
+ 184 
+ 185 export interface BuildQuery extends Schema.Schema.Type<typeof BuildQuery> {}
+ 186 export const BuildQuery = Schema.Struct({ projectID: Project.ID, buildID: BuildID }).annotate({
+ 187   identifier: "FtcJava.BuildQuery",
+ 188 })
+ 189 
+ 190 export const BuildRecord = Schema.Union([
+ 191   Schema.Struct({ state: Schema.Literal("running"), buildID: BuildID, projectID: Project.ID }),
+ 192   Schema.Struct({ state: Schema.Literal("settled"), buildID: BuildID, projectID: Project.ID, evidence: BuildEvidence }),
+ 193 ]).annotate({ identifier: "FtcJava.BuildRecord" })
+ 194 export type BuildRecord = typeof BuildRecord.Type

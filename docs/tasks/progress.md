@@ -1,9 +1,9 @@
 # FTC development progress
 
-Date: 2026-10-08
+Date: 2026-10-09
 Planning baseline: `d7aca195c`
 
-**Implementation progress: 0 / 12 modules complete; 29 / 94 tasks complete.**
+**Implementation progress: 0 / 12 modules complete; 30 / 94 tasks complete.**
 
 These checkboxes track future development, not completion of this planning document. The existing OpenCode foundation is reused, but its presence does not prove that the FTC tasks are done. Both inputs describe unimplemented or unevaluated product work, so every implementation box starts unchecked.
 
@@ -15,7 +15,7 @@ These checkboxes track future development, not completion of this planning docum
 - [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 6 / 6 tasks.
 - [ ] **M3 — [Agent and context](agent-and-context.md)** — 4 / 7 tasks.
 - [ ] **M4 — [Environment and compatibility](environment-and-compatibility.md)** — 5 / 7 tasks.
-- [ ] **M5 — [Java development](java-development.md)** — 2 / 8 tasks.
+- [ ] **M5 — [Java development](java-development.md)** — 3 / 8 tasks.
 - [ ] **M6 — [FTC configuration and libraries](ftc-configuration-and-libraries.md)** — 2 / 6 tasks.
 - [ ] **M7 — [AI access and local inference](ai-access-and-local-inference.md)** — 1 / 8 tasks.
 - [ ] **M8 — [Controller connections](controller-connections.md)** — 1 / 6 tasks.
@@ -764,3 +764,24 @@ The user requested continuation to **32/94 completed tasks in total**, then to e
 
 - M1-01 **DONE** at `dd00790ac`: independent scoped fix2 specification **Compliant**, quality **Approved**, I1/I2 cumulatively **ADDRESSED**, no remaining/new Critical or Important issue. Root reconfirms six source hashes, required named/component/Scope/locale/type checks and all five substeps before credit. [Final review](../validation/M1-01-fix2-review.md). Counts **29/94 tasks, 0/12 modules**, M1 **1/14**. Existing host/visual/persistence/bilingual/native/platform/physical gates remain open.
 - M5-05 root releases prepared `/root/m5_05` as sole product writer from source checkpoint `dd00790ac`; exact five-path [brief](../validation/M5-05-brief.md), immutable complete saved-input/runtime process boundaries, public owner-issued start/result/cancel/query and canonical contracts govern. **IN_PROGRESS**, intended task30; no artifact/production process/robot authority. Required actual RED/GREEN/Scope/types/Schema/facade/source freeze then independent review precede credit. M9-02 remains preparation-only awaiting later release.
+
+- M5-05 actual callable-owner behavioral RED is captured: saved-file change during termination incorrectly yielded succeeded instead of outdated; current focused Core candidate **49 pass / 298 assertions**. Public owner close with held long-acquisition cleanup reproduced the local Effect beta.83 mutable-observer notification hang; local await/join and immediate-admission cancellation repairs now pass covering public close/cancel probes. Still **IN_PROGRESS**, no credit; full canonical Schema/facade/types/hygiene/freeze and independent review remain required. Actual process/producer/platform gates remain disabled.
+
+- M5-05 self-review adds two genuine failing regressions beyond the interim GREEN: interrupted admission handoff must cancel/join the undelivered run; unordered process observations must yield typed output failure while retaining only valid ordered output. [Focused RED](../validation/m5-05/handoff-output-red.log), exact command metadata: **exit1; 0 pass / 2 fail / 6 assertions, 53 filtered**. This is a completed selected run, not final-suite evidence. Original writer repairs before freeze/review; task remains unchecked at **29/94**.
+
+- Root source reconciliation finds an actual internal producer incompatibility before M5-05 freeze: existing `Location.Service.of` constructs own `workspaceID: undefined` plus optional `vcs`; canonical JSON decode must stay strict, but the build owner must capture the documented narrow internal Location representation. Writer confirms current copy rejects that existing service shape and adds real Service.of constructor RED/GREEN plus minimal known-field projection at owned boundaries. Unknown/execution/malformed request fields must still fail at the callable owner. Candidate/final manifests are not released until affected checks pass; **29/94** remains verified. Earlier two full-run failures are disclosed fixture-only lint substitutions and preserved under `core-focused-fixture-lint-iteration.log/.json`, separate from these product defects.
+
+- **2026-10-09:** M5-05 candidate committed `03fd63ebd`, complete five-path source [review diff](../validation/M5-05-review.diff). Root verifies all source/report/check metadata/log/patch hashes, bounded original evidence, protected old files and required completed checks: Core **62/373**, document regressions **50/194**, Schema **34/85**, both types and lint **0 warnings/errors**/format/import/whitespace pass. Existing Location.Service shape is covered by genuine corrected constructor RED/GREEN and strict callable unknown/malformed rejection. Fresh `/root/m5_05_review` receives frozen complete candidate; **IN_REVIEW**, no credit, **29/94**. M5-06 read-only producer reconciliation resumes against this stable candidate and must refresh if review fixes change it.
+
+- M5-05 **DONE** at `03fd63ebd`: independent specification and quality **APPROVED**, no Critical/Important/Minor findings. Root reconfirms five source hashes, all required completed checks and five exact task substeps before credit. [Review](../validation/M5-05-review.md). M5 **3/8**, verified **30/94 tasks, 0/12 modules**. Existing internal Location compatibility is repaired without relaxing strict public canonical requests or importing a sibling runtime; complete real producer/process/tool/descendant/platform/robot/acceptance gates stay open.
+
+## Requested stopping boundary — 2026-10-09
+
+User requested: “Finish this session after the two subagents currently working have finished their tasks and update progress.md.” Root verified the two active workers are `/root/m5_05_review` (independent review) and `/root/m5_06_preflight` (frozen-producer reconciliation). This supersedes the current run-to-32 stopping point for this session. Finish those two reports, save the approved task/evidence and final ledger checkpoint, then stop. The original **32/94** target is unfinished at this stopping boundary. Root checked the current goal tool after the new request: it returns no active goal. Do not recreate a goal, mark **32/94** achieved, or dispatch M5-06/M9-02 implementation.
+
+- Both requested active agents are finished. M5-05 review is complete and approved; task credited as above. M5-06 [frozen-producer reconciliation](../validation/M5-06-producer-reconciliation.md) is **READY**, source-only: root verifies all fourteen evidence hashes, five producer source identities, producer report and nine local report links. It recommends optional run-bound output capture into owner-scoped protected retention and explicit post-retirement current authority anchored to complete basis/generation; released lease reuse cannot establish continuity. No artifact implementation, exact brief or task credit follows.
+- On explicit continuation: inspect the saved checkpoint and reports, use M5-06 producer reconciliation to write its exact minimal artifact brief, implement/review M5-06, then release prepared M9-02 under current canonical contracts. These two additional reviewed tasks would reach **32/94**; no task **33** was started or authorized in this session.
+- Retain all current source/evidence, failed probes, local ignored logs/native artifacts and owned temporary caches. Production complete input/dirty/recipe/artifact/current authority, M4 composition, M5-03, M9-07/08, Windows/native/package and physical-robot acceptance remain unavailable/unrun. No module or first-release completion is claimed.
+
+- Final stopping audit: **30/94 checked task entries, 0/12 completed modules**, checked tasks each have five completed substeps; M1 **1/14**, M5 **3/8**. This continuation completed independently approved **M1-01** (final source `dd00790ac`) and **M5-05** (`03fd63ebd`). M5-06 remains unchecked/reconciliation-only; M9-02 remains unchecked/preparation-only. Current M1 six-source and M5 five-source freezes are reconfirmed, production/platform/robot gates retained. All child agents are terminal/idle; no next implementation is dispatched. Root saves this ledger/reviews/reconciliation as a local conventional checkpoint and ends the session.
+- Final staged document/metadata whitespace check passes with explicit exclusions for the exact source review patch and immutable line-numbered source snapshots; those raw evidence bytes/hashes are preserved. No product source is staged in the stopping commit.

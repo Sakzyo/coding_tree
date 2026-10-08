@@ -1,0 +1,68 @@
+{
+  "classification": "read-only frozen-producer source reconciliation",
+  "revision": "03fd63ebd9bdd310ee56edad538ec7a774893169",
+  "producer_status": "IN_REVIEW; not credited",
+  "entries": [
+    {
+      "path": "packages/core/src/ftc/java/build.ts",
+      "sha256": "02ad95b5e59b8d8602fb2300d03530c3708992b16376148df7b487ea8dd143d9",
+      "git_blob": "89dedf83c367881e4053d5705de5ea8e55699d0d",
+      "producer_manifest_match": true
+    },
+    {
+      "path": "packages/core/src/ftc/java.ts",
+      "sha256": "44f7c5810f506a97fd213f96743d559d50bc7212c064d45cf097af2d9ef2f6b3",
+      "git_blob": "c52ac037a147651e9da526047c7b5866fb42380c",
+      "producer_manifest_match": true
+    },
+    {
+      "path": "packages/core/test/ftc/java-development/m5-05.test.ts",
+      "sha256": "02bf37061a5ac19f732498f5685c60401ce3953068eea5d2e81a1baecf5ae7d7",
+      "git_blob": "3a495f5e853e6a817c67c89e9e0efe5a386a6dd4",
+      "producer_manifest_match": true
+    },
+    {
+      "path": "packages/schema/src/ftc-java.ts",
+      "sha256": "85bebc90f9f1841e4974ce619f5d9099b0e63c343df6ed528b0ec86a1029101d",
+      "git_blob": "3bcf7f6865dad9cdad5ec1f457117a8e732fe7ae",
+      "producer_manifest_match": true
+    },
+    {
+      "path": "packages/schema/test/ftc-java-build.test.ts",
+      "sha256": "063f914d0fdeda70b694982d8d1d5bbde8701656187a549e00c177c31caeec9b",
+      "git_blob": "c76427b682245dfe519fb5e63ca0922b87092e6e",
+      "producer_manifest_match": true
+    },
+    {
+      "path": "docs/validation/M5-05-brief.md",
+      "sha256": "8b744874f6715da99b7594f61ac706d3320d646264d132a9f43912d4295e6320",
+      "git_blob": "49f874ac7ea0ae2972d601b7555e4b6844e30ac1",
+      "producer_manifest_match": null
+    },
+    {
+      "path": "docs/validation/M5-05-implementation.md",
+      "sha256": "153f3a6105ca9aba4665f9dc52da8c69f812113754ffa713a603183b8493dff9",
+      "git_blob": "658a99e1a8255d8a0c67b027052d57f71d0eec7f",
+      "producer_manifest_match": null
+    },
+    {
+      "path": "docs/validation/m5-05/final/candidate-manifest.json",
+      "sha256": "8329751da619d5aece53a86ec41b0fe3a8914d5d4e2e548718191aa69f76bc13",
+      "git_blob": "7c107d723db61b6fd14dfcbaea105ddb09fc17b0",
+      "producer_manifest_match": null
+    },
+    {
+      "path": "docs/validation/m5-05/final/source-sha256.txt",
+      "sha256": "845d4e6e032da8c0e5b94fd7a53c9d932300bb68a663495b55f111fc2e853d85",
+      "git_blob": "749b84998352795ca610ac81da6ea0b0483598be",
+      "producer_manifest_match": null
+    },
+    {
+      "path": "docs/validation/M5-06-preflight.md",
+      "sha256": "25bf75eb671d3cbf6bd42734db94749e3694c38e5f5eb768edcd96c0ddaaad67",
+      "git_blob": "239a0dd237420ecb3d380bcdb038b6629984e84b",
+      "producer_manifest_match": null
+    }
+  ],
+  "tests_or_typechecks_run": 0
+}

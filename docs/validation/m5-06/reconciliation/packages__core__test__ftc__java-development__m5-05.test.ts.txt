@@ -1,0 +1,1356 @@
+   1 import { expect, test } from "bun:test"
+   2 import fs from "node:fs/promises"
+   3 import path from "node:path"
+   4 import { createHash } from "node:crypto"
+   5 import { FtcJava } from "@opencode-ai/schema/ftc-java"
+   6 import { FtcProject } from "@opencode-ai/schema/ftc-project"
+   7 import { FtcEnvironment } from "@opencode-ai/schema/ftc-environment"
+   8 import { Info } from "@opencode-ai/schema/location"
+   9 import { Project } from "@opencode-ai/schema/project"
+  10 import { WorkspaceID } from "@opencode-ai/schema/workspace-id"
+  11 import { AbsolutePath } from "@opencode-ai/schema/schema"
+  12 import { Cause, Deferred, Effect, Exit, Fiber, Schema, Scope, Stream } from "effect"
+  13 import { JavaBuild } from "../../../src/ftc/java/build"
+  14 import { JavaDocuments } from "../../../src/ftc/java/documents"
+  15 import { Java } from "../../../src/ftc/java"
+  16 import { tmpdir } from "../../fixture/tmpdir"
+  17 
+  18 const context = (root: string) =>
+  19   FtcProject.ProjectContext.make({
+  20     projectID: Project.ID.make(`project:${root}`),
+  21     canonicalRoot: AbsolutePath.make(root),
+  22     location: new Info({
+  23       directory: AbsolutePath.make(root),
+  24       project: { id: Project.ID.global, directory: AbsolutePath.make(path.parse(root).root) },
+  25     }),
+  26   })
+  27 const descriptor = (root: string) =>
+  28   FtcEnvironment.ToolchainDescriptor.make({
+  29     profileID: "owned-fixture",
+  30     buildJdk: AbsolutePath.make("/fixture/build-jdk"),
+  31     editorJdk: AbsolutePath.make("/fixture/editor-jdk"),
+  32     androidSdk: AbsolutePath.make("/fixture/sdk"),
+  33     adb: AbsolutePath.make("/fixture/adb"),
+  34     gradleWrapper: AbsolutePath.make(path.join(root, "gradlew")),
+  35     versions: {
+  36       buildJdk: "17",
+  37       editorJdk: "21",
+  38       androidSdk: "fixture",
+  39       adb: "fixture",
+  40       gradleWrapper: "fixture",
+  41       ftcSdk: "fixture",
+  42       androidGradlePlugin: "fixture",
+  43     },
+  44   })
+  45 const gate = () => Effect.runSync(Deferred.make<void>())
+  46 const open = (value: Deferred.Deferred<void>) => Deferred.succeed(value, undefined)
+  47 const failure = (code: FtcJava.BuildError["code"]) => Effect.fail({ code } satisfies FtcJava.BuildError)
+  48 const run = <A, E>(effect: Effect.Effect<A, E, Scope.Scope>) => Effect.runPromise(Effect.scoped(effect))
+  49 
+  50 // This fixture consumes exactly the declared root files, excluding only its build/cache directories.
+  51 // It is not a Gradle inventory or an OS adapter. Every fixture mutation is serialized and increments
+  52 // the trusted complete interval generation; reading endpoint hashes alone cannot establish that interval.
+  53 async function fixture(root: string) {
+  54   const project = context(root)
+  55   const toolchain = descriptor(root)
+  56   const inventory = new Set([
+  57     "Main.java",
+  58     "Unopened.java",
+  59     "gradlew",
+  60     "build.gradle",
+  61     "settings.gradle",
+  62     "resource.xml",
+  63     "configuration.json",
+  64   ])
+  65   await Promise.all(
+  66     [...inventory].map((name) => Bun.write(path.join(root, name), name === "Main.java" ? "saved" : `fixture ${name}`)),
+  67   )
+  68   const started = gate()
+  69   const acquired = gate()
+  70   const finish = gate()
+  71   const outputFinish = gate()
+  72   const firstOutput = gate()
+  73   const processCleanup = gate()
+  74   const leaseCleanup = gate()
+  75   const state = {
+  76     generation: 0,
+  77     configurationRevision: "config-1",
+  78     authorized: project,
+  79     acquisitions: 0,
+  80     starts: 0,
+  81     processesClosed: 0,
+  82     leasesClosed: 0,
+  83     cancellations: 0,
+  84     revalidations: 0,
+  85     acquisition: Effect.void as Effect.Effect<void, FtcJava.BuildError>,
+  86     start: Effect.void as Effect.Effect<void, FtcJava.BuildError>,
+  87     processRelease: Effect.void as Effect.Effect<void, FtcJava.BuildError>,
+  88     leaseRelease: Effect.void as Effect.Effect<void, FtcJava.BuildError>,
+  89     revalidation: Effect.void as Effect.Effect<void, FtcJava.BuildError>,
+  90     exclusions: Effect.succeed([]) as Effect.Effect<readonly FtcJava.BuildExclusion[]>,
+  91     termination: { exitCode: 0 } as JavaBuild.Termination,
+  92     exitFailure: Effect.void as Effect.Effect<void, FtcJava.BuildError>,
+  93     basisMutation: (_basis: JavaBuild.SavedInputBasis) => {},
+  94     validationMutation: (_validation: JavaBuild.InputValidation) => {},
+  95     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+  96     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+  97     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+  98   }
+  99   const snapshot = () =>
+ 100     Effect.promise(async () => {
+ 101       const entries = await Promise.all(
+ 102         [...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const),
+ 103       )
+ 104       return {
+ 105         bytes: Object.fromEntries(entries),
+ 106         sourceRevision: createHash("sha256").update(JSON.stringify(entries)).digest("hex"),
+ 107       }
+ 108     })
+ 109   const validation = () =>
+ 110     Effect.gen(function* () {
+ 111       const saved = yield* snapshot()
+ 112       const value = {
+ 113         project: state.authorized,
+ 114         toolchain,
+ 115         sourceRevision: saved.sourceRevision,
+ 116         configurationRevision: state.configurationRevision,
+ 117         generation: String(state.generation),
+ 118         exclusions: yield* state.exclusions,
+ 119       }
+ 120       state.validationMutation(value)
+ 121       return value
+ 122     })
+ 123   const ports: JavaBuild.Ports = {
+ 124     projects: { resolve: () => Effect.succeed(state.authorized) },
+ 125     inputs: {
+ 126       acquire: (input) =>
+ 127         Effect.gen(function* () {
+ 128           state.acquisitions++
+ 129           expect(input.project).toEqual(project)
+ 130           expect(input.toolchain).toEqual(toolchain)
+ 131           const saved = yield* snapshot()
+ 132           const basis: JavaBuild.SavedInputBasis = {
+ 133             project,
+ 134             toolchain,
+ 135             sourceRevision: saved.sourceRevision,
+ 136             configurationRevision: state.configurationRevision,
+ 137             generation: String(state.generation),
+ 138             scope: "complete",
+ 139             mode: "immutable",
+ 140             recipe: {
+ 141               identity: "owned-complete-fixture",
+ 142               wrapper: toolchain.gradleWrapper,
+ 143               buildJdk: toolchain.buildJdk,
+ 144               androidSdk: toolchain.androidSdk,
+ 145             },
+ 146             exclusions: yield* state.exclusions,
+ 147           }
+ 148           state.basisMutation(basis)
+ 149           const released: { observation?: JavaBuild.InputValidation } = {}
+ 150           const release = Effect.gen(function* () {
+ 151             if (released.observation) return released.observation
+ 152             yield* open(leaseCleanup)
+ 153             yield* state.leaseRelease
+ 154             released.observation = yield* validation()
+ 155             state.leasesClosed++
+ 156             return released.observation
+ 157           })
+ 158           yield* Effect.addFinalizer(() => release.pipe(Effect.orDie, Effect.asVoid))
+ 159           yield* open(acquired)
+ 160           yield* state.acquisition
+ 161           return {
+ 162             basis,
+ 163             execution: Object.freeze({ bytes: Object.freeze(saved.bytes) }),
+ 164             release,
+ 165             revalidate: () =>
+ 166               Effect.gen(function* () {
+ 167                 state.revalidations++
+ 168                 yield* state.revalidation
+ 169                 return yield* validation()
+ 170               }),
+ 171           }
+ 172         }),
+ 173     },
+ 174     process: {
+ 175       start: (input) =>
+ 176         Effect.gen(function* () {
+ 177           state.starts++
+ 178           state.seen.push(input)
+ 179           yield* state.start
+ 180           const closed = { value: false }
+ 181           const release = Effect.gen(function* () {
+ 182             if (closed.value) return
+ 183             yield* open(processCleanup)
+ 184             yield* state.processRelease
+ 185             closed.value = true
+ 186             state.processesClosed++
+ 187           })
+ 188           yield* Effect.addFinalizer(() => release.pipe(Effect.orDie))
+ 189           yield* open(started)
+ 190           return {
+ 191             output:
+ 192               state.output ??
+ 193               Stream.make(state.log).pipe(
+ 194                 Stream.tap(() => open(firstOutput)),
+ 195                 Stream.concat(
+ 196                   Stream.fromEffect(
+ 197                     Deferred.await(outputFinish).pipe(
+ 198                       Effect.as({ sequence: 1, stream: "stderr" as const, text: "actual stderr\n" }),
+ 199                     ),
+ 200                   ),
+ 201                 ),
+ 202               ),
+ 203             termination: Deferred.await(finish).pipe(
+ 204               Effect.andThen(state.exitFailure),
+ 205               Effect.map(() => state.termination),
+ 206             ),
+ 207             cancelAndJoin: Effect.gen(function* () {
+ 208               state.cancellations++
+ 209               yield* open(finish)
+ 210               yield* open(outputFinish)
+ 211               return state.termination
+ 212             }),
+ 213             release,
+ 214           }
+ 215         }),
+ 216     },
+ 217   }
+ 218   const request = { project, toolchain, configurationRevision: "config-1" }
+ 219   const complete = open(finish).pipe(Effect.andThen(open(outputFinish)))
+ 220   const write = (name: string, bytes: string) =>
+ 221     Effect.promise(async () => {
+ 222       inventory.add(name)
+ 223       await Bun.write(path.join(root, name), bytes)
+ 224       state.generation++
+ 225     })
+ 226   return {
+ 227     project,
+ 228     toolchain,
+ 229     state,
+ 230     ports,
+ 231     request,
+ 232     inventory,
+ 233     write,
+ 234     snapshot,
+ 235     validation,
+ 236     started,
+ 237     acquired,
+ 238     finish,
+ 239     outputFinish,
+ 240     firstOutput,
+ 241     processCleanup,
+ 242     leaseCleanup,
+ 243     complete,
+ 244   }
+ 245 }
+ 246 
+ 247 async function isolated<A, E>(
+ 248   body: (owner: JavaBuild.Interface, supplied: Awaited<ReturnType<typeof fixture>>) => Effect.Effect<A, E, Scope.Scope>,
+ 249 ) {
+ 250   await using tmp = await tmpdir()
+ 251   const supplied = await fixture(tmp.path)
+ 252   return await run(
+ 253     Effect.gen(function* () {
+ 254       const owner = yield* JavaBuild.make(supplied.ports)
+ 255       return yield* body(owner, supplied)
+ 256     }),
+ 257   )
+ 258 }
+ 259 
+ 260 // Removing the owner's interval comparison makes this assertion fail after a real saved edit.
+ 261 test("source change during build makes evidence outdated", () =>
+ 262   isolated((owner, f) =>
+ 263     Effect.gen(function* () {
+ 264       const admitted = yield* owner.startBuild(f.request)
+ 265       yield* Deferred.await(f.started)
+ 266       const original = yield* f.snapshot()
+ 267       yield* f.write("Main.java", "changed")
+ 268       yield* f.complete
+ 269       const changed = yield* admitted.result
+ 270       expect(changed.status).toBe("outdated")
+ 271       expect(changed.inputChanged).toBe(true)
+ 272       expect(changed.sourceRevision).toBe(original.sourceRevision)
+ 273       expect(f.state.seen[0].lease.execution).toEqual({ bytes: { ...original.bytes } })
+ 274       const second = yield* owner.startBuild(f.request)
+ 275       const cancelled = yield* second.cancel
+ 276       expect(cancelled.status).toBe("cancelled")
+ 277     }),
+ 278   ))
+ 279 
+ 280 test("stable saved execution retains actual ordered output, exit and one immutable owner record", () =>
+ 281   isolated((owner, f) =>
+ 282     Effect.gen(function* () {
+ 283       const admitted = yield* owner.startBuild(f.request)
+ 284       expect(yield* owner.readBuild({ projectID: f.project.projectID, buildID: admitted.buildID })).toEqual({
+ 285         state: "running",
+ 286         projectID: f.project.projectID,
+ 287         buildID: admitted.buildID,
+ 288       })
+ 289       yield* f.complete
+ 290       const evidence = yield* admitted.result
+ 291       expect(evidence).toMatchObject({
+ 292         status: "succeeded",
+ 293         inputChanged: false,
+ 294         exitCode: 0,
+ 295         outputComplete: true,
+ 296         savedInputsOnly: true,
+ 297         logs: [
+ 298           { sequence: 0, stream: "stdout", text: "actual stdout\n" },
+ 299           { sequence: 1, stream: "stderr", text: "actual stderr\n" },
+ 300         ],
+ 301         errors: [],
+ 302         exclusions: { initial: [], settlement: [] },
+ 303       })
+ 304       expect("artifact" in evidence).toBe(false)
+ 305       expect(Object.isFrozen(evidence.logs)).toBe(true)
+ 306       expect(Object.isFrozen(evidence.logs[0])).toBe(true)
+ 307       expect(yield* admitted.result).toBe(evidence)
+ 308       expect(yield* admitted.cancel).toBe(evidence)
+ 309       const record = yield* owner.readBuild({ projectID: f.project.projectID, buildID: admitted.buildID })
+ 310       expect(record.state).toBe("settled")
+ 311       if (record.state === "settled") expect(record.evidence).toBe(evidence)
+ 312       expect(f.state.processesClosed).toBe(1)
+ 313       expect(f.state.leasesClosed).toBe(1)
+ 314     }),
+ 315   ))
+ 316 
+ 317 test.each([
+ 318   "Unopened.java",
+ 319   "gradlew",
+ 320   "build.gradle",
+ 321   "settings.gradle",
+ 322   "resource.xml",
+ 323   "configuration.json",
+ 324   "Added.java",
+ 325 ])("complete fixture input change invalidates saved currency: %s", (name) =>
+ 326   isolated((owner, f) =>
+ 327     Effect.gen(function* () {
+ 328       const admitted = yield* owner.startBuild(f.request)
+ 329       yield* Deferred.await(f.started)
+ 330       yield* f.write(name, "new saved bytes")
+ 331       yield* f.complete
+ 332       expect(yield* admitted.result).toMatchObject({ status: "outdated", inputChanged: true })
+ 333     }),
+ 334   ),
+ 335 )
+ 336 
+ 337 test.each(["delete", "rename"])("complete fixture %s changes invalidate the input inventory", (action) =>
+ 338   isolated((owner, f) =>
+ 339     Effect.gen(function* () {
+ 340       const admitted = yield* owner.startBuild(f.request)
+ 341       yield* Deferred.await(f.started)
+ 342       yield* Effect.promise(async () => {
+ 343         f.inventory.delete("Unopened.java")
+ 344         if (action === "delete") await fs.rm(path.join(f.project.canonicalRoot, "Unopened.java"))
+ 345         if (action === "rename") {
+ 346           f.inventory.add("Renamed.java")
+ 347           await fs.rename(
+ 348             path.join(f.project.canonicalRoot, "Unopened.java"),
+ 349             path.join(f.project.canonicalRoot, "Renamed.java"),
+ 350           )
+ 351         }
+ 352         f.state.generation++
+ 353       })
+ 354       yield* f.complete
+ 355       expect(yield* admitted.result).toMatchObject({ status: "outdated", inputChanged: true })
+ 356     }),
+ 357   ),
+ 358 )
+ 359 
+ 360 test("output/cache writes alone do not invalidate the fixture's complete consumed input scope", () =>
+ 361   isolated((owner, f) =>
+ 362     Effect.gen(function* () {
+ 363       const admitted = yield* owner.startBuild(f.request)
+ 364       yield* Deferred.await(f.started)
+ 365       yield* Effect.promise(async () => {
+ 366         await fs.mkdir(path.join(f.project.canonicalRoot, "build"))
+ 367         await fs.mkdir(path.join(f.project.canonicalRoot, "cache"))
+ 368         await Bun.write(path.join(f.project.canonicalRoot, "build/output"), "output")
+ 369         await Bun.write(path.join(f.project.canonicalRoot, "cache/data"), "cache")
+ 370       })
+ 371       yield* f.complete
+ 372       expect(yield* admitted.result).toMatchObject({ status: "succeeded", inputChanged: false })
+ 373     }),
+ 374   ))
+ 375 
+ 376 test("configuration-only and A-B-A interval changes outrank a nonzero observed exit", () =>
+ 377   isolated((owner, f) =>
+ 378     Effect.gen(function* () {
+ 379       const first = yield* owner.startBuild(f.request)
+ 380       yield* Deferred.await(f.started)
+ 381       f.state.configurationRevision = "config-2"
+ 382       f.state.generation++
+ 383       f.state.termination = { exitCode: 7 }
+ 384       yield* f.complete
+ 385       expect(yield* first.result).toMatchObject({
+ 386         status: "outdated",
+ 387         inputChanged: true,
+ 388         configurationRevision: "config-1",
+ 389         exitCode: 7,
+ 390       })
+ 391       const second = yield* owner.startBuild({ ...f.request, configurationRevision: "config-2" })
+ 392       yield* Effect.yieldNow
+ 393       yield* f.write("Main.java", "B")
+ 394       yield* f.write("Main.java", "saved")
+ 395       const evidence = yield* second.result
+ 396       expect(evidence.status).toBe("outdated")
+ 397       expect(evidence.sourceRevision).toBe((yield* f.snapshot()).sourceRevision)
+ 398       expect(evidence.inputChanged).toBe(true)
+ 399     }),
+ 400   ))
+ 401 
+ 402 test.each([{ exitCode: 9 }, { signal: "SIGTERM" }, {}])(
+ 403   "actual non-success termination is retained without invented exits: %j",
+ 404   (termination) =>
+ 405     isolated((owner, f) =>
+ 406       Effect.gen(function* () {
+ 407         f.state.termination = termination
+ 408         yield* f.complete
+ 409         const evidence = yield* owner.build(f.request)
+ 410         expect(evidence.status).toBe("failed")
+ 411         expect(evidence.exitCode).toBe(termination.exitCode)
+ 412         expect(evidence.signal).toBe(termination.signal)
+ 413         expect("exitCode" in evidence).toBe("exitCode" in termination)
+ 414       }),
+ 415     ),
+ 416 )
+ 417 
+ 418 test("stale configuration and incomplete leases are rejected before process launch", () =>
+ 419   isolated((owner, f) =>
+ 420     Effect.gen(function* () {
+ 421       expect(yield* owner.startBuild({ ...f.request, configurationRevision: "stale" }).pipe(Effect.flip)).toEqual({
+ 422         code: "stale_configuration",
+ 423       })
+ 424       f.state.basisMutation = (basis) => {
+ 425         Object.assign(basis, { scope: "incomplete" })
+ 426       }
+ 427       expect(yield* owner.startBuild(f.request).pipe(Effect.flip)).toEqual({ code: "incomplete_inputs" })
+ 428       expect(f.state.starts).toBe(0)
+ 429       expect(f.state.leasesClosed).toBe(2)
+ 430     }),
+ 431   ))
+ 432 
+ 433 test.each(["project", "location", "workspace", "host", "wrapper", "buildJdk", "sdk", "descriptor"])(
+ 434   "lease identity mismatch is rejected before process launch: %s",
+ 435   (field) =>
+ 436     isolated((owner, f) =>
+ 437       Effect.gen(function* () {
+ 438         f.state.basisMutation = (basis) => {
+ 439           if (field === "project")
+ 440             Object.assign(basis, { project: { ...basis.project, projectID: Project.ID.make("foreign") } })
+ 441           if (field === "location")
+ 442             Object.assign(basis, {
+ 443               project: {
+ 444                 ...basis.project,
+ 445                 location: new Info({
+ 446                   directory: AbsolutePath.make("/foreign"),
+ 447 
+ 448                   project: basis.project.location.project,
+ 449                 }),
+ 450               },
+ 451             })
+ 452           if (field === "workspace")
+ 453             Object.assign(basis, {
+ 454               project: {
+ 455                 ...basis.project,
+ 456                 location: new Info({
+ 457                   directory: basis.project.location.directory,
+ 458                   workspaceID: WorkspaceID.make("wrk_foreign"),
+ 459                   project: basis.project.location.project,
+ 460                 }),
+ 461               },
+ 462             })
+ 463           if (field === "host")
+ 464             Object.assign(basis, {
+ 465               project: {
+ 466                 ...basis.project,
+ 467                 location: new Info({
+ 468                   directory: basis.project.location.directory,
+ 469 
+ 470                   project: { id: Project.ID.make("foreign"), directory: AbsolutePath.make("/foreign") },
+ 471                 }),
+ 472               },
+ 473             })
+ 474           if (field === "descriptor") Object.assign(basis, { toolchain: { ...basis.toolchain, profileID: "foreign" } })
+ 475           if (field === "wrapper") Object.assign(basis, { recipe: { ...basis.recipe, wrapper: "/foreign/gradlew" } })
+ 476           if (field === "buildJdk")
+ 477             Object.assign(basis, { recipe: { ...basis.recipe, buildJdk: basis.toolchain.editorJdk } })
+ 478           if (field === "sdk") Object.assign(basis, { recipe: { ...basis.recipe, androidSdk: "/foreign/sdk" } })
+ 479         }
+ 480         expect((yield* owner.startBuild(f.request).pipe(Effect.flip)).code).toBe("lease_mismatch")
+ 481         expect(f.state.starts).toBe(0)
+ 482         expect(f.state.leasesClosed).toBe(1)
+ 483       }),
+ 484     ),
+ 485 )
+ 486 
+ 487 test("caller project/Location spoofing never acquires saved inputs", () =>
+ 488   isolated((owner, f) =>
+ 489     Effect.gen(function* () {
+ 490       for (const project of [
+ 491         { ...f.project, canonicalRoot: AbsolutePath.make("/foreign") },
+ 492         {
+ 493           ...f.project,
+ 494           location: new Info({
+ 495             directory: AbsolutePath.make("/foreign"),
+ 496 
+ 497             project: f.project.location.project,
+ 498           }),
+ 499         },
+ 500         {
+ 501           ...f.project,
+ 502           location: new Info({
+ 503             directory: f.project.location.directory,
+ 504 
+ 505             project: { id: Project.ID.make("foreign"), directory: AbsolutePath.make("/foreign") },
+ 506           }),
+ 507         },
+ 508       ])
+ 509         expect((yield* owner.startBuild({ ...f.request, project }).pipe(Effect.flip)).code).toBe("project_unauthorized")
+ 510       expect(f.state.acquisitions).toBe(0)
+ 511       expect(f.state.starts).toBe(0)
+ 512     }),
+ 513   ))
+ 514 
+ 515 test("strict model-facing request rejects command, capability, output selectors and malformed fields", () =>
+ 516   isolated((owner, f) =>
+ 517     Effect.gen(function* () {
+ 518       for (const extra of [
+ 519         { command: "gradle" },
+ 520         { task: "assemble" },
+ 521         { env: {} },
+ 522         { output: "/foreign" },
+ 523         { artifact: {} },
+ 524         { execution: {} },
+ 525         { configurationRevision: "" },
+ 526       ]) {
+ 527         expect((yield* owner.startBuild(Object.assign({}, f.request, extra)).pipe(Effect.flip)).code).toBe(
+ 528           "invalid_build_input",
+ 529         )
+ 530       }
+ 531       expect(f.state.acquisitions).toBe(0)
+ 532     }),
+ 533   ))
+ 534 
+ 535 test("authority revoked during acquisition prevents execution and releases its lease", () =>
+ 536   isolated((owner, f) =>
+ 537     Effect.gen(function* () {
+ 538       const held = gate()
+ 539       f.state.acquisition = Deferred.await(held)
+ 540       const acquiring = yield* owner.startBuild(f.request).pipe(Effect.forkScoped)
+ 541       yield* Deferred.await(f.acquired)
+ 542       f.state.authorized = context("/foreign")
+ 543       yield* open(held)
+ 544       expect((yield* Fiber.join(acquiring).pipe(Effect.flip)).code).toBe("project_unauthorized")
+ 545       expect(f.state.starts).toBe(0)
+ 546       expect(f.state.leasesClosed).toBe(1)
+ 547     }),
+ 548   ))
+ 549 
+ 550 test("execution and query boundaries refresh full project authority", () =>
+ 551   isolated((owner, f) =>
+ 552     Effect.gen(function* () {
+ 553       const admitted = yield* owner.startBuild(f.request)
+ 554       yield* Deferred.await(f.started)
+ 555       f.state.authorized = {
+ 556         ...f.project,
+ 557         location: new Info({
+ 558           directory: AbsolutePath.make("/replaced"),
+ 559 
+ 560           project: f.project.location.project,
+ 561         }),
+ 562       }
+ 563       expect(
+ 564         (yield* owner.readBuild({ projectID: f.project.projectID, buildID: admitted.buildID }).pipe(Effect.flip)).code,
+ 565       ).toBe("project_unauthorized")
+ 566       yield* f.complete
+ 567       const evidence = yield* admitted.result
+ 568       expect(evidence.status).toBe("failed")
+ 569       expect(evidence.errors.map((error) => error.code)).toContain("project_unauthorized")
+ 570     }),
+ 571   ))
+ 572 
+ 573 test.each(["acquisition", "start", "revalidation", "exitFailure", "processRelease", "leaseRelease"])(
+ 574   "typed %s failure never produces successful evidence",
+ 575   (phase) =>
+ 576     isolated((owner, f) =>
+ 577       Effect.gen(function* () {
+ 578         const code =
+ 579           phase === "acquisition"
+ 580             ? "inputs_unavailable"
+ 581             : phase === "start"
+ 582               ? "process_start_failed"
+ 583               : phase === "revalidation"
+ 584                 ? "input_verification_failed"
+ 585                 : phase === "exitFailure"
+ 586                   ? "termination_failed"
+ 587                   : "cleanup_failed"
+ 588         f.state[phase] = failure(code)
+ 589         yield* f.complete
+ 590         if (phase === "acquisition") {
+ 591           expect((yield* owner.startBuild(f.request).pipe(Effect.flip)).code).toBe(code)
+ 592           expect(f.state.starts).toBe(0)
+ 593           return
+ 594         }
+ 595         const admitted = yield* owner.startBuild(f.request)
+ 596         const evidence = yield* admitted.result.pipe(Effect.exit)
+ 597         const record = yield* owner.readBuild({ projectID: f.project.projectID, buildID: admitted.buildID })
+ 598         expect(record.state).toBe("settled")
+ 599         if (record.state !== "settled") return
+ 600         expect(record.evidence.status).toBe("failed")
+ 601         expect(record.evidence.inputChanged).toBe(false)
+ 602         expect(record.evidence.errors.map((error) => error.code)).toContain(code)
+ 603         if (phase === "start") expect("exitCode" in record.evidence).toBe(false)
+ 604         // A defect in a scoped fallback remains a defect at the caller result boundary.
+ 605         if (Exit.isFailure(evidence)) expect(Cause.hasDies(evidence.cause)).toBe(true)
+ 606       }),
+ 607     ),
+ 608 )
+ 609 
+ 610 test("output failure preserves partial actual text and joins the owned process", () =>
+ 611   isolated((owner, f) =>
+ 612     Effect.gen(function* () {
+ 613       f.state.output = Stream.make({ sequence: 0, stream: "stderr", text: "actual partial" }).pipe(
+ 614         Stream.concat(Stream.fromEffect(failure("output_failed"))),
+ 615       )
+ 616       const evidence = yield* owner.build(f.request)
+ 617       expect(evidence).toMatchObject({
+ 618         status: "failed",
+ 619         outputComplete: false,
+ 620         logs: [{ sequence: 0, stream: "stderr", text: "actual partial" }],
+ 621       })
+ 622       expect(evidence.errors.map((error) => error.code)).toContain("output_failed")
+ 623       expect(f.state.cancellations).toBe(1)
+ 624       expect(f.state.processesClosed).toBe(1)
+ 625     }),
+ 626   ))
+ 627 
+ 628 test("revalidation inability does not invent inputChanged or authorize unchanged success", () =>
+ 629   isolated((owner, f) =>
+ 630     Effect.gen(function* () {
+ 631       const admitted = yield* owner.startBuild(f.request)
+ 632       yield* Deferred.await(f.started)
+ 633       f.state.revalidation = failure("input_verification_failed")
+ 634       f.state.leaseRelease = failure("cleanup_failed")
+ 635       yield* f.complete
+ 636       const recordResult = yield* admitted.result.pipe(Effect.exit)
+ 637       const record = yield* owner.readBuild({ projectID: f.project.projectID, buildID: admitted.buildID })
+ 638       expect(record.state).toBe("settled")
+ 639       if (record.state === "settled")
+ 640         expect(record.evidence).toMatchObject({ status: "failed", inputChanged: false, exitCode: 0 })
+ 641       expect(Exit.isFailure(recordResult)).toBe(true)
+ 642     }),
+ 643   ))
+ 644 
+ 645 test("mutating caller/lease/output records cannot rewrite the admitted execution or returned history", () =>
+ 646   isolated((owner, f) =>
+ 647     Effect.gen(function* () {
+ 648       const held = gate()
+ 649       f.state.acquisition = Deferred.await(held)
+ 650       const input = structuredClone(f.request)
+ 651       const acquiring = yield* owner.startBuild(input).pipe(Effect.forkScoped)
+ 652       yield* Deferred.await(f.acquired)
+ 653       input.configurationRevision = "forged"
+ 654       Object.assign(input.toolchain, { buildJdk: AbsolutePath.make("/forged") })
+ 655       Object.assign(input.toolchain.versions, { buildJdk: "forged" })
+ 656       Object.assign(input.project.location.project, { id: Project.ID.make("forged") })
+ 657       yield* open(held)
+ 658       const admitted = yield* Fiber.join(acquiring)
+ 659       yield* Deferred.await(f.firstOutput)
+ 660       yield* Effect.yieldNow
+ 661       f.state.log.text = "rewritten"
+ 662       yield* f.complete
+ 663       const evidence = yield* admitted.result
+ 664       expect(evidence.configurationRevision).toBe("config-1")
+ 665       expect(evidence.logs[0].text).toBe("actual stdout\n")
+ 666       expect(f.state.seen[0].toolchain.buildJdk).toBe("/fixture/build-jdk")
+ 667       expect(Object.isFrozen(f.state.seen[0].lease.basis.toolchain.versions)).toBe(true)
+ 668       expect(Object.isFrozen(f.state.seen[0].lease.basis.project.location.project)).toBe(true)
+ 669     }),
+ 670   ))
+ 671 
+ 672 const documentFilesystem: JavaDocuments.Filesystem = {
+ 673   realpath: (value) =>
+ 674     Effect.tryPromise({ try: () => fs.realpath(value), catch: () => ({ code: "file_unavailable" as const }) }),
+ 675   readText: (value) =>
+ 676     Effect.tryPromise({ try: () => Bun.file(value).text(), catch: () => ({ code: "file_unavailable" as const }) }),
+ 677 }
+ 678 
+ 679 test.each(["before", "during"])("dirty real document %s execution remains untouched and excluded", async (timing) => {
+ 680   await using tmp = await tmpdir()
+ 681   const f = await fixture(tmp.path)
+ 682   await run(
+ 683     Effect.gen(function* () {
+ 684       const documents = yield* JavaDocuments.make({
+ 685         filesystem: documentFilesystem,
+ 686         projects: { resolve: () => Effect.succeed(f.project) },
+ 687       })
+ 688       const opened = yield* documents.openDocument({ project: f.project, path: "Main.java" })
+ 689       f.state.exclusions = documents.readDocument({ projectID: f.project.projectID, path: "Main.java" }).pipe(
+ 690         Effect.orDie,
+ 691         Effect.map((document) =>
+ 692           document.dirty
+ 693             ? [
+ 694                 {
+ 695                   path: "Main.java",
+ 696                   documentID: document.documentID,
+ 697                   bufferRevision: document.bufferRevision,
+ 698                   diskRevision: document.diskRevision,
+ 699                 },
+ 700               ]
+ 701             : [],
+ 702         ),
+ 703       )
+ 704       const change = documents.changeDocument({ path: opened.path, expectedRevision: 0, text: "unsaved" })
+ 705       if (timing === "before") yield* change
+ 706       const owner = yield* JavaBuild.make(f.ports)
+ 707       const admitted = yield* owner.startBuild(f.request)
+ 708       yield* Deferred.await(f.started)
+ 709       if (timing === "during") yield* change
+ 710       yield* f.complete
+ 711       const evidence = yield* admitted.result
+ 712       const untouched = yield* documents.readDocument({ projectID: f.project.projectID, path: "Main.java" })
+ 713       expect(untouched).toMatchObject({ text: "unsaved", dirty: true, bufferRevision: 1, diskRevision: 0 })
+ 714       expect(yield* Effect.promise(() => Bun.file(opened.path).text())).toBe("saved")
+ 715       expect(evidence).toMatchObject({ status: "succeeded", inputChanged: false, savedInputsOnly: true })
+ 716       expect(evidence.exclusions.initial).toHaveLength(timing === "before" ? 1 : 0)
+ 717       expect(evidence.exclusions.settlement).toEqual([
+ 718         { path: "Main.java", documentID: opened.documentID, bufferRevision: 1, diskRevision: 0 },
+ 719       ])
+ 720       expect(JSON.stringify(evidence)).not.toContain("unsaved")
+ 721       expect(f.state.seen[0].lease.execution).toMatchObject({ bytes: { "Main.java": "saved" } })
+ 722     }),
+ 723   )
+ 724 })
+ 725 
+ 726 test("explicit cancellation retains observed output, waits for async cleanup, and wins publication races", () =>
+ 727   isolated((owner, f) =>
+ 728     Effect.gen(function* () {
+ 729       const held = gate()
+ 730       f.state.processRelease = Deferred.await(held)
+ 731       const admitted = yield* owner.startBuild(f.request)
+ 732       yield* Deferred.await(f.firstOutput)
+ 733       const cancelling = yield* admitted.cancel.pipe(Effect.forkScoped)
+ 734       yield* Deferred.await(f.processCleanup)
+ 735       expect(cancelling.pollUnsafe()).toBeUndefined()
+ 736       expect((yield* owner.readBuild({ projectID: f.project.projectID, buildID: admitted.buildID })).state).toBe(
+ 737         "running",
+ 738       )
+ 739       yield* f.write("Main.java", "changed during cleanup")
+ 740       yield* open(held)
+ 741       const cancelled = yield* Fiber.join(cancelling)
+ 742       expect(cancelled).toMatchObject({
+ 743         status: "cancelled",
+ 744         inputChanged: true,
+ 745         logs: [{ sequence: 0, stream: "stdout", text: "actual stdout\n" }],
+ 746       })
+ 747       expect(yield* admitted.cancel).toBe(cancelled)
+ 748       expect(yield* admitted.result).toBe(cancelled)
+ 749       const record = yield* owner.readBuild({ projectID: f.project.projectID, buildID: admitted.buildID })
+ 750       if (record.state === "settled") expect(record.evidence).toBe(cancelled)
+ 751       expect(f.state.cancellations).toBe(1)
+ 752       expect(f.state.leasesClosed).toBe(1)
+ 753     }),
+ 754   ))
+ 755 
+ 756 test("interrupting a result waiter preserves interruption and public cancellation settles queryable evidence", () =>
+ 757   isolated((owner, f) =>
+ 758     Effect.gen(function* () {
+ 759       const admitted = yield* owner.startBuild(f.request)
+ 760       const waiting = yield* admitted.result.pipe(Effect.forkScoped)
+ 761       yield* Deferred.await(f.started)
+ 762       yield* Fiber.interrupt(waiting)
+ 763       const exit = yield* Fiber.await(waiting)
+ 764       expect(Exit.isFailure(exit) && Cause.hasInterrupts(exit.cause)).toBe(true)
+ 765       expect((yield* owner.readBuild({ projectID: f.project.projectID, buildID: admitted.buildID })).state).toBe(
+ 766         "running",
+ 767       )
+ 768       const cancelled = yield* admitted.cancel
+ 769       expect(cancelled.status).toBe("cancelled")
+ 770       expect((yield* owner.readBuild({ projectID: f.project.projectID, buildID: admitted.buildID })).state).toBe(
+ 771         "settled",
+ 772       )
+ 773     }),
+ 774   ))
+ 775 
+ 776 test("convenience build interruption joins cleanup and preserves caller interruption", () =>
+ 777   isolated((owner, f) =>
+ 778     Effect.gen(function* () {
+ 779       const held = gate()
+ 780       f.state.leaseRelease = Deferred.await(held)
+ 781       const building = yield* owner.build(f.request).pipe(Effect.forkScoped)
+ 782       yield* Deferred.await(f.started)
+ 783       const stopping = yield* Fiber.interrupt(building).pipe(Effect.forkScoped)
+ 784       yield* Deferred.await(f.leaseCleanup)
+ 785       expect(stopping.pollUnsafe()).toBeUndefined()
+ 786       yield* open(held)
+ 787       yield* Fiber.join(stopping)
+ 788       const exit = yield* Fiber.await(building)
+ 789       expect(Exit.isFailure(exit) && Cause.hasInterrupts(exit.cause)).toBe(true)
+ 790       expect(f.state.processesClosed).toBe(1)
+ 791       expect(f.state.leasesClosed).toBe(1)
+ 792       expect((yield* (yield* owner.startBuild(f.request)).cancel).status).toBe("cancelled")
+ 793     }),
+ 794   ))
+ 795 
+ 796 test("caller interruption during long acquisition releases provisional lease without launching", () =>
+ 797   isolated((owner, f) =>
+ 798     Effect.gen(function* () {
+ 799       f.state.acquisition = Effect.never
+ 800       const acquiring = yield* owner.startBuild(f.request).pipe(Effect.forkScoped)
+ 801       yield* Deferred.await(f.acquired)
+ 802       yield* Fiber.interrupt(acquiring)
+ 803       expect(f.state.starts).toBe(0)
+ 804       expect(f.state.leasesClosed).toBe(1)
+ 805     }),
+ 806   ))
+ 807 
+ 808 test("unknown, foreign and fresh-owner queries cannot adopt supplied successful evidence", () =>
+ 809   isolated((owner, f) =>
+ 810     Effect.gen(function* () {
+ 811       const admitted = yield* owner.startBuild(f.request)
+ 812       expect(
+ 813         (yield* owner
+ 814           .readBuild({ projectID: f.project.projectID, buildID: FtcJava.BuildID.create() })
+ 815           .pipe(Effect.flip)).code,
+ 816       ).toBe("build_unknown")
+ 817       expect(
+ 818         (yield* owner.readBuild({ projectID: Project.ID.make("foreign"), buildID: admitted.buildID }).pipe(Effect.flip))
+ 819           .code,
+ 820       ).toBe("build_unknown")
+ 821       const fresh = yield* JavaBuild.make(f.ports)
+ 822       expect(
+ 823         (yield* fresh.readBuild({ projectID: f.project.projectID, buildID: admitted.buildID }).pipe(Effect.flip)).code,
+ 824       ).toBe("build_unknown")
+ 825       expect(
+ 826         (yield* owner
+ 827           .readBuild(
+ 828             Object.assign(
+ 829               { projectID: f.project.projectID, buildID: admitted.buildID },
+ 830               { evidence: { status: "succeeded" } },
+ 831             ),
+ 832           )
+ 833           .pipe(Effect.flip)).code,
+ 834       ).toBe("invalid_build_input")
+ 835       yield* admitted.cancel
+ 836     }),
+ 837   ))
+ 838 
+ 839 test("same-root alias admissions reject busy while different roots run independently", async () => {
+ 840   await using one = await tmpdir()
+ 841   await using two = await tmpdir()
+ 842   const a = await fixture(one.path)
+ 843   const b = await fixture(two.path)
+ 844   const ports: JavaBuild.Ports = {
+ 845     projects: {
+ 846       resolve: (id) =>
+ 847         Effect.succeed(
+ 848           id === a.project.projectID
+ 849             ? a.project
+ 850             : id === b.project.projectID
+ 851               ? b.project
+ 852               : { ...a.project, projectID: id },
+ 853         ),
+ 854     },
+ 855     inputs: {
+ 856       acquire: (input) =>
+ 857         input.project.canonicalRoot === a.project.canonicalRoot
+ 858           ? a.ports.inputs.acquire(input)
+ 859           : b.ports.inputs.acquire(input),
+ 860     },
+ 861     process: {
+ 862       start: (input) =>
+ 863         input.lease.basis.project.canonicalRoot === a.project.canonicalRoot
+ 864           ? a.ports.process.start(input)
+ 865           : b.ports.process.start(input),
+ 866     },
+ 867   }
+ 868   await run(
+ 869     Effect.gen(function* () {
+ 870       const owner = yield* JavaBuild.make(ports)
+ 871       const first = yield* owner.startBuild(a.request)
+ 872       expect((yield* owner.startBuild(a.request).pipe(Effect.flip)).code).toBe("busy")
+ 873       const alias = { ...a.project, projectID: Project.ID.make("alias") }
+ 874       expect((yield* owner.startBuild({ ...a.request, project: alias }).pipe(Effect.flip)).code).toBe("busy")
+ 875       const second = yield* owner.startBuild(b.request)
+ 876       yield* Deferred.await(b.started)
+ 877       yield* b.complete
+ 878       expect((yield* second.result).projectID).toBe(b.project.projectID)
+ 879       expect((yield* owner.readBuild({ projectID: a.project.projectID, buildID: first.buildID })).state).toBe("running")
+ 880       yield* first.cancel
+ 881     }),
+ 882   )
+ 883 })
+ 884 
+ 885 test("public owner disposal and repeated cancellation join held async cleanup without losing observers", async () => {
+ 886   await using tmp = await tmpdir()
+ 887   const f = await fixture(tmp.path)
+ 888   await Effect.runPromise(
+ 889     Effect.gen(function* () {
+ 890       const scope = yield* Scope.make()
+ 891       const held = gate()
+ 892       f.state.leaseRelease = Deferred.await(held)
+ 893       const owner = yield* JavaBuild.make(f.ports).pipe(Scope.provide(scope))
+ 894       const admitted = yield* owner.startBuild(f.request)
+ 895       yield* Deferred.await(f.started)
+ 896       const first = yield* admitted.cancel.pipe(Effect.forkChild)
+ 897       const second = yield* admitted.cancel.pipe(Effect.forkChild)
+ 898       const closing = yield* Scope.close(scope, Exit.void).pipe(Effect.forkChild)
+ 899       yield* Deferred.await(f.leaseCleanup)
+ 900       expect(closing.pollUnsafe()).toBeUndefined()
+ 901       yield* open(held)
+ 902       const results = yield* Effect.all([Fiber.join(first), Fiber.join(second)], { concurrency: "unbounded" })
+ 903       yield* Fiber.join(closing)
+ 904       expect(results[0]).toBe(results[1])
+ 905       expect(results[0].status).toBe("cancelled")
+ 906       expect(f.state.processesClosed).toBe(1)
+ 907       expect(f.state.leasesClosed).toBe(1)
+ 908       expect(
+ 909         (yield* owner.readBuild({ projectID: f.project.projectID, buildID: admitted.buildID }).pipe(Effect.flip)).code,
+ 910       ).toBe("owner_closed")
+ 911       expect((yield* owner.startBuild(f.request).pipe(Effect.flip)).code).toBe("owner_closed")
+ 912     }),
+ 913   )
+ 914 }, 2000)
+ 915 
+ 916 test("owner close interrupts pending acquisition, releases resources and prevents late admission", async () => {
+ 917   await using tmp = await tmpdir()
+ 918   const f = await fixture(tmp.path)
+ 919   await Effect.runPromise(
+ 920     Effect.gen(function* () {
+ 921       const scope = yield* Scope.make()
+ 922       f.state.acquisition = Effect.never
+ 923       const held = gate()
+ 924       f.state.leaseRelease = Deferred.await(held)
+ 925       const owner = yield* JavaBuild.make(f.ports).pipe(Scope.provide(scope))
+ 926       const pending = yield* owner.startBuild(f.request).pipe(Effect.forkChild)
+ 927       yield* Deferred.await(f.acquired)
+ 928       const closing = yield* Scope.close(scope, Exit.void).pipe(Effect.forkChild)
+ 929       yield* Deferred.await(f.leaseCleanup)
+ 930       expect(closing.pollUnsafe()).toBeUndefined()
+ 931       yield* open(held)
+ 932       yield* Fiber.join(closing)
+ 933       const exit = yield* Fiber.await(pending)
+ 934       expect(Exit.isFailure(exit) && Cause.hasInterrupts(exit.cause)).toBe(true)
+ 935       expect(f.state.leasesClosed).toBe(1)
+ 936       expect(f.state.starts).toBe(0)
+ 937     }),
+ 938   )
+ 939 }, 2000)
+ 940 
+ 941 test("document-only facade stays usable and build-enabled construction launches no work", async () => {
+ 942   await using tmp = await tmpdir()
+ 943   const f = await fixture(tmp.path)
+ 944   const documents = { filesystem: documentFilesystem, projects: { resolve: () => Effect.succeed(f.project) } }
+ 945   await run(
+ 946     Effect.gen(function* () {
+ 947       const java = yield* Java.Service
+ 948       expect((yield* java.openDocument({ project: f.project, path: "Main.java" })).text).toBe("saved")
+ 949       expect((yield* java.build(f.request).pipe(Effect.flip)).code).toBe("build_unavailable")
+ 950       expect((yield* java.startBuild(f.request).pipe(Effect.flip)).code).toBe("build_unavailable")
+ 951       expect(
+ 952         (yield* java.readBuild({ projectID: f.project.projectID, buildID: FtcJava.BuildID.create() }).pipe(Effect.flip))
+ 953           .code,
+ 954       ).toBe("build_unavailable")
+ 955     }).pipe(Effect.provide(Java.layer(documents))),
+ 956   )
+ 957   await run(
+ 958     Effect.gen(function* () {
+ 959       const java = yield* Java.Service
+ 960       expect(f.state.acquisitions).toBe(0)
+ 961       expect(f.state.starts).toBe(0)
+ 962       yield* f.complete
+ 963       expect((yield* java.build(f.request)).status).toBe("succeeded")
+ 964       expect(
+ 965         (yield* java.readDocument({ projectID: f.project.projectID, path: "Main.java" }).pipe(Effect.flip)).code,
+ 966       ).toBe("document_not_open")
+ 967     }).pipe(Effect.provide(Java.layerWithBuilds({ documents, builds: f.ports }))),
+ 968   )
+ 969   for (const name of [
+ 970     "BuildID",
+ 971     "BuildRequest",
+ 972     "BuildExclusion",
+ 973     "BuildLog",
+ 974     "BuildEvidence",
+ 975     "BuildError",
+ 976     "BuildQuery",
+ 977     "BuildRecord",
+ 978   ] as const)
+ 979     expect(Java[name]).toBe(FtcJava[name])
+ 980 })
+ 981 
+ 982 test("interruption at admission handoff cancels the undelivered run and joins its resources", () =>
+ 983   isolated((owner, f) =>
+ 984     Effect.gen(function* () {
+ 985       const held = gate()
+ 986       f.state.acquisition = Deferred.await(held)
+ 987       const acquire = f.ports.inputs.acquire
+ 988       Object.assign(f.ports.inputs, {
+ 989         acquire: (input: Parameters<JavaBuild.Ports["inputs"]["acquire"]>[0]) =>
+ 990           acquire(input).pipe(
+ 991             Effect.map((lease) => ({
+ 992               ...lease,
+ 993               revalidate: () =>
+ 994                 Effect.succeed({
+ 995                   project: lease.basis.project,
+ 996                   toolchain: lease.basis.toolchain,
+ 997                   sourceRevision: lease.basis.sourceRevision,
+ 998                   configurationRevision: lease.basis.configurationRevision,
+ 999                   generation: lease.basis.generation,
+1000                   exclusions: lease.basis.exclusions,
+1001                 }),
+1002             })),
+1003           ),
+1004       })
+1005       const acquiring = yield* owner.startBuild(f.request).pipe(Effect.forkScoped)
+1006       yield* Deferred.await(f.acquired)
+1007       f.state.start = Effect.sync(() => acquiring.interruptUnsafe())
+1008       yield* open(held)
+1009       const exit = yield* Fiber.await(acquiring)
+1010       expect(Exit.isFailure(exit) && Cause.hasInterrupts(exit.cause)).toBe(true)
+1011       expect(f.state.processesClosed).toBe(1)
+1012       expect(f.state.leasesClosed).toBe(1)
+1013     }),
+1014   ))
+1015 
+1016 test("unordered process output is a typed output failure, retaining only ordered observations", () =>
+1017   isolated((owner, f) =>
+1018     Effect.gen(function* () {
+1019       f.state.output = Stream.make(
+1020         { sequence: 1, stream: "stdout", text: "first" },
+1021         { sequence: 0, stream: "stderr", text: "late" },
+1022       )
+1023       const evidence = yield* owner.build(f.request)
+1024       expect(evidence).toMatchObject({
+1025         status: "failed",
+1026         outputComplete: false,
+1027         logs: [{ sequence: 1, stream: "stdout", text: "first" }],
+1028         errors: [{ code: "output_failed" }],
+1029       })
+1030     }),
+1031   ))
+1032 
+1033 test("settlement observes saved and dirty changes during held lease cleanup", () =>
+1034   isolated((owner, f) =>
+1035     Effect.gen(function* () {
+1036       const held = gate()
+1037       f.state.leaseRelease = Deferred.await(held)
+1038       const admitted = yield* owner.startBuild(f.request)
+1039       yield* f.complete
+1040       yield* Deferred.await(f.leaseCleanup)
+1041       expect((yield* owner.readBuild({ projectID: f.project.projectID, buildID: admitted.buildID })).state).toBe(
+1042         "running",
+1043       )
+1044       yield* f.write("Unopened.java", "changed while lease closing")
+1045       f.state.exclusions = Effect.succeed([
+1046         { path: "Main.java", documentID: FtcJava.DocumentID.make("doc_fixture"), bufferRevision: 1, diskRevision: 0 },
+1047       ])
+1048       yield* open(held)
+1049       const evidence = yield* admitted.result
+1050       expect(evidence).toMatchObject({
+1051         status: "outdated",
+1052         inputChanged: true,
+1053         exclusions: {
+1054           initial: [],
+1055           settlement: [{ path: "Main.java", documentID: "doc_fixture", bufferRevision: 1, diskRevision: 0 }],
+1056         },
+1057       })
+1058     }),
+1059   ))
+1060 
+1061 test("a malformed revalidation identity cannot prove saved-input currency", () =>
+1062   isolated((owner, f) =>
+1063     Effect.gen(function* () {
+1064       const admitted = yield* owner.startBuild(f.request)
+1065       yield* Deferred.await(f.started)
+1066       f.state.validationMutation = (validation) => Object.assign(validation, { generation: "" })
+1067       yield* f.complete
+1068       expect(yield* admitted.result).toMatchObject({ status: "failed", inputChanged: false })
+1069     }),
+1070   ))
+1071 
+1072 test("a port defect stays a defect for the caller while the owner settles honest failed evidence", () =>
+1073   isolated((owner, f) =>
+1074     Effect.gen(function* () {
+1075       f.state.start = Effect.die("owned fixture defect")
+1076       const admitted = yield* owner.startBuild(f.request)
+1077       const exit = yield* admitted.result.pipe(Effect.exit)
+1078       expect(Exit.isFailure(exit) && Cause.hasDies(exit.cause)).toBe(true)
+1079       const record = yield* owner.readBuild({ projectID: f.project.projectID, buildID: admitted.buildID })
+1080       expect(record.state).toBe("settled")
+1081       if (record.state === "settled")
+1082         expect(record.evidence).toMatchObject({ status: "failed", errors: [{ code: "execution_defect" }] })
+1083     }),
+1084   ))
+1085 
+1086 test("cancelling a harmless test-owned child joins its actual exit and stdout reader", async () => {
+1087   await using tmp = await tmpdir()
+1088   const f = await fixture(tmp.path)
+1089   const observed = gate()
+1090   const handles: Bun.Subprocess<"ignore", "pipe", "ignore">[] = []
+1091   const childPort: JavaBuild.Ports["process"] = {
+1092     start: () =>
+1093       Effect.gen(function* () {
+1094         // This fixture runs only its own harmless script. It proves direct-child/pipe cleanup here,
+1095         // not Gradle, descendant isolation, production authority or Windows process behavior.
+1096         const child = Bun.spawn(
+1097           [
+1098             "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+1099             "-e",
+1100             'console.log("owned child ready"); setInterval(() => {}, 1000)',
+1101           ],
+1102           { stdin: "ignore", stdout: "pipe", stderr: "ignore" },
+1103         )
+1104         handles.push(child)
+1105         const termination = Effect.promise(async () => {
+1106           await child.exited
+1107           return {
+1108             ...(child.exitCode !== null ? { exitCode: child.exitCode } : {}),
+1109             ...(child.signalCode ? { signal: child.signalCode } : {}),
+1110           }
+1111         })
+1112         const cancelAndJoin = Effect.sync(() => {
+1113           if (child.exitCode === null) child.kill("SIGTERM")
+1114         }).pipe(Effect.andThen(termination))
+1115         const release = Effect.tryPromise({
+1116           try: async () => {
+1117             await child.exited
+1118             await child.stdout.cancel()
+1119           },
+1120           catch: () => ({ code: "cleanup_failed" as const }),
+1121         })
+1122         yield* Effect.addFinalizer(() => cancelAndJoin.pipe(Effect.andThen(release), Effect.orDie))
+1123         return {
+1124           output: Stream.fromReadableStream({
+1125             evaluate: () => child.stdout,
+1126             releaseLockOnEnd: true,
+1127             onError: () => ({ code: "output_failed" as const }),
+1128           }).pipe(
+1129             Stream.map((bytes) => ({ sequence: 0, stream: "stdout" as const, text: new TextDecoder().decode(bytes) })),
+1130             Stream.tap(() => open(observed)),
+1131           ),
+1132           termination,
+1133           cancelAndJoin,
+1134           release,
+1135         }
+1136       }),
+1137   }
+1138   Object.assign(f.ports.process, childPort)
+1139   await run(
+1140     Effect.gen(function* () {
+1141       const owner = yield* JavaBuild.make(f.ports)
+1142       const admitted = yield* owner.startBuild(f.request)
+1143       yield* Deferred.await(observed)
+1144       yield* Effect.yieldNow
+1145       const cancelled = yield* admitted.cancel
+1146       expect(cancelled.status).toBe("cancelled")
+1147       expect(cancelled.logs.map((log) => log.text).join("")).toBe("owned child ready\n")
+1148       expect(handles[0].signalCode).toBe("SIGTERM")
+1149       expect(cancelled.exitCode).toBe(handles[0].exitCode ?? undefined)
+1150       expect(cancelled.signal).toBe(handles[0].signalCode ?? undefined)
+1151       expect(handles[0].stdout.locked).toBe(false)
+1152     }),
+1153   )
+1154 })
+1155 
+1156 test("raw lease and process-handle mutation cannot replace retained execution/cleanup fields", () =>
+1157   isolated((owner, f) =>
+1158     Effect.gen(function* () {
+1159       const rawBasis: JavaBuild.SavedInputBasis[] = []
+1160       const rawProcesses: JavaBuild.BuildProcess[] = []
+1161       f.state.basisMutation = (basis) => {
+1162         rawBasis.push(basis)
+1163       }
+1164       const start = f.ports.process.start
+1165       Object.assign(f.ports.process, {
+1166         start: (input: Parameters<JavaBuild.Ports["process"]["start"]>[0]) =>
+1167           start(input).pipe(
+1168             Effect.tap((process) =>
+1169               Effect.sync(() => {
+1170                 rawProcesses.push(process)
+1171               }),
+1172             ),
+1173           ),
+1174       })
+1175       const admitted = yield* owner.startBuild(f.request)
+1176       yield* Deferred.await(f.firstOutput)
+1177       Object.assign(rawBasis[0], { sourceRevision: "forged", configurationRevision: "forged" })
+1178       Object.assign(rawBasis[0].recipe, { identity: "forged" })
+1179       Object.assign(rawProcesses[0], { release: Effect.never, cancelAndJoin: Effect.never })
+1180       yield* f.complete
+1181       const evidence = yield* admitted.result
+1182       expect(evidence.status).toBe("succeeded")
+1183       expect(evidence.configurationRevision).toBe("config-1")
+1184       expect(evidence.sourceRevision).not.toBe("forged")
+1185       expect(f.state.seen[0].lease.basis.recipe.identity).toBe("owned-complete-fixture")
+1186       expect(f.state.processesClosed).toBe(1)
+1187     }),
+1188   ))
+1189 
+1190 test("retained typed failures are immutable and unavailable settlement exclusions remain absent", () =>
+1191   isolated((owner, f) =>
+1192     Effect.gen(function* () {
+1193       const held = gate()
+1194       const error: FtcJava.BuildError = { code: "process_start_failed" }
+1195       f.state.start = Effect.fail(error)
+1196       f.state.leaseRelease = Deferred.await(held).pipe(Effect.andThen(failure("cleanup_failed")))
+1197       const admitted = yield* owner.startBuild(f.request)
+1198       yield* Deferred.await(f.leaseCleanup)
+1199       Object.assign(error, { code: "build_unknown" })
+1200       yield* open(held)
+1201       const record = yield* admitted.result.pipe(
+1202         Effect.exit,
+1203         Effect.andThen(owner.readBuild({ projectID: f.project.projectID, buildID: admitted.buildID })),
+1204       )
+1205       expect(record.state).toBe("settled")
+1206       if (record.state !== "settled") return
+1207       expect(record.evidence.errors[0]).toEqual({ code: "process_start_failed" })
+1208       expect(Object.isFrozen(record.evidence.errors[0])).toBe(true)
+1209       expect("settlement" in record.evidence.exclusions).toBe(false)
+1210     }),
+1211   ))
+1212 
+1213 test("accepted cancellation during successful cleanup wins the final publication race", () =>
+1214   isolated((owner, f) =>
+1215     Effect.gen(function* () {
+1216       const held = gate()
+1217       f.state.processRelease = Deferred.await(held)
+1218       const admitted = yield* owner.startBuild(f.request)
+1219       yield* f.complete
+1220       yield* Deferred.await(f.processCleanup)
+1221       const cancelling = yield* admitted.cancel.pipe(Effect.forkScoped)
+1222       yield* Effect.yieldNow
+1223       expect(cancelling.pollUnsafe()).toBeUndefined()
+1224       yield* open(held)
+1225       const evidence = yield* Fiber.join(cancelling)
+1226       expect(evidence).toMatchObject({ status: "cancelled", exitCode: 0, outputComplete: true })
+1227       expect(evidence.logs).toHaveLength(2)
+1228       expect(yield* admitted.result).toBe(evidence)
+1229     }),
+1230   ))
+1231 
+1232 test("cancellation cleanup without a new exit cannot erase an already observed real exit", () =>
+1233   isolated((owner, f) =>
+1234     Effect.gen(function* () {
+1235       const exited = gate()
+1236       const failOutput = gate()
+1237       const start = f.ports.process.start
+1238       f.state.termination = { exitCode: 5 }
+1239       f.state.output = Stream.make({ sequence: 0, stream: "stdout", text: "partial" }).pipe(
+1240         Stream.concat(Stream.fromEffect(Deferred.await(failOutput).pipe(Effect.andThen(failure("output_failed"))))),
+1241       )
+1242       Object.assign(f.ports.process, {
+1243         start: (input: Parameters<JavaBuild.Ports["process"]["start"]>[0]) =>
+1244           start(input).pipe(
+1245             Effect.map((process) => ({
+1246               ...process,
+1247               termination: process.termination.pipe(Effect.tap(() => open(exited))),
+1248               cancelAndJoin: Effect.succeed({}),
+1249             })),
+1250           ),
+1251       })
+1252       const admitted = yield* owner.startBuild(f.request)
+1253       yield* open(f.finish)
+1254       yield* Deferred.await(exited)
+1255       yield* Effect.yieldNow
+1256       yield* open(failOutput)
+1257       expect(yield* admitted.result).toMatchObject({
+1258         status: "failed",
+1259         exitCode: 5,
+1260         logs: [{ sequence: 0, stream: "stdout", text: "partial" }],
+1261       })
+1262     }),
+1263   ))
+1264 
+1265 test("real internal Location.Service shape projects canonically without weakening strict public request decoding", async () => {
+1266   await using tmp = await tmpdir()
+1267   const f = await fixture(tmp.path)
+1268   // Service.of is the real constructor; no boundNode/layer/Project runtime is started.
+1269   const { Location } = await import("../../../src/location")
+1270   const supplied = Location.Service.of({
+1271     directory: f.project.canonicalRoot,
+1272     workspaceID: undefined,
+1273     project: f.project.location.project,
+1274     vcs: { type: "git", store: f.project.canonicalRoot },
+1275   })
+1276   expect(Object.hasOwn(supplied, "workspaceID")).toBe(true)
+1277   expect(supplied.workspaceID).toBeUndefined()
+1278   f.state.authorized = { ...f.project, location: supplied }
+1279   const request = { ...f.request, project: f.state.authorized }
+1280   expect(() => Schema.decodeUnknownSync(FtcJava.BuildRequest, { onExcessProperty: "error" })(request)).toThrow()
+1281   await run(
+1282     Effect.gen(function* () {
+1283       const java = yield* Java.Service
+1284       yield* f.complete
+1285       const evidence = yield* java.build(request)
+1286       expect(evidence.status).toBe("succeeded")
+1287       const record = yield* java.readBuild({ projectID: request.project.projectID, buildID: evidence.buildID })
+1288       expect(record.state).toBe("settled")
+1289       expect(f.state.seen[0].lease.basis.project.location).toEqual(f.project.location)
+1290       expect("vcs" in f.state.seen[0].lease.basis.project.location).toBe(false)
+1291       expect("workspaceID" in f.state.seen[0].lease.basis.project.location).toBe(false)
+1292     }).pipe(
+1293       Effect.provide(
+1294         Java.layerWithBuilds({
+1295           documents: {
+1296             filesystem: documentFilesystem,
+1297             projects: { resolve: () => Effect.succeed(f.state.authorized) },
+1298           },
+1299           builds: f.ports,
+1300         }),
+1301       ),
+1302     ),
+1303   )
+1304 })
+1305 
+1306 test("internal location projection still rejects unknown request/project/location and malformed known fields", () =>
+1307   isolated((owner, f) =>
+1308     Effect.gen(function* () {
+1309       const requests = [
+1310         Object.assign({}, f.request, { execution: {} }),
+1311         { ...f.request, project: Object.assign({}, f.project, { execution: {} }) },
+1312         { ...f.request, project: { ...f.project, location: Object.assign({}, f.project.location, { execution: {} }) } },
+1313         {
+1314           ...f.request,
+1315           project: { ...f.project, location: Object.assign({}, f.project.location, { workspaceID: "foreign" }) },
+1316         },
+1317         { ...f.request, project: { ...f.project, location: Object.assign({}, f.project.location, { vcs: "git" }) } },
+1318         {
+1319           ...f.request,
+1320           project: {
+1321             ...f.project,
+1322             location: Object.assign({}, f.project.location, { vcs: { type: "git", store: 17 } }),
+1323           },
+1324         },
+1325         { ...f.request, project: Object.assign({}, f.project, { canonicalRoot: 17 }) },
+1326       ]
+1327       for (const request of requests)
+1328         expect((yield* owner.startBuild(request).pipe(Effect.flip)).code).toBe("invalid_build_input")
+1329       expect(f.state.acquisitions).toBe(0)
+1330       expect(f.state.starts).toBe(0)
+1331     }),
+1332   ))
+1333 
+1334 test("trusted lease/validation location projection accepts only the documented internal optional representation", () =>
+1335   isolated((owner, f) =>
+1336     Effect.gen(function* () {
+1337       const local = {
+1338         directory: f.project.canonicalRoot,
+1339         project: f.project.location.project,
+1340         workspaceID: undefined,
+1341         vcs: undefined,
+1342       }
+1343       f.state.basisMutation = (basis) => {
+1344         Object.assign(basis, { project: { ...basis.project, location: local } })
+1345       }
+1346       f.state.validationMutation = (value) => {
+1347         Object.assign(value, { project: { ...value.project, location: local } })
+1348       }
+1349       yield* f.complete
+1350       expect((yield* owner.build(f.request)).status).toBe("succeeded")
+1351       f.state.basisMutation = (basis) => {
+1352         Object.assign(basis, { execution: {} })
+1353       }
+1354       expect((yield* owner.startBuild(f.request).pipe(Effect.flip)).code).toBe("lease_mismatch")
+1355     }),
+1356   ))

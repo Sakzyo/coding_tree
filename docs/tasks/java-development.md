@@ -55,7 +55,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 - [x] [M5-02 — Save and apply edits with conflict checks](#m5-02)
 - [ ] [M5-03 — Evaluate FTC-aware Java import before building the full editor](#m5-03)
 - [ ] [M5-04 — Adapt scoped language-service requests](#m5-04)
-- [ ] [M5-05 — Build saved revisions and retain actual output](#m5-05)
+- [x] [M5-05 — Build saved revisions and retain actual output](#m5-05)
 - [ ] [M5-06 — Issue and revalidate immutable artifact references](#m5-06)
 - [ ] [M5-07 — Connect Monaco to document and language-service facades](#m5-07)
 - [ ] [M5-08 — Expose Java API and validate real editor/build integration](#m5-08)
@@ -155,16 +155,18 @@ expect(failed.state).toBe('failed'); expect(ready.items).toEqual([]); expect(rea
 
 **Interfaces:** Produces `build({ project, toolchain: ToolchainDescriptor, configurationRevision }): BuildEvidence`; consumes a build process and saved input snapshot/hash port.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/java-development/m5-05.test.ts`, add `source change during build makes evidence outdated`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/java-development/m5-05.test.ts`, add `source change during build makes evidence outdated`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(changed.status).toBe('outdated'); expect(changed.inputChanged).toBe(true); expect(cancelled.status).toBe('cancelled')
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/java-development/m5-05.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Use the project's Gradle wrapper and build JDK. Build a stable saved snapshot or verify relevant input revisions before/after execution; show unsaved-buffer exclusion. Capture exit status/logs and terminate owned child processes on cancellation. Production process access remains subject to M9-08.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/java-development/m5-05.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): build saved revisions and retain actual output`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/java-development/m5-05.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Use the project's Gradle wrapper and build JDK. Build a stable saved snapshot or verify relevant input revisions before/after execution; show unsaved-buffer exclusion. Capture exit status/logs and terminate owned child processes on cancellation. Production process access remains subject to M9-08.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/java-development/m5-05.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): build saved revisions and retain actual output`.
+
+**Verified 2026-10-09:** product `03fd63ebd`; Core **62/373**, affected document tests **50/194**, Schema **34/85**, both package types, lint/format/import and public held-cleanup/actual owned-child checks pass. Five current source hashes and protected old files match. Independent specification and quality **APPROVED**, no findings. [Implementation/evidence](../validation/M5-05-implementation.md), [review](../validation/M5-05-review.md). Canonical build contracts were assigned in Schema alongside the planned owner/facade/tests. Production complete input/dirty/fixed-recipe/process binding, M9-08 isolation, actual FTC wrapper/JDK/SDK/offline builds, Windows/native descendants, readiness/editor/robot/release gates remain unavailable or unrun; no APK/deployment-current result is issued.
 
 <a id="m5-06"></a>
 
