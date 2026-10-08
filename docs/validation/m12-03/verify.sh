@@ -16,8 +16,9 @@ run() {
   (cd "$cwd" && "$@") > "$task_logs/$label.log" 2>&1
   local code=$?
   printf '%s\t%s\t%s\t' "$label" "$cwd" "$code" >> "$task_logs/verification.tsv"
-  printf '%q ' "$@" >> "$task_logs/verification.tsv"
-  printf '\n' >> "$task_logs/verification.tsv"
+  local serialized_command
+  printf -v serialized_command '%q ' "$@"
+  printf '%s\n' "${serialized_command% }" >> "$task_logs/verification.tsv"
   return "$code"
 }
 run focused-final "$task_root/packages/core" bun test ./test/ftc/learning-and-progress/m12-03.test.ts || exit 1

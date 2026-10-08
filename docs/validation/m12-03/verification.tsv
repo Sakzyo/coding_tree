@@ -1,10 +1,10 @@
 check	cwd	exit	command
-focused-final	/Users/dylanxu/coding_tree/packages/core	0	bun test ./test/ftc/learning-and-progress/m12-03.test.ts 
-core-covering-final	/Users/dylanxu/coding_tree/packages/core	0	bun test ./test/ftc/learning-and-progress ./test/ftc/ftc-knowledge/course-metadata.test.ts ./test/ftc/ftc-knowledge/m11-02.test.ts ./test/ftc/ftc-knowledge/m11-04.test.ts 
-schema-final	/Users/dylanxu/coding_tree/packages/schema	0	bun test ./test/ftc-learning.test.ts 
-core-typecheck-final	/Users/dylanxu/coding_tree/packages/core	0	bun typecheck 
-schema-typecheck-final	/Users/dylanxu/coding_tree/packages/schema	0	bun typecheck 
-lint-final	/Users/dylanxu/coding_tree	0	/Users/dylanxu/coding_tree/node_modules/.bin/oxlint packages/core/src/ftc/learning.ts packages/core/test/ftc/learning-and-progress/m12-03.test.ts packages/schema/src/ftc-learning.ts packages/schema/test/ftc-learning.test.ts 
-format-final	/Users/dylanxu/coding_tree	0	/Users/dylanxu/coding_tree/node_modules/.bin/prettier --check packages/core/src/ftc/learning.ts packages/core/test/ftc/learning-and-progress/m12-03.test.ts packages/schema/src/ftc-learning.ts packages/schema/test/ftc-learning.test.ts 
-diff-check-final	/Users/dylanxu/coding_tree	0	git diff --check -- packages/core/src/ftc/learning.ts packages/core/test/ftc/learning-and-progress/m12-03.test.ts packages/schema/src/ftc-learning.ts packages/schema/test/ftc-learning.test.ts 
-source-freeze-check	/Users/dylanxu/coding_tree	0	shasum -a 256 -c docs/validation/m12-03/source-sha256.txt 
+focused-final	/Users/dylanxu/coding_tree/packages/core	0	bun test ./test/ftc/learning-and-progress/m12-03.test.ts
+core-covering-final	/Users/dylanxu/coding_tree/packages/core	0	bun test ./test/ftc/learning-and-progress ./test/ftc/ftc-knowledge/course-metadata.test.ts ./test/ftc/ftc-knowledge/m11-02.test.ts ./test/ftc/ftc-knowledge/m11-04.test.ts
+schema-final	/Users/dylanxu/coding_tree/packages/schema	0	bun test ./test/ftc-learning.test.ts
+core-typecheck-final	/Users/dylanxu/coding_tree/packages/core	0	bun typecheck
+schema-typecheck-final	/Users/dylanxu/coding_tree/packages/schema	0	bun typecheck
+lint-final	/Users/dylanxu/coding_tree	0	/Users/dylanxu/coding_tree/node_modules/.bin/oxlint packages/core/src/ftc/learning.ts packages/core/test/ftc/learning-and-progress/m12-03.test.ts packages/schema/src/ftc-learning.ts packages/schema/test/ftc-learning.test.ts
+format-final	/Users/dylanxu/coding_tree	0	/Users/dylanxu/coding_tree/node_modules/.bin/prettier --check packages/core/src/ftc/learning.ts packages/core/test/ftc/learning-and-progress/m12-03.test.ts packages/schema/src/ftc-learning.ts packages/schema/test/ftc-learning.test.ts
+diff-check-final	/Users/dylanxu/coding_tree	0	git diff --check -- packages/core/src/ftc/learning.ts packages/core/test/ftc/learning-and-progress/m12-03.test.ts packages/schema/src/ftc-learning.ts packages/schema/test/ftc-learning.test.ts
+source-freeze-check	/Users/dylanxu/coding_tree	0	shasum -a 256 -c docs/validation/m12-03/source-sha256.txt
