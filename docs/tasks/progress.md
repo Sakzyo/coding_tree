@@ -1,6 +1,6 @@
 # FTC development progress
 
-Date: 2026-10-07
+Date: 2026-10-08
 Planning baseline: `d7aca195c`
 
 **Implementation progress: 0 / 12 modules complete; 24 / 94 tasks complete.**
@@ -632,3 +632,16 @@ Finished only the authorized active M6 native-reader work and its independent re
 - Reconciled actual task checklists: **24/94 tasks complete, 0/12 modules complete**. M2-06 remains unchecked for its authoritative legacy activation fence; its reviewed lost-wake repair is complete. M3-04 remains preflight-only. Existing M5-03/M8-04/M9-07 and all platform/physical/model/credential/release gates stay open; unrelated Schema exhaustive-manifest/App native-locale baseline failures were not silently waived or rerun without cause.
 
 All product source and scoped verification evidence are saved in local focused commits; final coordinator documentation/evidence checkpoint follows separately. No user's app/server was restarted, real provider/robot operated, user database migrated, remote branch pushed, PR merged or release published. No implementation/review worker remains active after this checkpoint. Remain stopped until explicit continuation.
+
+## Explicit continuation — 2026-10-08
+
+User requested continuation from the last endpoint. Reconciled clean `ftc-workspace` at `11b3fe90e`; checklists confirm **24/94 tasks, 0/12 modules**. Previous stopping instruction is superseded by this explicit continuation. Existing focused branch/workspace is retained; no completed work is redispatched. [Resume dependency/ownership scan](../validation/resume-2026-10-08-preflight.md) verifies 94 unique task IDs with no missing dependencies or cycles.
+
+- Read-only `/root/m2_activation_preflight` examines the unresolved M2-06 authoritative legacy activation fence; only `M2-06-activation-resume-preflight.md` is assigned. No legacy activation or host enablement is implemented by this lane.
+- Next writer `/root/m3_04` is dependency-ready from reviewed M3-01 and existing canonical producer contracts. [Exact brief](../validation/M3-04-brief.md) assigns only four domain/adapter source paths, focused test, unavailable-only M10 Schema and necessary owning wrappers. Root alone owns exports/Git/ledger; product writers are serialized.
+- Ruling: M3-04 supplies one M10-owned unavailable-only context record and a required trusted text sanitization port before snapshot encoding/rendering; source set selection is explicitly captured in independent registry scopes — canonical producer ownership and existing SystemContext/Session epoch APIs satisfy the isolated task without fabricating telemetry or a production secret detector — incorrect sanitization/host selection could leak data or mix Session context, so real trusted host binding and simultaneous selection remain M3-06 gates, and missing sanitization fails closed.
+- Pinned Bun 1.3.14 temporary runtime from the prior session is absent. Root is restoring the exact repository-pinned development runtime; installed workspace dependencies remain present. No product test is credited until actual commands run. M6 Windows/release, M2 activation and earlier platform/physical/action-isolation gates remain open.
+
+- M3-04 shared-file assignment: sole writer also owns `packages/core/src/ftc/context-sanitizer.ts`, a reused side-effect-free projection/sanitization boundary with explicit field roles and canonical decode. Domain sources do not runtime-import the M3 adapter. Initial missing/failing sanitizer cannot admit raw text; transient failure may retain only an already-safe snapshot under existing SystemContext semantics. No public configuration/knowledge Schema wrappers are currently needed.
+- Restored exact pinned Bun **1.3.14** in `/private/tmp/ftc-bun-1.3.14`. Current macOS **26.5.2 (25F84), arm64**; stable Context/registry/M11-02 baseline **52 pass / 101 assertions**, no failures ([log](../validation/resume-2026-10-08/context-baseline.log)). This is baseline evidence only.
+- Read-only `/root/m9_01_preflight` prepares source-backed operation-preparation contracts and identifies missing M8/M5 producer contracts; only `M9-01-preflight.md` is assigned. No robot preparation/approval/dispatch/transport or schema implementation occurs in that lane.
