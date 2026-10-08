@@ -1,0 +1,11 @@
+{
+  "cwd": "/Users/dylanxu/coding_tree/packages/core",
+  "command": [
+    "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+    "test",
+    "./test/ftc/java-development/m5-05.test.ts",
+    "--test-name-pattern",
+    "owner close interrupts pending"
+  ],
+  "exit": 1
+}

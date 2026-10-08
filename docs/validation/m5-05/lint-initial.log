@@ -1,0 +1,145 @@
+$ oxlint packages/core/src/ftc/java/build.ts packages/core/src/ftc/java.ts "packages/core/test/ftc/java-development/m5-05.test.ts" packages/schema/src/ftc-java.ts packages/schema/test/ftc-java-build.test.ts
+
+  ! typescript-eslint(consistent-return): Function expected a return value.
+     ,-[packages/core/src/ftc/java/build.ts:264:36]
+ 263 |                           const validate = (value: InputValidation) =>
+ 264 | ,->                         Effect.gen(function* () {
+ 265 | |                             const validation = yield* copy(Validation, value, "input_verification_failed")
+ 266 | |                             if (
+ 267 | |                               !sameProject(validation.project, request.project) ||
+ 268 | |                               !sameToolchain(validation.toolchain, request.toolchain)
+ 269 | |                             )
+ 270 | |                               return yield* Effect.fail({
+ 271 | |                                 code: "input_verification_failed",
+ 272 | |                               } satisfies FtcJava.BuildError)
+ 273 | |                             observed.validation = validation
+ 274 | |                             if (
+ 275 | |                               validation.sourceRevision !== basis.sourceRevision ||
+ 276 | |                               validation.configurationRevision !== basis.configurationRevision ||
+ 277 | |                               validation.generation !== basis.generation
+ 278 | |                             )
+ 279 | |                               observed.inputChanged = true
+ 280 | `->                         })
+ 281 |                           const execution = yield* resume(
+     `----
+
+  ! typescript-eslint(consistent-return): Function expected a return value.
+     ,-[packages/core/src/ftc/java/build.ts:282:36]
+ 281 |                           const execution = yield* resume(
+ 282 | ,->                         Effect.gen(function* () {
+ 283 | |                             yield* authorize(request.project)
+ 284 | |                             yield* lease.revalidate().pipe(Effect.flatMap(validate))
+ 285 | |                             yield* authorize(request.project)
+ 286 | |                             const rawProcess = yield* ports.process
+ 287 | |                               .start({ lease, toolchain: request.toolchain })
+ 288 | |                               .pipe(Scope.provide(resourceScope))
+ 289 | |                             if (
+ 290 | |                               !rawProcess ||
+ 291 | |                               !Stream.isStream(rawProcess.output) ||
+ 292 | |                               !Effect.isEffect(rawProcess.termination) ||
+ 293 | |                               !Effect.isEffect(rawProcess.cancelAndJoin) ||
+ 294 | |                               !Effect.isEffect(rawProcess.release)
+ 295 | |                             )
+ 296 | |                               return yield* Effect.fail({ code: "process_start_failed" } satisfies FtcJava.BuildError)
+ 297 | |                             const process: BuildProcess = Object.freeze({
+ 298 | |                               output: rawProcess.output,
+ 299 | |                               termination: rawProcess.termination,
+ 300 | |                               cancelAndJoin: rawProcess.cancelAndJoin,
+ 301 | |                               release: rawProcess.release,
+ 302 | |                             })
+ 303 | |                             observed.process = process
+ 304 | |                             yield* Effect.all(
+ 305 | |                               [
+ 306 | |                                 process.output.pipe(
+ 307 | |                                   Stream.runForEach((value) =>
+ 308 | |                                     copy(FtcJava.BuildLog, value, "output_failed").pipe(
+ 309 | |                                       Effect.flatMap((log) =>
+ 310 | |                                         logs.length && log.sequence <= logs[logs.length - 1].sequence
+ 311 | |                                           ? Effect.fail({ code: "output_failed" } satisfies FtcJava.BuildError)
+ 312 | |                                           : Effect.sync(() => {
+ 313 | |                                               logs.push(log)
+ 314 | |                                             }),
+ 315 | |                                       ),
+ 316 | |                                     ),
+ 317 | |                                   ),
+ 318 | |                                   Effect.andThen(
+ 319 | |                                     Effect.sync(() => {
+ 320 | |                                       observed.outputComplete = true
+ 321 | |                                     }),
+ 322 | |                                   ),
+ 323 | |                                 ),
+ 324 | |                                 process.termination.pipe(
+ 325 | |                                   Effect.flatMap((value) => copy(ObservedTermination, value, "termination_failed")),
+ 326 | |                                   Effect.tap((value) =>
+ 327 | |                                     Effect.sync(() => {
+ 328 | |                                       observed.termination = value
+ 329 | |                                     }),
+ 330 | |                                   ),
+ 331 | |                                 ),
+ 332 | |                               ],
+ 333 | |                               { concurrency: "unbounded" },
+ 334 | |                             )
+ 335 | `->                         }),
+ 336 |                           ).pipe(Effect.exit)
+     `----
+
+  ! typescript-eslint(no-misused-spread): Using the spread operator on class instances will lose their class prototype.
+     ,-[packages/core/test/ftc/java-development/m5-05.test.ts:444:29]
+ 443 |                 ...basis.project,
+ 444 |                 location: { ...basis.project.location, directory: AbsolutePath.make("/foreign") },
+     :                             ^^^^^^^^^^^^^^^^^^^^^^^^^
+ 445 |               },
+     `----
+
+  ! typescript-eslint(no-misused-spread): Using the spread operator on class instances will lose their class prototype.
+     ,-[packages/core/test/ftc/java-development/m5-05.test.ts:449:56]
+ 448 |             Object.assign(basis, {
+ 449 |               project: { ...basis.project, location: { ...basis.project.location, workspaceID: "foreign" } },
+     :                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+ 450 |             })
+     `----
+
+  ! typescript-eslint(no-misused-spread): Using the spread operator on class instances will lose their class prototype.
+     ,-[packages/core/test/ftc/java-development/m5-05.test.ts:456:19]
+ 455 |                 location: {
+ 456 |                   ...basis.project.location,
+     :                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+ 457 |                   project: { id: Project.ID.make("foreign"), directory: AbsolutePath.make("/foreign") },
+     `----
+
+  ! typescript-eslint(no-misused-spread): Using the spread operator on class instances will lose their class prototype.
+     ,-[packages/core/test/ftc/java-development/m5-05.test.ts:481:41]
+ 480 |           ...f.project,
+ 481 |           location: new Location.Info({ ...f.project.location, directory: AbsolutePath.make("/foreign") }),
+     :                                         ^^^^^^^^^^^^^^^^^^^^^
+ 482 |         },
+     `----
+
+  ! typescript-eslint(no-misused-spread): Using the spread operator on class instances will lose their class prototype.
+     ,-[packages/core/test/ftc/java-development/m5-05.test.ts:486:13]
+ 485 |           location: new Location.Info({
+ 486 |             ...f.project.location,
+     :             ^^^^^^^^^^^^^^^^^^^^^
+ 487 |             project: { id: Project.ID.make("foreign"), directory: AbsolutePath.make("/foreign") },
+     `----
+
+  ! typescript-eslint(no-misused-spread): Using the spread operator on class instances will lose their class prototype.
+     ,-[packages/core/test/ftc/java-development/m5-05.test.ts:539:39]
+ 538 |         ...f.project,
+ 539 |         location: new Location.Info({ ...f.project.location, directory: AbsolutePath.make("/replaced") }),
+     :                                       ^^^^^^^^^^^^^^^^^^^^^
+ 540 |       }
+     `----
+
+  ! typescript-eslint(no-unnecessary-type-assertion): This assertion is unnecessary since it does not change the type of the expression.
+     ,-[packages/core/test/ftc/java-development/m5-05.test.ts:566:23]
+ 565 |                   : "cleanup_failed"
+ 566 |         f.state[phase as "acquisition" | "start" | "revalidation" | "exitFailure" | "processRelease" | "leaseRelease"] =
+     :                 ^^|^^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     :                   |                                                  `-- Casting it to '"acquisition" | "exitFailure" | "leaseRelease" | "processRelease" | "revalidation" | "start"' is unnecessary
+     :                   `-- This expression already has the type '"acquisition" | "exitFailure" | "leaseRelease" | "processRelease" | "revalidation" | "start"'
+ 567 |           failure(code)
+     `----
+
+Found 9 warnings and 0 errors.
+Finished in 894ms on 5 files with 130 rules using 10 threads.

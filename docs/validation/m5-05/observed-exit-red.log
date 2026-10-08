@@ -1,0 +1,60 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-05.test.ts:
+1220 |   const admitted = yield* owner.startBuild(f.request)
+1221 |   yield* open(f.finish)
+1222 |   yield* Deferred.await(exited)
+1223 |   yield* Effect.yieldNow
+1224 |   yield* open(failOutput)
+1225 |   expect(yield* admitted.result).toMatchObject({ status: "failed", exitCode: 5, logs: [{ sequence: 0, stream: "stdout", text: "partial" }] })
+                                        ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "exitCode": 5,
++   "buildID": "build_11c2f9235001cmzf4ugokUTLP0",
++   "configurationRevision": "config-1",
++   "errors": [
++     {
++       "code": "output_failed",
++     },
++   ],
++   "exclusions": {
++     "initial": [],
++     "settlement": [],
++   },
++   "inputChanged": false,
+    "logs": [
+      {
+        "sequence": 0,
+        "stream": "stdout",
+        "text": "partial",
+      },
+    ],
++   "outputComplete": false,
++   "projectID": "project:/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-37Eeal",
++   "savedInputsOnly": true,
++   "sourceRevision": "9d6e366d699538acb0c66a5efdc3fd42ebb52587d937d437bdbfc1a028c8e51d",
+    "status": "failed",
+  }
+
+- Expected  - 1
++ Received  + 16
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:1225:34)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at doneUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Deferred.js:657:20)
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:625:24)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) cancellation cleanup without a new exit cannot erase an already observed real exit [13.79ms]
+
+ 0 pass
+ 58 filtered out
+ 1 fail
+ 3 expect() calls
+Ran 1 test across 1 file. [78.00ms]

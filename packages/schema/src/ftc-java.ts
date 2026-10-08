@@ -2,6 +2,8 @@ export * as FtcJava from "./ftc-java"
 
 import { Schema } from "effect"
 import { Project } from "./project"
+import { FtcProject } from "./ftc-project"
+import { FtcEnvironment } from "./ftc-environment"
 import { AbsolutePath, NonNegativeInt, optional, statics } from "./schema"
 import { ascending } from "./identifier"
 
@@ -103,3 +105,90 @@ export const EditResult = Schema.Union([
   }),
 ]).annotate({ identifier: "FtcJava.EditResult" })
 export type EditResult = typeof EditResult.Type
+
+export const BuildID = Schema.String.check(Schema.isStartsWith("build_"))
+  .pipe(Schema.brand("FtcJava.BuildID"))
+  .annotate({ identifier: "FtcJava.BuildID" })
+  .pipe(statics((schema) => ({ create: () => schema.make(`build_${ascending()}`) })))
+export type BuildID = typeof BuildID.Type
+
+const BuildRevision = Schema.String.check(Schema.isMinLength(1))
+
+export interface BuildRequest extends Schema.Schema.Type<typeof BuildRequest> {}
+export const BuildRequest = Schema.Struct({
+  project: FtcProject.ProjectContext,
+  toolchain: FtcEnvironment.ToolchainDescriptor,
+  configurationRevision: BuildRevision,
+}).annotate({ identifier: "FtcJava.BuildRequest" })
+
+export interface BuildExclusion extends Schema.Schema.Type<typeof BuildExclusion> {}
+export const BuildExclusion = Schema.Struct({
+  path: Schema.String.check(Schema.isPattern(/^(?![\\/]|[a-zA-Z]:|.*(?:^|[\\/])\.\.(?:[\\/]|$)).+$/)),
+  documentID: optional(DocumentID),
+  bufferRevision: optional(NonNegativeInt),
+  diskRevision: optional(NonNegativeInt),
+}).annotate({ identifier: "FtcJava.BuildExclusion" })
+
+export interface BuildLog extends Schema.Schema.Type<typeof BuildLog> {}
+export const BuildLog = Schema.Struct({
+  sequence: NonNegativeInt,
+  stream: Schema.Literals(["stdout", "stderr"]),
+  text: Schema.String,
+}).annotate({ identifier: "FtcJava.BuildLog" })
+
+export interface BuildError extends Schema.Schema.Type<typeof BuildError> {}
+export const BuildError = Schema.Struct({
+  code: Schema.Literals([
+    "invalid_build_input",
+    "build_unavailable",
+    "project_unauthorized",
+    "inputs_unavailable",
+    "incomplete_inputs",
+    "stale_configuration",
+    "lease_mismatch",
+    "busy",
+    "build_unknown",
+    "owner_closed",
+    "process_start_failed",
+    "output_failed",
+    "termination_failed",
+    "input_verification_failed",
+    "cleanup_failed",
+    "execution_defect",
+  ]),
+  projectID: optional(Project.ID),
+  buildID: optional(BuildID),
+}).annotate({ identifier: "FtcJava.BuildError" })
+
+// Success describes only the captured saved basis; exclusions never authorize a displayed dirty program.
+export interface BuildEvidence extends Schema.Schema.Type<typeof BuildEvidence> {}
+export const BuildEvidence = Schema.Struct({
+  buildID: BuildID,
+  projectID: Project.ID,
+  sourceRevision: BuildRevision,
+  configurationRevision: BuildRevision,
+  inputChanged: Schema.Boolean,
+  exitCode: optional(Schema.Int),
+  signal: optional(BuildRevision),
+  status: Schema.Literals(["succeeded", "failed", "cancelled", "outdated"]),
+  logs: Schema.Array(BuildLog),
+  outputComplete: Schema.Boolean,
+  savedInputsOnly: Schema.Literal(true),
+  // Absence of settlement exclusions means final observation was unavailable, never an observed clean state.
+  exclusions: Schema.Struct({
+    initial: Schema.Array(BuildExclusion),
+    settlement: optional(Schema.Array(BuildExclusion)),
+  }),
+  errors: Schema.Array(BuildError),
+}).annotate({ identifier: "FtcJava.BuildEvidence" })
+
+export interface BuildQuery extends Schema.Schema.Type<typeof BuildQuery> {}
+export const BuildQuery = Schema.Struct({ projectID: Project.ID, buildID: BuildID }).annotate({
+  identifier: "FtcJava.BuildQuery",
+})
+
+export const BuildRecord = Schema.Union([
+  Schema.Struct({ state: Schema.Literal("running"), buildID: BuildID, projectID: Project.ID }),
+  Schema.Struct({ state: Schema.Literal("settled"), buildID: BuildID, projectID: Project.ID, evidence: BuildEvidence }),
+]).annotate({ identifier: "FtcJava.BuildRecord" })
+export type BuildRecord = typeof BuildRecord.Type

@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-05.test.ts:
+50 |   }
+51 |   const changed = await Effect.runPromise(Effect.gen(function* () {
+52 |     const owner = yield* JavaBuild.make(ports)
+53 |     return yield* owner.build({ project, toolchain, configurationRevision: "config-1" })
+54 |   }).pipe(Effect.scoped))
+55 |   expect(changed.status).toBe("outdated")
+                              ^
+error: expect(received).toBe(expected)
+
+Expected: "outdated"
+Received: "succeeded"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:55:26)
+(fail) source change during build makes evidence outdated [16.68ms]
+
+ 0 pass
+ 1 fail
+ 2 expect() calls
+Ran 1 test across 1 file. [190.00ms]

@@ -1,0 +1,11 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-05.test.ts:
+(fail) owner close interrupts pending acquisition, releases resources and prevents late admission [2000.01ms]
+  ^ this test timed out after 2000ms.
+
+ 0 pass
+ 48 filtered out
+ 1 fail
+ 3 expect() calls
+Ran 1 test across 1 file. [2.07s]

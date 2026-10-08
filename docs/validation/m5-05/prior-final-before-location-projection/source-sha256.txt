@@ -1,0 +1,5 @@
+a85de618956f5f2a710a064c11a73be189db34df863d998e91c3dc93cde5924e  packages/core/src/ftc/java/build.ts
+44f7c5810f506a97fd213f96743d559d50bc7212c064d45cf097af2d9ef2f6b3  packages/core/src/ftc/java.ts
+1d60d057cefe71b2f3b5df3a4f4cf3e77e24ae238e6a16d1e2383e72fcec299f  packages/core/test/ftc/java-development/m5-05.test.ts
+85bebc90f9f1841e4974ce619f5d9099b0e63c343df6ed528b0ec86a1029101d  packages/schema/src/ftc-java.ts
+063f914d0fdeda70b694982d8d1d5bbde8701656187a549e00c177c31caeec9b  packages/schema/test/ftc-java-build.test.ts

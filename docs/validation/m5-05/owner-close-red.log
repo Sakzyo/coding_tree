@@ -1,0 +1,10 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-05.test.ts:
+(pass) public owner disposal and repeated cancellation join held async cleanup without losing observers [15.30ms]
+
+ 1 pass
+ 48 filtered out
+ 0 fail
+ 9 expect() calls
+Ran 1 test across 1 file. [104.00ms]

@@ -1,0 +1,27 @@
+$ oxlint packages/core/src/ftc/java/build.ts packages/core/src/ftc/java.ts "packages/core/test/ftc/java-development/m5-05.test.ts" packages/schema/src/ftc-java.ts packages/schema/test/ftc-java-build.test.ts
+
+  ! typescript-eslint(consistent-return): Function expected a return value.
+     ,-[packages/core/src/ftc/java/build.ts:264:36]
+ 263 |                           const validate = (value: InputValidation) =>
+ 264 | ,->                         Effect.gen(function* () {
+ 265 | |                             const validation = yield* copy(Validation, value, "input_verification_failed")
+ 266 | |                             if (
+ 267 | |                               !sameProject(validation.project, request.project) ||
+ 268 | |                               !sameToolchain(validation.toolchain, request.toolchain)
+ 269 | |                             )
+ 270 | |                               return yield* Effect.fail({
+ 271 | |                                 code: "input_verification_failed",
+ 272 | |                               } satisfies FtcJava.BuildError)
+ 273 | |                             observed.validation = validation
+ 274 | |                             if (
+ 275 | |                               validation.sourceRevision !== basis.sourceRevision ||
+ 276 | |                               validation.configurationRevision !== basis.configurationRevision ||
+ 277 | |                               validation.generation !== basis.generation
+ 278 | |                             )
+ 279 | |                               observed.inputChanged = true
+ 280 | `->                         })
+ 281 |                           const execution = yield* resume(
+     `----
+
+Found 1 warning and 0 errors.
+Finished in 640ms on 5 files with 130 rules using 10 threads.

@@ -1,0 +1,46 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-java-build.test.ts:
+(pass) build request and evidence preserve canonical project, descriptor, saved basis and JSON [10.14ms]
+(pass) optional actual exits and exclusion/error properties omit undefined while encoding [1.38ms]
+(pass) owner-generated build IDs validate exactly their emitted prefix and are distinct [1.20ms]
+(pass) build contracts have unique stable domain identifiers [0.11ms]
+(pass) strict request decoding rejects capability/command/output and invented successful records [1.35ms]
+(pass) unsaved exclusion rejects escaped/empty path  [0.04ms]
+(pass) unsaved exclusion rejects escaped/empty path ../outside [0.02ms]
+(pass) unsaved exclusion rejects escaped/empty path nested/../outside [0.01ms]
+(pass) unsaved exclusion rejects escaped/empty path /outside [0.01ms]
+(pass) unsaved exclusion rejects escaped/empty path C:\outside [0.01ms]
+(pass) actual integer exit/log sequences and text-free exclusion records reject malformed wire values [0.18ms]
+
+test/ftc-java.test.ts:
+(pass) document snapshots and revisioned events survive JSON without losing buffer or disk identity [0.43ms]
+(pass) document IDs reject foreign prefix document [0.14ms]
+(pass) document IDs reject foreign prefix doc [0.04ms]
+(pass) document IDs reject foreign prefix docs_fixture [0.01ms]
+(pass) document IDs reject foreign prefix document_fixture
+(pass) generated document IDs validate their emitted prefix and distinguish identities [0.15ms]
+(pass) buffer and saved revisions reject invalid sequence value %s [0.12ms]
+(pass) buffer and saved revisions reject invalid sequence value %s [0.03ms]
+(pass) document errors omit undefined optional properties and reject invented success states [0.39ms]
+(pass) snapshot paths reject relative identity Main.java [0.06ms]
+(pass) snapshot paths reject relative identity ../Main.java [0.02ms]
+(pass) snapshot paths reject relative identity  [0.02ms]
+(pass) snapshot paths preserve platform absolute identity /team/Main.java [0.05ms]
+(pass) snapshot paths preserve platform absolute identity C:\team\Main.java [0.01ms]
+(pass) snapshot paths preserve platform absolute identity C:/team/Main.java [0.01ms]
+(pass) snapshot paths preserve platform absolute identity \\host\team\Main.java [0.01ms]
+(pass) edit/save contracts share complete document revisions and preserve proposal/result JSON [1.77ms]
+(pass) proposal and save validation reject empty edits and incomplete or negative revision pairs [1.94ms]
+
+test/contract-hygiene.test.ts:
+(pass) contract hygiene > optional properties preserve transformations and omit undefined while encoding [0.24ms]
+(pass) contract hygiene > todo status and priority preserve arbitrary strings [0.03ms]
+(pass) contract hygiene > current ID constructors expose create [0.09ms]
+(pass) contract hygiene > reusable public identifiers are stable and unique [0.05ms]
+(pass) contract hygiene > current source avoids Any and mutable contract wrappers [1.82ms]
+
+ 34 pass
+ 0 fail
+ 85 expect() calls
+Ran 34 tests across 3 files. [148.00ms]

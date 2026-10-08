@@ -1,0 +1,51 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-05.test.ts:
+594 |   yield* Deferred.await(f.acquired)
+595 |   f.state.start = Effect.sync(() => acquiring.interruptUnsafe())
+596 |   yield* open(held)
+597 |   const exit = yield* Fiber.await(acquiring)
+598 |   expect(Exit.isFailure(exit) && Cause.hasInterrupts(exit.cause)).toBe(true)
+599 |   expect(f.state.processesClosed).toBe(1)
+                                        ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:599:35)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) interruption at admission handoff cancels the undelivered run and joins its resources [13.34ms]
+180 |                 yield* lease.revalidate().pipe(Effect.flatMap(validate))
+181 |                 const process = yield* ports.process.start({ lease, toolchain: request.toolchain }).pipe(Scope.provide(resourceScope))
+182 |                 observed.process = process
+183 |                 yield* Effect.all([
+184 |                   process.output.pipe(Stream.runForEach((value) => copy(FtcJava.BuildLog, value, "output_failed").pipe(Effect.flatMap((log) => Effect.sync(() => {
+185 |                     if (logs.length && log.sequence <= logs[logs.length - 1].sequence) throw new Error("unordered build output")
+                                                                                                       ^
+error: unordered build output
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/java/build.ts:185:98)
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:625:24)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2079:11)
+      at go (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1926:25)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1914:28)
+      at ~effect/Effect/evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:719:22)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) unordered process output is a typed output failure, retaining only ordered observations [2.51ms]
+
+ 0 pass
+ 53 filtered out
+ 2 fail
+ 6 expect() calls
+Ran 2 tests across 1 file. [78.00ms]

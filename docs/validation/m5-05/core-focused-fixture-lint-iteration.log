@@ -1,0 +1,107 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-05.test.ts:
+(pass) source change during build makes evidence outdated [37.59ms]
+(pass) stable saved execution retains actual ordered output, exit and one immutable owner record [20.63ms]
+(pass) complete fixture input change invalidates saved currency: Unopened.java [25.82ms]
+(pass) complete fixture input change invalidates saved currency: gradlew [18.20ms]
+(pass) complete fixture input change invalidates saved currency: build.gradle [5.75ms]
+(pass) complete fixture input change invalidates saved currency: settings.gradle [4.20ms]
+(pass) complete fixture input change invalidates saved currency: resource.xml [6.64ms]
+(pass) complete fixture input change invalidates saved currency: configuration.json [5.01ms]
+(pass) complete fixture input change invalidates saved currency: Added.java [7.32ms]
+(pass) complete fixture delete changes invalidate the input inventory [8.63ms]
+(pass) complete fixture rename changes invalidate the input inventory [4.89ms]
+(pass) output/cache writes alone do not invalidate the fixture's complete consumed input scope [41.15ms]
+(pass) configuration-only and A-B-A interval changes outrank a nonzero observed exit [11.19ms]
+(pass) actual non-success termination is retained without invented exits: {"exitCode":9} [13.60ms]
+(pass) actual non-success termination is retained without invented exits: {"signal":"SIGTERM"} [5.87ms]
+(pass) actual non-success termination is retained without invented exits: {} [11.07ms]
+(pass) stale configuration and incomplete leases are rejected before process launch [5.11ms]
+(pass) lease identity mismatch is rejected before process launch: project [4.60ms]
+(pass) lease identity mismatch is rejected before process launch: location [6.90ms]
+1064 | /** @internal */
+1065 | export const exitMapError = /*#__PURE__*/dual(2, (self, f) => {
+1066 |   if (self._tag === "Success") return self;
+1067 |   const error = findError(self.cause);
+1068 |   if (Result.isFailure(error)) return self;
+1069 |   return exitFail(f(error.success));
+                         ^
+error: Expected a string starting with "wrk", got "foreign"
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:1069:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/SchemaParser.js:116:34)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:458:44)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:148:17)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) lease identity mismatch is rejected before process launch: workspace [4.52ms]
+(pass) lease identity mismatch is rejected before process launch: host [5.12ms]
+(pass) lease identity mismatch is rejected before process launch: wrapper [4.95ms]
+(pass) lease identity mismatch is rejected before process launch: buildJdk [2.34ms]
+(pass) lease identity mismatch is rejected before process launch: sdk [4.57ms]
+(pass) lease identity mismatch is rejected before process launch: descriptor [14.29ms]
+504 |             workspaceID: f.project.location.workspaceID,
+505 |             project: { id: Project.ID.make("foreign"), directory: AbsolutePath.make("/foreign") },
+506 |           }),
+507 |         },
+508 |       ])
+509 |         expect((yield* owner.startBuild({ ...f.request, project }).pipe(Effect.flip)).code).toBe("project_unauthorized")
+                                                                                                  ^
+error: expect(received).toBe(expected)
+
+Expected: "project_unauthorized"
+Received: "invalid_build_input"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:509:93)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at isolated (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:252:16)
+(fail) caller project/Location spoofing never acquires saved inputs [2.68ms]
+(pass) strict model-facing request rejects command, capability, output selectors and malformed fields [3.05ms]
+(pass) authority revoked during acquisition prevents execution and releases its lease [3.92ms]
+(pass) execution and query boundaries refresh full project authority [10.53ms]
+(pass) typed acquisition failure never produces successful evidence [4.43ms]
+(pass) typed start failure never produces successful evidence [4.80ms]
+(pass) typed revalidation failure never produces successful evidence [40.52ms]
+(pass) typed exitFailure failure never produces successful evidence [6.52ms]
+(pass) typed processRelease failure never produces successful evidence [7.68ms]
+(pass) typed leaseRelease failure never produces successful evidence [4.19ms]
+(pass) output failure preserves partial actual text and joins the owned process [11.18ms]
+(pass) revalidation inability does not invent inputChanged or authorize unchanged success [4.30ms]
+(pass) mutating caller/lease/output records cannot rewrite the admitted execution or returned history [4.21ms]
+(pass) dirty real document before execution remains untouched and excluded [16.59ms]
+(pass) dirty real document during execution remains untouched and excluded [21.82ms]
+(pass) explicit cancellation retains observed output, waits for async cleanup, and wins publication races [9.40ms]
+(pass) interrupting a result waiter preserves interruption and public cancellation settles queryable evidence [4.46ms]
+(pass) convenience build interruption joins cleanup and preserves caller interruption [19.07ms]
+(pass) caller interruption during long acquisition releases provisional lease without launching [6.41ms]
+(pass) unknown, foreign and fresh-owner queries cannot adopt supplied successful evidence [4.94ms]
+(pass) same-root alias admissions reject busy while different roots run independently [18.61ms]
+(pass) public owner disposal and repeated cancellation join held async cleanup without losing observers [6.01ms]
+(pass) owner close interrupts pending acquisition, releases resources and prevents late admission [9.70ms]
+(pass) document-only facade stays usable and build-enabled construction launches no work [9.08ms]
+(pass) interruption at admission handoff cancels the undelivered run and joins its resources [11.35ms]
+(pass) unordered process output is a typed output failure, retaining only ordered observations [5.54ms]
+(pass) settlement observes saved and dirty changes during held lease cleanup [9.51ms]
+(pass) a malformed revalidation identity cannot prove saved-input currency [6.01ms]
+(pass) a port defect stays a defect for the caller while the owner settles honest failed evidence [4.56ms]
+(pass) cancelling a harmless test-owned child joins its actual exit and stdout reader [35.49ms]
+(pass) raw lease and process-handle mutation cannot replace retained execution/cleanup fields [4.57ms]
+(pass) retained typed failures are immutable and unavailable settlement exclusions remain absent [4.64ms]
+(pass) accepted cancellation during successful cleanup wins the final publication race [4.93ms]
+(pass) cancellation cleanup without a new exit cannot erase an already observed real exit [7.37ms]
+
+2 tests failed:
+(fail) lease identity mismatch is rejected before process launch: workspace [4.52ms]
+(fail) caller project/Location spoofing never acquires saved inputs [2.68ms]
+
+ 57 pass
+ 2 fail
+ 342 expect() calls
+Ran 59 tests across 1 file. [689.00ms]

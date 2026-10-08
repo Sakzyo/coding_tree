@@ -1,0 +1,6 @@
+{
+  "packages/core/src/ftc/java/documents.ts": true,
+  "packages/core/test/ftc/java-development/m5-01.test.ts": true,
+  "packages/core/test/ftc/java-development/m5-02.test.ts": true,
+  "packages/schema/test/ftc-java.test.ts": true
+}

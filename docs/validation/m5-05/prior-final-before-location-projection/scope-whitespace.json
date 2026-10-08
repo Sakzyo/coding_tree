@@ -1,0 +1,92 @@
+{
+  "cwd": "/Users/dylanxu/coding_tree",
+  "command": [
+    "git",
+    "diff",
+    "--check",
+    "--",
+    "packages/core/src/ftc/java/build.ts",
+    "packages/core/src/ftc/java.ts",
+    "packages/core/test/ftc/java-development/m5-05.test.ts",
+    "packages/schema/src/ftc-java.ts",
+    "packages/schema/test/ftc-java-build.test.ts"
+  ],
+  "exit": 0,
+  "checks": {
+    "packages/core/src/ftc/java/build.ts": {
+      "sha256": "a85de618956f5f2a710a064c11a73be189db34df863d998e91c3dc93cde5924e",
+      "lines": 534,
+      "finalNewline": true,
+      "trailingWhitespace": false
+    },
+    "packages/core/src/ftc/java.ts": {
+      "sha256": "44f7c5810f506a97fd213f96743d559d50bc7212c064d45cf097af2d9ef2f6b3",
+      "lines": 56,
+      "finalNewline": true,
+      "trailingWhitespace": false
+    },
+    "packages/core/test/ftc/java-development/m5-05.test.ts": {
+      "sha256": "1d60d057cefe71b2f3b5df3a4f4cf3e77e24ae238e6a16d1e2383e72fcec299f",
+      "lines": 1263,
+      "finalNewline": true,
+      "trailingWhitespace": false
+    },
+    "packages/schema/src/ftc-java.ts": {
+      "sha256": "85bebc90f9f1841e4974ce619f5d9099b0e63c343df6ed528b0ec86a1029101d",
+      "lines": 194,
+      "finalNewline": true,
+      "trailingWhitespace": false
+    },
+    "packages/schema/test/ftc-java-build.test.ts": {
+      "sha256": "063f914d0fdeda70b694982d8d1d5bbde8701656187a549e00c177c31caeec9b",
+      "lines": 152,
+      "finalNewline": true,
+      "trailingWhitespace": false
+    }
+  },
+  "imports": {
+    "packages/core/src/ftc/java/build.ts": [
+      "@opencode-ai/schema/ftc-java",
+      "@opencode-ai/schema/ftc-project",
+      "@opencode-ai/schema/ftc-environment",
+      "@opencode-ai/schema/project",
+      "effect"
+    ],
+    "packages/core/src/ftc/java.ts": [
+      "effect",
+      "./java/documents",
+      "./java/build"
+    ],
+    "packages/core/test/ftc/java-development/m5-05.test.ts": [
+      "bun:test",
+      "node:fs/promises",
+      "node:path",
+      "node:crypto",
+      "@opencode-ai/schema/ftc-java",
+      "@opencode-ai/schema/ftc-project",
+      "@opencode-ai/schema/ftc-environment",
+      "@opencode-ai/schema/location",
+      "@opencode-ai/schema/project",
+      "@opencode-ai/schema/workspace-id",
+      "@opencode-ai/schema/schema",
+      "effect",
+      "../../../src/ftc/java/build",
+      "../../../src/ftc/java/documents",
+      "../../../src/ftc/java",
+      "../../fixture/tmpdir"
+    ],
+    "packages/schema/src/ftc-java.ts": [
+      "effect",
+      "./project",
+      "./ftc-project",
+      "./ftc-environment",
+      "./schema",
+      "./identifier"
+    ],
+    "packages/schema/test/ftc-java-build.test.ts": [
+      "bun:test",
+      "effect",
+      "../src/ftc-java"
+    ]
+  }
+}

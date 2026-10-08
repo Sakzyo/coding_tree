@@ -1,0 +1,1265 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-05.test.ts:
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-gZlDYd/Main.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-gZlDYd/Main.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) source change during build makes evidence outdated [22.10ms]
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-QA7Tib/Main.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-QA7Tib/Main.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) stable saved execution retains actual ordered output, exit and one immutable owner record [7.34ms]
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-4wThK2/gradlew'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-4wThK2/gradlew",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) complete fixture input change invalidates saved currency: Unopened.java [5.17ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-4wThK2/gradlew'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-4wThK2/gradlew",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+(fail) complete fixture input change invalidates saved currency: gradlew [5000.00ms]
+  ^ this test timed out after 5000ms.
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-NCWaB1/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-NCWaB1/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) complete fixture input change invalidates saved currency: build.gradle [3.31ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-NCWaB1/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-NCWaB1/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at /Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126
+      at /Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:67:35
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-Jsh9It/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-Jsh9It/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) complete fixture input change invalidates saved currency: settings.gradle [3.41ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-Jsh9It/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-Jsh9It/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-yLFNa2/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-yLFNa2/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) complete fixture input change invalidates saved currency: resource.xml [0.78ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-yLFNa2/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-yLFNa2/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-JlkR9m/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-JlkR9m/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) complete fixture input change invalidates saved currency: configuration.json [0.78ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-JlkR9m/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-JlkR9m/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-XZkASN/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-XZkASN/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) complete fixture input change invalidates saved currency: Added.java [0.91ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-XZkASN/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-XZkASN/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-JZw0gT/configuration.json'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-JZw0gT/configuration.json",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) complete fixture delete changes invalidate the input inventory [1.02ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-JZw0gT/configuration.json'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-JZw0gT/configuration.json",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-sdvm0M/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-sdvm0M/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) complete fixture rename changes invalidate the input inventory [0.77ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-sdvm0M/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-sdvm0M/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-1BPFrp/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-1BPFrp/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) output/cache writes alone do not invalidate the fixture's complete consumed input scope [0.91ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-1BPFrp/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-1BPFrp/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-NxRj2W/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-NxRj2W/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) configuration-only and A-B-A interval changes outrank a nonzero observed exit [1.04ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-NxRj2W/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-NxRj2W/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-ceDorf/gradlew'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-ceDorf/gradlew",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) actual non-success termination is retained without invented exits: {"exitCode":9} [0.98ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-ceDorf/gradlew'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-ceDorf/gradlew",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-LrwT1p/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-LrwT1p/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) actual non-success termination is retained without invented exits: {"signal":"SIGTERM"} [0.73ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-LrwT1p/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-LrwT1p/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-TTG2OQ/gradlew'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-TTG2OQ/gradlew",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) actual non-success termination is retained without invented exits: {} [0.83ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-TTG2OQ/gradlew'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-TTG2OQ/gradlew",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-ZfjVBg/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-ZfjVBg/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) stale configuration and incomplete leases are rejected before process launch [0.92ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-ZfjVBg/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-ZfjVBg/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-ZlHV3f/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-ZlHV3f/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) lease identity mismatch is rejected before process launch: project [0.89ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-ZlHV3f/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-ZlHV3f/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-BpcAQx/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-BpcAQx/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) lease identity mismatch is rejected before process launch: location [0.81ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-BpcAQx/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-BpcAQx/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-kMaCTd/gradlew'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-kMaCTd/gradlew",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) lease identity mismatch is rejected before process launch: workspace [0.78ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-kMaCTd/gradlew'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-kMaCTd/gradlew",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-oSg7cK/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-oSg7cK/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) lease identity mismatch is rejected before process launch: host [0.67ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-oSg7cK/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-oSg7cK/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-vmpZR2/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-vmpZR2/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) lease identity mismatch is rejected before process launch: wrapper [0.69ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-vmpZR2/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-vmpZR2/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-0UGnFK/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-0UGnFK/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) lease identity mismatch is rejected before process launch: buildJdk [1.53ms]
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-AvSVEP/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-AvSVEP/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) lease identity mismatch is rejected before process launch: sdk [0.70ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-AvSVEP/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-AvSVEP/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-PwlPP8/gradlew'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-PwlPP8/gradlew",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) lease identity mismatch is rejected before process launch: descriptor [0.78ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-PwlPP8/gradlew'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-PwlPP8/gradlew",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+(pass) caller project/Location spoofing never acquires saved inputs [0.95ms]
+(pass) strict model-facing request rejects command, capability, output selectors and malformed fields [1.19ms]
+(fail) authority revoked during acquisition prevents execution and releases its lease [5000.00ms]
+  ^ this test timed out after 5000ms.
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-3brerd/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-3brerd/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) execution and query boundaries refresh full project authority [2.62ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-3brerd/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-3brerd/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-V91My6/gradlew'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-V91My6/gradlew",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) typed acquisition failure never produces successful evidence [0.92ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-V91My6/gradlew'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-V91My6/gradlew",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-JwURmz/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-JwURmz/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) typed start failure never produces successful evidence [0.73ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-JwURmz/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-JwURmz/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-iRxfBo/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-iRxfBo/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) typed revalidation failure never produces successful evidence [0.82ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-iRxfBo/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-iRxfBo/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-Qzwqte/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-Qzwqte/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) typed exitFailure failure never produces successful evidence [0.76ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-Qzwqte/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-Qzwqte/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-FZ9QXB/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-FZ9QXB/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) typed processRelease failure never produces successful evidence [0.79ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-FZ9QXB/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-FZ9QXB/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-q60zES/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-q60zES/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) typed leaseRelease failure never produces successful evidence [0.73ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-q60zES/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-q60zES/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-RDWJob/gradlew'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-RDWJob/gradlew",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) output failure preserves partial actual text and joins the owned process [1.00ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-RDWJob/gradlew'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-RDWJob/gradlew",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-R1DqYF/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-R1DqYF/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) revalidation inability does not invent inputChanged or authorize unchanged success [0.75ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-R1DqYF/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-R1DqYF/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+(fail) mutating caller/lease/output records cannot rewrite the admitted execution or returned history [5000.00ms]
+  ^ this test timed out after 5000ms.
+(pass) dirty real document before execution remains untouched and excluded [9.36ms]
+(pass) dirty real document during execution remains untouched and excluded [2.98ms]
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-rrWQbw/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-rrWQbw/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) explicit cancellation retains observed output, waits for async cleanup, and wins publication races [1.10ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-rrWQbw/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-rrWQbw/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-HiVr28/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-HiVr28/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) interrupting a result waiter preserves interruption and public cancellation settles queryable evidence [0.90ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-HiVr28/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-HiVr28/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+(fail) convenience build interruption joins cleanup and preserves caller interruption [5000.00ms]
+  ^ this test timed out after 5000ms.
+(fail) caller interruption during long acquisition releases provisional lease without launching [5000.00ms]
+  ^ this test timed out after 5000ms.
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-IhRiWP/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-IhRiWP/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+(fail) unknown, foreign and fresh-owner queries cannot adopt supplied successful evidence [2.45ms]
+
+# Unhandled error between tests
+-------------------------------
+59 |     log: { sequence: 0, stream: "stdout" as const, text: "actual stdout\n" },
+60 |     output: undefined as Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError> | undefined,
+61 |     seen: [] as { lease: JavaBuild.SavedInputLease; toolchain: FtcEnvironment.ToolchainDescriptor }[],
+62 |   }
+63 |   const snapshot = () => Effect.promise(async () => {
+64 |     const entries = await Promise.all([...inventory].sort().map(async (name) => [name, await Bun.file(path.join(root, name)).text()] as const))
+                                                                                                                                  ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-IhRiWP/Unopened.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-IhRiWP/Unopened.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:126)
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-05.test.ts:64:35)
+-------------------------------
+
+(pass) same-root alias admissions reject busy while different roots run independently [5.15ms]
+(fail) public owner disposal and repeated cancellation join held async cleanup without losing observers [2000.00ms]
+  ^ this test timed out after 2000ms.
+(fail) owner close interrupts pending acquisition, releases resources and prevents late admission [2000.00ms]
+  ^ this test timed out after 2000ms.
+(pass) document-only facade stays usable and build-enabled construction launches no work [5.26ms]
+
+ 6 pass
+ 43 fail
+ 33 errors
+ 143 expect() calls
+Ran 49 tests across 1 file. [29.18s]
