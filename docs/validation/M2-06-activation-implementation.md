@@ -82,7 +82,7 @@ All commands use pinned Bun 1.3.14. [commands.jsonl](m2-06-activation/commands.j
 | Package / check | Result | Evidence |
 | --- | --- | --- |
 | OpenCode Runner, legacy BackgroundJob, LegacyActivity, FTC HTTP, prompt, compaction, processor-effect, TaskTool | 206 pass, 2 existing projector-disabled skips, 0 fail, 716 assertions | `regression-opencode-final.log` |
-| Core M2 integration, project/chat suites, BackgroundJob, FTC boundaries | 100 pass, 0 fail, 802 assertions | `regression-core-final.log` |
+| Core M2 integration, project/chat suites, BackgroundJob | 100 pass, 0 fail, 802 assertions | `regression-core-final.log` |
 | Server actual standalone/embedded FTC host | 1 pass, 0 fail, 16 assertions | `regression-server-final.log` |
 | SDK generated Client through embedded FTC host | 1 pass, 0 fail, 3 assertions | `regression-sdk-final.log` |
 | HTTP handler scalar capture follow-up | 3 pass, 0 fail, 32 assertions | `host-routing-freeze.log` |
@@ -134,3 +134,7 @@ The broad OpenCode rerun includes the previously added final HTTP scalar-capture
 The unchanged benchmark scripts were rerun after the regression commands finished. Ten alternating samples after two warmups remain preserved in `fix1-performance.log` and `fix1-performance-owned.log`. Per 1000 actual cycles including scope closure, median unowned Runner/BackgroundJob times are 9.253/25.139 ms; real-owned times are 15.090/33.594 ms. The repaired Runner adds an inner work fiber and resource scope to guarantee termination ordering. This costs approximately 5.837 microseconds per Runner cycle when comparing real-owned to unowned on this candidate; the previous pre-repair owned median was 11.781 ms per 1000 cycles. BackgroundJob source is unchanged, and its differing samples illustrate why these short local observations are not a production speedup/regression budget. All earlier baseline and candidate samples remain intact. Filesystem/SQLite/provider/platform/robot costs remain outside this microbenchmark.
 
 The final 22 source/test hashes are refreshed in both `fix1-source-sha256.txt` and `final-source-sha256.txt`; manifest SHA256 is `441315593885af3a340d081de4b0d4cdd0a1be49a5f988cc7e49030e14978b70`. Product source is frozen for root's independent re-review. No Git/index/commit/ledger action was performed by this worker. Review acceptance, commit and progress reconciliation remain root-owned; all previously stated Windows, packaging, production, external-process and M9/physical limits remain open and unchanged.
+
+## Coordinator evidence clarification — 2026-10-08
+
+The Core 100-test command also listed the proposed `./test/ftc-boundaries.test.ts`, which does not exist at this checkpoint. Bun ignored that unmatched selection while running seven actual files. The 100 passing tests/802 assertions are valid evidence for the actual M2 integration, isolated project/chat and BackgroundJob files; **no dedicated FTC boundary test execution is claimed**. Domain/import/state ownership was examined in the independent source reviews. This clarification changes no product/test source, test count or frozen hash.

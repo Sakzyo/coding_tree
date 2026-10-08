@@ -3,7 +3,7 @@
 Date: 2026-10-08
 Planning baseline: `d7aca195c`
 
-**Implementation progress: 0 / 12 modules complete; 25 / 94 tasks complete.**
+**Implementation progress: 0 / 12 modules complete; 26 / 94 tasks complete.**
 
 These checkboxes track future development, not completion of this planning document. The existing OpenCode foundation is reused, but its presence does not prove that the FTC tasks are done. Both inputs describe unimplemented or unevaluated product work, so every implementation box starts unchecked.
 
@@ -12,7 +12,7 @@ These checkboxes track future development, not completion of this planning docum
 ## Module checklist
 
 - [ ] **M1 — [Desktop workspace](desktop-workspace.md)** — 0 / 14 tasks.
-- [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 5 / 6 tasks.
+- [ ] **M2 — [Projects and chats](projects-and-chats.md)** — 6 / 6 tasks.
 - [ ] **M3 — [Agent and context](agent-and-context.md)** — 4 / 7 tasks.
 - [ ] **M4 — [Environment and compatibility](environment-and-compatibility.md)** — 5 / 7 tasks.
 - [ ] **M5 — [Java development](java-development.md)** — 2 / 8 tasks.
@@ -675,3 +675,31 @@ User requested continuation from the last endpoint. Reconciled clean `ftc-worksp
 
 - M2-06 routing audit confirms legacy prompt/loop/shell/command and direct compaction reread caller envelopes after an async guard. Writer adds captured entry routing and exact association commit identity, with a suspended-lock mutation regression; no payload/workflow redesign is assigned.
 - Ruling: M2-06 live registry generations use one narrow lazy lifetime gate because Effect memo-map removes the last-borrower cache entry before resource finalizers settle — immediate rebind would otherwise create a new owner while old claims still drain — incorrect lifetime/cancellation ordering could deadlock host reopening or permit overlap, so actual last-close/reopen and waiting-cancellation races must pass. Pure test factories stay independent; no generic Effect/memo-map patch, broad runtime replacement or import-time service construction is allowed.
+
+## Requested stopping boundary — 2026-10-08
+
+User requested: “Finish the most recent task then update progress.md and finish this session.” The active most-recent product task is **M2-06 activation-fence I2**, owner `/root/m2_06_activation`. Finish only that task's required available verification, independent review and repairs, then reconcile this ledger and stop. Do not dispatch M9-01, M12-03, M3-05, Windows, packaging or other implementation. Completed preflights remain proposals, not implementation or acceptance. Current verified counts **25/94 tasks, 0/12 modules**; M3-04 is complete, M2-06 remains in progress/unchecked until evidence and review pass. Preserve source/evidence/caches and all existing external gates.
+
+- M2-06 activation candidate is frozen: 22 source/test paths match the final SHA256 manifest. OpenCode **206 pass / 716 assertions**, 2 existing projector-disabled skips; Core **100/802**; Server **1/16**; SDK **1/3**, plus final captured-handler **3/32** and actual AppLayer generation checks. Core/OpenCode/Server/SDK types and scoped formatting pass. Root frozen-baseline lint comparison confirms **31 inherited warnings, 0 new diagnostics, 0 errors**, after restoring one unrelated pre-existing import. Task remains unchecked until independent review; stop boundary stays in force.
+
+- M2-06 activation candidate committed `4a8005983`; 22 frozen source/test hashes match. Fresh `/root/m2_activation_review` receives exact brief/report, all 22 source hunks from `5b8618d0f`, and the eight-category acceptance map. Status **IN_REVIEW**, task remains unchecked, counts **25/94, 0/12**. No new implementation/preflight is dispatched after the user's stopping instruction.
+
+- M2-06 independent reviewer reproduced an Important owner-shutdown gap in real Runner: SessionRunState-style LIFO owner teardown can close the accepted shell claim scope before runner.cancel reaches the actual gated shell cleanup (`heldDuringShellCleanup: 0`, disposal still pending). Ordinary prompt caller ownership may mask that route but does not satisfy the generic/SessionRunState shutdown contract. Await complete task review, then return findings to original writer for focused RED/GREEN and scoped re-review. Counts remain **25/94, 0/12**; stopping boundary includes required task repair, no next implementation.
+
+- M2-06 activation review: specification **Issues found**, quality **Needs fixes**. Important R1 owner-scope shell teardown goes to original `/root/m2_06_activation` for fix round **1/5**, base `4a8005983`, with exact delayed-finalizer RED/GREEN, caller-cancellation preservation, refreshed covering suites/hash evidence and scoped re-review. Task remains unchecked. [Review](../validation/M2-06-activation-review.md).
+- M2-06 Minor (deferred): scoped lint output contains **31 inherited warnings**, exactly matching baseline; no unrelated lint cleanup is authorized.
+- M2-06 Minor (evidence note): initial 206-test run precedes last scalar-handler capture; subsequent host/type/generation runs cover that edit, and the report distinguishes them. A fresh covering suite after the Runner repair will supersede the earlier combined-source snapshot; this note is not a claimed final full-suite run.
+
+- M2-06 activation fix round **1/5** complete: R1 **ADDRESSED**, **0 open** Critical/Important findings, `4a8005983` → `02d355917`; independent scoped re-review quality **Approved**. The new five lifetime regressions include exact shell owner disposal, parallel normal-run disposal, normal run/shell child-resource-release order and caller cancellation. Genuine RED expected held 1 but observed 0; final repaired suite **211 pass / 738 assertions**, 2 existing projector-disabled skips. M2 composed **13/75**, actual AppLayer lifecycle and OpenCode types/scoped checks pass. [Scoped re-review](../validation/M2-06-activation-fix1-review.md).
+- M2-06 **DONE**: prior API/concurrency candidate and lost-wake repair retain reviewed evidence; current activation fence closes its remaining I2 software requirement. Root confirms the Core run coordinator is unchanged from reviewed `c5d2f03e9`, all 22 final source hashes match, public Protocol/HttpApi payloads are unchanged, and original plus scoped independent reviews leave no task-specific software gap. Checked M2-06 and exactly five substeps; M2 **6/6**. Counts **26/94 tasks, 0/12 modules**. M2's production/first-release/platform gate remains open; task completion is not AC-03 or release acceptance.
+- Earlier Minor evidence note is superseded by the fresh **211-test** run on the repaired source, including final scalar-handler capture. The **31 inherited lint warnings** remain deferred and intentionally unmodified; final lint has zero errors and no introduced diagnostics.
+
+## Final user-requested stopping checkpoint — 2026-10-08
+
+Finished the active M2-06 activation-fence task and its independent repair/re-review, then stopped as requested. Branch `ftc-workspace`; final product commit `02d355917`. This continuation completed **M3-04** and **M2-06**, raising the authoritative checklist total from **24/94** to **26/94**, with **0/12 modules** complete. No M9-01, M12-03, M3-05, Windows, packaging or other implementation was dispatched after the stopping instruction.
+
+- Final relevant evidence: M3 context **15 focused / 85 affected** passing tests; M2 activation/legacy **211 pass / 738 assertions** with **2 existing skips**, retained unchanged Core **100/802**, Server **1/16**, SDK **1/3**, repaired composed **13/75**, actual AppLayer shutdown/reopen checks, package types, formatting, source/document whitespace and frozen source manifests. The proposed dedicated FTC boundary test is absent; the Core command ignored that unmatched selector and passed seven actual files. Import/domain boundaries are independently source-reviewed, not claimed as a nonexistent test run. Tests use owned temporary databases/files/controlled ports and harmless subprocess/loopback fixtures. They do not establish provider/robot/Windows/release acceptance.
+- M2 uses one current-process authority covering canonical-root association commit, foreground/queued/detached/background/promoted work and exact asynchronous cleanup; new owner generations wait for the prior generation. FTC provider/tool/robot execution remains disabled pending M9-07/08. External processes/escaped OS descendants, Windows, packaged host/release and real production performance are not proved by this task.
+- **M6-03 remains BLOCKED/unchecked** for its unimplemented Windows native counterpart and packaging/release gates. Earlier M5-03/M8-04/M9-07, local-model/OS-credential/physical/content/translation/first-release gates remain open. M3-06 must bind trusted sanitization, authorized document selection and simultaneous Session-specific sources; source context tests grant no filesystem or action authority.
+- On a later explicit continuation, prepared **M9-01** or **M12-03** can begin from their exact briefs after current source reconciliation. **M3-05** needs owner-defined M5 build/artifact, M6 proposal/mapping and M9 operation contracts first. These preflights/briefs are saved proposals, not checked implementation tasks.
+- All implementation/review workers are finished; no user's app/server was restarted, user database migrated, real provider/robot operated, remote branch pushed, PR merged or release published. Preserve task-owned logs, failed probes, frozen hashes, ignored native artifacts and temporary reproduction caches. No new implementation begins without explicit continuation. Final coordinator documentation/evidence commit follows this checkpoint.

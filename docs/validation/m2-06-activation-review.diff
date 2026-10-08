@@ -1,0 +1,3499 @@
+# M2-06 I2 source review package
+
+Base: 5b8618d0f
+Head: 4a8005983782eac8220dc7243167356f79636626
+
+
+4a8005983 fix(ftc): fence activation through settled legacy work
+2872784e1 docs(ftc): track activation races and tool contract blockers
+4122d5d54 docs(ftc): record reviewed context task and next activation work
+
+ packages/core/src/background-job.ts                | 103 ++++++---
+ packages/core/src/ftc/composition.ts               |  11 +-
+ packages/core/src/ftc/projects/adapters.ts         |  29 ++-
+ packages/core/test/background-job.test.ts          | 170 ++++++++++++++-
+ packages/core/test/ftc-integration/m2-06.test.ts   |   6 +-
+ packages/opencode/src/effect/app-runtime.ts        |   2 +
+ packages/opencode/src/effect/runner.ts             |  43 +++-
+ .../routes/instance/httpapi/handlers/session.ts    |  67 +++---
+ .../src/server/routes/instance/httpapi/server.ts   |  15 +-
+ packages/opencode/src/session/compaction.ts        |  32 ++-
+ packages/opencode/src/session/legacy-activity.ts   | 196 +++++++++++++++++
+ packages/opencode/src/session/processor.ts         |  22 +-
+ packages/opencode/src/session/prompt.ts            | 123 ++++++-----
+ packages/opencode/src/session/run-state.ts         |  22 +-
+ packages/opencode/src/tool/registry.ts             |   2 +
+ packages/opencode/src/tool/task.ts                 |  89 +++++---
+ packages/opencode/test/effect/runner.test.ts       |  86 ++++++++
+ .../test/server/httpapi-ftc-project.test.ts        | 137 ++++++++++--
+ .../opencode/test/session/legacy-activity.test.ts  | 214 +++++++++++++++++++
+ packages/opencode/test/session/prompt.test.ts      | 231 ++++++++++++++++++++-
+ packages/opencode/test/tool/task.test.ts           |  99 +++++++++
+ packages/server/src/routes.ts                      |   6 +-
+ 22 files changed, 1484 insertions(+), 221 deletions(-)
+
+diff --git a/packages/core/src/background-job.ts b/packages/core/src/background-job.ts
+index cdffd212b..53323df1d 100644
+--- a/packages/core/src/background-job.ts
++++ b/packages/core/src/background-job.ts
+@@ -11,24 +11,31 @@ export type Info = {
+   type: string
+   title?: string
+   status: Status
+   started_at: number
+   completed_at?: number
+   output?: string
+   error?: string
+   metadata?: Record<string, unknown>
+ }
+ 
++export interface Ownership {
++  readonly release: Effect.Effect<void>
++  readonly retain: Effect.Effect<Ownership>
++}
++
+ type Active = {
+   info: Info
+   done: Deferred.Deferred<Info>
+   scope: Scope.Closeable
++  lifetime: Scope.Closeable
++  ownership: Ownership[]
+   token: object
+   pending: number
+   next: number
+   output?: { sequence: number; text: string }
+   tail: Deferred.Deferred<void>
+   promoted: Deferred.Deferred<Info>
+   onPromote?: Effect.Effect<void>
+ }
+ 
+ type State = {
+@@ -36,20 +43,21 @@ type State = {
+   scope: Scope.Scope
+ }
+ 
+ type FinishResult = {
+   info?: Info
+   done?: Deferred.Deferred<Info>
+   scope?: Scope.Closeable
+ }
+ 
+ type PromoteResult = {
++  release?: Effect.Effect<void>
+   info?: Info
+   promoted?: Deferred.Deferred<Info>
+   onPromote?: Effect.Effect<void>
+ }
+ 
+ type StartResult = { info: Info } | { info: Info; scope: Scope.Closeable; token: object }
+ 
+ type ExtendResult =
+   | { extended: false }
+   | {
+@@ -60,26 +68,28 @@ type ExtendResult =
+       token: object
+       sequence: number
+     }
+ 
+ export type StartInput = {
+   id?: string
+   type: string
+   title?: string
+   metadata?: Record<string, unknown>
+   onPromote?: Effect.Effect<void>
+-  run: Effect.Effect<string, unknown>
++  ownership?: Effect.Effect<Ownership>
++  run: Effect.Effect<string, unknown, Scope.Scope>
+ }
+ 
+ export type ExtendInput = {
+   id: string
+-  run: Effect.Effect<string, unknown>
++  ownership?: Effect.Effect<Ownership>
++  run: Effect.Effect<string, unknown, Scope.Scope>
+ }
+ 
+ export type WaitInput = {
+   id: string
+   timeout?: number
+ }
+ 
+ export type WaitResult = {
+   info?: Info
+   timedOut: boolean
+@@ -154,37 +164,38 @@ export const make = Effect.gen(function* () {
+         pending: 0,
+         output,
+         info: {
+           ...job.info,
+           status,
+           completed_at,
+           ...(output ? { output: output.text } : {}),
+           ...(Exit.isFailure(exit) ? { error: errorText(Cause.squash(exit.cause)) } : {}),
+         },
+       }
+-      return [{ info: snapshot(next), done: job.done, scope: job.scope }, new Map(jobs).set(id, next)]
++      return [{ info: snapshot(next), done: job.done, scope: job.lifetime }, new Map(jobs).set(id, next)]
+     })
+     if (result.info && result.done) yield* Deferred.succeed(result.done, result.info).pipe(Effect.ignore)
+     if (result.scope) {
+       yield* Scope.close(result.scope, Exit.void).pipe(Effect.forkIn(state.scope, { startImmediately: true }))
+     }
+     return result.info
+   })
+ 
+   const fork = Effect.fn("BackgroundJob.fork")(function* (
+     scope: Scope.Scope,
+     id: string,
+     token: object,
+     sequence: number,
+-    run: Effect.Effect<string, unknown>,
++    run: Effect.Effect<string, unknown, Scope.Scope>,
+   ) {
+     return yield* run.pipe(
++      Scope.provide(scope),
+       Effect.matchCauseEffect({
+         onSuccess: (output) => settle(id, token, sequence, Exit.succeed(output)),
+         onFailure: (cause) => settle(id, token, sequence, Exit.failCause(cause)),
+       }),
+       Effect.asVoid,
+       Effect.forkIn(scope, { startImmediately: true }),
+     )
+   })
+ 
+   const list: Interface["list"] = Effect.fn("BackgroundJob.list")(function* () {
+@@ -207,33 +218,42 @@ export const make = Effect.gen(function* () {
+         const done = yield* Deferred.make<Info>()
+         const promoted = yield* Deferred.make<Info>()
+         const tail = yield* Deferred.make<void>()
+         const result = yield* SynchronizedRef.modifyEffect(
+           state.jobs,
+           Effect.fnUntraced(function* (jobs) {
+             const existing = jobs.get(id)
+             if (existing?.info.status === "running") {
+               return [{ info: snapshot(existing) }, jobs] as readonly [StartResult, Map<string, Active>]
+             }
+-            const scope = yield* Scope.fork(state.scope, "parallel")
++            const ownership: Ownership[] = input.ownership ? [yield* input.ownership] : []
++            const lifetime = yield* Scope.fork(state.scope, "sequential")
++            yield* Scope.addFinalizer(
++              lifetime,
++              Effect.suspend(() => Effect.forEach(ownership, (held) => held.release, { discard: true })),
++            )
++            // Child work and its parallel finalizers close before the outer ownership finalizer.
++            const scope = yield* Scope.fork(lifetime, "parallel")
+             const token = {}
+             const job = {
+               info: {
+                 id,
+                 type: input.type,
+                 title: input.title,
+                 status: "running" as const,
+                 started_at,
+                 metadata: input.metadata,
+               },
+               done,
+               scope,
++              lifetime,
++              ownership,
+               token,
+               pending: 1,
+               next: 1,
+               tail,
+               promoted,
+               onPromote: input.onPromote,
+             }
+             return [{ info: snapshot(job), scope, token }, new Map(jobs).set(id, job)] as readonly [
+               StartResult,
+               Map<string, Active>,
+@@ -250,35 +270,36 @@ export const make = Effect.gen(function* () {
+           )
+         return result.info
+       }),
+     )
+   })
+ 
+   const extend: Interface["extend"] = Effect.fn("BackgroundJob.extend")(function* (input) {
+     return yield* Effect.uninterruptibleMask((restore) =>
+       Effect.gen(function* () {
+         const tail = yield* Deferred.make<void>()
+-        const result = yield* SynchronizedRef.modify(
++        const result = yield* SynchronizedRef.modifyEffect(
+           state.jobs,
+-          (jobs): readonly [ExtendResult, Map<string, Active>] => {
++          Effect.fnUntraced(function* (jobs): Effect.fn.Return<readonly [ExtendResult, Map<string, Active>]> {
+             const job = jobs.get(input.id)
+             if (!job || job.info.status !== "running") return [{ extended: false }, jobs]
++            if (input.ownership) job.ownership.push(yield* input.ownership)
+             return [
+               { extended: true, previous: job.tail, scope: job.scope, tail, token: job.token, sequence: job.next },
+               new Map(jobs).set(input.id, {
+                 ...job,
+                 pending: job.pending + 1,
+                 next: job.next + 1,
+                 tail,
+               }),
+             ]
+-          },
++          }),
+         )
+         if (!result.extended) return false
+         yield* fork(
+           result.scope,
+           input.id,
+           result.token,
+           result.sequence,
+           Deferred.await(result.previous).pipe(
+             Effect.andThen(restore(input.run)),
+             Effect.ensuring(Deferred.succeed(result.tail, undefined)),
+@@ -300,64 +321,78 @@ export const make = Effect.gen(function* () {
+     return { info: snapshot(job), timedOut: true }
+   })
+ 
+   const waitForPromotion: Interface["waitForPromotion"] = Effect.fn("BackgroundJob.waitForPromotion")(function* (id) {
+     const job = (yield* SynchronizedRef.get(state.jobs)).get(id)
+     if (!job || job.info.status !== "running") return yield* Effect.never
+     if (job.info.metadata?.background === true) return snapshot(job)
+     return yield* Deferred.await(job.promoted)
+   })
+ 
+-  const promote: Interface["promote"] = Effect.fn("BackgroundJob.promote")(function* (id) {
+-    const result = yield* SynchronizedRef.modifyEffect(
+-      state.jobs,
+-      Effect.fnUntraced(function* (jobs) {
+-        const job = jobs.get(id)
+-        if (!job || job.info.status !== "running") return [{}, jobs] as readonly [PromoteResult, Map<string, Active>]
+-        if (job.info.metadata?.background === true)
+-          return [{ info: snapshot(job) }, jobs] as readonly [PromoteResult, Map<string, Active>]
+-        const next = {
+-          ...job,
+-          onPromote: undefined,
+-          info: {
+-            ...job.info,
+-            metadata: { ...job.info.metadata, background: true },
+-          },
+-        }
+-        return [
+-          { info: snapshot(next), onPromote: job.onPromote, promoted: job.promoted },
+-          new Map(jobs).set(id, next),
+-        ] as readonly [PromoteResult, Map<string, Active>]
++  const promote: Interface["promote"] = Effect.fn("BackgroundJob.promote")((id) =>
++    Effect.uninterruptibleMask((restore) =>
++      Effect.gen(function* () {
++        const result = yield* SynchronizedRef.modifyEffect(
++          state.jobs,
++          Effect.fnUntraced(function* (jobs) {
++            const job = jobs.get(id)
++            if (!job || job.info.status !== "running")
++              return [{}, jobs] as readonly [PromoteResult, Map<string, Active>]
++            if (job.info.metadata?.background === true)
++              return [{ info: snapshot(job) }, jobs] as readonly [PromoteResult, Map<string, Active>]
++            const retained = yield* Effect.forEach(job.ownership, (held) => held.retain)
++            const next = {
++              ...job,
++              onPromote: undefined,
++              info: {
++                ...job.info,
++                metadata: { ...job.info.metadata, background: true },
++              },
++            }
++            return [
++              {
++                info: snapshot(next),
++                onPromote: job.onPromote,
++                promoted: job.promoted,
++                release: Effect.forEach(retained, (held) => held.release, { discard: true }),
++              },
++              new Map(jobs).set(id, next),
++            ] as readonly [PromoteResult, Map<string, Active>]
++          }),
++        )
++        if (result.info && result.promoted) yield* Deferred.succeed(result.promoted, result.info).pipe(Effect.ignore)
++        yield* restore(result.onPromote ?? Effect.void).pipe(
++          Effect.ignore,
++          Effect.ensuring(result.release ?? Effect.void),
++        )
++        return result.info
+       }),
+-    )
+-    if (result.info && result.promoted) yield* Deferred.succeed(result.promoted, result.info).pipe(Effect.ignore)
+-    if (result.onPromote) yield* result.onPromote.pipe(Effect.ignore)
+-    return result.info
+-  })
++    ),
++  )
+ 
+   const cancel: Interface["cancel"] = Effect.fn("BackgroundJob.cancel")(function* (id) {
+     const completed_at = yield* Clock.currentTimeMillis
+     const result = yield* SynchronizedRef.modify(state.jobs, (jobs): readonly [FinishResult, Map<string, Active>] => {
+       const job = jobs.get(id)
+       if (!job) return [{}, jobs]
+       if (job.info.status !== "running") return [{ info: snapshot(job) }, jobs]
+       const next = {
+         ...job,
+         onPromote: undefined,
+         pending: 0,
+         info: {
+           ...job.info,
+           status: "cancelled" as const,
+           completed_at,
+         },
+       }
+-      return [{ info: snapshot(next), done: job.done, scope: job.scope }, new Map(jobs).set(id, next)]
++      return [{ info: snapshot(next), done: job.done, scope: job.lifetime }, new Map(jobs).set(id, next)]
+     })
+     if (result.info && result.done) yield* Deferred.succeed(result.done, result.info).pipe(Effect.ignore)
+     if (result.scope) yield* Scope.close(result.scope, Exit.void)
+     return result.info
+   })
+ 
+   return Service.of({ list, get, start, extend, wait, waitForPromotion, promote, cancel })
+ })
+ 
+ const layer = Layer.effect(Service, make)
+diff --git a/packages/core/src/ftc/composition.ts b/packages/core/src/ftc/composition.ts
+index 354f5be17..6d3f08039 100644
+--- a/packages/core/src/ftc/composition.ts
++++ b/packages/core/src/ftc/composition.ts
+@@ -10,21 +10,21 @@ import { ProjectGate } from "./projects/gate"
+ import { FtcProjectAdapters } from "./projects/adapters"
+ import { FtcProjectExecution } from "./projects/execution"
+ import type { ProjectAssociations } from "./projects/sql"
+ 
+ export interface Ports {
+   readonly repository: ProjectAssociations.Lookup
+   readonly folders: FtcProjects.FolderIdentity
+   readonly store: Parameters<typeof SessionExecutionLocal.make>[0]["store"]
+   readonly locations: Parameters<typeof SessionExecutionLocal.make>[0]["locations"]
+   readonly changed: (status: FtcProject.OwnerStatus) => Effect.Effect<void>
+-  readonly activate: (root: FtcProject.FolderRequest) => Effect.Effect<void, FtcProject.AssociationError>
++  readonly activate: FtcProjectAdapters.Association
+ }
+ 
+ export interface Interface {
+   readonly execution: SessionExecution.Interface & SessionExecution.TrackedInterface
+   readonly guard: SessionV2.AdmissionGuard
+   readonly bind: Effect.Success<ReturnType<typeof FtcProjectExecution.controlled>>["bind"]
+   readonly projects: (session: SessionV2.Interface) => FtcProjects.Interface
+   readonly legacy: (request: FtcProject.FolderRequest) => Effect.Effect<void, FtcProject.ExecutionUnavailable>
+ }
+ 
+@@ -59,18 +59,17 @@ const make = (
+         store: input.store,
+         locations: input.locations,
+         gate: runtime.gatePort,
+       },
+     )
+     return {
+       execution,
+       guard: runtime.guard,
+       bind: runtime.bind,
+       projects: (session) =>
+-        FtcProjects.make(
+-          FtcProjectAdapters.activation(input.folders, input.repository, input.activate),
+-          input.repository,
+-          { createSession: session.create, getSession: input.store.get },
+-        ),
++        FtcProjects.make(input.folders, FtcProjectAdapters.activation(input.repository, input.activate), {
++          createSession: session.create,
++          getSession: input.store.get,
++        }),
+       legacy: FtcProjectAdapters.guardLegacy(input.repository),
+     }
+   })
+diff --git a/packages/core/src/ftc/projects/adapters.ts b/packages/core/src/ftc/projects/adapters.ts
+index 59b8d4000..19fb54c9f 100644
+--- a/packages/core/src/ftc/projects/adapters.ts
++++ b/packages/core/src/ftc/projects/adapters.ts
+@@ -4,21 +4,21 @@ import fs from "node:fs/promises"
+ import { Effect } from "effect"
+ import { FtcProject } from "@opencode-ai/schema/ftc-project"
+ import { AbsolutePath } from "@opencode-ai/schema/schema"
+ import { Location } from "@opencode-ai/schema/location"
+ import type { ProjectV2 } from "../../project"
+ import type { FtcAgentGate } from "../agent/gate"
+ import { FtcProjects } from "../projects"
+ import { ProjectAssociations } from "./sql"
+ import type { EffectDrizzleSqlite } from "@opencode-ai/effect-drizzle-sqlite"
+ 
+-const canonical = (input: FtcProject.FolderRequest) =>
++export const canonical = (input: FtcProject.FolderRequest) =>
+   Effect.tryPromise({
+     try: async () => {
+       const root = await fs.realpath(input.root)
+       if (!(await fs.stat(root)).isDirectory()) throw new Error("not_a_directory")
+       await fs.access(root, fs.constants.R_OK)
+       return AbsolutePath.make(root)
+     },
+     catch: (): FtcProject.AssociationError => ({
+       code: "folder_unavailable",
+       root: input.root,
+@@ -63,35 +63,48 @@ export const membership = (input: {
+           code: "invalid_project",
+           projectID: project.projectID,
+           recovery: "reopen_project",
+         } satisfies FtcProject.GateError)
+       yield* read.lookup(project, request.sessionID)
+       return { kind: "managed", chat } as const
+     })
+   return { ...read, resolve }
+ }
+ 
++export type Association = (
++  folder: Effect.Success<ReturnType<FtcProjects.FolderIdentity["resolve"]>>,
++  commit: Effect.Effect<FtcProject.ProjectContext, FtcProject.AssociationError>,
++) => Effect.Effect<FtcProject.ProjectContext, FtcProject.AssociationError>
++
++/** Hold host exclusion around the actual repository commit, never a prior idle snapshot. */
+ export const activation = (
+-  identity: FtcProjects.FolderIdentity,
+   repository: ProjectAssociations.Lookup,
+-  activate: (request: FtcProject.FolderRequest) => Effect.Effect<void, FtcProject.AssociationError>,
+-): FtcProjects.FolderIdentity => ({
+-  resolve: (request) =>
++  associate: Association,
++): ProjectAssociations.Lookup => ({
++  ...repository,
++  associate: (input) =>
+     Effect.gen(function* () {
+-      const folder = yield* identity.resolve(request)
++      const folder = {
++        canonicalRoot: input.canonicalRoot,
++        location: new Location.Info({
++          directory: input.location.directory,
++          workspaceID: input.location.workspaceID,
++          project: { ...input.location.project },
++        }),
++      }
+       const existing = yield* repository
+         .findRoot(folder.canonicalRoot)
+         .pipe(
+           Effect.mapError((): FtcProject.AssociationError => ({ code: "association_store_failed", recovery: "retry" })),
+         )
+-      if (!existing) yield* activate({ root: folder.canonicalRoot })
+-      return folder
++      if (existing) return yield* repository.associate(folder)
++      return yield* associate(folder, repository.associate(folder))
+     }),
+ })
+ 
+ export const guardLegacy = (repository: ProjectAssociations.Lookup) => (request: FtcProject.FolderRequest) =>
+   canonical(request).pipe(
+     Effect.flatMap(repository.findRoot),
+     Effect.mapError(() => new FtcProject.ExecutionUnavailable({ code: "membership_unavailable" })),
+     Effect.flatMap((project) =>
+       project ? Effect.fail(new FtcProject.ExecutionUnavailable({ code: "legacy_execution_disabled" })) : Effect.void,
+     ),
+diff --git a/packages/core/test/background-job.test.ts b/packages/core/test/background-job.test.ts
+index 5ad1e061a..9c5e913a4 100644
+--- a/packages/core/test/background-job.test.ts
++++ b/packages/core/test/background-job.test.ts
+@@ -1,14 +1,14 @@
+ import { describe, expect } from "bun:test"
+ import { BackgroundJob } from "@opencode-ai/core/background-job"
+ import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+-import { Deferred, Effect, Exit, Scope } from "effect"
++import { Deferred, Effect, Exit, Fiber, Scope } from "effect"
+ import { it } from "./lib/effect"
+ 
+ const jobsLayer = LayerNode.compile(BackgroundJob.node)
+ 
+ describe("BackgroundJob", () => {
+   it.live("tracks process-local work through explicit observation", () =>
+     Effect.gen(function* () {
+       const jobs = yield* BackgroundJob.Service
+       const latch = yield* Deferred.make<void>()
+       const job = yield* jobs.start({
+@@ -97,10 +97,178 @@ describe("BackgroundJob", () => {
+       })
+ 
+       yield* Scope.close(scope, Exit.void)
+ 
+       yield* Deferred.await(interrupted).pipe(Effect.timeout("1 second"))
+       // The abandoned in-memory registry is not a durable observation channel.
+       expect((yield* jobs.get(job.id))?.status).toBe("running")
+     }),
+   )
+ })
++
++it.live("ownership outlives completed publication and parallel job finalizers", () =>
++  Effect.gen(function* () {
++    const scope = yield* Scope.make()
++    const jobs = yield* BackgroundJob.make.pipe(Scope.provide(scope))
++    const held = new Set<object>()
++    const finish = yield* Deferred.make<void>()
++    const cleanup = yield* Deferred.make<void>()
++    const closing = yield* Deferred.make<void>()
++    yield* Effect.gen(function* () {
++      const job = yield* jobs.start({
++        type: "ownership",
++        ownership: Effect.sync(() => {
++          const token = {}
++          held.add(token)
++          return {
++            release: Effect.sync(() => {
++              held.delete(token)
++            }),
++            retain: Effect.die("Unused"),
++          }
++        }),
++        run: Effect.gen(function* () {
++          yield* Effect.addFinalizer(() =>
++            Deferred.succeed(closing, undefined).pipe(Effect.andThen(Deferred.await(cleanup))),
++          )
++          yield* Deferred.await(finish)
++          return "done"
++        }),
++      })
++      expect(held.size).toBe(1)
++      yield* Deferred.succeed(finish, undefined)
++      expect((yield* jobs.wait({ id: job.id })).info?.status).toBe("completed")
++      yield* Deferred.await(closing)
++      expect(held.size).toBe(1)
++      yield* Deferred.succeed(cleanup, undefined)
++    }).pipe(Effect.ensuring(Deferred.succeed(cleanup, undefined)))
++    yield* Scope.close(scope, Exit.void)
++    expect(held.size).toBe(0)
++  }),
++)
++
++it.live("promotion retains ownership outside a completed job and cancellation settles the callback", () =>
++  Effect.gen(function* () {
++    const scope = yield* Scope.make()
++    const jobs = yield* BackgroundJob.make.pipe(Scope.provide(scope))
++    const finish = yield* Deferred.make<void>()
++    const promoted = yield* Deferred.make<void>()
++    const stopCallback = yield* Deferred.make<void>()
++    const interrupted = yield* Deferred.make<void>()
++    const held = new Set<object>()
++    const acquire: Effect.Effect<BackgroundJob.Ownership> = Effect.sync(() => {
++      const token = {}
++      held.add(token)
++      return {
++        release: Effect.sync(() => {
++          held.delete(token)
++        }),
++        retain: acquire,
++      }
++    })
++    yield* Effect.gen(function* () {
++      const job = yield* jobs.start({
++        type: "promotion",
++        ownership: acquire,
++        run: Deferred.await(finish).pipe(Effect.as("done")),
++        onPromote: Deferred.succeed(promoted, undefined).pipe(
++          Effect.andThen(Deferred.await(stopCallback)),
++          Effect.onInterrupt(() => Deferred.succeed(interrupted, undefined)),
++        ),
++      })
++      const promotion = yield* jobs.promote(job.id).pipe(Effect.forkChild)
++      yield* Deferred.await(promoted)
++      yield* Deferred.succeed(finish, undefined)
++      yield* jobs.wait({ id: job.id })
++      expect(held.size).toBeGreaterThan(0)
++      const cancelled = yield* Fiber.interrupt(promotion).pipe(Effect.forkChild)
++      yield* Deferred.await(interrupted).pipe(Effect.timeout("500 millis"))
++      yield* Fiber.join(cancelled)
++    }).pipe(
++      Effect.ensuring(
++        Effect.all([Deferred.succeed(stopCallback, undefined), Deferred.succeed(finish, undefined)], { discard: true }),
++      ),
++    )
++    yield* Scope.close(scope, Exit.void)
++    expect(held.size).toBe(0)
++  }),
++)
++
++it.live("accepted extension owns waiting work, duplicate/rejected work owns nothing, and shutdown releases all", () =>
++  Effect.gen(function* () {
++    const scope = yield* Scope.make()
++    const jobs = yield* BackgroundJob.make.pipe(Scope.provide(scope))
++    const held = new Set<object>()
++    const acquire: Effect.Effect<BackgroundJob.Ownership> = Effect.sync(() => {
++      const token = {}
++      held.add(token)
++      return {
++        release: Effect.sync(() => {
++          held.delete(token)
++        }),
++        retain: acquire,
++      }
++    })
++    const entered = yield* Deferred.make<void>()
++    const job = yield* jobs.start({
++      id: "same",
++      type: "ownership",
++      ownership: acquire,
++      run: Deferred.succeed(entered, undefined).pipe(Effect.andThen(Effect.never)),
++    })
++    yield* Deferred.await(entered)
++    yield* jobs.start({ id: job.id, type: "duplicate", ownership: acquire, run: Effect.die("Duplicate ran") })
++    expect(held.size).toBe(1)
++    expect(yield* jobs.extend({ id: "missing", ownership: acquire, run: Effect.die("Missing ran") })).toBe(false)
++    expect(held.size).toBe(1)
++    expect(
++      yield* jobs.extend({ id: job.id, ownership: acquire, run: Effect.die("Queued work ran before predecessor") }),
++    ).toBe(true)
++    expect(held.size).toBe(2)
++    expect(yield* jobs.get(job.id)).not.toHaveProperty("ownership")
++    yield* Scope.close(scope, Exit.void)
++    expect(held.size).toBe(0)
++  }),
++)
++
++it.live("old generation cleanup cannot release a replacement job's ownership", () =>
++  Effect.gen(function* () {
++    const scope = yield* Scope.make()
++    const jobs = yield* BackgroundJob.make.pipe(Scope.provide(scope))
++    const held = new Set<object>()
++    const acquire: Effect.Effect<BackgroundJob.Ownership> = Effect.sync(() => {
++      const token = {}
++      held.add(token)
++      return {
++        release: Effect.sync(() => {
++          held.delete(token)
++        }),
++        retain: acquire,
++      }
++    })
++    const cleanup = yield* Deferred.make<void>()
++    const closing = yield* Deferred.make<void>()
++    yield* Effect.gen(function* () {
++      const first = yield* jobs.start({
++        id: "reused",
++        type: "old",
++        ownership: acquire,
++        run: Effect.gen(function* () {
++          yield* Effect.addFinalizer(() =>
++            Deferred.succeed(closing, undefined).pipe(Effect.andThen(Deferred.await(cleanup))),
++          )
++          return yield* Effect.fail("controlled failure")
++        }),
++      })
++      expect((yield* jobs.wait({ id: first.id })).info?.status).toBe("error")
++      yield* Deferred.await(closing)
++      yield* jobs.start({ id: first.id, type: "new", ownership: acquire, run: Effect.never })
++      expect(held.size).toBe(2)
++      yield* Deferred.succeed(cleanup, undefined)
++      yield* Effect.yieldNow.pipe(Effect.repeat({ until: () => held.size === 1 }), Effect.timeout("1 second"))
++      expect((yield* jobs.get(first.id))?.type).toBe("new")
++      expect((yield* jobs.get(first.id))?.status).toBe("running")
++      yield* jobs.cancel(first.id)
++      expect(held.size).toBe(0)
++    }).pipe(Effect.ensuring(Deferred.succeed(cleanup, undefined)), Effect.ensuring(Scope.close(scope, Exit.void)))
++  }),
++)
+diff --git a/packages/core/test/ftc-integration/m2-06.test.ts b/packages/core/test/ftc-integration/m2-06.test.ts
+index a4fa0d7cf..b034536f9 100644
+--- a/packages/core/test/ftc-integration/m2-06.test.ts
++++ b/packages/core/test/ftc-integration/m2-06.test.ts
+@@ -126,28 +126,28 @@ const fixture = (
+     )
+     const runtime = yield* (options.disabled ? FtcComposition.disabled : FtcComposition.controlled)({
+       repository: ProjectAssociations.make(database.db),
+       folders: FtcProjectAdapters.folders(host),
+       store,
+       locations,
+       changed: (status) =>
+         Effect.sync(() => {
+           statuses.push(status)
+         }).pipe(Effect.andThen(options.changed ? options.changed(status) : Effect.void)),
+-      activate: (request) =>
++      activate: (request, commit) =>
+         options.unavailable
+           ? Effect.fail({
+               code: "activation_unavailable",
+-              root: request.root,
++              root: request.canonicalRoot,
+               recovery: "retry",
+             } satisfies FtcProject.AssociationError)
+-          : Effect.void,
++          : commit,
+     })
+     const sessionLocations = yield* LayerMap.make((_: Location.Ref) =>
+       Layer.effectContext<LocationServices, never, never>(
+         Effect.die("These tests do not invoke Session Location operations"),
+       ),
+     )
+     const session = yield* SessionV2.Service.pipe(
+       Effect.provide(
+         AppNodeBuilder.build(SessionV2.node, [
+           [Database.node, Layer.succeed(Database.Service, database)],
+diff --git a/packages/opencode/src/effect/app-runtime.ts b/packages/opencode/src/effect/app-runtime.ts
+index d17326966..aced77e39 100644
+--- a/packages/opencode/src/effect/app-runtime.ts
++++ b/packages/opencode/src/effect/app-runtime.ts
+@@ -1,10 +1,11 @@
++import { LegacyActivity } from "@/session/legacy-activity"
+ import { Layer, ManagedRuntime } from "effect"
+ import { attach } from "./run-service"
+ import * as Observability from "@opencode-ai/core/observability"
+ 
+ import { FSUtil } from "@opencode-ai/core/fs-util"
+ import { Database } from "@opencode-ai/core/database/database"
+ import { Auth } from "@/auth"
+ import { Account } from "@/account/account"
+ import { Config } from "@/config/config"
+ import { Git } from "@/git"
+@@ -81,20 +82,21 @@ export const AppLayer = AppNodeBuilderV1.build(
+     SessionStatus.node,
+     BackgroundJob.node,
+     RuntimeFlags.node,
+     EventV2Bridge.node,
+     SessionRunState.node,
+     SessionProcessor.node,
+     SessionCompaction.node,
+     SessionRevert.node,
+     SessionSummary.node,
+     SessionPrompt.node,
++    LegacyActivity.node,
+     Instruction.node,
+     LLM.node,
+     LSP.node,
+     MCP.node,
+     McpAuth.node,
+     Command.node,
+     Truncate.node,
+     ToolRegistry.node,
+     Format.node,
+     InstanceStore.node,
+diff --git a/packages/opencode/src/effect/runner.ts b/packages/opencode/src/effect/runner.ts
+index f21a61c97..1a75fae72 100644
+--- a/packages/opencode/src/effect/runner.ts
++++ b/packages/opencode/src/effect/runner.ts
+@@ -1,17 +1,17 @@
+ import { Cause, Deferred, Effect, Exit, Fiber, Latch, Schema, Scope, SynchronizedRef } from "effect"
+ 
+ export interface Runner<A, E = never> {
+   readonly state: State<A, E>
+   readonly busy: boolean
+-  readonly ensureRunning: (work: Effect.Effect<A, E>) => Effect.Effect<A, E>
+-  readonly startShell: (work: Effect.Effect<A, E>, ready?: Latch.Latch) => Effect.Effect<A, E | Busy>
++  readonly ensureRunning: (work: Effect.Effect<A, E, Scope.Scope>) => Effect.Effect<A, E>
++  readonly startShell: (work: Effect.Effect<A, E, Scope.Scope>, ready?: Latch.Latch) => Effect.Effect<A, E | Busy>
+   readonly cancel: Effect.Effect<void>
+ }
+ 
+ export class Cancelled extends Schema.TaggedErrorClass<Cancelled>()("RunnerCancelled", {}) {}
+ export class Busy extends Schema.TaggedErrorClass<Busy>()("RunnerBusy", {}) {}
+ 
+ interface RunHandle<A, E> {
+   id: number
+   done: Deferred.Deferred<A, E | Cancelled>
+   fiber: Fiber.Fiber<A, E>
+@@ -20,32 +20,34 @@ interface RunHandle<A, E> {
+ interface ShellHandle<A, E> {
+   id: number
+   cancelled: Deferred.Deferred<void>
+   ready?: Latch.Latch
+   fiber: Fiber.Fiber<A, E>
+ }
+ 
+ interface PendingHandle<A, E> {
+   id: number
+   done: Deferred.Deferred<A, E | Cancelled>
+-  work: Effect.Effect<A, E>
++  work: Effect.Effect<A, E, Scope.Scope>
++  scope: Scope.Closeable
+ }
+ 
+ export type State<A, E> =
+   | { readonly _tag: "Idle" }
+   | { readonly _tag: "Running"; readonly run: RunHandle<A, E> }
+   | { readonly _tag: "Shell"; readonly shell: ShellHandle<A, E> }
+   | { readonly _tag: "ShellThenRun"; readonly shell: ShellHandle<A, E>; readonly run: PendingHandle<A, E> }
+ 
+ export const make = <A, E = never>(
+   scope: Scope.Scope,
+   opts?: {
++    ownership?: Effect.Effect<Effect.Effect<void>, E>
+     onIdle?: Effect.Effect<void>
+     onBusy?: Effect.Effect<void>
+     onInterrupt?: Effect.Effect<A, E>
+   },
+ ): Runner<A, E> => {
+   const ref = SynchronizedRef.makeUnsafe<State<A, E>>({ _tag: "Idle" })
+   const idle = opts?.onIdle ?? Effect.void
+   const onBusy = opts?.onBusy ?? Effect.void
+   const onInterrupt = opts?.onInterrupt
+   let ids = 0
+@@ -73,89 +75,109 @@ export const make = <A, E = never>(
+       (st) =>
+         [
+           Effect.gen(function* () {
+             if (st._tag === "Running" && st.run.id === id) yield* idle
+             yield* complete(done, exit)
+           }),
+           st._tag === "Running" && st.run.id === id ? ({ _tag: "Idle" } as const) : st,
+         ] as const,
+     ).pipe(Effect.flatten)
+ 
+-  const startRun = (work: Effect.Effect<A, E>, done: Deferred.Deferred<A, E | Cancelled>) =>
++  const accept = Effect.uninterruptible(
++    Effect.gen(function* () {
++      const release = yield* opts?.ownership ?? Effect.succeed(Effect.void)
++      const owned = yield* Scope.fork(scope, "sequential")
++      yield* Scope.addFinalizer(owned, release)
++      return owned
++    }),
++  )
++
++  const startRun = (
++    work: Effect.Effect<A, E, Scope.Scope>,
++    done: Deferred.Deferred<A, E | Cancelled>,
++    owned: Scope.Closeable,
++  ) =>
+     Effect.gen(function* () {
+       const id = next()
+       const fiber = yield* work.pipe(
+-        Effect.onExit((exit) => finishRun(id, done, exit)),
++        Scope.provide(owned),
++        Effect.onExit((exit) => Scope.close(owned, exit).pipe(Effect.ensuring(finishRun(id, done, exit)))),
+         Effect.forkIn(scope),
+       )
+       return { id, done, fiber } satisfies RunHandle<A, E>
+     })
+ 
+   const finishShell = (id: number) =>
+     SynchronizedRef.modifyEffect(
+       ref,
+       Effect.fnUntraced(function* (st) {
+         if (st._tag === "Shell" && st.shell.id === id) {
+           return [idle, { _tag: "Idle" }] as const
+         }
+         if (st._tag === "ShellThenRun" && st.shell.id === id) {
+-          const run = yield* startRun(st.run.work, st.run.done)
++          const run = yield* startRun(st.run.work, st.run.done, st.run.scope)
+           return [Effect.void, { _tag: "Running", run }] as const
+         }
+         return [Effect.void, st] as const
+       }),
+     ).pipe(Effect.flatten)
+ 
+   const stopShell = (shell: ShellHandle<A, E>) =>
+     Effect.gen(function* () {
+       if (shell.ready) yield* shell.ready.await.pipe(Effect.exit, Effect.asVoid)
+       yield* Deferred.succeed(shell.cancelled, undefined).pipe(Effect.asVoid)
+       yield* Fiber.interrupt(shell.fiber)
+     })
+ 
+-  const ensureRunning = (work: Effect.Effect<A, E>) =>
++  const ensureRunning = (work: Effect.Effect<A, E, Scope.Scope>) =>
+     SynchronizedRef.modifyEffect(
+       ref,
+       Effect.fnUntraced(function* (st) {
+         switch (st._tag) {
+           case "Running":
+           case "ShellThenRun":
+             return [awaitDone(st.run.done), st] as const
+           case "Shell": {
+             const run = {
+               id: next(),
+               done: yield* Deferred.make<A, E | Cancelled>(),
+               work,
++              scope: yield* accept,
+             } satisfies PendingHandle<A, E>
+             return [awaitDone(run.done), { _tag: "ShellThenRun", shell: st.shell, run }] as const
+           }
+           case "Idle": {
+             const done = yield* Deferred.make<A, E | Cancelled>()
+-            const run = yield* startRun(work, done)
++            const run = yield* startRun(work, done, yield* accept)
+             return [awaitDone(done), { _tag: "Running", run }] as const
+           }
+         }
+       }),
+     ).pipe(Effect.flatten)
+ 
+-  const startShell = (work: Effect.Effect<A, E>, ready?: Latch.Latch): Effect.Effect<A, E | Busy> =>
++  const startShell = (work: Effect.Effect<A, E, Scope.Scope>, ready?: Latch.Latch): Effect.Effect<A, E | Busy> =>
+     SynchronizedRef.modifyEffect(
+       ref,
+       Effect.fnUntraced(function* (st) {
+         if (st._tag !== "Idle") {
+           const reject: Effect.Effect<A, E | Busy> = Effect.fail(new Busy())
+           return [reject, st] as const
+         }
++        const owned = yield* accept
+         yield* onBusy
+         const id = next()
+         const cancelled = yield* Deferred.make<void>()
+-        const fiber = yield* work.pipe(Effect.ensuring(finishShell(id)), Effect.forkChild)
++        const fiber = yield* work.pipe(
++          Scope.provide(owned),
++          Effect.onExit((exit) => Scope.close(owned, exit).pipe(Effect.ensuring(finishShell(id)))),
++          Effect.forkChild,
++        )
+         const shell = { id, cancelled, ready, fiber } satisfies ShellHandle<A, E>
+         return [
+           Effect.gen(function* () {
+             const exit = yield* Fiber.await(fiber)
+             if (Exit.isSuccess(exit)) return exit.value
+             if (
+               Cause.hasInterruptsOnly(exit.cause) ||
+               ((yield* Deferred.isDone(cancelled)) && Cause.hasInterrupts(exit.cause) && !Cause.hasDies(exit.cause))
+             ) {
+               if (onInterrupt) return yield* onInterrupt
+@@ -186,20 +208,21 @@ export const make = <A, E = never>(
+           Effect.gen(function* () {
+             yield* stopShell(st.shell)
+             yield* idleIfCurrent()
+           }),
+           { _tag: "Idle" } as const,
+         ] as const
+       case "ShellThenRun":
+         return [
+           Effect.gen(function* () {
+             yield* stopShell(st.shell)
++            yield* Scope.close(st.run.scope, Exit.void)
+             yield* Deferred.fail(st.run.done, new Cancelled()).pipe(Effect.asVoid)
+             yield* idleIfCurrent()
+           }),
+           { _tag: "Idle" } as const,
+         ] as const
+     }
+   }).pipe(Effect.flatten)
+ 
+   return {
+     get state() {
+diff --git a/packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts b/packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts
+index c3c44fa3a..989c321d7 100644
+--- a/packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts
++++ b/packages/opencode/src/server/routes/instance/httpapi/handlers/session.ts
+@@ -1,10 +1,12 @@
++import { LegacyActivity } from "@/session/legacy-activity"
++import { Database } from "@opencode-ai/core/database/database"
+ import { FtcComposition } from "@opencode-ai/core/ftc/composition"
+ import { AbsolutePath } from "@opencode-ai/core/schema"
+ import { PermissionV1 } from "@opencode-ai/core/v1/permission"
+ import { Agent } from "@/agent/agent"
+ import { SessionV1 } from "@opencode-ai/core/v1/session"
+ import { EventV2Bridge } from "@/event-v2-bridge"
+ import { Command } from "@/command"
+ import { Permission } from "@/permission"
+ import { SessionShare } from "@/share/session"
+ import { Session } from "@/session/session"
+@@ -56,20 +58,23 @@ export const sessionHandlers = HttpApiBuilder.group(InstanceHttpApi, "session",
+     const revertSvc = yield* SessionRevert.Service
+     const compactSvc = yield* SessionCompaction.Service
+     const runState = yield* SessionRunState.Service
+     const agentSvc = yield* Agent.Service
+     const permissionSvc = yield* Permission.Service
+     const statusSvc = yield* SessionStatus.Service
+     const todoSvc = yield* Todo.Service
+     const summary = yield* SessionSummary.Service
+     const events = yield* EventV2Bridge.Service
+     const scope = yield* Scope.Scope
++    const owner = yield* LegacyActivity.Service
++    const database = yield* Database.Service
++    const activity = LegacyActivity.sessions(owner, session, database)
+ 
+     const list = Effect.fn("SessionHttpApi.list")(function* (ctx: { query: typeof ListQuery.Type }) {
+       const directory = ctx.query.directory ? yield* InstanceState.directory : undefined
+       return yield* session.list({
+         directory: ctx.query.scope === "project" ? undefined : directory,
+         scope: ctx.query.scope,
+         path: ctx.query.path,
+         roots: ctx.query.roots,
+         start: ctx.query.start,
+         search: ctx.query.search,
+@@ -284,39 +289,41 @@ export const sessionHandlers = HttpApiBuilder.group(InstanceHttpApi, "session",
+       yield* shareSvc
+         .unshare(ctx.params.sessionID)
+         .pipe(Effect.mapError(() => new HttpApiError.InternalServerError({})))
+       return yield* requireSession(ctx.params.sessionID)
+     })
+ 
+     const summarize = Effect.fn("SessionHttpApi.summarize")(function* (ctx: {
+       params: { sessionID: SessionID }
+       payload: typeof SummarizePayload.Type
+     }) {
+-      yield* revertSvc.cleanup(yield* requireExecutable(ctx.params.sessionID))
+-      const messages = yield* SessionError.mapStorageNotFound(session.messages({ sessionID: ctx.params.sessionID }))
++      const sessionID = ctx.params.sessionID
++      yield* activity.scoped(sessionID).pipe(Effect.mapError(() => new HttpApiError.BadRequest({})))
++      yield* revertSvc.cleanup(yield* requireExecutable(sessionID))
++      const messages = yield* SessionError.mapStorageNotFound(session.messages({ sessionID }))
+       const defaultAgent = yield* agentSvc.defaultAgent()
+       const currentAgent = messages.findLast((message) => message.info.role === "user")?.info.agent ?? defaultAgent
+ 
+-      yield* compactSvc.create({
+-        sessionID: ctx.params.sessionID,
+-        agent: currentAgent,
+-        model: {
+-          providerID: ctx.payload.providerID,
+-          modelID: ctx.payload.modelID,
+-        },
+-        auto: ctx.payload.auto ?? false,
+-      })
+-      yield* promptSvc
+-        .loop({ sessionID: ctx.params.sessionID })
++      yield* compactSvc
++        .create({
++          sessionID,
++          agent: currentAgent,
++          model: {
++            providerID: ctx.payload.providerID,
++            modelID: ctx.payload.modelID,
++          },
++          auto: ctx.payload.auto ?? false,
++        })
+         .pipe(Effect.mapError(() => new HttpApiError.BadRequest({})))
++      yield* promptSvc.loop({ sessionID }).pipe(Effect.mapError(() => new HttpApiError.BadRequest({})))
+       return true
+-    })
++    }, Effect.scoped)
+ 
+     const prompt = Effect.fn("SessionHttpApi.prompt")(function* (ctx: {
+       params: { sessionID: SessionID }
+       payload: typeof PromptPayload.Type
+     }) {
+       yield* requireExecutable(ctx.params.sessionID)
+       const message = yield* promptSvc
+         .prompt({
+           ...ctx.payload,
+           sessionID: ctx.params.sessionID,
+@@ -324,33 +331,39 @@ export const sessionHandlers = HttpApiBuilder.group(InstanceHttpApi, "session",
+         .pipe(Effect.mapError(() => new HttpApiError.BadRequest({})))
+       return HttpServerResponse.stream(Stream.make(JSON.stringify(message)).pipe(Stream.encodeText), {
+         contentType: "application/json",
+       })
+     })
+ 
+     const promptAsync = Effect.fn("SessionHttpApi.promptAsync")(function* (ctx: {
+       params: { sessionID: SessionID }
+       payload: typeof PromptPayload.Type
+     }) {
+-      yield* requireExecutable(ctx.params.sessionID)
+-      yield* promptSvc.prompt({ ...ctx.payload, sessionID: ctx.params.sessionID }).pipe(
+-        Effect.catchCause((cause) =>
+-          Effect.gen(function* () {
+-            yield* Effect.logError("prompt_async failed", { sessionID: ctx.params.sessionID, cause })
+-            yield* events.publish(Session.Event.Error, {
+-              sessionID: ctx.params.sessionID,
+-              error: new NamedError.Unknown({ message: Cause.pretty(cause) }).toObject(),
+-            })
+-          }),
+-        ),
+-        Effect.forkIn(scope, { startImmediately: true }),
+-      )
++      const sessionID = ctx.params.sessionID
++      yield* requireExecutable(sessionID)
++      yield* activity
++        .fork(
++          sessionID,
++          promptSvc.prompt({ ...ctx.payload, sessionID }).pipe(
++            Effect.catchCause((cause) =>
++              Effect.gen(function* () {
++                yield* Effect.logError("prompt_async failed", { sessionID, cause })
++                yield* events.publish(Session.Event.Error, {
++                  sessionID,
++                  error: new NamedError.Unknown({ message: Cause.pretty(cause) }).toObject(),
++                })
++              }),
++            ),
++          ),
++          scope,
++        )
++        .pipe(Effect.mapError(() => new HttpApiError.BadRequest({})))
+       return HttpApiSchema.NoContent.make()
+     })
+ 
+     const command = Effect.fn("SessionHttpApi.command")(function* (ctx: {
+       params: { sessionID: SessionID }
+       payload: typeof CommandPayload.Type
+     }) {
+       yield* requireExecutable(ctx.params.sessionID)
+       return yield* promptSvc
+         .command({ ...ctx.payload, sessionID: ctx.params.sessionID })
+diff --git a/packages/opencode/src/server/routes/instance/httpapi/server.ts b/packages/opencode/src/server/routes/instance/httpapi/server.ts
+index d6cf13a0d..13fe7ade1 100644
+--- a/packages/opencode/src/server/routes/instance/httpapi/server.ts
++++ b/packages/opencode/src/server/routes/instance/httpapi/server.ts
+@@ -1,10 +1,11 @@
++import { LegacyActivity } from "@/session/legacy-activity"
+ import { Config as EffectConfig, Context, Effect, Layer } from "effect"
+ import { HttpApiBuilder, OpenApi } from "effect/unstable/httpapi"
+ import { HttpClient, HttpMiddleware, HttpRouter, HttpServer, HttpServerResponse } from "effect/unstable/http"
+ import * as Socket from "effect/unstable/socket/Socket"
+ import { FSUtil } from "@opencode-ai/core/fs-util"
+ import * as Observability from "@opencode-ai/core/observability"
+ import { Account } from "@/account/account"
+ import { Agent } from "@/agent/agent"
+ import { Auth } from "@/auth"
+ import { BackgroundJob } from "@/background/job"
+@@ -58,21 +59,20 @@ import { EventV2 } from "@opencode-ai/core/event"
+ import { ModelsDev } from "@opencode-ai/core/models-dev"
+ import { Npm } from "@opencode-ai/core/npm"
+ import { PermissionSaved } from "@opencode-ai/core/permission/saved"
+ import { ProjectV2 } from "@opencode-ai/core/project"
+ import { ProjectCopy } from "@opencode-ai/core/project/copy"
+ import { PtyTicket } from "@opencode-ai/core/pty/ticket"
+ import { Ripgrep } from "@opencode-ai/core/ripgrep"
+ import { SessionProjector } from "@opencode-ai/core/session/projector"
+ import { SessionV2 } from "@opencode-ai/core/session"
+ import { ftcHost } from "@opencode-ai/server/routes"
+-import { FtcProjects } from "@opencode-ai/core/ftc/projects"
+ import { lazy } from "@/util/lazy"
+ import { CorsConfig, isAllowedCorsOrigin, type CorsOptions } from "@opencode-ai/server/cors"
+ import { serveUIEffect } from "@/server/shared/ui"
+ import { ServerAuth } from "@/server/auth"
+ import { InstanceHttpApi, RootHttpApi } from "./api"
+ import { Api } from "@opencode-ai/server/api"
+ import { PublicApi } from "./public"
+ import {
+   authorizationLayer,
+   authorizationRouterMiddleware,
+@@ -237,20 +237,21 @@ const app = LayerNode.group([
+   SessionStatus.node,
+   BackgroundJob.node,
+   RuntimeFlags.node,
+   EventV2Bridge.node,
+   SessionRunState.node,
+   SessionProcessor.node,
+   SessionCompaction.node,
+   SessionRevert.node,
+   SessionSummary.node,
+   SessionPrompt.node,
++  LegacyActivity.node,
+   Instruction.node,
+   LLM.node,
+   LSP.node,
+   MCP.node,
+   McpAuth.node,
+   Command.node,
+   Truncate.node,
+   ToolRegistry.node,
+   Format.node,
+   Project.node,
+@@ -265,27 +266,25 @@ const app = LayerNode.group([
+   EventV2.node,
+   ProjectV2.node,
+   ProjectCopy.node,
+   PtyTicket.node,
+ ])
+ 
+ export function createRoutes(
+   corsOptions?: CorsOptions,
+ ): Layer.Layer<never, EffectConfig.ConfigError, RouteRequirements> {
+   const locationServiceMapV2 = buildLocationServiceMap()
+-  // Legacy execution has no authoritative process-wide activation fence yet.
+-  const ftc = ftcHost((request) =>
+-    Effect.fail({
+-      code: "activation_unavailable",
+-      root: request.root,
+-      recovery: "retry",
+-    } satisfies FtcProjects.AssociationError),
++  const ftc = ftcHost(
++    Effect.gen(function* () {
++      const context = yield* Layer.build(LegacyActivity.live)
++      return Context.get(context, LegacyActivity.Service).withAssociation
++    }),
+   )
+ 
+   return Layer.mergeAll(
+     rootApiRoutes,
+     eventApiRoutes,
+     ptyConnectApiRoutes,
+     instanceRoutes,
+     serverRoutes,
+     docRoute,
+     uiRoute,
+diff --git a/packages/opencode/src/session/compaction.ts b/packages/opencode/src/session/compaction.ts
+index 75d6374bf..06bd87cf7 100644
+--- a/packages/opencode/src/session/compaction.ts
++++ b/packages/opencode/src/session/compaction.ts
+@@ -1,10 +1,13 @@
++import { LegacyActivity } from "./legacy-activity"
++import { Database } from "@opencode-ai/core/database/database"
++import { FtcProjects } from "@opencode-ai/core/ftc/projects"
+ import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+ import { SessionV1 } from "@opencode-ai/core/v1/session"
+ import { ConfigV1 } from "@opencode-ai/core/v1/config/config"
+ import { Session } from "./session"
+ import { SessionID, MessageID, PartID } from "./schema"
+ import { Provider } from "@/provider/provider"
+ import { MessageV2 } from "./message-v2"
+ import { Token } from "@/util/token"
+ import { SessionProcessor } from "./processor"
+ import { Agent } from "@/agent/agent"
+@@ -160,46 +163,49 @@ function splitTurn(input: {
+     }
+     return undefined
+   })
+ }
+ 
+ export interface Interface {
+   readonly isOverflow: (input: {
+     tokens: SessionV1.Assistant["tokens"]
+     model: Provider.Model
+   }) => Effect.Effect<boolean>
+-  readonly prune: (input: { sessionID: SessionID }) => Effect.Effect<void>
++  readonly prune: (input: { sessionID: SessionID }) => Effect.Effect<void, FtcProjects.ExecutionUnavailable>
+   readonly process: (input: {
+     parentID: MessageID
+     messages: SessionV1.WithParts[]
+     sessionID: SessionID
+     auto: boolean
+     overflow?: boolean
+-  }) => Effect.Effect<"continue" | "stop">
++  }) => Effect.Effect<"continue" | "stop", FtcProjects.ExecutionUnavailable>
+   readonly create: (input: {
+     sessionID: SessionID
+     agent: string
+     model: { providerID: ProviderV2.ID; modelID: ModelV2.ID }
+     auto: boolean
+     overflow?: boolean
+-  }) => Effect.Effect<void>
++  }) => Effect.Effect<void, FtcProjects.ExecutionUnavailable>
+ }
+ 
+ export class Service extends Context.Service<Service, Interface>()("@opencode/SessionCompaction") {}
+ 
+ export const use = serviceUse(Service)
+ 
+ const layer = Layer.effect(
+   Service,
+   Effect.gen(function* () {
+     const config = yield* Config.Service
+     const session = yield* Session.Service
++    const database = yield* Database.Service
++    const owner = yield* LegacyActivity.Service
++    const activity = LegacyActivity.sessions(owner, session, database)
+     const agents = yield* Agent.Service
+     const plugin = yield* Plugin.Service
+     const processors = yield* SessionProcessor.Service
+     const provider = yield* Provider.Service
+     const events = yield* EventV2Bridge.Service
+     const flags = yield* RuntimeFlags.Service
+ 
+     const isOverflow = Effect.fn("SessionCompaction.isOverflow")(function* (input: {
+       tokens: SessionV1.Assistant["tokens"]
+       model: Provider.Model
+@@ -263,21 +269,23 @@ const layer = Layer.effect(
+ 
+       if (!keep || keep.start === 0) return { head: input.messages, tail_start_id: undefined }
+       return {
+         head: input.messages.slice(0, keep.start),
+         tail_start_id: keep.id,
+       }
+     })
+ 
+     // goes backwards through parts until there are PRUNE_PROTECT tokens worth of tool
+     // calls, then erases output of older tool calls to free context space
+-    const prune = Effect.fn("SessionCompaction.prune")(function* (input: { sessionID: SessionID }) {
++    const prune = Effect.fn("SessionCompaction.prune")(function* (request: { sessionID: SessionID }) {
++      const input = { ...request }
++      yield* activity.scoped(input.sessionID)
+       const cfg = yield* config.get()
+       if (!cfg.compaction?.prune) return
+       yield* Effect.logInfo("pruning")
+ 
+       const msgs = yield* session
+         .messages({ sessionID: input.sessionID })
+         .pipe(Effect.catchIf(NotFoundError.isInstance, () => Effect.succeed(undefined)))
+       if (!msgs) return
+ 
+       let total = 0
+@@ -307,29 +315,31 @@ const layer = Layer.effect(
+       yield* Effect.logInfo("found", { pruned, total })
+       if (pruned > PRUNE_MINIMUM) {
+         for (const part of toPrune) {
+           if (part.state.status === "completed") {
+             part.state.time.compacted = Date.now()
+             yield* session.updatePart(part)
+           }
+         }
+         yield* Effect.logInfo("pruned", { count: toPrune.length })
+       }
+-    })
++    }, Effect.scoped)
+ 
+-    const processCompaction = Effect.fn("SessionCompaction.process")(function* (input: {
++    const processCompaction = Effect.fn("SessionCompaction.process")(function* (request: {
+       parentID: MessageID
+       messages: SessionV1.WithParts[]
+       sessionID: SessionID
+       auto: boolean
+       overflow?: boolean
+     }) {
++      const input = { ...request }
++      yield* activity.scoped(input.sessionID)
+       const parent = input.messages.findLast((m) => m.info.id === input.parentID)
+       if (!parent || parent.info.role !== "user") {
+         throw new Error(`Compaction parent must be a user message: ${input.parentID}`)
+       }
+       const userMessage = parent.info
+       const compactionPart = parent.parts.find((part): part is SessionV1.CompactionPart => part.type === "compaction")
+ 
+       let messages = input.messages
+       let replay:
+         | {
+@@ -547,60 +557,64 @@ const layer = Layer.effect(
+             })
+           }
+         }
+       }
+ 
+       if (processor.message.error) return "stop"
+       if (result === "continue") {
+         yield* events.publish(Event.Compacted, { sessionID: input.sessionID })
+       }
+       return result
+-    })
++    }, Effect.scoped)
+ 
+-    const create = Effect.fn("SessionCompaction.create")(function* (input: {
++    const create = Effect.fn("SessionCompaction.create")(function* (request: {
+       sessionID: SessionID
+       agent: string
+       model: { providerID: ProviderV2.ID; modelID: ModelV2.ID }
+       auto: boolean
+       overflow?: boolean
+     }) {
++      const input = { ...request }
++      yield* activity.scoped(input.sessionID)
+       const msg = yield* session.updateMessage({
+         id: MessageID.ascending(),
+         role: "user",
+         model: input.model,
+         sessionID: input.sessionID,
+         agent: input.agent,
+         time: { created: Date.now() },
+       })
+       yield* session.updatePart({
+         id: PartID.ascending(),
+         messageID: msg.id,
+         sessionID: msg.sessionID,
+         type: "compaction",
+         auto: input.auto,
+         overflow: input.overflow,
+       })
+-    })
++    }, Effect.scoped)
+ 
+     return Service.of({
+       isOverflow,
+       prune,
+       process: processCompaction,
+       create,
+     })
+   }),
+ )
+ 
+ export const node = LayerNode.make({
+   service: Service,
+   layer: layer,
+   deps: [
++    LegacyActivity.node,
++    Database.node,
+     Config.node,
+     Session.node,
+     Agent.node,
+     Plugin.node,
+     SessionProcessor.node,
+     Provider.node,
+     EventV2Bridge.node,
+     RuntimeFlags.node,
+   ],
+ })
+diff --git a/packages/opencode/src/session/legacy-activity.ts b/packages/opencode/src/session/legacy-activity.ts
+new file mode 100644
+index 000000000..ad0fdf5fb
+--- /dev/null
++++ b/packages/opencode/src/session/legacy-activity.ts
+@@ -0,0 +1,196 @@
++import { lazy } from "@opencode-ai/core/util/lazy"
++import { Context, Deferred, Effect, Layer, Scope, Semaphore } from "effect"
++import { LayerNode } from "@opencode-ai/core/effect/layer-node"
++import { memoMap } from "@opencode-ai/core/effect/memo-map"
++import { FtcProjectAdapters } from "@opencode-ai/core/ftc/projects/adapters"
++import { FtcProjects } from "@opencode-ai/core/ftc/projects"
++import type { BackgroundJob } from "@opencode-ai/core/background-job"
++import type { Database } from "@opencode-ai/core/database/database"
++import { AbsolutePath } from "@opencode-ai/core/schema"
++import type { Session } from "./session"
++import type { SessionID } from "./schema"
++
++const claim = Symbol("LegacyActivity.Claim")
++export interface Claim {
++  readonly [claim]: true
++}
++export interface Interface {
++  readonly acquire: (
++    root: AbsolutePath,
++    verify: Effect.Effect<void, FtcProjects.ExecutionUnavailable>,
++  ) => Effect.Effect<Claim, FtcProjects.ExecutionUnavailable>
++  readonly retain: (lease: Claim) => Effect.Effect<Claim, FtcProjects.ExecutionUnavailable>
++  readonly release: (lease: Claim) => Effect.Effect<void>
++  readonly withAssociation: FtcProjectAdapters.Association
++}
++export class Service extends Context.Service<Service, Interface>()("@opencode/LegacyActivity") {}
++
++/** Volatile current-process ownership only; callers supply M2's canonical identity and live check. */
++export const make = Effect.gen(function* () {
++  const roots = new Map<AbsolutePath, { lock: Semaphore.Semaphore; claims: Set<Claim>; pending: number }>()
++  const claims = new Map<Claim, AbsolutePath>()
++  const drained = yield* Deferred.make<void>()
++  let closed = false
++  let pending = 0
++  const rootState = (root: AbsolutePath) => {
++    const existing = roots.get(root)
++    if (existing) return existing
++    const state = { lock: Semaphore.makeUnsafe(1), claims: new Set<Claim>(), pending: 0 }
++    roots.set(root, state)
++    return state
++  }
++  const settle = (root: AbsolutePath) =>
++    Effect.gen(function* () {
++      const state = roots.get(root)
++      if (state && state.pending === 0 && state.claims.size === 0) roots.delete(root)
++      if (closed && claims.size === 0 && pending === 0) yield* Deferred.succeed(drained, undefined)
++    })
++  const withRoot = <A, E>(root: AbsolutePath, work: Effect.Effect<A, E>) =>
++    Effect.acquireUseRelease(
++      Effect.sync(() => {
++        const state = rootState(root)
++        state.pending++
++        pending++
++        return state
++      }),
++      (state) => state.lock.withPermits(1)(work),
++      (state) =>
++        Effect.gen(function* () {
++          state.pending--
++          pending--
++          yield* settle(root)
++        }),
++    )
++  const publish = (root: AbsolutePath): Claim => {
++    const lease: Claim = Object.freeze({ [claim]: true as const })
++    claims.set(lease, root)
++    rootState(root).claims.add(lease)
++    return lease
++  }
++  const unavailable = () => new FtcProjects.ExecutionUnavailable({ code: "membership_unavailable" })
++  const acquire: Interface["acquire"] = (root, verify) =>
++    Effect.suspend(() =>
++      withRoot(
++        root,
++        Effect.uninterruptibleMask((restore) =>
++          Effect.gen(function* () {
++            if (closed) return yield* unavailable()
++            yield* restore(verify)
++            if (closed) return yield* unavailable()
++            return publish(root)
++          }),
++        ),
++      ),
++    )
++  const retain: Interface["retain"] = (lease) =>
++    Effect.suspend(() => {
++      const root = claims.get(lease)
++      if (closed || !root) return Effect.fail(unavailable())
++      return Effect.succeed(publish(root))
++    })
++  const release: Interface["release"] = (lease) =>
++    Effect.gen(function* () {
++      const root = claims.get(lease)
++      if (!root) return
++      claims.delete(lease)
++      rootState(root).claims.delete(lease)
++      yield* settle(root)
++    })
++  const withAssociation: Interface["withAssociation"] = (folder, commit) =>
++    Effect.suspend(() => {
++      const root = folder.canonicalRoot
++      return withRoot(
++        root,
++        Effect.gen(function* () {
++          if (closed || rootState(root).claims.size > 0)
++            return yield* Effect.fail({
++              code: "activation_unavailable",
++              root,
++              recovery: "retry",
++            } satisfies FtcProjects.AssociationError)
++          return yield* commit
++        }),
++      )
++    })
++  yield* Effect.addFinalizer(() =>
++    Effect.gen(function* () {
++      closed = true
++      if (claims.size > 0 || pending > 0) yield* Deferred.await(drained)
++      roots.clear()
++    }),
++  )
++  return Service.of({ acquire, retain, release, withAssociation })
++})
++
++export const layer = Layer.effect(Service, make)
++// MemoMap evicts before awaiting finalizers. A successor must wait for the old owner's claims to drain.
++const generations = lazy(() => Semaphore.makeUnsafe(1))
++const shared = Layer.effect(
++  Service,
++  Effect.gen(function* () {
++    yield* Effect.acquireRelease(Effect.interruptible(generations().take(1)), () => generations().release(1))
++    return yield* make
++  }),
++)
++export const live = Layer.effect(
++  Service,
++  Effect.gen(function* () {
++    const scope = yield* Scope.Scope
++    return Context.get(yield* Layer.buildWithMemoMap(shared, memoMap, scope), Service)
++  }),
++)
++export const node = LayerNode.make({ service: Service, layer: live, deps: [] })
++
++/** Retains exact accepted claims for generic engines, without exposing root authority in job metadata. */
++export const ownership = (owner: Interface, leases: readonly Claim[]): Effect.Effect<BackgroundJob.Ownership> =>
++  Effect.uninterruptible(
++    Effect.gen(function* () {
++      const held: Claim[] = []
++      yield* Effect.forEach(
++        leases,
++        (lease) => owner.retain(lease).pipe(Effect.tap((next) => Effect.sync(() => held.push(next)))),
++        { discard: true },
++      ).pipe(
++        Effect.onError(() => Effect.forEach(held, owner.release, { discard: true })),
++        Effect.orDie,
++      )
++      return {
++        release: Effect.forEach(held, owner.release, { discard: true }),
++        retain: Effect.suspend(() => ownership(owner, held)),
++      }
++    }),
++  )
++
++export const sessions = (
++  owner: Interface,
++  session: Pick<Session.Interface, "get">,
++  database: Pick<Database.Interface, "db">,
++) => {
++  const verify = FtcProjectAdapters.legacy(database.db)
++  const acquire = (id: SessionID) =>
++    Effect.gen(function* () {
++      const recorded = yield* session.get(id).pipe(Effect.orDie)
++      const root = yield* FtcProjectAdapters.canonical({ root: AbsolutePath.make(recorded.directory) }).pipe(
++        Effect.mapError(() => new FtcProjects.ExecutionUnavailable({ code: "membership_unavailable" })),
++      )
++      return yield* owner.acquire(root, verify({ root }))
++    })
++  const scoped = (id: SessionID) => Effect.acquireRelease(acquire(id), owner.release)
++  const fork = <A, E, R>(id: SessionID, work: Effect.Effect<A, E, R>, scope: Scope.Scope) =>
++    Effect.uninterruptibleMask((restore) =>
++      Effect.gen(function* () {
++        const lease = yield* restore(acquire(id))
++        const owned = yield* Scope.fork(scope, "sequential")
++        yield* Scope.addFinalizer(owned, owner.release(lease))
++        return yield* work.pipe(
++          Scope.provide(owned),
++          Effect.onExit((exit) => Scope.close(owned, exit)),
++          Effect.interruptible,
++          Effect.forkIn(scope),
++        )
++      }),
++    )
++  return { acquire, scoped, fork }
++}
++
++export * as LegacyActivity from "./legacy-activity"
+diff --git a/packages/opencode/src/session/processor.ts b/packages/opencode/src/session/processor.ts
+index 9f8530929..65a5f02b8 100644
+--- a/packages/opencode/src/session/processor.ts
++++ b/packages/opencode/src/session/processor.ts
+@@ -1,10 +1,11 @@
++import { LegacyActivity } from "./legacy-activity"
+ import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+ import { PermissionV1 } from "@opencode-ai/core/v1/permission"
+ import { Image } from "@/image/image"
+ import { SessionV1 } from "@opencode-ai/core/v1/session"
+ import { Cause, Deferred, Effect, Exit, Layer, Context, Scope, Schema } from "effect"
+ import * as Stream from "effect/Stream"
+ import { Agent } from "@/agent/agent"
+ import { Config } from "@/config/config"
+ import { Permission } from "@/permission"
+ import { Plugin } from "@/plugin"
+@@ -87,20 +88,22 @@ const layer = Layer.effect(
+     const agents = yield* Agent.Service
+     const llm = yield* LLM.Service
+     const permission = yield* Permission.Service
+     const plugin = yield* Plugin.Service
+     const summary = yield* SessionSummary.Service
+     const scope = yield* Scope.Scope
+     const status = yield* SessionStatus.Service
+     const image = yield* Image.Service
+     const events = yield* EventV2Bridge.Service
+     const database = yield* Database.Service
++    const owner = yield* LegacyActivity.Service
++    const activity = LegacyActivity.sessions(owner, session, database)
+ 
+     const create = Effect.fn("SessionProcessor.create")(function* (input: Input) {
+       // Pre-capture snapshot before the LLM stream starts. The AI SDK
+       // may execute tools internally before emitting start-step events,
+       // so capturing inside the event handler can be too late.
+       const initialSnapshot = yield* snapshot.track()
+       const ctx: ProcessorContext = {
+         assistantMessage: input.assistantMessage,
+         sessionID: input.sessionID,
+         model: input.model,
+@@ -475,26 +478,32 @@ const layer = Layer.effect(
+                   id: PartID.ascending(),
+                   messageID: ctx.assistantMessage.id,
+                   sessionID: ctx.sessionID,
+                   type: "patch",
+                   hash: patch.hash,
+                   files: patch.files,
+                 })
+               }
+               ctx.snapshot = undefined
+             }
+-            yield* summary
+-              .summarize({
+-                sessionID: ctx.sessionID,
+-                messageID: ctx.assistantMessage.parentID,
+-              })
+-              .pipe(Effect.ignore, Effect.forkIn(scope))
++            yield* activity
++              .fork(
++                ctx.sessionID,
++                summary
++                  .summarize({
++                    sessionID: ctx.sessionID,
++                    messageID: ctx.assistantMessage.parentID,
++                  })
++                  .pipe(Effect.ignore),
++                scope,
++              )
++              .pipe(Effect.orDie)
+             if (
+               !ctx.assistantMessage.summary &&
+               isOverflow({ cfg: yield* config.get(), tokens: usage.tokens, model: ctx.model })
+             ) {
+               ctx.needsCompaction = true
+             }
+             return
+           }
+ 
+           case "text-start":
+@@ -707,20 +716,21 @@ const layer = Layer.effect(
+     })
+ 
+     return Service.of({ create })
+   }),
+ )
+ 
+ export const node = LayerNode.make({
+   service: Service,
+   layer: layer,
+   deps: [
++    LegacyActivity.node,
+     Session.node,
+     Config.node,
+     Snapshot.node,
+     Agent.node,
+     LLM.node,
+     Permission.node,
+     Plugin.node,
+     SessionSummary.node,
+     SessionStatus.node,
+     Image.node,
+diff --git a/packages/opencode/src/session/prompt.ts b/packages/opencode/src/session/prompt.ts
+index 862569a35..d4840d614 100644
+--- a/packages/opencode/src/session/prompt.ts
++++ b/packages/opencode/src/session/prompt.ts
+@@ -1,13 +1,12 @@
++import { LegacyActivity } from "./legacy-activity"
+ import { FtcProjects } from "@opencode-ai/core/ftc/projects"
+-import { FtcProjectAdapters } from "@opencode-ai/core/ftc/projects/adapters"
+-import { AbsolutePath } from "@opencode-ai/core/schema"
+ import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+ import { PermissionV1 } from "@opencode-ai/core/v1/permission"
+ import path from "path"
+ import { SessionV1 } from "@opencode-ai/core/v1/session"
+ import os from "os"
+ import { SessionID, MessageID, PartID } from "./schema"
+ import { MessageV2 } from "./message-v2"
+ import { SessionRevert } from "./revert"
+ import { Session } from "./session"
+ import { Agent } from "../agent/agent"
+@@ -37,21 +36,20 @@ import { SessionProcessor } from "./processor"
+ import { Tool } from "@/tool/tool"
+ import { Permission } from "@/permission"
+ import { SessionStatus } from "./status"
+ import { LLM } from "./llm"
+ import { Shell } from "@opencode-ai/core/shell"
+ import { ShellID } from "@/tool/shell/id"
+ import { FSUtil } from "@opencode-ai/core/fs-util"
+ import { Truncate } from "@/tool/truncate"
+ import { Image } from "@/image/image"
+ import { decodeDataUrl } from "@/util/data-url"
+-import { Process } from "@/util/process"
+ import { Cause, Effect, Exit, Latch, Layer, Option, Scope, Context, Schema, Types } from "effect"
+ import { InstanceState } from "@/effect/instance-state"
+ import { TaskTool, type TaskPromptOps } from "@/tool/task"
+ import { SessionRunState } from "./run-state"
+ import { RuntimeFlags } from "@/effect/runtime-flags"
+ import { EventV2Bridge } from "@/event-v2-bridge"
+ import { Database } from "@opencode-ai/core/database/database"
+ import { ModelV2 } from "@opencode-ai/core/model"
+ import { ProviderV2 } from "@opencode-ai/core/provider"
+ import { eq } from "drizzle-orm"
+@@ -142,25 +140,22 @@ const layer = Layer.effect(
+     const scope = yield* Scope.Scope
+     const instruction = yield* Instruction.Service
+     const state = yield* SessionRunState.Service
+     const revert = yield* SessionRevert.Service
+     const summary = yield* SessionSummary.Service
+     const sys = yield* SystemPrompt.Service
+     const llm = yield* LLM.Service
+     const events = yield* EventV2Bridge.Service
+     const flags = yield* RuntimeFlags.Service
+     const database = yield* Database.Service
+-    const requireUnmanaged = FtcProjectAdapters.legacy(database.db)
+-    const requireExecutable = Effect.fn("SessionPrompt.requireExecutable")(function* (sessionID: SessionID) {
+-      const session = yield* sessions.get(sessionID).pipe(Effect.orDie)
+-      yield* requireUnmanaged({ root: AbsolutePath.make(session.directory) })
+-    })
++    const owner = yield* LegacyActivity.Service
++    const activity = LegacyActivity.sessions(owner, sessions, database)
+     const { db } = database
+     const ops = Effect.fn("SessionPrompt.ops")(function* () {
+       return {
+         cancel: (sessionID: SessionID) => cancel(sessionID),
+         resolvePromptParts: (template: string) => resolvePromptParts(template),
+         prompt: (input: PromptInput) => prompt(input).pipe(Effect.catch(Effect.die)),
+       } satisfies TaskPromptOps
+     })
+ 
+     const cancel = Effect.fn("SessionPrompt.cancel")(function* (sessionID: SessionID) {
+@@ -639,21 +634,22 @@ const layer = Layer.effect(
+           ...(current.model.variant && current.model.variant !== "default" ? { variant: current.model.variant } : {}),
+         }
+       }
+       const match = yield* sessions
+         .findMessage(sessionID, (m) => m.info.role === "user" && !!m.info.model)
+         .pipe(Effect.orDie)
+       if (Option.isSome(match) && match.value.info.role === "user") return match.value.info.model
+       return yield* provider.defaultModel().pipe(Effect.orDie)
+     })
+ 
+-    const createUserMessage = Effect.fn("SessionPrompt.createUserMessage")(function* (input: PromptInput) {
++    const createUserMessage = Effect.fn("SessionPrompt.createUserMessage")(function* (request: PromptInput) {
++      const input = { ...request }
+       const agentName = input.agent
+       const ag = agentName ? yield* agents.get(agentName) : yield* agents.defaultInfo()
+       if (!ag) {
+         const available = (yield* agents.list()).filter((a) => !a.hidden).map((a) => a.name)
+         const hint = available.length ? ` Available agents: ${available.join(", ")}` : ""
+         const error = new NamedError.Unknown({ message: `Agent not found: "${agentName}".${hint}` })
+         yield* events.publish(Session.Event.Error, { sessionID: input.sessionID, error: error.toObject() })
+         throw error
+       }
+ 
+@@ -1060,39 +1056,40 @@ const layer = Layer.effect(
+       yield* sessions.updateMessage(info)
+       for (const part of parts) yield* sessions.updatePart(part)
+ 
+       return { info, parts }
+     }, Effect.scoped)
+ 
+     const prompt: (
+       input: PromptInput,
+     ) => Effect.Effect<SessionV1.WithParts, Image.Error | FtcProjects.ExecutionUnavailable> = Effect.fn(
+       "SessionPrompt.prompt",
+-    )(function* (input: PromptInput) {
+-      yield* requireExecutable(input.sessionID)
++    )(function* (request: PromptInput) {
++      const input = { ...request }
++      yield* activity.scoped(input.sessionID)
+       const session = yield* sessions.get(input.sessionID).pipe(Effect.orDie)
+       yield* revert.cleanup(session)
+       const message = yield* createUserMessage(input)
+       yield* sessions.touch(input.sessionID)
+ 
+       const permissions: PermissionV1.Rule[] = []
+       for (const [t, enabled] of Object.entries(input.tools ?? {})) {
+         permissions.push({ permission: t, action: enabled ? "allow" : "deny", pattern: "*" })
+       }
+       if (permissions.length > 0) {
+         session.permission = permissions
+         yield* sessions.setPermission({ sessionID: session.id, permission: permissions })
+       }
+ 
+       if (input.noReply === true) return message
+       return yield* loop({ sessionID: input.sessionID })
+-    })
++    }, Effect.scoped)
+ 
+     const lastAssistant = Effect.fnUntraced(function* (sessionID: SessionID) {
+       const match = yield* sessions.findMessage(sessionID, (m) => m.info.role !== "user").pipe(Effect.orDie)
+       if (Option.isSome(match)) return match.value
+       const msgs = yield* sessions.messages({ sessionID, limit: 1 }).pipe(Effect.orDie)
+       if (msgs.length > 0) return msgs[0]
+       throw new Error("Impossible")
+     })
+ 
+     const runLoop: (sessionID: SessionID) => Effect.Effect<SessionV1.WithParts> = Effect.fn("SessionPrompt.run")(
+@@ -1141,53 +1138,63 @@ const layer = Layer.effect(
+                 tool: orphan.tool,
+                 callID: orphan.callID,
+               })
+             }
+             yield* Effect.logInfo("exiting loop", { "session.id": sessionID })
+             break
+           }
+ 
+           step++
+           if (step === 1)
+-            yield* title({
+-              session,
+-              modelID: lastUser.model.modelID,
+-              providerID: lastUser.model.providerID,
+-              history: msgs,
+-            }).pipe(Effect.ignore, Effect.forkIn(scope))
++            yield* activity
++              .fork(
++                sessionID,
++                title({
++                  session,
++                  modelID: lastUser.model.modelID,
++                  providerID: lastUser.model.providerID,
++                  history: msgs,
++                }).pipe(Effect.ignore),
++                scope,
++              )
++              .pipe(Effect.orDie)
+ 
+           const model = yield* getModel(lastUser.model.providerID, lastUser.model.modelID, sessionID)
+           const task = tasks.pop()
+ 
+           if (task?.type === "subtask") {
+             yield* handleSubtask({ task, model, lastUser, sessionID, session, msgs })
+             continue
+           }
+ 
+           if (task?.type === "compaction") {
+-            const result = yield* compaction.process({
+-              messages: msgs,
+-              parentID: lastUser.id,
+-              sessionID,
+-              auto: task.auto,
+-              overflow: task.overflow,
+-            })
++            const result = yield* compaction
++              .process({
++                messages: msgs,
++                parentID: lastUser.id,
++                sessionID,
++                auto: task.auto,
++                overflow: task.overflow,
++              })
++              .pipe(Effect.orDie)
+             if (result === "stop") break
+             continue
+           }
+ 
+           if (
+             lastFinished &&
+             lastFinished.summary !== true &&
+             (yield* compaction.isOverflow({ tokens: lastFinished.tokens, model }))
+           ) {
+-            yield* compaction.create({ sessionID, agent: lastUser.agent, model: lastUser.model, auto: true })
++            yield* compaction
++              .create({ sessionID, agent: lastUser.agent, model: lastUser.model, auto: true })
++              .pipe(Effect.orDie)
+             continue
+           }
+ 
+           const agent = yield* agents.get(lastUser.agent)
+           if (!agent) {
+             const available = (yield* agents.list()).filter((a) => !a.hidden).map((a) => a.name)
+             const hint = available.length ? ` Available agents: ${available.join(", ")}` : ""
+             const error = new NamedError.Unknown({ message: `Agent not found: "${lastUser.agent}".${hint}` })
+             yield* events.publish(Session.Event.Error, { sessionID, error: error.toObject() })
+             throw error
+@@ -1260,21 +1267,23 @@ const layer = Layer.effect(
+             if (lastUser.format?.type === "json_schema") {
+               tools["StructuredOutput"] = createStructuredOutputTool({
+                 schema: lastUser.format.schema,
+                 onSuccess(output) {
+                   structured = output
+                 },
+               })
+             }
+ 
+             if (step === 1)
+-              yield* summary.summarize({ sessionID, messageID: lastUser.id }).pipe(Effect.ignore, Effect.forkIn(scope))
++              yield* activity
++                .fork(sessionID, summary.summarize({ sessionID, messageID: lastUser.id }).pipe(Effect.ignore), scope)
++                .pipe(Effect.orDie)
+ 
+             yield* plugin.trigger("experimental.chat.messages.transform", {}, { messages: msgs })
+ 
+             const [skills, env, instructions, mcpInstructions, modelMsgs] = yield* Effect.all([
+               sys.skills(agent),
+               sys.environment(model),
+               instruction.system().pipe(Effect.orDie),
+               sys.mcp(agent, session.permission),
+               MessageV2.toModelMessagesEffect(msgs, model),
+             ])
+@@ -1328,61 +1337,66 @@ const layer = Layer.effect(
+                   message: "Model did not produce structured output",
+                   retries: 0,
+                 }).toObject()
+                 yield* sessions.updateMessage(handle.message)
+                 return "break" as const
+               }
+             }
+ 
+             if (result === "stop") return "break" as const
+             if (result === "compact") {
+-              yield* compaction.create({
+-                sessionID,
+-                agent: lastUser.agent,
+-                model: lastUser.model,
+-                auto: true,
+-                overflow: !handle.message.finish,
+-              })
++              yield* compaction
++                .create({
++                  sessionID,
++                  agent: lastUser.agent,
++                  model: lastUser.model,
++                  auto: true,
++                  overflow: !handle.message.finish,
++                })
++                .pipe(Effect.orDie)
+             }
+             return "continue" as const
+           }).pipe(
+             Effect.ensuring(instruction.clear(handle.message.id)),
+             Effect.onInterrupt(() => finalizeInterruptedAssistant),
+           )
+           if (outcome === "break") break
+           continue
+         }
+ 
+-        yield* compaction.prune({ sessionID }).pipe(Effect.ignore, Effect.forkIn(scope))
++        yield* activity.fork(sessionID, compaction.prune({ sessionID }).pipe(Effect.ignore), scope).pipe(Effect.orDie)
+         return yield* lastAssistant(sessionID)
+       },
+     )
+ 
+     const loop: (input: LoopInput) => Effect.Effect<SessionV1.WithParts, FtcProjects.ExecutionUnavailable> = Effect.fn(
+       "SessionPrompt.loop",
+-    )(function* (input: LoopInput) {
+-      yield* requireExecutable(input.sessionID)
++    )(function* (request: LoopInput) {
++      const input = new LoopInput(request)
++      yield* activity.scoped(input.sessionID)
+       return yield* state.ensureRunning(input.sessionID, lastAssistant(input.sessionID), runLoop(input.sessionID))
+-    })
++    }, Effect.scoped)
+ 
+     const shell: (
+       input: ShellInput,
+     ) => Effect.Effect<SessionV1.WithParts, Session.BusyError | FtcProjects.ExecutionUnavailable> = Effect.fn(
+       "SessionPrompt.shell",
+-    )(function* (input: ShellInput) {
+-      yield* requireExecutable(input.sessionID)
++    )(function* (request: ShellInput) {
++      const input = { ...request }
++      yield* activity.scoped(input.sessionID)
+       const ready = yield* Latch.make()
+       return yield* state.startShell(input.sessionID, lastAssistant(input.sessionID), shellImpl(input, ready), ready)
+-    })
++    }, Effect.scoped)
+ 
+-    const command = Effect.fn("SessionPrompt.command")(function* (input: CommandInput) {
+-      yield* requireExecutable(input.sessionID)
++    const command = Effect.fn("SessionPrompt.command")(function* (request: CommandInput) {
++      const input = { ...request }
++      yield* activity.scoped(input.sessionID)
+       yield* Effect.logInfo("command", {
+         "session.id": input.sessionID,
+         command: input.command,
+         agent: input.agent,
+       })
+       const cmd = yield* commands.get(input.command)
+       if (!cmd) {
+         const available = (yield* commands.list()).map((c) => c.name)
+         const hint = available.length ? ` Available commands: ${available.join(", ")}` : ""
+         const error = new NamedError.Unknown({ message: `Command not found: "${input.command}".${hint}` })
+@@ -1413,24 +1427,36 @@ const layer = Layer.effect(
+       let template = withArgs.replaceAll("$ARGUMENTS", input.arguments)
+ 
+       if (placeholders.length === 0 && !usesArgumentsPlaceholder && input.arguments.trim()) {
+         template = template + "\n\n" + input.arguments
+       }
+ 
+       const shellMatches = ConfigMarkdown.shell(template)
+       if (shellMatches.length > 0) {
+         const cfg = yield* config.get()
+         const sh = Shell.preferred(cfg.shell)
+-        const results = yield* Effect.promise(() =>
+-          Promise.all(
+-            shellMatches.map(async ([, cmd]) => (await Process.text([cmd], { shell: sh, nothrow: true })).text),
+-          ),
++        const results = yield* Effect.forEach(
++          shellMatches,
++          ([, command]) =>
++            Effect.gen(function* () {
++              const handle = yield* spawner.spawn(
++                ChildProcess.make(sh, ["-c", command], {
++                  stdin: "ignore",
++                  extendEnv: true,
++                  forceKillAfter: "3 seconds",
++                }),
++              )
++              const output = yield* Stream.mkString(Stream.decodeText(handle.all))
++              yield* handle.exitCode
++              return output
++            }).pipe(Effect.scoped, Effect.orDie),
++          { concurrency: "unbounded" },
+         )
+         let index = 0
+         template = template.replace(bashRegex, () => results[index++])
+       }
+       template = template.trim()
+ 
+       const taskModel = yield* Effect.gen(function* () {
+         if (cmd.model) return Provider.parseModel(cmd.model)
+         if (cmd.agent) {
+           const cmdAgent = yield* agents.get(cmd.agent)
+@@ -1493,21 +1519,21 @@ const layer = Layer.effect(
+         parts,
+         variant: input.variant,
+       })
+       yield* events.publish(Command.Event.Executed, {
+         name: input.command,
+         sessionID: input.sessionID,
+         arguments: input.arguments,
+         messageID: result.info.id,
+       })
+       return result
+-    })
++    }, Effect.scoped)
+ 
+     return Service.of({
+       cancel,
+       prompt,
+       loop,
+       shell,
+       command,
+       resolvePromptParts,
+     })
+   }),
+@@ -1614,20 +1640,21 @@ export function createStructuredOutputTool(input: {
+ const bashRegex = /!`([^`]+)`/g
+ // Match [Image N] as single token, quoted strings, or non-space sequences
+ const argsRegex = /(?:\[Image\s+\d+\]|"[^"]*"|'[^']*'|[^\s"']+)/gi
+ const placeholderRegex = /\$(\d+)/g
+ const quoteTrimRegex = /^["']|["']$/g
+ 
+ export const node = LayerNode.make({
+   service: Service,
+   layer: layer,
+   deps: [
++    LegacyActivity.node,
+     SessionStatus.node,
+     Session.node,
+     Agent.node,
+     Provider.node,
+     SessionProcessor.node,
+     SessionCompaction.node,
+     Plugin.node,
+     Command.node,
+     Config.node,
+     Permission.node,
+diff --git a/packages/opencode/src/session/run-state.ts b/packages/opencode/src/session/run-state.ts
+index 5cefdd04a..8b1b63269 100644
+--- a/packages/opencode/src/session/run-state.ts
++++ b/packages/opencode/src/session/run-state.ts
+@@ -1,69 +1,77 @@
++import { LegacyActivity } from "./legacy-activity"
++import { Database } from "@opencode-ai/core/database/database"
++import { FtcProjects } from "@opencode-ai/core/ftc/projects"
+ import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+ import { InstanceState } from "@/effect/instance-state"
+ import { SessionV1 } from "@opencode-ai/core/v1/session"
+ import { Runner } from "@/effect/runner"
+ import { BackgroundJob } from "@/background/job"
+ import { Effect, Latch, Layer, Scope, Context } from "effect"
+ import { Session } from "./session"
+ import { SessionID } from "./schema"
+ import { SessionStatus } from "./status"
+ 
+ export interface Interface {
+   readonly assertNotBusy: (sessionID: SessionID) => Effect.Effect<void, Session.BusyError>
+   readonly cancel: (sessionID: SessionID) => Effect.Effect<void>
+   readonly ensureRunning: (
+     sessionID: SessionID,
+     onInterrupt: Effect.Effect<SessionV1.WithParts>,
+     work: Effect.Effect<SessionV1.WithParts>,
+-  ) => Effect.Effect<SessionV1.WithParts>
++  ) => Effect.Effect<SessionV1.WithParts, FtcProjects.ExecutionUnavailable>
+   readonly startShell: (
+     sessionID: SessionID,
+     onInterrupt: Effect.Effect<SessionV1.WithParts>,
+     work: Effect.Effect<SessionV1.WithParts>,
+     ready?: Latch.Latch,
+-  ) => Effect.Effect<SessionV1.WithParts, Session.BusyError>
++  ) => Effect.Effect<SessionV1.WithParts, Session.BusyError | FtcProjects.ExecutionUnavailable>
+ }
+ 
+ export class Service extends Context.Service<Service, Interface>()("@opencode/SessionRunState") {}
+ 
+ const layer = Layer.effect(
+   Service,
+   Effect.gen(function* () {
++    const owner = yield* LegacyActivity.Service
++    const sessions = yield* Session.Service
++    const database = yield* Database.Service
++    const activity = LegacyActivity.sessions(owner, sessions, database)
+     const background = yield* BackgroundJob.Service
+     const status = yield* SessionStatus.Service
+ 
+     const state = yield* InstanceState.make(
+       Effect.fn("SessionRunState.state")(function* () {
+         const scope = yield* Scope.Scope
+-        const runners = new Map<SessionID, Runner.Runner<SessionV1.WithParts>>()
++        const runners = new Map<SessionID, Runner.Runner<SessionV1.WithParts, FtcProjects.ExecutionUnavailable>>()
+         yield* Effect.addFinalizer(
+           Effect.fnUntraced(function* () {
+             yield* Effect.forEach(runners.values(), (runner) => runner.cancel, {
+               concurrency: "unbounded",
+               discard: true,
+             })
+             runners.clear()
+           }),
+         )
+         return { runners, scope }
+       }),
+     )
+ 
+     const runner = Effect.fn("SessionRunState.runner")(function* (
+       sessionID: SessionID,
+       onInterrupt: Effect.Effect<SessionV1.WithParts>,
+     ) {
+       const data = yield* InstanceState.get(state)
+       const existing = data.runners.get(sessionID)
+       if (existing) return existing
+-      const next = Runner.make<SessionV1.WithParts>(data.scope, {
++      const next = Runner.make<SessionV1.WithParts, FtcProjects.ExecutionUnavailable>(data.scope, {
++        ownership: activity.acquire(sessionID).pipe(Effect.map((lease) => owner.release(lease))),
+         onIdle: Effect.gen(function* () {
+           data.runners.delete(sessionID)
+           yield* status.set(sessionID, { type: "idle" })
+         }),
+         onBusy: status.set(sessionID, { type: "busy" }),
+         onInterrupt,
+       })
+       data.runners.set(sessionID, next)
+       return next
+     })
+@@ -139,13 +147,17 @@ const cancelBackgroundJobs = Effect.fn("SessionRunState.cancelBackgroundJobs")(f
+       { concurrency: "unbounded", discard: true },
+     )
+     batch = jobs.filter(matches)
+   }
+ })
+ 
+ function busyError(sessionID: SessionID) {
+   return new Session.BusyError({ sessionID })
+ }
+ 
+-export const node = LayerNode.make({ service: Service, layer: layer, deps: [BackgroundJob.node, SessionStatus.node] })
++export const node = LayerNode.make({
++  service: Service,
++  layer: layer,
++  deps: [BackgroundJob.node, SessionStatus.node, LegacyActivity.node, Session.node, Database.node],
++})
+ 
+ export * as SessionRunState from "./run-state"
+diff --git a/packages/opencode/src/tool/registry.ts b/packages/opencode/src/tool/registry.ts
+index 9167cb3ea..436288db3 100644
+--- a/packages/opencode/src/tool/registry.ts
++++ b/packages/opencode/src/tool/registry.ts
+@@ -1,10 +1,11 @@
++import { LegacyActivity } from "@/session/legacy-activity"
+ import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+ import { httpClient } from "@opencode-ai/core/effect/app-node-platform"
+ import { Ripgrep } from "@opencode-ai/core/ripgrep"
+ import { PlanExitTool } from "./plan"
+ import { Session } from "@/session/session"
+ import { QuestionTool } from "./question"
+ import { ShellTool } from "./shell"
+ import { EditTool } from "./edit"
+ import { GlobTool } from "./glob"
+ import { GrepTool } from "./grep"
+@@ -421,20 +422,21 @@ function normalizeZodJsonSchema(value: unknown): unknown {
+ }
+ 
+ function isJsonSchemaObject(value: unknown): value is Record<string, unknown> {
+   return typeof value === "object" && value !== null && !Array.isArray(value)
+ }
+ 
+ export const node = LayerNode.make({
+   service: Service,
+   layer,
+   deps: [
++    LegacyActivity.node,
+     Config.node,
+     Plugin.node,
+     Question.node,
+     Todo.node,
+     Agent.node,
+     Skill.node,
+     Session.node,
+     BackgroundJob.node,
+     Provider.node,
+     LSP.node,
+diff --git a/packages/opencode/src/tool/task.ts b/packages/opencode/src/tool/task.ts
+index d8ca640cf..08777aa14 100644
+--- a/packages/opencode/src/tool/task.ts
++++ b/packages/opencode/src/tool/task.ts
+@@ -1,10 +1,11 @@
++import { LegacyActivity } from "@/session/legacy-activity"
+ import * as Tool from "./tool"
+ import DESCRIPTION from "./task.txt"
+ import { ToolJsonSchema } from "./json-schema"
+ import { SessionV1 } from "@opencode-ai/core/v1/session"
+ import { BackgroundJob } from "@/background/job"
+ import { Session } from "@/session/session"
+ import { SessionID, MessageID } from "../session/schema"
+ import { MessageV2 } from "../session/message-v2"
+ import { Agent } from "../agent/agent"
+ import { deriveSubagentSessionPermission } from "../agent/subagent-permissions"
+@@ -81,25 +82,30 @@ function renderOutput(input: {
+ export const TaskTool = Tool.define(
+   id,
+   Effect.gen(function* () {
+     const agent = yield* Agent.Service
+     const background = yield* BackgroundJob.Service
+     const config = yield* Config.Service
+     const sessions = yield* Session.Service
+     const scope = yield* Scope.Scope
+     const flags = yield* RuntimeFlags.Service
+     const database = yield* Database.Service
++    const owner = yield* LegacyActivity.Service
++    const activity = LegacyActivity.sessions(owner, sessions, database)
+ 
+     const run = Effect.fn("TaskTool.execute")(function* (
+-      params: Schema.Schema.Type<typeof Parameters>,
+-      ctx: Tool.Context,
++      request: Schema.Schema.Type<typeof Parameters>,
++      context: Tool.Context,
+     ) {
++      const params = { ...request }
++      const ctx = { ...context }
++      const parentClaim = yield* activity.scoped(ctx.sessionID)
+       const cfg = yield* config.get()
+       const runInBackground = params.background === true
+       if (runInBackground && !flags.experimentalBackgroundSubagents) {
+         return yield* Effect.fail(
+           new Error("Background subagents require OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS=true"),
+         )
+       }
+ 
+       const parent = yield* sessions.get(ctx.sessionID)
+       let current = parent
+@@ -164,20 +170,23 @@ export const TaskTool = Tool.define(
+             ...childToolDenies.filter(
+               (deny) =>
+                 !childPermission.some(
+                   (rule) =>
+                     rule.permission === deny.permission && rule.pattern === deny.pattern && rule.action === deny.action,
+                 ),
+             ),
+           ],
+         }))
+ 
++      const childClaim = yield* activity.scoped(nextSession.id)
++      const ownership = LegacyActivity.ownership(owner, [parentClaim, childClaim])
++
+       const msg = yield* MessageV2.get({ sessionID: ctx.sessionID, messageID: ctx.messageID }).pipe(
+         Effect.provideService(Database.Service, database),
+         Effect.orDie,
+       )
+       if (msg.info.role !== "assistant") return yield* Effect.fail(new Error("Not an assistant message"))
+       const variant = msg.info.variant
+ 
+       const model = next.model ?? {
+         modelID: msg.info.modelID,
+         providerID: msg.info.providerID,
+@@ -222,74 +231,86 @@ export const TaskTool = Tool.define(
+           return yield* Effect.fail(new Error(`Subagent failed (task_id: ${nextSession.id}): ${failed.state.error}`))
+         }
+         return result.parts.findLast((item) => item.type === "text")?.text ?? ""
+       })
+ 
+       const inject = Effect.fn("TaskTool.injectBackgroundResult")(function* (
+         state: "completed" | "error",
+         text: string,
+       ) {
+         const currentParent = yield* sessions.get(ctx.sessionID)
+-        yield* ops
+-          .prompt({
+-            sessionID: ctx.sessionID,
+-            agent: currentParent.agent ?? ctx.agent,
+-            variant,
+-            parts: [
+-              {
+-                type: "text",
+-                synthetic: true,
+-                text: renderOutput({
+-                  sessionID: nextSession.id,
+-                  state,
+-                  summary:
+-                    state === "completed"
+-                      ? `Background task completed: ${params.description}`
+-                      : `Background task failed: ${params.description}`,
+-                  text,
+-                }),
+-              },
+-            ],
+-          })
+-          .pipe(Effect.ignore, Effect.forkIn(scope, { startImmediately: true }))
++        yield* activity
++          .fork(
++            ctx.sessionID,
++            ops
++              .prompt({
++                sessionID: ctx.sessionID,
++                agent: currentParent.agent ?? ctx.agent,
++                variant,
++                parts: [
++                  {
++                    type: "text",
++                    synthetic: true,
++                    text: renderOutput({
++                      sessionID: nextSession.id,
++                      state,
++                      summary:
++                        state === "completed"
++                          ? `Background task completed: ${params.description}`
++                          : `Background task failed: ${params.description}`,
++                      text,
++                    }),
++                  },
++                ],
++              })
++              .pipe(Effect.ignore),
++            scope,
++          )
++          .pipe(Effect.orDie)
+       })
+ 
+       const notify = Effect.fn("TaskTool.notifyBackgroundResult")(function* (jobID: string) {
+-        yield* background.wait({ id: jobID }).pipe(
+-          Effect.flatMap((result) => {
+-            if (result.info?.status === "completed") return inject("completed", result.info.output ?? "")
+-            if (result.info?.status === "error") return inject("error", result.info.error ?? "")
+-            return Effect.void
+-          }),
+-          Effect.forkIn(scope, { startImmediately: true }),
+-        )
++        yield* activity
++          .fork(
++            ctx.sessionID,
++            background.wait({ id: jobID }).pipe(
++              Effect.flatMap((result) => {
++                if (result.info?.status === "completed") return inject("completed", result.info.output ?? "")
++                if (result.info?.status === "error") return inject("error", result.info.error ?? "")
++                return Effect.void
++              }),
++            ),
++            scope,
++          )
++          .pipe(Effect.orDie)
+       })
+ 
+-      if (yield* background.extend({ id: nextSession.id, run: runTask() })) {
++      if (yield* background.extend({ id: nextSession.id, ownership, run: runTask() })) {
+         return {
+           title: params.description,
+           metadata: {
+             ...metadata,
+             background: true,
+             jobId: nextSession.id,
+           },
+           output: renderOutput({
+             sessionID: nextSession.id,
+             state: "running",
+             summary: "Background task updated",
+             text: BACKGROUND_UPDATED,
+           }),
+         }
+       }
+ 
+       const info = yield* background.start({
+         id: nextSession.id,
++        ownership,
+         type: id,
+         title: params.description,
+         metadata,
+         onPromote: Effect.all([
+           ctx.metadata({
+             title: params.description,
+             metadata: { ...metadata, background: true, jobId: nextSession.id },
+           }),
+           notify(nextSession.id),
+         ]),
+@@ -349,21 +370,21 @@ export const TaskTool = Tool.define(
+             if (Exit.hasInterrupts(exit))
+               yield* Effect.all([cancel, background.cancel(nextSession.id)], { discard: true })
+           }).pipe(
+             Effect.ensuring(
+               Effect.sync(() => {
+                 ctx.abort.removeEventListener("abort", onAbort)
+               }),
+             ),
+           ),
+       )
+-    })
++    }, Effect.scoped)
+ 
+     return {
+       description: flags.experimentalBackgroundSubagents
+         ? [DESCRIPTION, BACKGROUND_DESCRIPTION].join("\n\n")
+         : DESCRIPTION,
+       parameters: Parameters,
+       jsonSchema: flags.experimentalBackgroundSubagents ? undefined : ToolJsonSchema.fromSchema(BaseParameters),
+       execute: (params: Schema.Schema.Type<typeof Parameters>, ctx: Tool.Context) =>
+         run(params, ctx).pipe(Effect.orDie),
+     }
+diff --git a/packages/opencode/test/effect/runner.test.ts b/packages/opencode/test/effect/runner.test.ts
+index 27fe9e025..e80a2ebb9 100644
+--- a/packages/opencode/test/effect/runner.test.ts
++++ b/packages/opencode/test/effect/runner.test.ts
+@@ -505,10 +505,96 @@ describe("Runner", () => {
+       const fiber = yield* runner.startShell(Deferred.await(gate).pipe(Effect.as("ok"))).pipe(Effect.forkChild)
+       yield* waitForState(runner, "Shell")
+       expect(runner.busy).toBe(true)
+ 
+       yield* Deferred.succeed(gate, undefined)
+       yield* Fiber.await(fiber)
+       expect(runner.busy).toBe(false)
+     }),
+   )
+ })
++
++it.live(
++  "accepted Runner ownership survives a cancelled joiner and idle cleanup",
++  Effect.gen(function* () {
++    const scope = yield* Scope.Scope
++    const cleanup = yield* Deferred.make<void>()
++    const closing = yield* Deferred.make<void>()
++    const held = new Set<object>()
++    const runner = Runner.make<string>(scope, {
++      ownership: Effect.sync(() => {
++        const token = {}
++        held.add(token)
++        return Effect.sync(() => {
++          held.delete(token)
++        })
++      }),
++    })
++    yield* Effect.gen(function* () {
++      const caller = yield* runner
++        .ensureRunning(
++          Effect.never.pipe(
++            Effect.ensuring(Deferred.succeed(closing, undefined).pipe(Effect.andThen(Deferred.await(cleanup)))),
++          ),
++        )
++        .pipe(Effect.forkChild)
++      yield* waitForState(runner, "Running")
++      expect(held.size).toBe(1)
++      yield* Fiber.interrupt(caller)
++      expect(held.size).toBe(1)
++      const cancel = yield* runner.cancel.pipe(Effect.forkChild)
++      yield* Deferred.await(closing)
++      expect(runner.state._tag).toBe("Idle")
++      expect(held.size).toBe(1)
++      yield* Deferred.succeed(cleanup, undefined)
++      yield* Fiber.join(cancel)
++      expect(held.size).toBe(0)
++    }).pipe(Effect.ensuring(Deferred.succeed(cleanup, undefined)))
++  }),
++)
++
++it.live(
++  "accepted queued ownership survives waiter cancellation and releases only its generation",
++  Effect.gen(function* () {
++    const scope = yield* Scope.Scope
++    const releaseShell = yield* Deferred.make<void>()
++    const entered = yield* Deferred.make<void>()
++    const finish = yield* Deferred.make<void>()
++    const held = new Set<object>()
++    const runner = Runner.make<string>(scope, {
++      ownership: Effect.sync(() => {
++        const token = {}
++        held.add(token)
++        return Effect.sync(() => {
++          held.delete(token)
++        })
++      }),
++    })
++    yield* Effect.gen(function* () {
++      const shell = yield* runner
++        .startShell(Deferred.await(releaseShell).pipe(Effect.as("shell")))
++        .pipe(Effect.forkChild)
++      yield* waitForState(runner, "Shell")
++      const queued = yield* runner
++        .ensureRunning(
++          Deferred.succeed(entered, undefined).pipe(Effect.andThen(Deferred.await(finish)), Effect.as("run")),
++        )
++        .pipe(Effect.forkChild)
++      yield* waitForState(runner, "ShellThenRun")
++      expect(held.size).toBe(2)
++      yield* Fiber.interrupt(queued)
++      expect(held.size).toBe(2)
++      yield* Deferred.succeed(releaseShell, undefined)
++      yield* Deferred.await(entered)
++      yield* Fiber.join(shell)
++      expect(held.size).toBe(1)
++      yield* runner.cancel
++      expect(held.size).toBe(0)
++      expect(yield* runner.ensureRunning(Effect.succeed("new"))).toBe("new")
++      expect(held.size).toBe(0)
++    }).pipe(
++      Effect.ensuring(
++        Effect.all([Deferred.succeed(releaseShell, undefined), Deferred.succeed(finish, undefined)], { discard: true }),
++      ),
++    )
++  }),
++)
+diff --git a/packages/opencode/test/server/httpapi-ftc-project.test.ts b/packages/opencode/test/server/httpapi-ftc-project.test.ts
+index dfa6929a3..76c2225f2 100644
+--- a/packages/opencode/test/server/httpapi-ftc-project.test.ts
++++ b/packages/opencode/test/server/httpapi-ftc-project.test.ts
+@@ -1,56 +1,48 @@
++import { Global } from "@opencode-ai/core/global"
++import { LegacyActivity } from "../../src/session/legacy-activity"
++import { HttpRouter } from "effect/unstable/http"
++import { SessionCompaction } from "../../src/session/compaction"
+ import { expect, test } from "bun:test"
+-import { Context, Effect } from "effect"
++import { Context, Effect, Layer } from "effect"
+ import { HttpApiApp } from "../../src/server/routes/instance/httpapi/server"
+ import { AppRuntime } from "../../src/effect/app-runtime"
+-import { Database } from "@opencode-ai/core/database/database"
+-import { ProjectV2 } from "@opencode-ai/core/project"
+-import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder"
+-import { ProjectAssociations } from "@opencode-ai/core/ftc/projects/sql"
+-import { FtcProjectAdapters } from "@opencode-ai/core/ftc/projects/adapters"
+ import { AbsolutePath } from "@opencode-ai/core/schema"
+ import { SessionPrompt } from "../../src/session/prompt"
+ import { SessionID, MessageID } from "../../src/session/schema"
+ import { ModelV2 } from "@opencode-ai/core/model"
+ import { ProviderV2 } from "@opencode-ai/core/provider"
+ import { provideInstanceEffect, tmpdir, disposeAllInstances } from "../fixture/fixture"
+ 
+ const context = Context.makeUnsafe<unknown>(new Map())
+ 
+-test("actual OpenCode host denies unfenced activation and all managed legacy execution entrances", async () => {
++test("actual OpenCode host activates an idle root and denies all managed legacy execution entrances", async () => {
+   await using tmp = await tmpdir()
+   const web = HttpApiApp.webHandler()
+   const call = (route: string, payload?: unknown) =>
+     web.handler(
+       new Request(`http://localhost${route}`, {
+         method: payload === undefined ? "GET" : "POST",
+         headers: { "content-type": "application/json", "x-opencode-directory": tmp.path },
+         ...(payload === undefined ? {} : { body: JSON.stringify(payload) }),
+       }),
+       context,
+     )
+   try {
+     const opening = await call("/api/ftc/project/open", { root: tmp.path })
+-    expect(opening.status).toBe(409)
+-    expect(await opening.json()).toMatchObject({ reason: { code: "activation_unavailable" } })
++    expect(opening.status).toBe(200)
++    const activated = await opening.json()
++    expect(activated.canonicalRoot).toBe(tmp.path)
+     const legacy = await call("/session", {})
+     expect(legacy.status).toBe(200)
+     const saved = await legacy.json()
+-    // Seed only the existing association fixture, without claiming host activation succeeded.
+-    const project = await AppRuntime.runPromise(
+-      Effect.gen(function* () {
+-        const database = yield* Database.Service
+-        const host = yield* ProjectV2.Service.pipe(Effect.provide(AppNodeBuilder.build(ProjectV2.node)))
+-        const folder = yield* FtcProjectAdapters.folders(host).resolve({ root: AbsolutePath.make(tmp.path) })
+-        return yield* ProjectAssociations.make(database.db).associate(folder)
+-      }),
+-    )
++    const project = activated
+     expect((await call("/api/ftc/project/open", { root: tmp.path })).status).toBe(200)
+     const chatResponse = await call("/api/ftc/project/chat", { projectID: project.projectID })
+     expect(chatResponse.status).toBe(200)
+     const chat = await chatResponse.json()
+     expect((await call("/api/ftc/project/submit", { chat, prompt: { text: "disabled" } })).status).toBe(409)
+     const raw = await call(`/api/session/${chat.sessionID}/prompt`, { prompt: { text: "disabled" }, resume: false })
+     expect(raw.status).toBeGreaterThanOrEqual(400)
+     expect(await raw.json()).toMatchObject({ code: "execution_disabled" })
+     const model = { providerID: "test", modelID: "test" }
+     const calls = [
+@@ -63,33 +55,140 @@ test("actual OpenCode host denies unfenced activation and all managed legacy exe
+     ] as const
+     for (const [route, payload] of calls)
+       expect((await call(`/session/${saved.id}/${route}`, payload)).status).toBe(400)
+     expect((await call(`/session/${saved.id}`)).status).toBe(200)
+     const history = await call(`/session/${saved.id}/message`)
+     expect(history.status).toBe(200)
+     expect(await history.json()).toEqual([])
+     const results = await AppRuntime.runPromise(
+       Effect.gen(function* () {
+         const prompts = yield* SessionPrompt.Service
++        const compaction = yield* SessionCompaction.Service
+         const sessionID = SessionID.make(saved.id)
+         return yield* Effect.all([
+           prompts.prompt({ sessionID, parts: [{ type: "text", text: "disabled" }], noReply: true }).pipe(Effect.flip),
+           prompts.loop({ sessionID }).pipe(Effect.flip),
+           prompts
+             .shell({
+               sessionID,
+               command: "must-not-run",
+               agent: "build",
+               model: { providerID: ProviderV2.ID.make("test"), modelID: ModelV2.ID.make("test") },
+             })
+             .pipe(Effect.flip),
+           prompts.command({ sessionID, command: "init", arguments: "" }).pipe(Effect.flip),
++          compaction
++            .create({
++              sessionID,
++              agent: "build",
++              model: { providerID: ProviderV2.ID.make("test"), modelID: ModelV2.ID.make("test") },
++              auto: false,
++            })
++            .pipe(Effect.flip),
++          compaction
++            .process({ sessionID, parentID: MessageID.ascending(), messages: [], auto: false })
++            .pipe(Effect.flip),
+         ])
+       }).pipe(provideInstanceEffect(tmp.path)),
+     )
+-    expect(results).toHaveLength(4)
++    expect(results).toHaveLength(6)
+     results.forEach((error) => expect(error).toMatchObject({ code: "legacy_execution_disabled" }))
+   } finally {
+     await disposeAllInstances()
+     await web.dispose()
+   }
+ }, 30000)
++
++test("actual AppRuntime and fresh listener graph exclude association while web handler keeps its owner", async () => {
++  await using tmp = await tmpdir()
++  const web = HttpApiApp.webHandler()
++  const fresh = HttpRouter.toWebHandler(HttpApiApp.createRoutes(), {
++    memoMap: Layer.makeMemoMapUnsafe(),
++    disableLogger: true,
++  })
++  const owner = await AppRuntime.runPromise(LegacyActivity.Service)
++  const root = AbsolutePath.make(tmp.path)
++  const lease = await AppRuntime.runPromise(owner.acquire(root, Effect.void))
++  const call = (handler: typeof web.handler) =>
++    handler(
++      new Request("http://localhost/api/ftc/project/open", {
++        method: "POST",
++        headers: { "content-type": "application/json", "x-opencode-directory": tmp.path },
++        body: JSON.stringify({ root }),
++      }),
++      context,
++    )
++  try {
++    expect((await call(fresh.handler)).status).toBe(409)
++    expect((await call(web.handler)).status).toBe(409)
++    await fresh.dispose()
++    expect((await call(web.handler)).status).toBe(409)
++    await AppRuntime.runPromise(owner.release(lease))
++    expect((await call(web.handler)).status).toBe(200)
++  } finally {
++    await AppRuntime.runPromise(owner.release(lease))
++    await fresh.dispose()
++    await disposeAllInstances()
++    await web.dispose()
++  }
++}, 30000)
++
++test("actual prompt_async holds accepted work through paused admission and noReply completion", async () => {
++  await using tmp = await tmpdir({
++    init: async (directory) => {
++      await Bun.write(`${Global.Path.config}/node_modules/.fixture`, "local fixture")
++      await Bun.write(
++        `${Global.Path.config}/package-lock.json`,
++        JSON.stringify({ packages: { "": { dependencies: { "@opencode-ai/plugin": "local" } } } }),
++      )
++      const plugin = `${directory}/pause.mjs`
++      await Bun.write(
++        plugin,
++        `export default async () => ({ "chat.message": async () => { await Bun.write(${JSON.stringify(directory + "/entered")}, "ready"); while (!(await Bun.file(${JSON.stringify(directory + "/release")}).exists())) await Bun.sleep(5) } })`,
++      )
++      await Bun.write(`${directory}/opencode.json`, JSON.stringify({ plugin: [`file://${plugin}`] }))
++    },
++  })
++  const web = HttpRouter.toWebHandler(HttpApiApp.createRoutes(), {
++    memoMap: Layer.makeMemoMapUnsafe(),
++    disableLogger: true,
++  })
++  const call = (route: string, payload?: unknown) =>
++    web.handler(
++      new Request(`http://localhost${route}`, {
++        method: payload === undefined ? "GET" : "POST",
++        headers: { "content-type": "application/json", "x-opencode-directory": tmp.path },
++        ...(payload === undefined ? {} : { body: JSON.stringify(payload) }),
++      }),
++      context,
++    )
++  try {
++    const session = await (await call("/session", {})).json()
++    const accepted = await call(`/session/${session.id}/prompt_async`, {
++      noReply: true,
++      model: { providerID: "test", modelID: "test" },
++      parts: [{ type: "text", text: "accepted" }],
++    })
++    expect(accepted.status).toBe(204)
++    expect((await call("/api/ftc/project/open", { root: tmp.path })).status).toBe(409)
++    await Effect.runPromise(
++      Effect.promise(() => Bun.file(`${tmp.path}/entered`).exists()).pipe(
++        Effect.repeat({ until: (ready) => ready, schedule: undefined }),
++        Effect.timeout("5 seconds"),
++      ),
++    )
++    expect((await call("/api/ftc/project/open", { root: tmp.path })).status).toBe(409)
++    await Bun.write(`${tmp.path}/release`, "release")
++    await Effect.runPromise(
++      Effect.promise(async () => (await call(`/session/${session.id}/message`)).json()).pipe(
++        Effect.repeat({ until: (messages) => messages.length === 1 }),
++        Effect.timeout("5 seconds"),
++      ),
++    )
++    const opened = await call("/api/ftc/project/open", { root: tmp.path })
++    expect(opened.status).toBe(200)
++  } finally {
++    await Bun.write(`${tmp.path}/release`, "release")
++    await disposeAllInstances()
++    await web.dispose()
++  }
++}, 15000)
+diff --git a/packages/opencode/test/session/legacy-activity.test.ts b/packages/opencode/test/session/legacy-activity.test.ts
+new file mode 100644
+index 000000000..88efb38f2
+--- /dev/null
++++ b/packages/opencode/test/session/legacy-activity.test.ts
+@@ -0,0 +1,214 @@
++import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
++import { expect } from "bun:test"
++import fs from "node:fs/promises"
++import path from "node:path"
++import { Context, Deferred, Effect, Exit, Fiber, Layer, Scope } from "effect"
++import { LegacyActivity } from "../../src/session/legacy-activity"
++import { Database } from "@opencode-ai/core/database/database"
++import { LayerNode } from "@opencode-ai/core/effect/layer-node"
++import { ProjectAssociations } from "@opencode-ai/core/ftc/projects/sql"
++import { FtcProjectAdapters } from "@opencode-ai/core/ftc/projects/adapters"
++import { FtcProjects } from "@opencode-ai/core/ftc/projects"
++import { AbsolutePath } from "@opencode-ai/core/schema"
++import { ProjectV2 } from "@opencode-ai/core/project"
++import { tmpdirScoped } from "../fixture/fixture"
++import { testEffect } from "../lib/effect"
++
++const it = testEffect(LayerNode.compile(LayerNode.group([Database.node, CrossSpawnSpawner.node])))
++const fixture = Effect.gen(function* () {
++  const tmp = yield* tmpdirScoped()
++  const database = yield* Database.Service
++  const owner = yield* LegacyActivity.make
++  const repository = ProjectAssociations.make(database.db)
++  const identity = FtcProjectAdapters.folders({
++    resolve: () => Effect.succeed({ id: ProjectV2.ID.global, directory: AbsolutePath.make(path.parse(tmp).root) }),
++  })
++  const folder = yield* identity.resolve({ root: AbsolutePath.make(tmp) })
++  const guarded = FtcProjectAdapters.activation(repository, owner.withAssociation)
++  const facade = FtcProjects.make(identity, guarded, {
++    createSession: () => Effect.die("Unused"),
++    getSession: () => Effect.die("Unused"),
++  })
++  const acquire = (root = folder.canonicalRoot) => owner.acquire(root, FtcProjectAdapters.legacy(database.db)({ root }))
++  return { tmp, database, owner, repository, identity, folder, guarded, facade, acquire }
++})
++
++it.live("legacy first excludes real association through symlink aliases and exact stale releases", () =>
++  Effect.gen(function* () {
++    const f = yield* fixture
++    const alias = path.join(f.tmp, "alias")
++    yield* Effect.promise(() => fs.symlink(f.tmp, alias))
++    const first = yield* f.acquire()
++    const retained = yield* f.owner.retain(first)
++    yield* f.owner.release(first)
++    yield* f.owner.release(first)
++    expect(yield* f.facade.openProject({ root: AbsolutePath.make(alias) }).pipe(Effect.flip)).toMatchObject({
++      code: "activation_unavailable",
++    })
++    expect(yield* f.repository.findRoot(f.folder.canonicalRoot)).toBeUndefined()
++    yield* f.owner.release(retained)
++    const created = yield* f.facade.createProject({ root: AbsolutePath.make(alias) })
++    expect((yield* f.facade.openProject({ root: f.folder.canonicalRoot })).projectID).toBe(created.projectID)
++    expect(yield* f.acquire().pipe(Effect.flip)).toMatchObject({ code: "legacy_execution_disabled" })
++  }),
++)
++
++it.live("association holds exclusion across the actual commit and a waiting legacy check observes it", () =>
++  Effect.gen(function* () {
++    const f = yield* fixture
++    const entered = yield* Deferred.make<void>()
++    const finish = yield* Deferred.make<void>()
++    const adapter = FtcProjectAdapters.activation(
++      {
++        ...f.repository,
++        associate: (folder) =>
++          Deferred.succeed(entered, undefined).pipe(
++            Effect.andThen(Deferred.await(finish)),
++            Effect.andThen(f.repository.associate(folder)),
++          ),
++      },
++      f.owner.withAssociation,
++    )
++    yield* Effect.gen(function* () {
++      const writing = yield* adapter.associate(f.folder).pipe(Effect.forkChild)
++      yield* Deferred.await(entered)
++      const admission = yield* f.acquire().pipe(Effect.exit, Effect.forkChild)
++      yield* Effect.yieldNow
++      expect(admission.pollUnsafe()).toBeUndefined()
++      const other = yield* tmpdirScoped()
++      const otherFolder = yield* f.identity.resolve({ root: AbsolutePath.make(other) })
++      expect((yield* f.guarded.associate(otherFolder)).canonicalRoot).toBe(otherFolder.canonicalRoot)
++      yield* Deferred.succeed(finish, undefined)
++      yield* Fiber.join(writing)
++      expect(Exit.isFailure(yield* Fiber.join(admission))).toBe(true)
++    }).pipe(Effect.ensuring(Deferred.succeed(finish, undefined)))
++  }),
++)
++
++it.live("failed and cancelled association commits release exclusion without losing durable reconciliation", () =>
++  Effect.gen(function* () {
++    const f = yield* fixture
++    const entered = yield* Deferred.make<void>()
++    const waiting = yield* f.owner
++      .withAssociation(f.folder, Deferred.succeed(entered, undefined).pipe(Effect.andThen(Effect.never)))
++      .pipe(Effect.forkChild)
++    yield* Deferred.await(entered)
++    yield* Fiber.interrupt(waiting)
++    const claim = yield* f.acquire()
++    yield* f.owner.release(claim)
++    const failure = { code: "association_store_failed", recovery: "retry" } as const
++    expect(yield* f.owner.withAssociation(f.folder, Effect.fail(failure)).pipe(Effect.flip)).toEqual(failure)
++    const committed = yield* f.guarded.associate(f.folder)
++    expect((yield* f.guarded.associate(f.folder)).projectID).toBe(committed.projectID)
++  }),
++)
++
++it.live("narrow live layer shares fresh memo graphs until the final borrower closes; explicit factories isolate", () =>
++  Effect.gen(function* () {
++    const firstScope = yield* Scope.make()
++    const secondScope = yield* Scope.make()
++    const first = Context.get(
++      yield* Layer.buildWithMemoMap(LegacyActivity.live, Layer.makeMemoMapUnsafe(), firstScope),
++      LegacyActivity.Service,
++    )
++    const second = Context.get(
++      yield* Layer.buildWithMemoMap(LegacyActivity.live, Layer.makeMemoMapUnsafe(), secondScope),
++      LegacyActivity.Service,
++    )
++    expect(first).toBe(second)
++    const independent = yield* LegacyActivity.make
++    expect(independent).not.toBe(first)
++    const f = yield* fixture
++    const lease = yield* first.acquire(f.folder.canonicalRoot, Effect.void)
++    yield* Scope.close(firstScope, Exit.void)
++    expect(yield* second.withAssociation(f.folder, f.repository.associate(f.folder)).pipe(Effect.flip)).toMatchObject({
++      code: "activation_unavailable",
++    })
++    const closing = yield* Scope.close(secondScope, Exit.void).pipe(Effect.forkChild)
++    yield* Effect.yieldNow
++    expect(closing.pollUnsafe()).toBeUndefined()
++    const cancelledScope = yield* Scope.make()
++    yield* Effect.addFinalizer(() => first.release(lease))
++    const cancelled = yield* Layer.buildWithMemoMap(
++      LegacyActivity.live,
++      Layer.makeMemoMapUnsafe(),
++      cancelledScope,
++    ).pipe(Effect.forkChild)
++    yield* Effect.yieldNow
++    yield* Fiber.interrupt(cancelled).pipe(Effect.timeout("500 millis"))
++    yield* Scope.close(cancelledScope, Exit.void)
++    const nextScope = yield* Scope.make()
++    yield* Effect.addFinalizer(() => first.release(lease))
++    const reopening = yield* Layer.buildWithMemoMap(LegacyActivity.live, Layer.makeMemoMapUnsafe(), nextScope).pipe(
++      Effect.forkChild,
++    )
++    yield* Effect.yieldNow
++    expect(reopening.pollUnsafe()).toBeUndefined()
++    yield* first.release(lease)
++    yield* Fiber.join(closing)
++    const next = Context.get(yield* Fiber.join(reopening), LegacyActivity.Service)
++    expect(next).not.toBe(first)
++    yield* Scope.close(nextScope, Exit.void)
++  }),
++)
++
++it.live("shutdown waits for an in-flight association commit before retiring root exclusion", () =>
++  Effect.gen(function* () {
++    const f = yield* fixture
++    const scope = yield* Scope.make()
++    const owner = yield* LegacyActivity.make.pipe(Scope.provide(scope))
++    const entered = yield* Deferred.make<void>()
++    const finish = yield* Deferred.make<void>()
++    yield* Effect.gen(function* () {
++      const write = yield* owner
++        .withAssociation(
++          f.folder,
++          Deferred.succeed(entered, undefined).pipe(
++            Effect.andThen(Deferred.await(finish)),
++            Effect.andThen(f.repository.associate(f.folder)),
++          ),
++        )
++        .pipe(Effect.forkChild)
++      yield* Deferred.await(entered)
++      const close = yield* Scope.close(scope, Exit.void).pipe(Effect.forkChild)
++      yield* Effect.yieldNow
++      expect(close.pollUnsafe()).toBeUndefined()
++      yield* Deferred.succeed(finish, undefined)
++      yield* Fiber.join(write)
++      yield* Fiber.join(close)
++    }).pipe(Effect.ensuring(Deferred.succeed(finish, undefined)))
++  }),
++)
++
++it.live("association snapshots canonical root and Location before a suspended commit", () =>
++  Effect.gen(function* () {
++    const f = yield* fixture
++    const other = yield* tmpdirScoped()
++    const alternate = yield* f.identity.resolve({ root: AbsolutePath.make(other) })
++    const input = { ...f.folder }
++    const entered = yield* Deferred.make<void>()
++    const finish = yield* Deferred.make<void>()
++    const holding = yield* f.owner
++      .withAssociation(
++        f.folder,
++        Deferred.succeed(entered, undefined).pipe(
++          Effect.andThen(Deferred.await(finish)),
++          Effect.andThen(Effect.fail({ code: "association_store_failed", recovery: "retry" } as const)),
++        ),
++      )
++      .pipe(Effect.exit, Effect.forkChild)
++    yield* Deferred.await(entered)
++    yield* Effect.gen(function* () {
++      const writing = yield* f.guarded.associate(input).pipe(Effect.forkChild)
++      yield* Effect.yieldNow
++      input.canonicalRoot = alternate.canonicalRoot
++      input.location = alternate.location
++      yield* Deferred.succeed(finish, undefined)
++      yield* Fiber.join(holding)
++      const result = yield* Fiber.join(writing)
++      expect(result.canonicalRoot).toBe(f.folder.canonicalRoot)
++      expect(result.location.directory).toBe(f.folder.location.directory)
++      expect(yield* f.repository.findRoot(alternate.canonicalRoot)).toBeUndefined()
++    }).pipe(Effect.ensuring(Deferred.succeed(finish, undefined)))
++  }),
++)
+diff --git a/packages/opencode/test/session/prompt.test.ts b/packages/opencode/test/session/prompt.test.ts
+index da6e0f8d0..06275435d 100644
+--- a/packages/opencode/test/session/prompt.test.ts
++++ b/packages/opencode/test/session/prompt.test.ts
+@@ -1,19 +1,25 @@
++import { tmpdirScoped, provideInstance } from "../fixture/fixture"
++import { LegacyActivity } from "../../src/session/legacy-activity"
++import { FtcProjectAdapters } from "@opencode-ai/core/ftc/projects/adapters"
++import { ProjectAssociations } from "@opencode-ai/core/ftc/projects/sql"
++import { ProjectV2 } from "@opencode-ai/core/project"
++import { AbsolutePath } from "@opencode-ai/core/schema"
+ import { ConfigV1 } from "@opencode-ai/core/v1/config/config"
+ import { SessionV1 } from "@opencode-ai/core/v1/session"
+ import { Database } from "@opencode-ai/core/database/database"
+ import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+ import { SessionProjector } from "@opencode-ai/core/session/projector"
+ import { eq } from "drizzle-orm"
+ import { EventV2Bridge } from "@/event-v2-bridge"
+ import { expect } from "bun:test"
+-import { Cause, Deferred, Duration, Effect, Exit, Fiber, Layer } from "effect"
++import { Cause, Context, Deferred, Duration, Effect, Exit, Fiber, Layer, Stream } from "effect"
+ import path from "path"
+ import { fileURLToPath } from "url"
+ import { NamedError } from "@opencode-ai/core/util/error"
+ import { Agent as AgentSvc } from "../../src/agent/agent"
+ import { BackgroundJob } from "@/background/job"
+ import { Command } from "../../src/command"
+ import { Config } from "@/config/config"
+ import { LSP } from "@/lsp/lsp"
+ import { MCP } from "../../src/mcp"
+ import { Permission } from "../../src/permission"
+@@ -162,20 +168,21 @@ const blockingProcessor = Layer.succeed(
+   SessionProcessor.Service.of({
+     create: () => Effect.sync(() => processorCreateStarted.shift()?.()).pipe(Effect.andThen(Effect.never)),
+   }),
+ )
+ 
+ const runtimeFlags = RuntimeFlags.layer({ experimentalEventSystem: true })
+ 
+ const testLLMServerNode = LayerNode.make({ service: TestLLMServer, layer: TestLLMServer.layer, deps: [] })
+ 
+ const promptRoot = LayerNode.group([
++  LegacyActivity.node,
+   SessionPrompt.node,
+   Session.node,
+   SessionProjector.node,
+   MessageV2.node,
+   Snapshot.node,
+   LLM.node,
+   Env.node,
+   AgentSvc.node,
+   Command.node,
+   Permission.node,
+@@ -2461,10 +2468,232 @@ noLLMServer.instance(
+         expect(err).not.toBeInstanceOf(TypeError)
+         expect(NamedError.Unknown.isInstance(err)).toBe(true)
+         if (NamedError.Unknown.isInstance(err)) {
+           expect(err.data.message).toContain('Command not found: "nonexistent-command-xyz"')
+           expect(err.data.message).toContain("init")
+         }
+       }
+     }),
+   30_000,
+ )
++
++unixNoLLMServer(
++  "command template cancellation holds root until real child cleanup",
++  () =>
++    Effect.gen(function* () {
++      const { directory } = yield* TestInstance
++      const ready = path.join(directory, "template-ready")
++      const stopping = path.join(directory, "template-stopping")
++      const release = path.join(directory, "template-release")
++      const pidFile = path.join(directory, "template-pid")
++      yield* writeConfig(directory, {
++        ...cfg,
++        shell: "/bin/bash",
++        command: {
++          probe: {
++            template:
++              "!`" +
++              `trap 'touch "${stopping}"; while [ ! -e "${release}" ]; do sleep 0.02; done; exit' TERM; echo $$ > "${pidFile}"; touch "${ready}"; while :; do sleep 0.02; done` +
++              "`",
++          },
++        },
++      })
++      const { prompt, chat } = yield* boot()
++      const afs = yield* FSUtil.Service
++      const owner = yield* LegacyActivity.Service
++      const database = yield* Database.Service
++      const folder = yield* FtcProjectAdapters.folders({
++        resolve: () =>
++          Effect.succeed({ id: ProjectV2.ID.global, directory: AbsolutePath.make(path.parse(directory).root) }),
++      }).resolve({ root: AbsolutePath.make(directory) })
++      const associate = FtcProjectAdapters.activation(
++        ProjectAssociations.make(database.db),
++        owner.withAssociation,
++      ).associate(folder)
++      yield* Effect.gen(function* () {
++        const command = yield* prompt
++          .command({ sessionID: chat.id, command: "probe", arguments: "" })
++          .pipe(Effect.forkChild)
++        yield* pollWithTimeout(
++          afs.existsSafe(ready).pipe(Effect.map((found) => (found ? true : undefined))),
++          "template process never started",
++        )
++        const cancel = yield* Fiber.interrupt(command).pipe(Effect.forkChild)
++        yield* pollWithTimeout(
++          afs.existsSafe(stopping).pipe(Effect.map((found) => (found ? true : undefined))),
++          "template process never received termination",
++        )
++        expect(yield* associate.pipe(Effect.flip)).toMatchObject({ code: "activation_unavailable" })
++        yield* writeText(release, "release")
++        yield* Fiber.join(cancel)
++        const pid = Number(yield* Effect.promise(() => Bun.file(pidFile).text()))
++        expect(() => process.kill(pid, 0)).toThrow()
++        expect((yield* associate).canonicalRoot).toBe(AbsolutePath.make(directory))
++      }).pipe(Effect.ensuring(writeText(release, "release").pipe(Effect.orDie)))
++    }),
++  { git: true },
++  15000,
++)
++
++noLLMServer.instance(
++  "internal prompt captures Session identity before suspended admission",
++  () =>
++    Effect.gen(function* () {
++      const { directory } = yield* TestInstance
++      const { prompt, sessions, chat } = yield* boot()
++      const other = yield* tmpdirScoped()
++      const managed = yield* sessions.create({ title: "managed" }).pipe(provideInstance(other))
++      const database = yield* Database.Service
++      const owner = yield* LegacyActivity.Service
++      const identity = FtcProjectAdapters.folders({
++        resolve: () => Effect.succeed({ id: ProjectV2.ID.global, directory: AbsolutePath.make("/") }),
++      })
++      const folder = yield* identity.resolve({ root: AbsolutePath.make(directory) })
++      yield* ProjectAssociations.make(database.db).associate(
++        yield* identity.resolve({ root: AbsolutePath.make(other) }),
++      )
++      const entered = yield* Deferred.make<void>()
++      const unlock = yield* Deferred.make<void>()
++      const lock = yield* owner
++        .withAssociation(
++          folder,
++          Deferred.succeed(entered, undefined).pipe(
++            Effect.andThen(Deferred.await(unlock)),
++            Effect.andThen(Effect.fail({ code: "association_store_failed", recovery: "retry" } as const)),
++          ),
++        )
++        .pipe(Effect.exit, Effect.forkChild)
++      yield* Deferred.await(entered)
++      const input = {
++        sessionID: chat.id,
++        noReply: true,
++        model: ref,
++        parts: [{ type: "text" as const, text: "captured" }],
++      }
++      yield* Effect.gen(function* () {
++        const admission = yield* prompt.prompt(input).pipe(
++          Effect.forkChild,
++          Effect.tap(() => Effect.yieldNow),
++        )
++        input.sessionID = managed.id
++        yield* Deferred.succeed(unlock, undefined)
++        yield* Fiber.join(lock)
++        yield* Fiber.join(admission)
++        expect(yield* sessions.messages({ sessionID: managed.id })).toEqual([])
++        expect(yield* sessions.messages({ sessionID: chat.id })).toHaveLength(1)
++      }).pipe(Effect.ensuring(Deferred.succeed(unlock, undefined)))
++    }),
++  { config: cfg },
++)
++
++class DetachedActivityProbe extends Context.Service<
++  DetachedActivityProbe,
++  { started: Deferred.Deferred<void>; finish: Deferred.Deferred<void> }
++>()("test/DetachedActivityProbe") {}
++for (const producer of ["title", "summary", "prune"] as const) {
++  const probe = Layer.effect(
++    DetachedActivityProbe,
++    Effect.gen(function* () {
++      return { started: yield* Deferred.make<void>(), finish: yield* Deferred.make<void>() }
++    }),
++  )
++  const pause = Effect.gen(function* () {
++    const gates = yield* DetachedActivityProbe
++    yield* Deferred.succeed(gates.started, undefined)
++    yield* Deferred.await(gates.finish)
++  })
++  const probes = [
++    [
++      SessionSummary.node,
++      Layer.effect(
++        SessionSummary.Service,
++        Effect.gen(function* () {
++          const captured = yield* Effect.context<DetachedActivityProbe>()
++          return SessionSummary.Service.of({
++            summarize: () => (producer === "summary" ? pause.pipe(Effect.provide(captured)) : Effect.void),
++            diff: () => Effect.succeed([]),
++            computeDiff: () => Effect.succeed([]),
++          })
++        }),
++      ).pipe(Layer.provide(probe)),
++    ],
++    [
++      SessionCompaction.node,
++      Layer.effect(
++        SessionCompaction.Service,
++        Effect.gen(function* () {
++          const captured = yield* Effect.context<DetachedActivityProbe>()
++          return SessionCompaction.Service.of({
++            isOverflow: () => Effect.succeed(false),
++            create: () => Effect.void,
++            process: () => Effect.succeed("stop"),
++            prune: () => (producer === "prune" ? pause.pipe(Effect.provide(captured)) : Effect.void),
++          })
++        }),
++      ).pipe(Layer.provide(probe)),
++    ],
++    [
++      LLM.node,
++      Layer.effect(
++        LLM.Service,
++        Effect.gen(function* () {
++          const captured = yield* Effect.context<DetachedActivityProbe>()
++          return LLM.Service.of({
++            stream: () => Stream.fromEffect(pause.pipe(Effect.provide(captured))).pipe(Stream.drain),
++          })
++        }),
++      ).pipe(Layer.provide(probe)),
++    ],
++    [
++      SessionProcessor.node,
++      Layer.succeed(
++        SessionProcessor.Service,
++        SessionProcessor.Service.of({
++          create: (input) =>
++            Effect.succeed({
++              message: input.assistantMessage,
++              updateToolCall: () => Effect.succeed(undefined),
++              completeToolCall: () => Effect.void,
++              process: () => Effect.succeed("stop"),
++            }),
++        }),
++      ),
++    ],
++    [LSP.node, lsp],
++    [MCP.node, makeMcp()],
++    [RuntimeFlags.node, runtimeFlags],
++  ] as const
++  const detached = testEffect(LayerNode.compile(promptRoot, probes).pipe(Layer.provideMerge(probe)))
++  detached.instance(
++    `detached ${producer} keeps activation excluded after foreground ends`,
++    () =>
++      Effect.gen(function* () {
++        const { directory } = yield* TestInstance
++        const gates = yield* DetachedActivityProbe
++        const database = yield* Database.Service
++        const owner = yield* LegacyActivity.Service
++        const sessions = yield* Session.Service
++        const prompt = yield* SessionPrompt.Service
++        const chat = yield* sessions.create(producer === "title" ? {} : { title: "Pinned" })
++        const folder = yield* FtcProjectAdapters.folders({
++          resolve: () => Effect.succeed({ id: ProjectV2.ID.global, directory: AbsolutePath.make("/") }),
++        }).resolve({ root: AbsolutePath.make(directory) })
++        const associate = FtcProjectAdapters.activation(
++          ProjectAssociations.make(database.db),
++          owner.withAssociation,
++        ).associate(folder)
++        yield* Effect.gen(function* () {
++          yield* prompt.prompt({
++            sessionID: chat.id,
++            model: ref,
++            parts: [{ type: "text", text: "hello" }],
++            noReply: true,
++          })
++          yield* prompt.loop({ sessionID: chat.id })
++          yield* Deferred.await(gates.started)
++          expect(yield* associate.pipe(Effect.flip)).toMatchObject({ code: "activation_unavailable" })
++          yield* Deferred.succeed(gates.finish, undefined)
++        }).pipe(Effect.ensuring(Deferred.succeed(gates.finish, undefined)))
++      }),
++    { config: cfg },
++  )
++}
+diff --git a/packages/opencode/test/tool/task.test.ts b/packages/opencode/test/tool/task.test.ts
+index 42f46fd35..b37cbcea5 100644
+--- a/packages/opencode/test/tool/task.test.ts
++++ b/packages/opencode/test/tool/task.test.ts
+@@ -1,10 +1,17 @@
++import { FtcProjectAdapters } from "@opencode-ai/core/ftc/projects/adapters"
++import { ProjectAssociations } from "@opencode-ai/core/ftc/projects/sql"
++import { ProjectV2 } from "@opencode-ai/core/project"
++import { AbsolutePath } from "@opencode-ai/core/schema"
++import { TestInstance, tmpdirScoped, provideInstance } from "../fixture/fixture"
++import path from "node:path"
++import { LegacyActivity } from "../../src/session/legacy-activity"
+ import { afterEach, describe, expect } from "bun:test"
+ import { SessionV1 } from "@opencode-ai/core/v1/session"
+ import { Database } from "@opencode-ai/core/database/database"
+ import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+ import { SessionProjector } from "@opencode-ai/core/session/projector"
+ import { Cause, Deferred, Effect, Exit, Fiber, Layer } from "effect"
+ import { Agent } from "../../src/agent/agent"
+ import { BackgroundJob } from "@/background/job"
+ import { EventV2Bridge } from "@/event-v2-bridge"
+ import { Config } from "@/config/config"
+@@ -31,20 +38,21 @@ afterEach(async () => {
+ 
+ const ref = {
+   providerID: ProviderV2.ID.make("test"),
+   modelID: ModelV2.ID.make("test-model"),
+ }
+ 
+ const layer = (flags: Partial<RuntimeFlags.Info> = {}) =>
+   LayerNode.compile(
+     LayerNode.group([
+       Agent.node,
++      LegacyActivity.node,
+       BackgroundJob.node,
+       EventV2Bridge.node,
+       Config.node,
+       CrossSpawnSpawner.node,
+       Session.node,
+       SessionProjector.node,
+       SessionRunState.node,
+       SessionStatus.node,
+       Truncate.node,
+       ToolRegistry.node,
+@@ -1092,10 +1100,101 @@ describe("tool.task", () => {
+         run: Effect.never,
+       })
+ 
+       yield* runState.cancel(chat.id)
+ 
+       expect((yield* jobs.get(child.id))?.status).toBe("cancelled")
+       expect((yield* jobs.get(grandchild.id))?.status).toBe("cancelled")
+     }),
+   )
+ })
++
++background.instance("task notification and injected parent work retain activation exclusion after job completion", () =>
++  Effect.gen(function* () {
++    const { directory } = yield* TestInstance
++    const database = yield* Database.Service
++    const owner = yield* LegacyActivity.Service
++    const { chat, assistant } = yield* seed()
++    const tool = yield* TaskTool
++    const def = yield* tool.init()
++    const injected = yield* Deferred.make<void>()
++    const finish = yield* Deferred.make<void>()
++    const jobs = yield* BackgroundJob.Service
++    const folder = yield* FtcProjectAdapters.folders({
++      resolve: () =>
++        Effect.succeed({ id: ProjectV2.ID.global, directory: AbsolutePath.make(path.parse(directory).root) }),
++    }).resolve({ root: AbsolutePath.make(directory) })
++    const associate = FtcProjectAdapters.activation(
++      ProjectAssociations.make(database.db),
++      owner.withAssociation,
++    ).associate(folder)
++    yield* Effect.gen(function* () {
++      const result = yield* def.execute(
++        { description: "controlled", prompt: "controlled", subagent_type: "general", background: true },
++        {
++          sessionID: chat.id,
++          messageID: assistant.id,
++          agent: "build",
++          abort: new AbortController().signal,
++          extra: {
++            promptOps: {
++              ...stubOps(),
++              prompt: (input) =>
++                input.sessionID === chat.id
++                  ? Deferred.succeed(injected, undefined).pipe(
++                      Effect.andThen(Deferred.await(finish)),
++                      Effect.as(reply(input, "injected")),
++                    )
++                  : Effect.succeed(reply(input, "child done")),
++            } satisfies TaskPromptOps,
++          },
++          messages: [],
++          metadata: () => Effect.void,
++          ask: () => Effect.void,
++        },
++      )
++      yield* Deferred.await(injected)
++      expect((yield* jobs.wait({ id: result.metadata.sessionId })).info?.status).toBe("completed")
++      expect(yield* associate.pipe(Effect.flip)).toMatchObject({ code: "activation_unavailable" })
++      yield* Deferred.succeed(finish, undefined)
++    }).pipe(Effect.ensuring(Deferred.succeed(finish, undefined)))
++  }),
++)
++
++it.instance("reused task resolves the stored child root and refuses managed child before acceptance", () =>
++  Effect.gen(function* () {
++    const database = yield* Database.Service
++    const owner = yield* LegacyActivity.Service
++    const sessions = yield* Session.Service
++    const { chat, assistant } = yield* seed()
++    const other = yield* tmpdirScoped()
++    const child = yield* sessions.create({ title: "foreign" }).pipe(provideInstance(other))
++    const folder = yield* FtcProjectAdapters.folders({
++      resolve: () => Effect.succeed({ id: ProjectV2.ID.global, directory: AbsolutePath.make(path.parse(other).root) }),
++    }).resolve({ root: AbsolutePath.make(other) })
++    yield* FtcProjectAdapters.activation(ProjectAssociations.make(database.db), owner.withAssociation).associate(folder)
++    const tool = yield* TaskTool
++    const def = yield* tool.init()
++    const accepted: string[] = []
++    const exit = yield* def
++      .execute(
++        { description: "foreign", prompt: "must refuse", subagent_type: "general", task_id: child.id },
++        {
++          sessionID: chat.id,
++          messageID: assistant.id,
++          agent: "build",
++          abort: new AbortController().signal,
++          extra: { promptOps: stubOps({ onPrompt: () => accepted.push("prompt") }) },
++          messages: [],
++          metadata: () =>
++            Effect.sync(() => {
++              accepted.push("metadata")
++            }),
++          ask: () => Effect.void,
++        },
++      )
++      .pipe(Effect.exit)
++    expect(Exit.isFailure(exit)).toBe(true)
++    expect(accepted).toEqual([])
++    expect(yield* sessions.messages({ sessionID: child.id })).toEqual([])
++  }),
++)
+diff --git a/packages/server/src/routes.ts b/packages/server/src/routes.ts
+index 511fa5b35..65730b738 100644
+--- a/packages/server/src/routes.ts
++++ b/packages/server/src/routes.ts
+@@ -1,10 +1,11 @@
++import type { Scope } from "effect"
+ import { Database } from "@opencode-ai/core/database/database"
+ import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+ import { httpClient } from "@opencode-ai/core/effect/app-node-platform"
+ import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder"
+ import { EventV2 } from "@opencode-ai/core/event"
+ import { Credential } from "@opencode-ai/core/credential"
+ import { PermissionSaved } from "@opencode-ai/core/permission/saved"
+ import { PtyTicket } from "@opencode-ai/core/pty/ticket"
+ import { SessionV2 } from "@opencode-ai/core/session"
+ import { SessionExecution } from "@opencode-ai/core/session/execution"
+@@ -52,46 +53,47 @@ export function createRoutes(password?: string) {
+       ? ServerAuth.Config.configLayer({ username: "opencode", password: Option.some(password) })
+       : ServerAuth.Config.layer,
+   )
+ }
+ 
+ export function createEmbeddedRoutes() {
+   return makeRoutes(ServerAuth.Config.configLayer({ username: "opencode", password: Option.none() }))
+ }
+ 
+ function makeRoutes<AuthError, AuthServices>(auth: Layer.Layer<ServerAuth.Config, AuthError, AuthServices>) {
+-  const ftc = ftcHost(() => Effect.void)
++  const ftc = ftcHost(Effect.succeed((_, commit) => commit))
+   const serviceLayer = AppNodeBuilder.build(applicationServices(ftc), ftc.replacements)
+ 
+   return HttpApiBuilder.layer(Api, { openapiPath: "/openapi.json" }).pipe(
+     Layer.provide(handlers),
+     Layer.provide(sessionLocationLayer),
+     Layer.provide(locationLayer),
+     Layer.provide(authorizationLayer),
+     Layer.provide(schemaErrorLayer),
+     Layer.provide(auth),
+     Layer.provide(serviceLayer),
+   )
+ }
+ 
+ export const routes = createRoutes()
+ 
+ export const webHandler = () =>
+   HttpRouter.toWebHandler(routes.pipe(Layer.provide(HttpServer.layerServices)), { disableLogger: true })
+ 
+ /** Shared graph constructor for standalone/SDK and OpenCode's independent V2 host. */
+-export function ftcHost(activate: FtcComposition.Ports["activate"]) {
++export function ftcHost(activation: Effect.Effect<FtcComposition.Ports["activate"], never, Scope.Scope>) {
+   const runtime = makeGlobalNode({
+     service: FtcComposition.Service,
+     layer: Layer.effect(
+       FtcComposition.Service,
+       Effect.gen(function* () {
++        const activate = yield* activation
+         const database = yield* Database.Service
+         const project = yield* ProjectV2.Service
+         const store = yield* SessionStore.Service
+         const locations = yield* LocationServiceMap.Service
+         const events = yield* EventV2.Service
+         return yield* FtcComposition.disabled({
+           repository: ProjectAssociations.make(database.db),
+           folders: FtcProjectAdapters.folders(project),
+           store,
+           locations,

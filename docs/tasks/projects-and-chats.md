@@ -54,7 +54,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 - [x] [M2-03 — Acquire one atomic project execution lease](#m2-03)
 - [x] [M2-04 — Submit without admitting a busy chat's draft](#m2-04)
 - [x] [M2-05 — Release ownership after settled stop or completion](#m2-05)
-- [ ] [M2-06 — Expose project API and compose the execution gate](#m2-06)
+- [x] [M2-06 — Expose project API and compose the execution gate](#m2-06)
 
 ## Execution tasks
 
@@ -179,20 +179,24 @@ Verified 2026-10-07 at `e2fe3f44c`: [implementation evidence](../validation/M2-0
 
 **Interfaces:** Binds M2 Session ports to M3 and M3 gate ports to M2 only in host wiring. Produces typed commands/events for M1 and one process-wide gate.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc-integration/m2-06.test.ts`, add `composed duplicate windows cannot bypass gate`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc-integration/m2-06.test.ts`, add `composed duplicate windows cannot bypass gate`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(maxActiveForProject).toBe(1); expect(otherProjectStarted).toBe(true); expect(restartedActive).toBeUndefined()
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc-integration/m2-06.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Register handlers in existing API/handler composition and regenerate Client. Add composed prompt/resume/wake/stop race tests with real M2/M3, persist separate histories across reopen, and require explicit post-crash resume. Keep this suite outside module-only selection.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc-integration/m2-06.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. This is a composed suite, not the module-only suite.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): expose project api and compose the execution gate`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc-integration/m2-06.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Register handlers in existing API/handler composition and regenerate Client. Add composed prompt/resume/wake/stop race tests with real M2/M3, persist separate histories across reopen, and require explicit post-crash resume. Keep this suite outside module-only selection.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc-integration/m2-06.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. This is a composed suite, not the module-only suite.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): expose project api and compose the execution gate`.
+
+Verified 2026-10-08: original API/concurrency candidate `7dd70f8ae`, independently reviewed lost-wake repair `c5d2f03e9`, activation-fence candidate `4a8005983` and owner-shell repair `02d355917`. [Activation implementation](../validation/M2-06-activation-implementation.md), [task review](../validation/M2-06-activation-review.md), [approved scoped repair review](../validation/M2-06-activation-fix1-review.md). Current-process software requirements are complete; production FTC execution remains disabled pending M9, and Windows/release/physical acceptance is unverified.
 
 ## Module completion gate
 
-- [ ] All 6 tasks above and their substeps are complete, with evidence attached.
-- [ ] From `packages/core`: `bun test ./test/ftc/projects-and-chats`. Expected: isolated tests pass with no other product module, internet, provider key, downloaded model, installed FTC toolchain or robot. Extract any helper boundary still pulling in those dependencies.
+- [x] All 6 tasks above and their substeps are complete, with evidence attached.
+- [x] From `packages/core`: `bun test ./test/ftc/projects-and-chats`. Expected: isolated tests pass with no other product module, internet, provider key, downloaded model, installed FTC toolchain or robot. Extract any helper boundary still pulling in those dependencies.
 - [ ] Production adapter contracts, composed checks and this module's required real-platform/physical checks pass; report these separately.
 - [ ] `bun typecheck` passes in touched packages; public Protocol/HttpApi changes have regenerated clients; relevant acceptance evidence in [progress](progress.md) is linked.
+
+Module gate remains open: all six task behaviors and the isolated project/chat suite have software evidence, but production FTC enablement, assigned first-release acceptance and Windows/platform validation are still pending. Do not mark M2 complete from the controlled/API evidence alone.
