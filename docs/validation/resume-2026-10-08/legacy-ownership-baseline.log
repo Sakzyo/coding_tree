@@ -1,0 +1,46 @@
+bun test v1.3.14 (0d9b296a)
+
+test/effect/runner.test.ts:
+(pass) Runner > ensureRunning starts work and returns result [21.01ms]
+(pass) Runner > ensureRunning propagates work failures [1.60ms]
+(pass) Runner > concurrent callers share the same run [22.42ms]
+(pass) Runner > concurrent callers all receive same error [13.71ms]
+(pass) Runner > ensureRunning can be called again after previous run completes [1.27ms]
+(pass) Runner > second ensureRunning ignores new work if already running [59.33ms]
+(pass) Runner > cancel interrupts running work [2.32ms]
+(pass) Runner > cancel on idle is a no-op [0.31ms]
+(pass) Runner > cancel with onInterrupt resolves callers gracefully [1.62ms]
+(pass) Runner > cancel with queued callers resolves all [3.86ms]
+(pass) Runner > work can be started after cancel [2.64ms]
+(pass) Runner > cancel does not deadlock when replacement work starts before interrupted run exits [4.27ms]
+(pass) Runner > shell runs exclusively [1.82ms]
+(pass) Runner > shell rejects when run is active [2.58ms]
+(pass) Runner > shell rejects when another shell is running [1.54ms]
+(pass) Runner > cancel interrupts shell [11.93ms]
+(pass) Runner > cancel does not mask shell defects [4.20ms]
+(pass) Runner > ensureRunning queues behind shell then runs after [1.56ms]
+(pass) Runner > multiple ensureRunning callers share the queued run behind shell [17.12ms]
+(pass) Runner > cancel during shell_then_run cancels both [4.19ms]
+(pass) Runner > onIdle fires when returning to idle from running [0.84ms]
+(pass) Runner > onIdle fires on cancel [1.93ms]
+(pass) Runner > onBusy fires when shell starts [16.44ms]
+(pass) Runner > busy is true during run [2.68ms]
+(pass) Runner > busy is true during shell [7.48ms]
+
+test/background/job.test.ts:
+(pass) background.job > tracks started jobs through completion [163.92ms]
+(pass) background.job > returns a running snapshot when wait times out [53.06ms]
+(pass) background.job > deduplicates concurrent starts for a running id [62.09ms]
+(pass) background.job > waits for extensions before completing a running job [152.75ms]
+(pass) background.job > runs extensions after earlier work completes [77.57ms]
+(pass) background.job > rejects extensions after a job completes [89.28ms]
+(pass) background.job > records failed jobs [84.63ms]
+(pass) background.job > ignores stale settlements after restarting a failed job [46.26ms]
+(pass) background.job > can cancel running jobs [24.49ms]
+(pass) background.job > promotes running jobs without interrupting them [24.85ms]
+(pass) background.job > returns immutable snapshots [23.37ms]
+
+ 36 pass
+ 0 fail
+ 95 expect() calls
+Ran 36 tests across 2 files. [5.38s]
