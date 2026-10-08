@@ -1,0 +1,9 @@
+$ tsgo --noEmit
+test/ftc-learning.test.ts(38,62): error TS2339: Property 'element' does not exist on type '$Array<Struct<{ readonly id: String; readonly prompt: String; readonly requiresExplanation: Literal<true>; readonly requiresProjectApplication: Literal<true>; readonly requiresPhysicalValidation: decodeTo<...>; readonly explanationCriteria: String; readonly projectApplicationCriteria: String; }>>'.
+test/ftc-learning.test.ts(50,112): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '{ readonly kind: "exercise"; readonly courseID: string; readonly courseVersion: string; readonly lessonID: string; readonly lessonVersion: string; readonly language: "en" | "zh"; readonly projectID: string; ... 6 more ...; readonly requiredEvidence: readonly { ...; }[]; }' is not assignable to parameter of type '{ readonly kind: "exercise"; readonly courseID: string; readonly courseVersion: string; readonly lessonID: string; readonly lessonVersion: string; readonly language: "en" | "zh"; ... 7 more ...; readonly requiredEvidence: readonly { ...; }[]; } | { ...; }'.
+      Type '{ readonly kind: "exercise"; readonly courseID: string; readonly courseVersion: string; readonly lessonID: string; readonly lessonVersion: string; readonly language: "en" | "zh"; readonly projectID: string; ... 6 more ...; readonly requiredEvidence: readonly { ...; }[]; }' is not assignable to type '{ readonly kind: "exercise"; readonly courseID: string; readonly courseVersion: string; readonly lessonID: string; readonly lessonVersion: string; readonly language: "en" | "zh"; readonly projectID: string & Brand<...>; ... 6 more ...; readonly requiredEvidence: readonly { ...; }[]; }'.
+        Types of property 'projectID' are incompatible.
+          Type 'string' is not assignable to type 'string & Brand<"Project.ID">'.
+            Type 'string' is not assignable to type 'Brand<"Project.ID">'.

@@ -1,0 +1,4 @@
+packages/core/src/ftc/learning.ts: OK
+packages/core/test/ftc/learning-and-progress/m12-03.test.ts: OK
+packages/schema/src/ftc-learning.ts: OK
+packages/schema/test/ftc-learning.test.ts: OK

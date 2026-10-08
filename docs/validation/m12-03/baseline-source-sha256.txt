@@ -1,0 +1,9 @@
+33d6c3d3d8f6ae7a769355fb95f33ef99f3f1382a05dcb38fae2b4878f171884  packages/core/src/ftc/learning.ts
+6917dce3b95eea8351a4b89de3549a4660ea836ecf9164e47d784950e6ba3bb5  packages/core/test/ftc/learning-and-progress/m12-01.test.ts
+e482c9d700d7615b313eadd6caf436fd2755a0407ec1b55551b6a17d811b7fca  packages/core/test/ftc/learning-and-progress/m12-02.test.ts
+5499e84078c458f0390144170b1a7e3fd63d061945ed6eb40853351af7cca352  packages/schema/src/ftc-learning.ts
+56cdfe56e8050637d830f596fb980f441b335469d9fee94bba93d080f3346d68  packages/schema/test/ftc-learning.test.ts
+8d6120ae9755c2986baaa99d9bc44916215a9c6b13216ff96e74b861dbca972b  packages/schema/src/ftc-knowledge.ts
+9262770dd0b10c043677cb74f5656a62805ed89c9fe82be3932ace8f0b12c113  packages/core/src/ftc/knowledge.ts
+98a7d751726b594ff598852faff48ea23076ed868a9eb82ae1d730ea7a2c4920  packages/schema/src/ftc-project.ts
+1940fc8a123213368bce4392dca08b3f49c56df88d02f911c3fe1efcda691b53  packages/schema/src/ftc-configuration.ts

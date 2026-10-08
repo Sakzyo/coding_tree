@@ -1,0 +1,25 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-learning.test.ts:
+(pass) attempt IDs require the exact generated prefix and records round-trip as serializable values [1.65ms]
+454 |  *
+455 |  * @category encoding
+456 |  * @since 4.0.0
+457 |  */
+458 | export function encodeUnknownEffect(schema, options) {
+459 |   const parser = run(SchemaAST.flip(schema.ast));
+                                          ^
+TypeError: undefined is not an object (evaluating 'schema.ast')
+      at encodeUnknownEffect (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/SchemaParser.js:459:37)
+      at encodeUnknownEffect (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Schema.js:945:31)
+      at encodeUnknownSync (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Schema.js:1183:18)
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/schema/test/ftc-learning.test.ts:35:26)
+(fail) exercise requests preserve canonical snapshots, all evidence and optional omission [0.21ms]
+(pass) evidence requires labelled provenance and nonnegative timestamp, with no completion assertion [0.34ms]
+(pass) learning errors omit undefined properties and public identifiers remain stable and unique [0.16ms]
+(pass) navigation contracts keep exact entry levels, omitted personal metadata and result bindings [0.27ms]
+
+ 4 pass
+ 1 fail
+ 23 expect() calls
+Ran 5 tests across 1 file. [50.00ms]

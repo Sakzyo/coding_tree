@@ -1,0 +1,418 @@
+diff --git a/packages/core/src/ftc/learning.ts b/packages/core/src/ftc/learning.ts
+index d63dfa53d..4b0e96c67 100644
+--- a/packages/core/src/ftc/learning.ts
++++ b/packages/core/src/ftc/learning.ts
+@@ -2,6 +2,7 @@ export * as FtcLearning from "./learning"
+ 
+ import { FtcKnowledge } from "@opencode-ai/schema/ftc-knowledge"
+ import { FtcLearning } from "@opencode-ai/schema/ftc-learning"
++import { optional } from "@opencode-ai/schema/schema"
+ import semver from "semver"
+ import { Context, Effect, Layer, Schema } from "effect"
+ import type { EffectDrizzleSqlite } from "@opencode-ai/effect-drizzle-sqlite"
+@@ -29,7 +30,31 @@ export type NextLessonRequest = FtcLearning.NextLessonRequest
+ export const LessonResult = FtcLearning.LessonResult
+ export type LessonResult = FtcLearning.LessonResult
+ 
++export const RequestExerciseCommand = FtcLearning.RequestExerciseCommand
++export type RequestExerciseCommand = FtcLearning.RequestExerciseCommand
++export const ExerciseProjectSnapshot = FtcLearning.ExerciseProjectSnapshot
++export type ExerciseProjectSnapshot = FtcLearning.ExerciseProjectSnapshot
++export const Track = FtcLearning.Track
++export type Track = FtcLearning.Track
++export const ExerciseRequest = FtcLearning.ExerciseRequest
++export type ExerciseRequest = FtcLearning.ExerciseRequest
++export const ExerciseResult = FtcLearning.ExerciseResult
++export type ExerciseResult = FtcLearning.ExerciseResult
++
++const ExerciseBinding = Schema.Struct({
++  request: RequestExerciseCommand,
++  courseVersion: Schema.String,
++  track: Track,
++  // Curriculum applicability can exist while the project has selected neither.
++  contentLibrary: optional(Schema.String.check(Schema.isMinLength(1), Schema.isTrimmed())),
++  contentLibraryVersion: optional(Schema.String),
++})
++
+ export interface LessonLookup {
++  readonly exercise?: {
++    readonly binding: (input: RequestExerciseCommand) => Effect.Effect<typeof ExerciseBinding.Type, unknown>
++    readonly lookup: (input: FtcKnowledge.ContentQuery) => Effect.Effect<FtcKnowledge.ContentResult, unknown>
++  }
+   readonly course?: {
+     // Trusted caller pins applicability and current version; no implicit latest content or SDK.
+     readonly binding: (input: ProgressRequest) => Effect.Effect<
+@@ -48,6 +73,7 @@ export interface LessonLookup {
+ }
+ 
+ export interface Interface {
++  readonly requestExercise: (input: RequestExerciseCommand) => Effect.Effect<ExerciseResult, LearningError>
+   readonly selectEntry: (input: SelectEntryRequest) => Effect.Effect<Progress, LearningError>
+   readonly skipLesson: (input: SkipLessonRequest) => Effect.Effect<Progress, LearningError>
+   readonly nextLesson: (input: NextLessonRequest) => Effect.Effect<LessonResult, LearningError>
+@@ -89,17 +115,33 @@ export const layer = (lookup: LessonLookup, db: EffectDrizzleSqlite.EffectSQLite
+       } satisfies LearningError)
+     return structuredClone(decoded)
+   })
+-  const course = Effect.fn("FtcLearning.course")(function* (requested: NextLessonRequest) {
++  const contentCourse = Effect.fn("FtcLearning.contentCourse")(function* (
++    requested: NextLessonRequest,
++    supplied?: {
++      readonly binding: {
++        readonly courseVersion: string
++        readonly sdkVersion: string
++        readonly library?: string
++        readonly libraryVersion?: string
++      }
++      readonly lookup: NonNullable<LessonLookup["course"]>["lookup"]
++      readonly track?: Track
++    },
++  ) {
+     const unavailable = (reason: FtcLearning.UnavailableReason) => ({
+       kind: "unavailable" as const,
+       ...requested,
+       reason,
+     })
+-    if (!lookup.course) return unavailable("course_lookup_unavailable")
+-    const binding = yield* lookup.course.binding(Object.freeze({ courseID: requested.courseID })).pipe(
+-      Effect.map((value) => ({ ...value })),
+-      Effect.mapError((): LearningError => ({ code: "course_lookup_failed", recovery: "retry" })),
+-    )
++    const port = supplied ?? lookup.course
++    if (!port) return unavailable("course_lookup_unavailable")
++    const binding =
++      typeof port.binding === "function"
++        ? yield* port.binding(Object.freeze({ courseID: requested.courseID })).pipe(
++            Effect.map((value) => ({ ...value })),
++            Effect.mapError((): LearningError => ({ code: "course_lookup_failed", recovery: "retry" })),
++          )
++        : port.binding
+     if (
+       !concreteVersion(binding.courseVersion) ||
+       !concreteVersion(binding.sdkVersion) ||
+@@ -118,7 +160,7 @@ export const layer = (lookup: LessonLookup, db: EffectDrizzleSqlite.EffectSQLite
+       sdkVersion: binding.sdkVersion,
+       ...(binding.library === undefined ? {} : { library: binding.library, libraryVersion: binding.libraryVersion }),
+     }).pipe(Effect.mapError((): LearningError => ({ code: "invalid_course", recovery: "refresh_lessons" })))
+-    const result = yield* lookup.course.lookup(Object.freeze(query)).pipe(
++    const result = yield* port.lookup(Object.freeze(query)).pipe(
+       Effect.mapError((): LearningError => ({ code: "course_lookup_failed", recovery: "retry" })),
+       Effect.flatMap((value) =>
+         capture(FtcKnowledge.ContentResult, value).pipe(
+@@ -151,6 +193,8 @@ export const layer = (lookup: LessonLookup, db: EffectDrizzleSqlite.EffectSQLite
+       } satisfies LearningError)
+     const record = records[0]
+     if (
++      (supplied?.track === "foundations" && (record.library !== undefined || record.libraryRange !== undefined)) ||
++      (supplied?.track !== undefined && supplied.track !== "foundations" && record.library === undefined) ||
+       !semver.validRange(record.sdkRange) ||
+       !semver.satisfies(binding.sdkVersion, record.sdkRange) ||
+       (record.library === undefined) !== (record.libraryRange === undefined) ||
+@@ -191,7 +235,6 @@ export const layer = (lookup: LessonLookup, db: EffectDrizzleSqlite.EffectSQLite
+         courseID: requested.courseID,
+         recovery: "refresh_lessons",
+       } satisfies LearningError)
+-    if (!document.entryPoints) return unavailable("missing_entry_points")
+     return {
+       kind: "course" as const,
+       courseID: requested.courseID,
+@@ -201,6 +244,13 @@ export const layer = (lookup: LessonLookup, db: EffectDrizzleSqlite.EffectSQLite
+       entryPoints: document.entryPoints,
+     }
+   })
++  const course = Effect.fn("FtcLearning.course")(function* (requested: NextLessonRequest) {
++    const current = yield* contentCourse(requested)
++    if (current.kind === "unavailable") return current
++    if (!current.entryPoints)
++      return { kind: "unavailable" as const, ...requested, reason: "missing_entry_points" as const }
++    return { ...current, entryPoints: current.entryPoints }
++  })
+   type Course = Extract<Effect.Success<ReturnType<typeof course>>, { kind: "course" }>
+   const progress = (
+     current: Course,
+@@ -253,6 +303,114 @@ export const layer = (lookup: LessonLookup, db: EffectDrizzleSqlite.EffectSQLite
+           recovery: "refresh_lessons",
+         } satisfies LearningError)
+   return Layer.succeed(Service, {
++    requestExercise: Effect.fn("FtcLearning.requestExercise")(function* (input: RequestExerciseCommand) {
++      const requested = yield* capture(RequestExerciseCommand, input).pipe(
++        Effect.map(deepFreeze),
++        Effect.mapError((): LearningError => ({ code: "invalid_input", recovery: "correct_input" })),
++      )
++      const project = requested.projectSnapshot
++      const selection = requested.configuration.manifest.managedPathing
++      if (
++        !concreteVersion(project.sdkVersion) ||
++        (project.library === undefined) !== (project.libraryVersion === undefined) ||
++        (project.libraryVersion !== undefined && !concreteVersion(project.libraryVersion)) ||
++        (selection === "neither" ? project.library !== undefined : project.library === undefined)
++      )
++        return yield* Effect.fail({ code: "invalid_input", recovery: "correct_input" } satisfies LearningError)
++      if (!lookup.exercise)
++        return yield* Effect.fail({
++          code: "course_unavailable",
++          courseID: requested.courseID,
++          reason: "course_lookup_unavailable",
++          recovery: "refresh_lessons",
++        } satisfies LearningError)
++      const binding = yield* lookup.exercise.binding(requested).pipe(
++        Effect.mapError((): LearningError => ({ code: "course_lookup_failed", recovery: "retry" })),
++        Effect.flatMap((value) =>
++          capture(ExerciseBinding, value).pipe(
++            Effect.mapError(
++              (): LearningError => ({
++                code: "invalid_course",
++                courseID: requested.courseID,
++                recovery: "refresh_lessons",
++              }),
++            ),
++          ),
++        ),
++      )
++      if (
++        JSON.stringify(binding.request) !== JSON.stringify(requested) ||
++        !concreteVersion(binding.courseVersion) ||
++        (binding.track === "foundations"
++          ? binding.contentLibrary !== undefined || binding.contentLibraryVersion !== undefined
++          : binding.contentLibrary === undefined || !concreteVersion(binding.contentLibraryVersion))
++      )
++        return yield* Effect.fail({
++          code: "invalid_course",
++          courseID: requested.courseID,
++          recovery: "refresh_lessons",
++        } satisfies LearningError)
++      if (
++        binding.track !== "foundations" &&
++        selection !== "neither" &&
++        (binding.track !== selection ||
++          binding.contentLibrary !== project.library ||
++          binding.contentLibraryVersion !== project.libraryVersion)
++      )
++        return yield* Effect.fail({
++          code: "course_unavailable",
++          courseID: requested.courseID,
++          reason: "incompatible",
++          recovery: "refresh_lessons",
++        } satisfies LearningError)
++      const current = yield* contentCourse(
++        { courseID: requested.courseID, language: requested.language },
++        {
++          binding: {
++            courseVersion: binding.courseVersion,
++            sdkVersion: project.sdkVersion,
++            ...(binding.track === "foundations"
++              ? project.library === undefined
++                ? {}
++                : { library: project.library, libraryVersion: project.libraryVersion }
++              : { library: binding.contentLibrary, libraryVersion: binding.contentLibraryVersion }),
++          },
++          lookup: lookup.exercise.lookup,
++          track: binding.track,
++        },
++      )
++      if (current.kind === "unavailable")
++        return yield* Effect.fail({
++          code: "course_unavailable",
++          courseID: requested.courseID,
++          reason: current.reason,
++          recovery: "refresh_lessons",
++        } satisfies LearningError)
++      const lesson = current.lessons.find((lesson) => lesson.id === requested.lessonID)
++      if (!lesson)
++        return yield* Effect.fail({
++          code: "lesson_not_found",
++          courseID: requested.courseID,
++          lessonID: requested.lessonID,
++          recovery: "refresh_lessons",
++        } satisfies LearningError)
++      if (binding.track !== "foundations" && selection === "neither") return { kind: "pathing_required" as const }
++      return {
++        kind: "exercise" as const,
++        courseID: requested.courseID,
++        courseVersion: current.courseVersion,
++        lessonID: lesson.id,
++        lessonVersion: lesson.version,
++        language: requested.language,
++        projectID: project.projectID,
++        configurationRevision: requested.configuration.revision,
++        sdkVersion: project.sdkVersion,
++        managedPathing: selection,
++        track: binding.track,
++        ...(project.library === undefined ? {} : { library: project.library, libraryVersion: project.libraryVersion }),
++        requiredEvidence: lesson.exercises,
++      }
++    }),
+     selectEntry: Effect.fn("FtcLearning.selectEntry")(function* (input: SelectEntryRequest) {
+       const requested = yield* capture(SelectEntryRequest, input).pipe(
+         Effect.mapError((): LearningError => ({ code: "invalid_input", recovery: "correct_input" })),
+@@ -368,6 +526,14 @@ function concreteVersion(value: unknown): value is string {
+   return typeof value === "string" && semver.valid(value) === value
+ }
+ 
++function deepFreeze<T>(value: T): T {
++  if (value !== null && typeof value === "object") {
++    Object.values(value).forEach(deepFreeze)
++    Object.freeze(value)
++  }
++  return value
++}
++
+ function capture<S extends Schema.Top>(schema: S, input: unknown) {
+   return Schema.decodeUnknownEffect(schema, { onExcessProperty: "error" })(input).pipe(
+     Effect.map((value) => structuredClone(value)),
+diff --git a/packages/schema/src/ftc-learning.ts b/packages/schema/src/ftc-learning.ts
+index 21af986c6..2d0da8eaf 100644
+--- a/packages/schema/src/ftc-learning.ts
++++ b/packages/schema/src/ftc-learning.ts
+@@ -2,6 +2,7 @@ export * as FtcLearning from "./ftc-learning"
+ 
+ import { Schema } from "effect"
+ import { FtcKnowledge } from "./ftc-knowledge"
++import { FtcConfiguration } from "./ftc-configuration"
+ import { Project } from "./project"
+ import { ascending } from "./identifier"
+ import { optional, statics } from "./schema"
+@@ -65,6 +66,53 @@ export const NextLessonRequest = Schema.Struct({ courseID: Text, language: Schem
+   identifier: "FtcLearning.NextLessonRequest",
+ })
+ 
++// Consumed immutable applicability facts, not another project or inspection store.
++export interface ExerciseProjectSnapshot extends Schema.Schema.Type<typeof ExerciseProjectSnapshot> {}
++export const ExerciseProjectSnapshot = Schema.Struct({
++  projectID: Project.ID,
++  sdkVersion: Text,
++  library: optional(Text),
++  libraryVersion: optional(Text),
++}).annotate({ identifier: "FtcLearning.ExerciseProjectSnapshot" })
++
++export interface RequestExerciseCommand extends Schema.Schema.Type<typeof RequestExerciseCommand> {}
++export const RequestExerciseCommand = Schema.Struct({
++  courseID: Text,
++  lessonID: Text,
++  language: Schema.Literals(["en", "zh"]),
++  projectSnapshot: ExerciseProjectSnapshot,
++  configuration: FtcConfiguration.ManifestSnapshot,
++}).annotate({ identifier: "FtcLearning.RequestExerciseCommand" })
++
++export const Track = Schema.Literals(["foundations", "pedro", "road-runner"]).annotate({
++  identifier: "FtcLearning.Track",
++})
++export type Track = typeof Track.Type
++
++export interface ExerciseRequest extends Schema.Schema.Type<typeof ExerciseRequest> {}
++export const ExerciseRequest = Schema.Struct({
++  kind: Schema.Literal("exercise"),
++  courseID: Text,
++  courseVersion: Text,
++  lessonID: Text,
++  lessonVersion: Text,
++  language: Schema.Literals(["en", "zh"]),
++  projectID: Project.ID,
++  configurationRevision: FtcConfiguration.Revision,
++  sdkVersion: Text,
++  managedPathing: FtcConfiguration.Manifest.fields.managedPathing,
++  library: optional(Text),
++  libraryVersion: optional(Text),
++  track: Track,
++  requiredEvidence: Schema.Array(FtcKnowledge.Exercise).check(Schema.isMinLength(1)),
++}).annotate({ identifier: "FtcLearning.ExerciseRequest" })
++
++export const ExerciseResult = Schema.Union([
++  ExerciseRequest,
++  Schema.Struct({ kind: Schema.Literal("pathing_required") }),
++]).annotate({ identifier: "FtcLearning.ExerciseResult" })
++export type ExerciseResult = typeof ExerciseResult.Type
++
+ export const UnavailableReason = Schema.Literals([
+   "not_found",
+   "incompatible",
+diff --git a/packages/schema/test/ftc-learning.test.ts b/packages/schema/test/ftc-learning.test.ts
+index dc5b6785b..8fe62e424 100644
+--- a/packages/schema/test/ftc-learning.test.ts
++++ b/packages/schema/test/ftc-learning.test.ts
+@@ -2,6 +2,8 @@ import { expect, test } from "bun:test"
+ import { Schema } from "effect"
+ import { FtcLearning } from "../src/ftc-learning"
+ import { Project } from "../src/project"
++import { FtcConfiguration } from "../src/ftc-configuration"
++import { FtcKnowledge } from "../src/ftc-knowledge"
+ 
+ const input = {
+   attemptID: FtcLearning.AttemptID.create(),
+@@ -24,6 +26,76 @@ test("attempt IDs require the exact generated prefix and records round-trip as s
+   expect(Schema.is(FtcLearning.Attempt)({ ...input, outcome: "completed" })).toBe(false)
+ })
+ 
++test("exercise requests preserve canonical snapshots, all evidence and optional omission", () => {
++  const command = {
++    courseID: "generic",
++    lessonID: "lesson",
++    language: "en" as const,
++    projectSnapshot: {
++      projectID: input.projectID,
++      sdkVersion: "11.1.0",
++      library: undefined,
++      libraryVersion: undefined,
++    },
++    configuration: {
++      revision: "a".repeat(64),
++      manifest: { schemaVersion: 1 as const, hardware: [], managedPathing: "neither" as const },
++    },
++  }
++  const encoded = Schema.encodeSync(FtcLearning.RequestExerciseCommand)(command)
++  expect(encoded.projectSnapshot).toEqual({ projectID: input.projectID, sdkVersion: "11.1.0" })
++  expect(FtcLearning.RequestExerciseCommand.fields.configuration).toBe(FtcConfiguration.ManifestSnapshot)
++  expect(FtcLearning.ExerciseRequest.fields.requiredEvidence.value).toBe(FtcKnowledge.Exercise)
++  const request = {
++    kind: "exercise" as const,
++    courseID: "generic",
++    courseVersion: "1.0.0",
++    lessonID: "lesson",
++    lessonVersion: "1.0.0",
++    projectID: input.projectID,
++    configurationRevision: command.configuration.revision,
++    sdkVersion: "11.1.0",
++    managedPathing: "neither" as const,
++    language: "en" as const,
++    track: "foundations" as const,
++    requiredEvidence: [
++      {
++        id: "e",
++        prompt: "Explain and apply",
++        requiresExplanation: true as const,
++        requiresProjectApplication: true as const,
++        explanationCriteria: "Explain",
++        projectApplicationCriteria: "Apply",
++        requiresPhysicalValidation: undefined,
++      },
++    ],
++    library: undefined,
++    libraryVersion: undefined,
++  }
++  const serialized = Schema.encodeSync(FtcLearning.ExerciseRequest)(request)
++  expect("library" in serialized).toBe(false)
++  expect("requiresPhysicalValidation" in serialized.requiredEvidence[0]).toBe(false)
++  expect(Schema.decodeUnknownSync(FtcLearning.ExerciseResult)(JSON.parse(JSON.stringify(serialized)))).toEqual(
++    JSON.parse(JSON.stringify(serialized)),
++  )
++  expect(Schema.is(FtcLearning.RequestExerciseCommand)({ ...command, language: "fr" })).toBe(false)
++  expect(Schema.is(FtcLearning.ExerciseResult)({ kind: "pathing_required" })).toBe(true)
++  const values = [
++    FtcLearning.ExerciseProjectSnapshot,
++    FtcLearning.RequestExerciseCommand,
++    FtcLearning.Track,
++    FtcLearning.ExerciseRequest,
++    FtcLearning.ExerciseResult,
++  ]
++  expect(values.map((schema) => schema.ast.annotations?.identifier)).toEqual([
++    "FtcLearning.ExerciseProjectSnapshot",
++    "FtcLearning.RequestExerciseCommand",
++    "FtcLearning.Track",
++    "FtcLearning.ExerciseRequest",
++    "FtcLearning.ExerciseResult",
++  ])
++})
++
+ test("evidence requires labelled provenance and nonnegative timestamp, with no completion assertion", () => {
+   const base = { kind: "physical", source: "student", timestamp: 0 }
+   expect(Schema.is(FtcLearning.Evidence)(base)).toBe(false)

@@ -1,0 +1,13 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-learning.test.ts:
+(pass) attempt IDs require the exact generated prefix and records round-trip as serializable values [2.62ms]
+(pass) exercise requests preserve canonical snapshots, all evidence and optional omission [0.66ms]
+(pass) evidence requires labelled provenance and nonnegative timestamp, with no completion assertion [0.19ms]
+(pass) learning errors omit undefined properties and public identifiers remain stable and unique [0.11ms]
+(pass) navigation contracts keep exact entry levels, omitted personal metadata and result bindings [0.24ms]
+
+ 5 pass
+ 0 fail
+ 32 expect() calls
+Ran 5 tests across 1 file. [55.00ms]

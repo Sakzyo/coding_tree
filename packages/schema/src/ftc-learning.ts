@@ -2,6 +2,7 @@ export * as FtcLearning from "./ftc-learning"
 
 import { Schema } from "effect"
 import { FtcKnowledge } from "./ftc-knowledge"
+import { FtcConfiguration } from "./ftc-configuration"
 import { Project } from "./project"
 import { ascending } from "./identifier"
 import { optional, statics } from "./schema"
@@ -64,6 +65,53 @@ export interface NextLessonRequest extends Schema.Schema.Type<typeof NextLessonR
 export const NextLessonRequest = Schema.Struct({ courseID: Text, language: Schema.Literals(["en", "zh"]) }).annotate({
   identifier: "FtcLearning.NextLessonRequest",
 })
+
+// Consumed immutable applicability facts, not another project or inspection store.
+export interface ExerciseProjectSnapshot extends Schema.Schema.Type<typeof ExerciseProjectSnapshot> {}
+export const ExerciseProjectSnapshot = Schema.Struct({
+  projectID: Project.ID,
+  sdkVersion: Text,
+  library: optional(Text),
+  libraryVersion: optional(Text),
+}).annotate({ identifier: "FtcLearning.ExerciseProjectSnapshot" })
+
+export interface RequestExerciseCommand extends Schema.Schema.Type<typeof RequestExerciseCommand> {}
+export const RequestExerciseCommand = Schema.Struct({
+  courseID: Text,
+  lessonID: Text,
+  language: Schema.Literals(["en", "zh"]),
+  projectSnapshot: ExerciseProjectSnapshot,
+  configuration: FtcConfiguration.ManifestSnapshot,
+}).annotate({ identifier: "FtcLearning.RequestExerciseCommand" })
+
+export const Track = Schema.Literals(["foundations", "pedro", "road-runner"]).annotate({
+  identifier: "FtcLearning.Track",
+})
+export type Track = typeof Track.Type
+
+export interface ExerciseRequest extends Schema.Schema.Type<typeof ExerciseRequest> {}
+export const ExerciseRequest = Schema.Struct({
+  kind: Schema.Literal("exercise"),
+  courseID: Text,
+  courseVersion: Text,
+  lessonID: Text,
+  lessonVersion: Text,
+  language: Schema.Literals(["en", "zh"]),
+  projectID: Project.ID,
+  configurationRevision: FtcConfiguration.Revision,
+  sdkVersion: Text,
+  managedPathing: FtcConfiguration.Manifest.fields.managedPathing,
+  library: optional(Text),
+  libraryVersion: optional(Text),
+  track: Track,
+  requiredEvidence: Schema.Array(FtcKnowledge.Exercise).check(Schema.isMinLength(1)),
+}).annotate({ identifier: "FtcLearning.ExerciseRequest" })
+
+export const ExerciseResult = Schema.Union([
+  ExerciseRequest,
+  Schema.Struct({ kind: Schema.Literal("pathing_required") }),
+]).annotate({ identifier: "FtcLearning.ExerciseResult" })
+export type ExerciseResult = typeof ExerciseResult.Type
 
 export const UnavailableReason = Schema.Literals([
   "not_found",

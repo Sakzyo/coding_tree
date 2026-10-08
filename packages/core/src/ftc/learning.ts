@@ -2,6 +2,7 @@ export * as FtcLearning from "./learning"
 
 import { FtcKnowledge } from "@opencode-ai/schema/ftc-knowledge"
 import { FtcLearning } from "@opencode-ai/schema/ftc-learning"
+import { optional } from "@opencode-ai/schema/schema"
 import semver from "semver"
 import { Context, Effect, Layer, Schema } from "effect"
 import type { EffectDrizzleSqlite } from "@opencode-ai/effect-drizzle-sqlite"
@@ -29,7 +30,31 @@ export type NextLessonRequest = FtcLearning.NextLessonRequest
 export const LessonResult = FtcLearning.LessonResult
 export type LessonResult = FtcLearning.LessonResult
 
+export const RequestExerciseCommand = FtcLearning.RequestExerciseCommand
+export type RequestExerciseCommand = FtcLearning.RequestExerciseCommand
+export const ExerciseProjectSnapshot = FtcLearning.ExerciseProjectSnapshot
+export type ExerciseProjectSnapshot = FtcLearning.ExerciseProjectSnapshot
+export const Track = FtcLearning.Track
+export type Track = FtcLearning.Track
+export const ExerciseRequest = FtcLearning.ExerciseRequest
+export type ExerciseRequest = FtcLearning.ExerciseRequest
+export const ExerciseResult = FtcLearning.ExerciseResult
+export type ExerciseResult = FtcLearning.ExerciseResult
+
+const ExerciseBinding = Schema.Struct({
+  request: RequestExerciseCommand,
+  courseVersion: Schema.String,
+  track: Track,
+  // Curriculum applicability can exist while the project has selected neither.
+  contentLibrary: optional(Schema.String.check(Schema.isMinLength(1), Schema.isTrimmed())),
+  contentLibraryVersion: optional(Schema.String),
+})
+
 export interface LessonLookup {
+  readonly exercise?: {
+    readonly binding: (input: RequestExerciseCommand) => Effect.Effect<typeof ExerciseBinding.Type, unknown>
+    readonly lookup: (input: FtcKnowledge.ContentQuery) => Effect.Effect<FtcKnowledge.ContentResult, unknown>
+  }
   readonly course?: {
     // Trusted caller pins applicability and current version; no implicit latest content or SDK.
     readonly binding: (input: ProgressRequest) => Effect.Effect<
@@ -48,6 +73,7 @@ export interface LessonLookup {
 }
 
 export interface Interface {
+  readonly requestExercise: (input: RequestExerciseCommand) => Effect.Effect<ExerciseResult, LearningError>
   readonly selectEntry: (input: SelectEntryRequest) => Effect.Effect<Progress, LearningError>
   readonly skipLesson: (input: SkipLessonRequest) => Effect.Effect<Progress, LearningError>
   readonly nextLesson: (input: NextLessonRequest) => Effect.Effect<LessonResult, LearningError>
@@ -89,17 +115,33 @@ export const layer = (lookup: LessonLookup, db: EffectDrizzleSqlite.EffectSQLite
       } satisfies LearningError)
     return structuredClone(decoded)
   })
-  const course = Effect.fn("FtcLearning.course")(function* (requested: NextLessonRequest) {
+  const contentCourse = Effect.fn("FtcLearning.contentCourse")(function* (
+    requested: NextLessonRequest,
+    supplied?: {
+      readonly binding: {
+        readonly courseVersion: string
+        readonly sdkVersion: string
+        readonly library?: string
+        readonly libraryVersion?: string
+      }
+      readonly lookup: NonNullable<LessonLookup["course"]>["lookup"]
+      readonly track?: Track
+    },
+  ) {
     const unavailable = (reason: FtcLearning.UnavailableReason) => ({
       kind: "unavailable" as const,
       ...requested,
       reason,
     })
-    if (!lookup.course) return unavailable("course_lookup_unavailable")
-    const binding = yield* lookup.course.binding(Object.freeze({ courseID: requested.courseID })).pipe(
-      Effect.map((value) => ({ ...value })),
-      Effect.mapError((): LearningError => ({ code: "course_lookup_failed", recovery: "retry" })),
-    )
+    const port = supplied ?? lookup.course
+    if (!port) return unavailable("course_lookup_unavailable")
+    const binding =
+      typeof port.binding === "function"
+        ? yield* port.binding(Object.freeze({ courseID: requested.courseID })).pipe(
+            Effect.map((value) => ({ ...value })),
+            Effect.mapError((): LearningError => ({ code: "course_lookup_failed", recovery: "retry" })),
+          )
+        : port.binding
     if (
       !concreteVersion(binding.courseVersion) ||
       !concreteVersion(binding.sdkVersion) ||
@@ -118,7 +160,7 @@ export const layer = (lookup: LessonLookup, db: EffectDrizzleSqlite.EffectSQLite
       sdkVersion: binding.sdkVersion,
       ...(binding.library === undefined ? {} : { library: binding.library, libraryVersion: binding.libraryVersion }),
     }).pipe(Effect.mapError((): LearningError => ({ code: "invalid_course", recovery: "refresh_lessons" })))
-    const result = yield* lookup.course.lookup(Object.freeze(query)).pipe(
+    const result = yield* port.lookup(Object.freeze(query)).pipe(
       Effect.mapError((): LearningError => ({ code: "course_lookup_failed", recovery: "retry" })),
       Effect.flatMap((value) =>
         capture(FtcKnowledge.ContentResult, value).pipe(
@@ -151,6 +193,8 @@ export const layer = (lookup: LessonLookup, db: EffectDrizzleSqlite.EffectSQLite
       } satisfies LearningError)
     const record = records[0]
     if (
+      (supplied?.track === "foundations" && (record.library !== undefined || record.libraryRange !== undefined)) ||
+      (supplied?.track !== undefined && supplied.track !== "foundations" && record.library === undefined) ||
       !semver.validRange(record.sdkRange) ||
       !semver.satisfies(binding.sdkVersion, record.sdkRange) ||
       (record.library === undefined) !== (record.libraryRange === undefined) ||
@@ -191,7 +235,6 @@ export const layer = (lookup: LessonLookup, db: EffectDrizzleSqlite.EffectSQLite
         courseID: requested.courseID,
         recovery: "refresh_lessons",
       } satisfies LearningError)
-    if (!document.entryPoints) return unavailable("missing_entry_points")
     return {
       kind: "course" as const,
       courseID: requested.courseID,
@@ -200,6 +243,13 @@ export const layer = (lookup: LessonLookup, db: EffectDrizzleSqlite.EffectSQLite
       lessons: document.lessons,
       entryPoints: document.entryPoints,
     }
+  })
+  const course = Effect.fn("FtcLearning.course")(function* (requested: NextLessonRequest) {
+    const current = yield* contentCourse(requested)
+    if (current.kind === "unavailable") return current
+    if (!current.entryPoints)
+      return { kind: "unavailable" as const, ...requested, reason: "missing_entry_points" as const }
+    return { ...current, entryPoints: current.entryPoints }
   })
   type Course = Extract<Effect.Success<ReturnType<typeof course>>, { kind: "course" }>
   const progress = (
@@ -253,6 +303,114 @@ export const layer = (lookup: LessonLookup, db: EffectDrizzleSqlite.EffectSQLite
           recovery: "refresh_lessons",
         } satisfies LearningError)
   return Layer.succeed(Service, {
+    requestExercise: Effect.fn("FtcLearning.requestExercise")(function* (input: RequestExerciseCommand) {
+      const requested = yield* capture(RequestExerciseCommand, input).pipe(
+        Effect.map(deepFreeze),
+        Effect.mapError((): LearningError => ({ code: "invalid_input", recovery: "correct_input" })),
+      )
+      const project = requested.projectSnapshot
+      const selection = requested.configuration.manifest.managedPathing
+      if (
+        !concreteVersion(project.sdkVersion) ||
+        (project.library === undefined) !== (project.libraryVersion === undefined) ||
+        (project.libraryVersion !== undefined && !concreteVersion(project.libraryVersion)) ||
+        (selection === "neither" ? project.library !== undefined : project.library === undefined)
+      )
+        return yield* Effect.fail({ code: "invalid_input", recovery: "correct_input" } satisfies LearningError)
+      if (!lookup.exercise)
+        return yield* Effect.fail({
+          code: "course_unavailable",
+          courseID: requested.courseID,
+          reason: "course_lookup_unavailable",
+          recovery: "refresh_lessons",
+        } satisfies LearningError)
+      const binding = yield* lookup.exercise.binding(requested).pipe(
+        Effect.mapError((): LearningError => ({ code: "course_lookup_failed", recovery: "retry" })),
+        Effect.flatMap((value) =>
+          capture(ExerciseBinding, value).pipe(
+            Effect.mapError(
+              (): LearningError => ({
+                code: "invalid_course",
+                courseID: requested.courseID,
+                recovery: "refresh_lessons",
+              }),
+            ),
+          ),
+        ),
+      )
+      if (
+        JSON.stringify(binding.request) !== JSON.stringify(requested) ||
+        !concreteVersion(binding.courseVersion) ||
+        (binding.track === "foundations"
+          ? binding.contentLibrary !== undefined || binding.contentLibraryVersion !== undefined
+          : binding.contentLibrary === undefined || !concreteVersion(binding.contentLibraryVersion))
+      )
+        return yield* Effect.fail({
+          code: "invalid_course",
+          courseID: requested.courseID,
+          recovery: "refresh_lessons",
+        } satisfies LearningError)
+      if (
+        binding.track !== "foundations" &&
+        selection !== "neither" &&
+        (binding.track !== selection ||
+          binding.contentLibrary !== project.library ||
+          binding.contentLibraryVersion !== project.libraryVersion)
+      )
+        return yield* Effect.fail({
+          code: "course_unavailable",
+          courseID: requested.courseID,
+          reason: "incompatible",
+          recovery: "refresh_lessons",
+        } satisfies LearningError)
+      const current = yield* contentCourse(
+        { courseID: requested.courseID, language: requested.language },
+        {
+          binding: {
+            courseVersion: binding.courseVersion,
+            sdkVersion: project.sdkVersion,
+            ...(binding.track === "foundations"
+              ? project.library === undefined
+                ? {}
+                : { library: project.library, libraryVersion: project.libraryVersion }
+              : { library: binding.contentLibrary, libraryVersion: binding.contentLibraryVersion }),
+          },
+          lookup: lookup.exercise.lookup,
+          track: binding.track,
+        },
+      )
+      if (current.kind === "unavailable")
+        return yield* Effect.fail({
+          code: "course_unavailable",
+          courseID: requested.courseID,
+          reason: current.reason,
+          recovery: "refresh_lessons",
+        } satisfies LearningError)
+      const lesson = current.lessons.find((lesson) => lesson.id === requested.lessonID)
+      if (!lesson)
+        return yield* Effect.fail({
+          code: "lesson_not_found",
+          courseID: requested.courseID,
+          lessonID: requested.lessonID,
+          recovery: "refresh_lessons",
+        } satisfies LearningError)
+      if (binding.track !== "foundations" && selection === "neither") return { kind: "pathing_required" as const }
+      return {
+        kind: "exercise" as const,
+        courseID: requested.courseID,
+        courseVersion: current.courseVersion,
+        lessonID: lesson.id,
+        lessonVersion: lesson.version,
+        language: requested.language,
+        projectID: project.projectID,
+        configurationRevision: requested.configuration.revision,
+        sdkVersion: project.sdkVersion,
+        managedPathing: selection,
+        track: binding.track,
+        ...(project.library === undefined ? {} : { library: project.library, libraryVersion: project.libraryVersion }),
+        requiredEvidence: lesson.exercises,
+      }
+    }),
     selectEntry: Effect.fn("FtcLearning.selectEntry")(function* (input: SelectEntryRequest) {
       const requested = yield* capture(SelectEntryRequest, input).pipe(
         Effect.mapError((): LearningError => ({ code: "invalid_input", recovery: "correct_input" })),
@@ -366,6 +524,14 @@ export const layer = (lookup: LessonLookup, db: EffectDrizzleSqlite.EffectSQLite
 
 function concreteVersion(value: unknown): value is string {
   return typeof value === "string" && semver.valid(value) === value
+}
+
+function deepFreeze<T>(value: T): T {
+  if (value !== null && typeof value === "object") {
+    Object.values(value).forEach(deepFreeze)
+    Object.freeze(value)
+  }
+  return value
 }
 
 function capture<S extends Schema.Top>(schema: S, input: unknown) {

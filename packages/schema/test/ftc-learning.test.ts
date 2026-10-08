@@ -2,6 +2,8 @@ import { expect, test } from "bun:test"
 import { Schema } from "effect"
 import { FtcLearning } from "../src/ftc-learning"
 import { Project } from "../src/project"
+import { FtcConfiguration } from "../src/ftc-configuration"
+import { FtcKnowledge } from "../src/ftc-knowledge"
 
 const input = {
   attemptID: FtcLearning.AttemptID.create(),
@@ -22,6 +24,76 @@ test("attempt IDs require the exact generated prefix and records round-trip as s
   expect(Schema.decodeUnknownSync(FtcLearning.Attempt)(JSON.parse(JSON.stringify(encoded)))).toEqual(input)
   expect(Schema.is(FtcLearning.Attempt)({ ...input, configurationRevision: "" })).toBe(false)
   expect(Schema.is(FtcLearning.Attempt)({ ...input, outcome: "completed" })).toBe(false)
+})
+
+test("exercise requests preserve canonical snapshots, all evidence and optional omission", () => {
+  const command = {
+    courseID: "generic",
+    lessonID: "lesson",
+    language: "en" as const,
+    projectSnapshot: {
+      projectID: input.projectID,
+      sdkVersion: "11.1.0",
+      library: undefined,
+      libraryVersion: undefined,
+    },
+    configuration: {
+      revision: "a".repeat(64),
+      manifest: { schemaVersion: 1 as const, hardware: [], managedPathing: "neither" as const },
+    },
+  }
+  const encoded = Schema.encodeSync(FtcLearning.RequestExerciseCommand)(command)
+  expect(encoded.projectSnapshot).toEqual({ projectID: input.projectID, sdkVersion: "11.1.0" })
+  expect(FtcLearning.RequestExerciseCommand.fields.configuration).toBe(FtcConfiguration.ManifestSnapshot)
+  expect(FtcLearning.ExerciseRequest.fields.requiredEvidence.value).toBe(FtcKnowledge.Exercise)
+  const request = {
+    kind: "exercise" as const,
+    courseID: "generic",
+    courseVersion: "1.0.0",
+    lessonID: "lesson",
+    lessonVersion: "1.0.0",
+    projectID: input.projectID,
+    configurationRevision: command.configuration.revision,
+    sdkVersion: "11.1.0",
+    managedPathing: "neither" as const,
+    language: "en" as const,
+    track: "foundations" as const,
+    requiredEvidence: [
+      {
+        id: "e",
+        prompt: "Explain and apply",
+        requiresExplanation: true as const,
+        requiresProjectApplication: true as const,
+        explanationCriteria: "Explain",
+        projectApplicationCriteria: "Apply",
+        requiresPhysicalValidation: undefined,
+      },
+    ],
+    library: undefined,
+    libraryVersion: undefined,
+  }
+  const serialized = Schema.encodeSync(FtcLearning.ExerciseRequest)(request)
+  expect("library" in serialized).toBe(false)
+  expect("requiresPhysicalValidation" in serialized.requiredEvidence[0]).toBe(false)
+  expect(Schema.decodeUnknownSync(FtcLearning.ExerciseResult)(JSON.parse(JSON.stringify(serialized)))).toEqual(
+    JSON.parse(JSON.stringify(serialized)),
+  )
+  expect(Schema.is(FtcLearning.RequestExerciseCommand)({ ...command, language: "fr" })).toBe(false)
+  expect(Schema.is(FtcLearning.ExerciseResult)({ kind: "pathing_required" })).toBe(true)
+  const values = [
+    FtcLearning.ExerciseProjectSnapshot,
+    FtcLearning.RequestExerciseCommand,
+    FtcLearning.Track,
+    FtcLearning.ExerciseRequest,
+    FtcLearning.ExerciseResult,
+  ]
+  expect(values.map((schema) => schema.ast.annotations?.identifier)).toEqual([
+    "FtcLearning.ExerciseProjectSnapshot",
+    "FtcLearning.RequestExerciseCommand",
+    "FtcLearning.Track",
+    "FtcLearning.ExerciseRequest",
+    "FtcLearning.ExerciseResult",
+  ])
 })
 
 test("evidence requires labelled provenance and nonnegative timestamp, with no completion assertion", () => {

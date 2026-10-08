@@ -1,0 +1,6 @@
+74e54d504bda29410378e73f0316e0566deef3ad52fd08f8f003f785c69ce4fb  docs/validation/M12-03-implementation.md
+228943c086d812cd9c62b569d58eabb7b7f603a0152e24bc263a01028eb23d11  docs/validation/m12-03/source-sha256.txt
+570d6d4446f730204811bfe5f5debb550f85c3bca5057f05615e5701fb15eab7  docs/validation/m12-03/verification.tsv
+411b5f9dbb75ab9f4e2a108fa1971658132ddd216011be149ff4542c281ab793  docs/validation/m12-03/verify.sh
+cdd8e46b9630c92b0d52c6edf3bb7822b17fc9b38921c8bd5846249fe02cda4d  docs/validation/m12-03/tracked-product.patch
+7b94b8b6f30fa7532d9aa4b83f981add96b95b7dbdf3ac023d91c53f5effbbbc  docs/validation/m12-03/import-boundaries.txt

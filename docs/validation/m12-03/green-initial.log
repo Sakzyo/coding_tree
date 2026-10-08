@@ -1,0 +1,9 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/learning-and-progress/m12-03.test.ts:
+(pass) neither permits foundations but blocks autonomous track [18.27ms]
+
+ 1 pass
+ 0 fail
+ 6 expect() calls
+Ran 1 test across 1 file. [106.00ms]

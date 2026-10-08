@@ -1,0 +1,9 @@
+$ tsgo --noEmit
+test/ftc/learning-and-progress/m12-03.test.ts(59,138): error TS2345: Argument of type '{ lessons: (input: { courseID: string; }) => Effect.Effect<readonly { readonly id: string; readonly version: string; readonly topic: string; readonly title: string; readonly body: string; readonly skippable?: boolean | undefined; readonly exercises: readonly { ...; }[]; }[], never, never>; exercise: { ...; }; }' is not assignable to parameter of type 'LessonLookup'.
+  The types of 'exercise.binding' are incompatible between these types.
+    Type '(request: { courseID: string; lessonID: string; language: "en"; projectSnapshot: { projectID: string & Brand<"Project.ID">; sdkVersion: string; }; configuration: { revision: string; manifest: { ...; }; }; }) => Effect.Effect<...>' is not assignable to type '(input: RequestExerciseCommand) => Effect<{ readonly request: { readonly courseID: string; readonly lessonID: string; readonly language: "en" | "zh"; readonly projectSnapshot: { ...; }; readonly configuration: { ...; }; }; readonly courseVersion: string; readonly track: "foundations" | ... 1 more ... | "road-runner"...'.
+      Types of parameters 'request' and 'input' are incompatible.
+        Type 'RequestExerciseCommand' is not assignable to type '{ courseID: string; lessonID: string; language: "en"; projectSnapshot: { projectID: string & Brand<"Project.ID">; sdkVersion: string; }; configuration: { revision: string; manifest: { ...; }; }; }'.
+          Types of property 'language' are incompatible.
+            Type '"en" | "zh"' is not assignable to type '"en"'.
+              Type '"zh"' is not assignable to type '"en"'.

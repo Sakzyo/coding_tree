@@ -1,0 +1,25 @@
+$ tsgo --noEmit
+test/ftc/learning-and-progress/m12-03.test.ts(91,19): error TS2540: Cannot assign to 'lookup' because it is a read-only property.
+test/ftc/learning-and-progress/m12-03.test.ts(91,29): error TS7006: Parameter 'query' implicitly has an 'any' type.
+test/ftc/learning-and-progress/m12-03.test.ts(100,10): error TS2540: Cannot assign to 'lessons' because it is a read-only property.
+test/ftc/learning-and-progress/m12-03.test.ts(100,21): error TS7006: Parameter 'input' implicitly has an 'any' type.
+test/ftc/learning-and-progress/m12-03.test.ts(135,17): error TS2540: Cannot assign to 'lookup' because it is a read-only property.
+test/ftc/learning-and-progress/m12-03.test.ts(150,19): error TS2540: Cannot assign to 'lookup' because it is a read-only property.
+test/ftc/learning-and-progress/m12-03.test.ts(150,29): error TS7006: Parameter 'query' implicitly has an 'any' type.
+test/ftc/learning-and-progress/m12-03.test.ts(175,19): error TS2540: Cannot assign to 'binding' because it is a read-only property.
+test/ftc/learning-and-progress/m12-03.test.ts(175,30): error TS7006: Parameter 'input' implicitly has an 'any' type.
+test/ftc/learning-and-progress/m12-03.test.ts(189,19): error TS2540: Cannot assign to 'lookup' because it is a read-only property.
+test/ftc/learning-and-progress/m12-03.test.ts(214,17): error TS2540: Cannot assign to 'lookup' because it is a read-only property.
+test/ftc/learning-and-progress/m12-03.test.ts(214,27): error TS7006: Parameter 'query' implicitly has an 'any' type.
+test/ftc/learning-and-progress/m12-03.test.ts(267,17): error TS2540: Cannot assign to 'binding' because it is a read-only property.
+test/ftc/learning-and-progress/m12-03.test.ts(267,28): error TS7006: Parameter 'input' implicitly has an 'any' type.
+test/ftc/learning-and-progress/m12-03.test.ts(274,17): error TS2540: Cannot assign to 'lookup' because it is a read-only property.
+test/ftc/learning-and-progress/m12-03.test.ts(275,8): error TS2540: Cannot assign to 'lessons' because it is a read-only property.
+test/ftc/learning-and-progress/m12-03.test.ts(298,19): error TS2540: Cannot assign to 'lookup' because it is a read-only property.
+test/ftc/learning-and-progress/m12-03.test.ts(298,29): error TS7006: Parameter 'query' implicitly has an 'any' type.
+test/ftc/learning-and-progress/m12-03.test.ts(318,86): error TS2540: Cannot assign to 'binding' because it is a read-only property.
+test/ftc/learning-and-progress/m12-03.test.ts(318,97): error TS7006: Parameter 'input' implicitly has an 'any' type.
+test/ftc/learning-and-progress/m12-03.test.ts(319,84): error TS2540: Cannot assign to 'lookup' because it is a read-only property.
+test/ftc/learning-and-progress/m12-03.test.ts(319,94): error TS7006: Parameter 'input' implicitly has an 'any' type.
+test/ftc/learning-and-progress/m12-03.test.ts(320,68): error TS2540: Cannot assign to 'lessons' because it is a read-only property.
+test/ftc/learning-and-progress/m12-03.test.ts(320,79): error TS7006: Parameter 'input' implicitly has an 'any' type.
