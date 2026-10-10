@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+    "test",
+    "/Users/dylanxu/coding_tree/docs/validation/m5-06/review/publication-content.test.ts"
+  ],
+  "cwd": "/Users/dylanxu/coding_tree/packages/core",
+  "exit": 1,
+  "environment": {
+    "XDG_CONFIG_HOME": "/private/tmp/m5-06-review-xdg/config",
+    "XDG_DATA_HOME": "/private/tmp/m5-06-review-xdg/data",
+    "XDG_CACHE_HOME": "/private/tmp/m5-06-review-xdg/cache",
+    "XDG_STATE_HOME": "/private/tmp/m5-06-review-xdg/state"
+  },
+  "probe_sha256": "3d81b51080a9d159b04899b87ea3516f053020d12134c140325b0148a056c64a",
+  "log_sha256": "19c7e986ae2f751a3584afdd016300ef6acce421dac1ef58a3c31ba8239e381e"
+}

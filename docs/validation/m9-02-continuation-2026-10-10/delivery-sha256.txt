@@ -1,0 +1,5 @@
+072a23a763a390ff8f55371517cdc81bf99b95640fb68203d5a873164b79411d  docs/validation/M9-02-continuation-2026-10-10.md
+76adb989b2a6e189ca700a8d3cec29be0860f0a57cd3520def6536c5a8922d3d  docs/validation/m9-02-continuation-2026-10-10/exact-task.md
+e0eaef2b54a587689525a20c14557c02c8ab78899b96140018ae7db20b2f199b  docs/validation/m9-02-continuation-2026-10-10/report-validation.json
+d6a149643a8869a2d059bbe3093a5f516cfa0fd07ac6e3e2bad37ab13ffcce3c  docs/validation/m9-02-continuation-2026-10-10/source-audit.json
+826523f1cc9ac3d8086d9f80db74f19892d55920adf811f2ebaacfded0208a30  docs/validation/m9-02-continuation-2026-10-10/source-sha256.txt

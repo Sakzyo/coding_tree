@@ -1,0 +1,50 @@
+bun test v1.3.14 (0d9b296a)
+
+../../docs/validation/m5-06/review/publication-content.test.ts:
+current {"valid":true}
+264 |         yield* Deferred.await(f.entered[phase])
+265 |         yield* Effect.promise(() => Bun.write(path.join(f.project.canonicalRoot, "owned.apk"), "changed"))
+266 |         yield* open(held)
+267 |         const result = yield* Fiber.join(pending)
+268 |         console.log(phase, JSON.stringify(result))
+269 |         expect(result.valid).toBe(false)
+                                   ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (/Users/dylanxu/coding_tree/docs/validation/m5-06/review/publication-content.test.ts:269:30)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) verification observes protected content changes during held current [13.67ms]
+queryCleanup {"valid":true}
+264 |         yield* Deferred.await(f.entered[phase])
+265 |         yield* Effect.promise(() => Bun.write(path.join(f.project.canonicalRoot, "owned.apk"), "changed"))
+266 |         yield* open(held)
+267 |         const result = yield* Fiber.join(pending)
+268 |         console.log(phase, JSON.stringify(result))
+269 |         expect(result.valid).toBe(false)
+                                   ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (/Users/dylanxu/coding_tree/docs/validation/m5-06/review/publication-content.test.ts:269:30)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) verification observes protected content changes during held queryCleanup [2.24ms]
+
+ 0 pass
+ 2 fail
+ 6 expect() calls
+Ran 2 tests across 1 file. [78.00ms]

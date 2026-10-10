@@ -1,0 +1,81 @@
+{
+  "worker": "/root/m9_prepare",
+  "status": "READ_ONLY_SOURCE_PREPARATION",
+  "observed_utc": "2026-10-10T07:50:48.904689+00:00",
+  "cwd": "/Users/dylanxu/coding_tree",
+  "head": "e99b38f28d1b4b8e8179fd3b06c4d46b9ab0d13b",
+  "prior_manifest": "docs/validation/m9-02/preparation/source-sha256.txt",
+  "source_hashes": {
+    "packages/core/src/ftc/operations.ts": "090da2676b7ba2298867467004e3cb8a0debf7046b35ec23661a4a6590441bb7",
+    "packages/schema/src/ftc-operation.ts": "1c2e66f286fced3c1ed251c2f326b96c5fe07af78a990b6168b41a8f18eb4ae5",
+    "packages/core/test/ftc/robot-approvals-and-operations/m9-01.test.ts": "ae346562f8068fbf3be72c074e00290bdd8f8ac9bfb3d2615d347f4a67108a41",
+    "docs/validation/M9-02-brief.md": "7636acd554876381479c8690fe4c8fd874380e3cebdf74700e55302b94655ba9",
+    "docs/validation/M9-02-preflight.md": "0251352923e73334d3af0530a5c3d16c1dca79bd3e1128ec1b7ec14976154d92",
+    "docs/validation/M9-02-resume-reconciliation.md": "a81ae4e29ed695508bc8a681f8d21f6358129edb76a1724aa33e68d5a07b3dcd",
+    "docs/validation/M9-01-brief.md": "8b3dab917b7d58ca6e8d707cf310afff21602ebeb4bb7dc36106ad0e872e7aac",
+    "docs/validation/M9-01-implementation.md": "8d0dc7b1b92b0b5f85f891e2b0be3f72c9b25fa7d4db23918bcc5f35c985f2f1",
+    "docs/validation/M9-01-review.md": "1f3a333e3b2c76bb76f6337d6f9177b783a6a3c04ca9cf72d172e1facb26985b",
+    "docs/prompt.md": "f0a2b104a4f46f32cd5de3540c4e2c7f41ca21ef94c0647ef49dcfdacefab2dd",
+    "docs/proposal.md": "64c94000bbf2a0fffc0204591f8b48a509d22cfdde98ed2086f6f1d43a3726ee",
+    "docs/high-level-design.md": "7c9918debef6b832d5e60f0b971207765ed33f9cfd93ff73d08b021846714c97",
+    "docs/tasks/robot-approvals-and-operations.md": "8dc50fca3ca87e093003cc04ea603543c4ad70c6a260ec383a056351c29c4627",
+    "AGENTS.md": "1c9b877668f74a1a2a735fb3aee730e8bb058d1fa34c1d96e8db1e41bbec9233",
+    "packages/schema/AGENTS.md": "326d8238f64675cfad3f72dafebf1923873f21ae6d2eebf0bad4b5729d7aa0fc"
+  },
+  "all_fifteen_prior_hashes_match": true,
+  "m9_01_reviewed_commit_diff": [
+    {
+      "argv": [
+        "git",
+        "diff",
+        "768ec206c",
+        "--",
+        "packages/core/src/ftc/operations.ts"
+      ],
+      "exit": 0,
+      "empty_diff": true,
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "768ec206c",
+        "--",
+        "packages/schema/src/ftc-operation.ts"
+      ],
+      "exit": 0,
+      "empty_diff": true,
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "768ec206c",
+        "--",
+        "packages/core/test/ftc/robot-approvals-and-operations/m9-01.test.ts"
+      ],
+      "exit": 0,
+      "empty_diff": true,
+      "stderr": ""
+    }
+  ],
+  "exact_task_excerpt_matches": true,
+  "m9_02_test_exists": false,
+  "pinned_bun_exists": true,
+  "tests_or_typechecks_run": false,
+  "note": "M5-06 writer may change upstream Java artifacts; this is not a frozen upstream review snapshot. Required baseline follows reviewed M5-06 source freeze.",
+  "m5_git_baseline": {
+    "ref": "e99b38f28d1b4b8e8179fd3b06c4d46b9ab0d13b",
+    "note": "Read directly from Git baseline e99b38f28; not current changing M5-06 writer files.",
+    "sha256": {
+      "packages/schema/src/ftc-java.ts": "85bebc90f9f1841e4974ce619f5d9099b0e63c343df6ed528b0ec86a1029101d",
+      "packages/core/src/ftc/java/build.ts": "02ad95b5e59b8d8602fb2300d03530c3708992b16376148df7b487ea8dd143d9",
+      "packages/core/src/ftc/java.ts": "44f7c5810f506a97fd213f96743d559d50bc7212c064d45cf097af2d9ef2f6b3",
+      "packages/core/test/ftc/java-development/m5-05.test.ts": "02bf37061a5ac19f732498f5685c60401ce3953068eea5d2e81a1baecf5ae7d7",
+      "packages/schema/test/ftc-java-build.test.ts": "063f914d0fdeda70b694982d8d1d5bbde8701656187a549e00c177c31caeec9b"
+    }
+  },
+  "continuation_addendum_sha256": "cf8f7e4be8c018b0d29db295ac6e829abffe27d640b169ec272f37f78468e91c"
+}

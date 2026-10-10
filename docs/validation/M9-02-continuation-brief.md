@@ -1,0 +1,18 @@
+# M9-02 continuation addendum — 2026-10-10
+
+Read this together with the unchanged [exact single-use approval brief](M9-02-brief.md). The source task, assertions, ownership, four assigned product/test paths and approval contract remain binding. This addendum supersedes preparation-only labels when root explicitly releases the fresh writer. Root owns Git/ledger/checklists; no worker commits/delegation. Target remains task32 of the saved **32/94** milestone, after independently approved M5-06; no task33 dispatch.
+
+## Current reconciliation and rulings
+
+- Read the new [continuation audit](M9-02-continuation-2026-10-10.md) and reconcile its source hashes before edits. The M5 artifact facade changes require no M9 source conversion in this isolated task. The current M9 document-revision-array artifact projection remains a trusted preparation fixture; complete M5 input identity must be reconciled at future integration, never reduced silently to document revisions.
+- TDD ruling: the historical preparation report's recommendation to add a minimal production method scaffold before behavioral RED is superseded. Write test code first and show a meaningful expected behavior failing against the real existing owner. Use a test-only expected interface/guard for absent new behavior where necessary; do not edit production merely to make the test importable. Preserve actual failed output. The exact Deploy/digest/reuse/forged assertions and subsequent real owner GREEN remain mandatory.
+- Observer readiness ruling: trust registration is a required prerequisite for approval, not preparation. The Core-only optional `observe` port may return a fallible scoped Effect; retain the existing `make` construction result and old preparation-only ports. Construction may register the supplied local observer under the owner Scope; approval is unavailable unless registration succeeded. Failed/malformed/partially registered observers never grant readiness; all partial registration cleanup remains owner-scoped and joined. Canonical errors/defects must remain distinguishable where the operation contract requires them; missing readiness yields approval_unavailable. No actual producer or host protocol is invented.
+- Scope-close ordering stays explicit: set closed, retire/clear pending/consent/tombstones, then close the scope containing registration and approval/preparation waits. Callback teardown cannot create a window for late insertion or approval. Cover held asynchronous registration/caller/owner cleanup at the actual public owner, and reuse the queued observer join boundary where needed.
+
+## Evidence and release
+
+Do not overwrite preflight, preparation or earlier evidence. Root assigns `docs/validation/M9-02-implementation-2026-10-10.md` and new files under `docs/validation/m9-02/implementation-2026-10-10/` for fresh implementation/evidence. Record exact argv/cwd/exit, full bounded logs, actual RED/GREEN, four source hashes and protected old-file checks. Existing case-label diagnostic Minor stays documented; do not repair it here.
+
+Fresh prerequisite M9-01 baseline is required after M5-06 freezes, then the new actual owner task/lifecycle/canonical contract checks, combined M9-01+02, Core and Schema package `bun typecheck`, scoped lint/format/import/whitespace. Pinned Bun remains `/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun`. Follow relevant-check scope in docs/prompt.md; no full-package pass claim or production host/robot/provider/toolchain work.
+
+Return DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED with the exact tested source manifest, report path, task assertion/substep evidence and all unrun gates. Root freezes/commits then dispatches a different spec/quality reviewer; no task credit before approval.

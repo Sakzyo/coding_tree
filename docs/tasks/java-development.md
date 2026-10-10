@@ -56,7 +56,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 - [ ] [M5-03 — Evaluate FTC-aware Java import before building the full editor](#m5-03)
 - [ ] [M5-04 — Adapt scoped language-service requests](#m5-04)
 - [x] [M5-05 — Build saved revisions and retain actual output](#m5-05)
-- [ ] [M5-06 — Issue and revalidate immutable artifact references](#m5-06)
+- [x] [M5-06 — Issue and revalidate immutable artifact references](#m5-06)
 - [ ] [M5-07 — Connect Monaco to document and language-service facades](#m5-07)
 - [ ] [M5-08 — Expose Java API and validate real editor/build integration](#m5-08)
 
@@ -178,16 +178,18 @@ expect(changed.status).toBe('outdated'); expect(changed.inputChanged).toBe(true)
 
 **Interfaces:** Produces `artifact({ buildID }): ArtifactRef | undefined` and `verifyArtifact({ ref, currentProject }): { valid: boolean, reason? }` for M9's live verification port.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/java-development/m5-06.test.ts`, add `failed or changed artifacts cannot authorize deployment`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/java-development/m5-06.test.ts`, add `failed or changed artifacts cannot authorize deployment`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(failedArtifact).toBeUndefined(); expect(tampered.valid).toBe(false); expect(stale.valid).toBe(false)
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/java-development/m5-06.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Hash only the APK produced by a successful current build; bind project/source/configuration/build identities. Recheck content digest and current input revisions on query. Preserve old artifacts as historical evidence, never silently substitute them.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/java-development/m5-06.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): issue and revalidate immutable artifact references`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/java-development/m5-06.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Hash only the APK produced by a successful current build; bind project/source/configuration/build identities. Recheck content digest and current input revisions on query. Preserve old artifacts as historical evidence, never silently substitute them.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/java-development/m5-06.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): issue and revalidate immutable artifact references`.
+
+**Verified 2026-10-10:** candidate `7bcada6d9`, final repair `3c2438f5c`. Focused Core **101/346**, unchanged build **62/373**, document **50/194**, Schema **49/107**; Core/Schema types and scoped lint **0 warnings/errors**/format/import/whitespace pass. [Implementation](../validation/M5-06-implementation.md), [repair/evidence](../validation/M5-06-fix1-implementation.md), [independent final review](../validation/M5-06-fix1-review.md). Original Important publication race is addressed; specification and quality approved with no remaining findings. Trusted protected-content and complete-current confirmation producers, actual FTC tools, M4/M9 composition, Windows/native/package and physical robot/release gates remain unavailable or unrun. This isolated owner result enables no production deployment or robot action.
 
 <a id="m5-07"></a>
 

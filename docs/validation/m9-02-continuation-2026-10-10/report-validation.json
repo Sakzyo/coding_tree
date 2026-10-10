@@ -1,0 +1,10 @@
+{
+  "report_exists": true,
+  "local_link_count": 4,
+  "missing_links": [],
+  "fifteen_current_source_changes_since_audit": [],
+  "report_whitespace_exit": 1,
+  "report_whitespace_output": "",
+  "tests_or_typechecks_run": false,
+  "report_whitespace_note": "git diff --no-index reports 1 for the new file versus /dev/null; no whitespace diagnostics were emitted. This is not a test failure or behavior check."
+}

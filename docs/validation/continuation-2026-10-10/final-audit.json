@@ -1,0 +1,136 @@
+{
+  "date": "2026-10-10",
+  "source_commit": "3c2438f5c784ec7e97af56cd5468a17f8d8c12b7",
+  "task_complete": "M5-06",
+  "completed_tasks": 31,
+  "completed_modules": 0,
+  "module_task_counts": {
+    "desktop-workspace.md": 1,
+    "java-development.md": 4,
+    "ai-access-and-local-inference.md": 1,
+    "learning-and-progress.md": 3,
+    "environment-and-compatibility.md": 5,
+    "diagnostics-and-dashboard.md": 0,
+    "projects-and-chats.md": 6,
+    "agent-and-context.md": 4,
+    "ftc-configuration-and-libraries.md": 2,
+    "ftc-knowledge.md": 3,
+    "robot-approvals-and-operations.md": 1,
+    "controller-connections.md": 1
+  },
+  "checked_task_ids": [
+    "M1-01",
+    "M11-01",
+    "M11-02",
+    "M11-04",
+    "M12-01",
+    "M12-02",
+    "M12-03",
+    "M2-01",
+    "M2-02",
+    "M2-03",
+    "M2-04",
+    "M2-05",
+    "M2-06",
+    "M3-01",
+    "M3-02",
+    "M3-03",
+    "M3-04",
+    "M4-01",
+    "M4-02",
+    "M4-03",
+    "M4-04",
+    "M4-05",
+    "M5-01",
+    "M5-02",
+    "M5-05",
+    "M5-06",
+    "M6-01",
+    "M6-02",
+    "M7-01",
+    "M8-01",
+    "M9-01"
+  ],
+  "all_checked_task_substeps": 5,
+  "frozen_source": {
+    "packages/core/src/ftc/java/build.ts": "5f5d1e62525903cc8a4cebfeb2003e826af54e5a147aa1ed01cbb06a4085fc48",
+    "packages/core/src/ftc/java.ts": "8f1b06fe9fd9bac8cfe0cbe23621aa4e0eff6d44389de3388d5cf2c0b348b916",
+    "packages/core/test/ftc/java-development/m5-06.test.ts": "cac1c940b0ca76d5221afbcd43855743ecf1ac32847e08f20c40c563f2b59c3b",
+    "packages/schema/src/ftc-java.ts": "ccbc5b19fd72b058adee48581d6241470861699fbbf87275f08dff2cc9b952d0",
+    "packages/schema/test/ftc-java-artifact.test.ts": "6240012d11220a0eb1ba7930b2f279b9fb3d7e9a1ad2d27035231ed098967432"
+  },
+  "selected_checks": {
+    "final-core-focused-v2": {
+      "exit": 0,
+      "pass_count": 101,
+      "assertions": 346,
+      "log_sha256": "d77e63228c21b1b2f6885b836e4e1aa30ca5ac1758207ddb268b47c11f09aaaa"
+    },
+    "final-core-build-regression": {
+      "exit": 0,
+      "pass_count": 62,
+      "assertions": 373,
+      "log_sha256": "cca45fd5d24a610c6c1eb58231aade4e05df077cbb7993c99c7b773e2445dfcc"
+    },
+    "final-core-document-regression": {
+      "exit": 0,
+      "pass_count": 50,
+      "assertions": 194,
+      "log_sha256": "0b65105c96fb35f4c2e7dac1c2bb7a64a3d223a5390ee2fc46dfb159934ab582"
+    },
+    "final-schema-focused": {
+      "exit": 0,
+      "pass_count": 49,
+      "assertions": 107,
+      "log_sha256": "5481292a323a13c76bd794de01d929b588feaaf74ee9b50995db991c42fd6dac"
+    },
+    "final-core-types-v2": {
+      "exit": 0,
+      "pass_count": null,
+      "assertions": null,
+      "log_sha256": "ae47736bb2a9401aa9743893f2f64b9a605e65a99d78cd991a8021e0f7722d87"
+    },
+    "final-schema-types": {
+      "exit": 0,
+      "pass_count": null,
+      "assertions": null,
+      "log_sha256": "ae47736bb2a9401aa9743893f2f64b9a605e65a99d78cd991a8021e0f7722d87"
+    },
+    "final-lint-v2": {
+      "exit": 0,
+      "pass_count": null,
+      "assertions": null,
+      "log_sha256": "e3b0b98b847ef956b56a7ba1e1255d32269685b26c68b151bbc28112eae3029a"
+    },
+    "final-format-v3": {
+      "exit": 0,
+      "pass_count": null,
+      "assertions": null,
+      "log_sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    "final-whitespace": {
+      "exit": 0,
+      "pass_count": null,
+      "assertions": null,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "final-imports": {
+      "exit": 0,
+      "pass_count": null,
+      "assertions": null,
+      "log_sha256": "7fad4d984712f076f8340f64b92f2e3aa52012037bfc2612fa83b821dba37751"
+    }
+  },
+  "reports": {
+    "docs/validation/M5-06-review.md": "7bea5c2a9c5f45291cefefea408e930bff49c64564a7e62cf113e40531d0bdf3",
+    "docs/validation/M5-06-fix1-review.md": "0b92ec3272093ce017a6067a91983736b9454e11ffb379620e02e99d440da1a7",
+    "docs/validation/M5-06-implementation.md": "dcdd284a256022bbd2a2f9631c6ecadf773b2847c6d31277a35a8bdcc0a4a175",
+    "docs/validation/M5-06-fix1-implementation.md": "bd7a3dc67a73883ffdbfdf83478c19aeee0e023e78b075eee9f7c3c272636922",
+    "docs/validation/M9-02-continuation-2026-10-10.md": "072a23a763a390ff8f55371517cdc81bf99b95640fb68203d5a873164b79411d",
+    "docs/validation/M9-02-continuation-brief.md": "cf8f7e4be8c018b0d29db295ac6e829abffe27d640b169ec272f37f78468e91c"
+  },
+  "stop_requested": true,
+  "next_task": "M9-02 preparation only; no writer dispatched",
+  "active_goal": null,
+  "production_platform_robot_gates": "NOT RUN/unavailable"
+}
