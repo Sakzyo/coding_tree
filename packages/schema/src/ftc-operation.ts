@@ -74,6 +74,12 @@ export const PreparedOperation = Schema.Struct({
   contextFingerprint: Schema.String.check(Schema.isPattern(/^[a-f0-9]{64}$/)),
 }).annotate({ identifier: "FtcOperation.PreparedOperation" })
 
+export interface ApprovalRequest extends Schema.Schema.Type<typeof ApprovalRequest> {}
+export const ApprovalRequest = Schema.Struct({
+  operationID: PreparedOperation.fields.operationID,
+  contextFingerprint: PreparedOperation.fields.contextFingerprint,
+}).annotate({ identifier: "FtcOperation.ApprovalRequest" })
+
 export interface OperationError extends Schema.Schema.Type<typeof OperationError> {}
 export const OperationError = Schema.Struct({
   code: Schema.Literals([
@@ -90,6 +96,13 @@ export const OperationError = Schema.Struct({
     "artifact_invalid",
     "observation_only",
     "owner_closed",
+    "approval_consumed",
+    "untrusted_approval",
+    "approval_unavailable",
+    "operation_unknown",
+    "approval_rejected",
+    "approval_expired",
+    "approval_cancelled",
   ]),
   projectID: optional(Project.ID),
   chatID: optional(FtcProject.ChatID),

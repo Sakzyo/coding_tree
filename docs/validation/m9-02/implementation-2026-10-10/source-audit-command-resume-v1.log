@@ -1,0 +1,144 @@
+{
+  "four_source_sha256": {
+    "packages/core/src/ftc/operations.ts": "e701c26a463962d19e196d735ef83adc91808fd30ea9d64093092a9ee11d35f8",
+    "packages/schema/src/ftc-operation.ts": "30c49b1809b43bb808b25ebb29887d436dc45db1236c99f54454950ecd5bcbf9",
+    "packages/core/test/ftc/robot-approvals-and-operations/m9-01.test.ts": "685a7b9a327b9a61031cb0af18b9439cd1fc54c33c5701aa7120545fe84e051b",
+    "packages/core/test/ftc/robot-approvals-and-operations/m9-02.test.ts": "12e3805e4bc5d40d24e4c1c8db956e943066b8055fc6698a46aece08c1c76c1e"
+  },
+  "matches_interrupted_snapshot": {
+    "packages/core/src/ftc/operations.ts": true,
+    "packages/schema/src/ftc-operation.ts": true,
+    "packages/core/test/ftc/robot-approvals-and-operations/m9-01.test.ts": true,
+    "packages/core/test/ftc/robot-approvals-and-operations/m9-02.test.ts": false
+  },
+  "protected_source_checks": [
+    {
+      "path": "docs/validation/M9-02-brief.md",
+      "expected": "7636acd554876381479c8690fe4c8fd874380e3cebdf74700e55302b94655ba9",
+      "actual": "7636acd554876381479c8690fe4c8fd874380e3cebdf74700e55302b94655ba9",
+      "matches": true
+    },
+    {
+      "path": "docs/validation/M9-02-preflight.md",
+      "expected": "0251352923e73334d3af0530a5c3d16c1dca79bd3e1128ec1b7ec14976154d92",
+      "actual": "0251352923e73334d3af0530a5c3d16c1dca79bd3e1128ec1b7ec14976154d92",
+      "matches": true
+    },
+    {
+      "path": "docs/validation/M9-02-resume-reconciliation.md",
+      "expected": "a81ae4e29ed695508bc8a681f8d21f6358129edb76a1724aa33e68d5a07b3dcd",
+      "actual": "a81ae4e29ed695508bc8a681f8d21f6358129edb76a1724aa33e68d5a07b3dcd",
+      "matches": true
+    },
+    {
+      "path": "docs/validation/M9-01-brief.md",
+      "expected": "8b3dab917b7d58ca6e8d707cf310afff21602ebeb4bb7dc36106ad0e872e7aac",
+      "actual": "8b3dab917b7d58ca6e8d707cf310afff21602ebeb4bb7dc36106ad0e872e7aac",
+      "matches": true
+    },
+    {
+      "path": "docs/validation/M9-01-implementation.md",
+      "expected": "8d0dc7b1b92b0b5f85f891e2b0be3f72c9b25fa7d4db23918bcc5f35c985f2f1",
+      "actual": "8d0dc7b1b92b0b5f85f891e2b0be3f72c9b25fa7d4db23918bcc5f35c985f2f1",
+      "matches": true
+    },
+    {
+      "path": "docs/validation/M9-01-review.md",
+      "expected": "1f3a333e3b2c76bb76f6337d6f9177b783a6a3c04ca9cf72d172e1facb26985b",
+      "actual": "1f3a333e3b2c76bb76f6337d6f9177b783a6a3c04ca9cf72d172e1facb26985b",
+      "matches": true
+    },
+    {
+      "path": "docs/prompt.md",
+      "expected": "f0a2b104a4f46f32cd5de3540c4e2c7f41ca21ef94c0647ef49dcfdacefab2dd",
+      "actual": "f0a2b104a4f46f32cd5de3540c4e2c7f41ca21ef94c0647ef49dcfdacefab2dd",
+      "matches": true
+    },
+    {
+      "path": "docs/proposal.md",
+      "expected": "64c94000bbf2a0fffc0204591f8b48a509d22cfdde98ed2086f6f1d43a3726ee",
+      "actual": "64c94000bbf2a0fffc0204591f8b48a509d22cfdde98ed2086f6f1d43a3726ee",
+      "matches": true
+    },
+    {
+      "path": "docs/high-level-design.md",
+      "expected": "7c9918debef6b832d5e60f0b971207765ed33f9cfd93ff73d08b021846714c97",
+      "actual": "7c9918debef6b832d5e60f0b971207765ed33f9cfd93ff73d08b021846714c97",
+      "matches": true
+    },
+    {
+      "path": "docs/tasks/robot-approvals-and-operations.md",
+      "expected": "8dc50fca3ca87e093003cc04ea603543c4ad70c6a260ec383a056351c29c4627",
+      "actual": "8dc50fca3ca87e093003cc04ea603543c4ad70c6a260ec383a056351c29c4627",
+      "matches": true
+    },
+    {
+      "path": "AGENTS.md",
+      "expected": "1c9b877668f74a1a2a735fb3aee730e8bb058d1fa34c1d96e8db1e41bbec9233",
+      "actual": "1c9b877668f74a1a2a735fb3aee730e8bb058d1fa34c1d96e8db1e41bbec9233",
+      "matches": true
+    },
+    {
+      "path": "packages/schema/AGENTS.md",
+      "expected": "326d8238f64675cfad3f72dafebf1923873f21ae6d2eebf0bad4b5729d7aa0fc",
+      "actual": "326d8238f64675cfad3f72dafebf1923873f21ae6d2eebf0bad4b5729d7aa0fc",
+      "matches": true
+    }
+  ],
+  "inverse_assigned_edits_restore_reviewed_prerequisite": {
+    "packages/core/src/ftc/operations.ts": {
+      "sha256": "5a02cae520334a7d348edacac2e628115da640eea7a5cd5408268f4ddadbc1aa",
+      "expected": "090da2676b7ba2298867467004e3cb8a0debf7046b35ec23661a4a6590441bb7",
+      "matches": false
+    },
+    "packages/schema/src/ftc-operation.ts": {
+      "sha256": "1c2e66f286fced3c1ed251c2f326b96c5fe07af78a990b6168b41a8f18eb4ae5",
+      "expected": "1c2e66f286fced3c1ed251c2f326b96c5fe07af78a990b6168b41a8f18eb4ae5",
+      "matches": true
+    },
+    "packages/core/test/ftc/robot-approvals-and-operations/m9-01.test.ts": {
+      "sha256": "ae346562f8068fbf3be72c074e00290bdd8f8ac9bfb3d2615d347f4a67108a41",
+      "expected": "ae346562f8068fbf3be72c074e00290bdd8f8ac9bfb3d2615d347f4a67108a41",
+      "matches": true
+    }
+  },
+  "product_imports": {
+    "packages/core/src/ftc/operations.ts": [
+      "node:crypto",
+      "@opencode-ai/schema/ftc-operation",
+      "@opencode-ai/schema/ftc-project",
+      "effect"
+    ],
+    "packages/schema/src/ftc-operation.ts": [
+      "effect",
+      "./ftc-java",
+      "./ftc-project",
+      "./identifier",
+      "./project",
+      "./schema"
+    ]
+  },
+  "whitespace": {
+    "packages/core/src/ftc/operations.ts": {
+      "trailing_lines": [],
+      "final_newline": true
+    },
+    "packages/schema/src/ftc-operation.ts": {
+      "trailing_lines": [],
+      "final_newline": true
+    },
+    "packages/core/test/ftc/robot-approvals-and-operations/m9-01.test.ts": {
+      "trailing_lines": [],
+      "final_newline": true
+    },
+    "packages/core/test/ftc/robot-approvals-and-operations/m9-02.test.ts": {
+      "trailing_lines": [],
+      "final_newline": true
+    }
+  }
+}
+Traceback (most recent call last):
+  File "/Users/dylanxu/coding_tree/docs/validation/m9-02/implementation-2026-10-10/source-audit-resume-v1.py", line 43, in <module>
+    assert all(x['matches'] for x in inverse.values())
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

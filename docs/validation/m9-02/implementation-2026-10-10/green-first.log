@@ -1,0 +1,92 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/robot-approvals-and-operations/m9-02.test.ts:
+(pass) Deploy click authorizes only the displayed build and target [9.39ms]
+(pass) Deploy requires one deliberate event in observation [1.01ms]
+(pass) Deploy requires one deliberate event in actions-with-approval [0.44ms]
+(pass) specific approval retains exact initialize action [0.87ms]
+(pass) specific approval retains exact start action [0.55ms]
+(pass) specific approval retains exact tune action [0.51ms]
+(pass) plain events grant no consent [0.84ms]
+(pass) copied events grant no consent [0.48ms]
+(pass) serialized events grant no consent [0.48ms]
+(pass) code events grant no consent [0.38ms]
+(pass) wrong-owner events grant no consent [0.34ms]
+(pass) unknown and caller-mismatched contexts do not claim an event [0.34ms]
+(pass) same hash never transfers events between different operation IDs [0.44ms]
+(pass) exact project revocation is irreversible before during and after acceptance [1.75ms]
+(pass) exact chat revocation is irreversible before during and after acceptance [0.48ms]
+(pass) exact initiator revocation is irreversible before during and after acceptance [0.45ms]
+(pass) exact mode revocation is irreversible before during and after acceptance [0.46ms]
+(pass) exact target revocation is irreversible before during and after acceptance [0.57ms]
+(pass) exact generation revocation is irreversible before during and after acceptance [0.43ms]
+(pass) exact build revocation is irreversible before during and after acceptance [0.48ms]
+(pass) exact digest revocation is irreversible before during and after acceptance [0.59ms]
+(pass) exact source revocation is irreversible before during and after acceptance [0.34ms]
+(pass) exact configuration revocation is irreversible before during and after acceptance [0.37ms]
+(pass) exact kind revocation is irreversible before during and after acceptance [0.33ms]
+(pass) exact opMode revocation is irreversible before during and after acceptance [0.32ms]
+(pass) exact field revocation is irreversible before during and after acceptance [0.32ms]
+(pass) exact value revocation is irreversible before during and after acceptance [0.31ms]
+(pass) exact state revocation is irreversible before during and after acceptance [0.28ms]
+(pass) unknown exact notifications cannot revoke a different binding [0.24ms]
+(pass) trusted rejection via decision retires the exact binding [0.26ms]
+(pass) trusted rejection via callback retires the exact binding [0.12ms]
+(pass) trusted rejection via accepted retires the exact binding [0.13ms]
+(pass) injected time 19 and deadline 20 yield accepted [1.46ms]
+(pass) injected time 20 and deadline 20 yield approval_expired [0.32ms]
+(pass) injected time 21 and deadline 20 yield approval_expired [0.14ms]
+(pass) injected time 10 and deadline 10 yield approval_expired [0.23ms]
+(pass) injected time 10 and deadline 9 yield approval_expired [0.19ms]
+(pass) injected time NaN and deadline 20 yield approval_unavailable [0.13ms]
+(pass) injected time Infinity and deadline 20 yield approval_unavailable [0.12ms]
+(pass) injected time 10 and deadline NaN yield approval_unavailable [0.15ms]
+(pass) injected time 10 and deadline Infinity yield approval_unavailable [0.14ms]
+(pass) clock advance during policy and lazy accepted expiry retire consent [0.45ms]
+(pass) synchronous claim reentrancy cannot overwrite revocation [0.26ms]
+(pass) at most one acceptance wins and unrelated operations progress [0.48ms]
+(pass) approval envelope and captured decision survive mutation during waits [0.29ms]
+(pass) canonical now failure and defect remain distinguishable [0.58ms]
+(pass) canonical deadline failure and defect remain distinguishable [0.25ms]
+(pass) absent observer cannot make approval ready [0.18ms]
+(pass) pending observer cannot make approval ready [0.13ms]
+(pass) failed observer cannot make approval ready [0.09ms]
+(pass) malformed observer cannot make approval ready [0.08ms]
+(pass) malformed-result observer cannot make approval ready [0.07ms]
+(pass) caller interruption joins owned scoped deadline cleanup and retires admission [0.73ms]
+(pass) owner interruption joins owned scoped deadline cleanup and retires admission [0.25ms]
+(pass) scoped preclaim clock cleanup belongs to the attempt [0.40ms]
+(pass) scoped postclaim clock cleanup belongs to the attempt [0.23ms]
+(pass) late domain failure after held cleanup preserves revocation precedence [0.47ms]
+398 |   const failed = yield* Fiber.await(accepting)
+399 |   expect(Exit.isFailure(failed)).toBe(true)
+400 |   if (Exit.isFailure(failed) && !Cause.hasInterrupts(failed.cause)) {
+401 |     const code = Cause.findErrorOption(failed.cause).pipe((x) => x._tag === "Some" ? x.value.code : "missing")
+402 |     // Matching failure retired first, so revocation during cleanup cannot replace cancellation.
+403 |     expect(code).toBe(kind === "owner" ? "owner_closed" : "invalid_parameters")
+                       ^
+error: expect(received).toBe(expected)
+
+Expected: "owner_closed"
+Received: "invalid_parameters"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/robot-approvals-and-operations/m9-02.test.ts:403:18)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) late domain failure after held cleanup preserves owner precedence [0.31ms]
+(pass) owner closes before joined successful observer cleanup and old events never transfer [0.55ms]
+(pass) owner closes before joined failed observer cleanup and old events never transfer [0.21ms]
+(pass) owner closes before joined pending observer cleanup and old events never transfer [0.20ms]
+(pass) canonical request is data only and Schema/Core identities remain exact [0.17ms]
+
+1 tests failed:
+(fail) late domain failure after held cleanup preserves owner precedence [0.31ms]
+
+ 61 pass
+ 1 fail
+ 343 expect() calls
+Ran 62 tests across 1 file. [95.00ms]

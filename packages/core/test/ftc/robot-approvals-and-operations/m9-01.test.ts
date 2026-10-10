@@ -75,7 +75,7 @@ test("observation blocks agent control but not separately approved deployment", 
         })
         expect(deploy.status).toBe("awaiting_approval")
         expect(dispatchCount).toBe(0)
-        expect(Object.keys(operations)).toEqual(["prepareOperation"])
+        expect(Object.keys(operations)).toEqual(["prepareOperation", "approveOperation"])
         expect("executeOperation" in operations).toBe(false)
       }),
     ),

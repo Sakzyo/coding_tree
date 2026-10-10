@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "docs/validation/m9-02/implementation-2026-10-10/source-audit-resume-v2.py"
+  ],
+  "cwd": "/Users/dylanxu/coding_tree",
+  "exit": 0,
+  "environment": {
+    "OPENCODE_TEST_HOME": "/private/tmp/m9-02-2026-10-10-home/opencode_test_home",
+    "XDG_CONFIG_HOME": "/private/tmp/m9-02-2026-10-10-home/xdg_config_home",
+    "XDG_DATA_HOME": "/private/tmp/m9-02-2026-10-10-home/xdg_data_home",
+    "XDG_CACHE_HOME": "/private/tmp/m9-02-2026-10-10-home/xdg_cache_home",
+    "XDG_STATE_HOME": "/private/tmp/m9-02-2026-10-10-home/xdg_state_home"
+  },
+  "log_sha256": "919f7a5e6f961d787dcd90a22edbac7bd8130950d1bab8c9452434730afafa01",
+  "source_sha256": {
+    "packages/core/src/ftc/operations.ts": "e701c26a463962d19e196d735ef83adc91808fd30ea9d64093092a9ee11d35f8",
+    "packages/schema/src/ftc-operation.ts": "30c49b1809b43bb808b25ebb29887d436dc45db1236c99f54454950ecd5bcbf9",
+    "packages/core/test/ftc/robot-approvals-and-operations/m9-01.test.ts": "685a7b9a327b9a61031cb0af18b9439cd1fc54c33c5701aa7120545fe84e051b",
+    "packages/core/test/ftc/robot-approvals-and-operations/m9-02.test.ts": "12e3805e4bc5d40d24e4c1c8db956e943066b8055fc6698a46aece08c1c76c1e"
+  }
+}

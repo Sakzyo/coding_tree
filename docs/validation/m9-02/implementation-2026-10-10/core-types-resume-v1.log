@@ -1,0 +1,406 @@
+$ tsgo --noEmit
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(154,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(158,31): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(158,75): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<Exit<A, E>, never, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(168,29): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(168,73): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(171,29): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(171,67): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(199,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(204,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(204,82): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(207,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(207,83): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(216,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(232,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(232,60): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(240,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(245,17): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(249,16): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(252,17): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(252,97): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(261,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(267,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(267,73): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(268,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(268,72): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(335,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(363,24): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(363,66): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(388,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(398,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(398,74): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(404,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(404,64): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(421,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(426,29): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(426,71): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<Exit<A, E>, never, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(429,85): error TS18046: 'x.value' is of type 'unknown'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(438,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(446,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(446,64): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(452,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(452,63): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(454,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(454,78): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(462,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(471,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(471,64): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(477,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(489,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(489,60): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(495,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(495,60): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(533,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(541,31): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(541,68): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<Exit<A, E>, never, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(547,84): error TS18046: 'x.value' is of type 'unknown'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(553,26): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(553,68): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(564,7): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(580,24): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(580,66): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(591,7): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(628,24): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(628,66): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(649,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(664,32): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(665,9): error TS2345: Argument of type '<E, R>(self: Effect<never, E, R>) => Effect<never, E, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<never, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<never, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'PreparedOperation' is not assignable to type 'never'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(674,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(674,56): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(683,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(716,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(716,56): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(728,7): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(773,24): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(773,59): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(777,24): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(777,66): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(814,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(835,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(835,59): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(846,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(846,56): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(901,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(936,24): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(936,58): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(940,24): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(940,66): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(953,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(987,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(987,56): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(996,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(1006,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(1006,64): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(1007,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(1007,56): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(1014,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(1029,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(1029,56): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(1035,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(1035,56): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(1065,5): error TS2345: Argument of type 'Effect<void, unknown, unknown>' is not assignable to parameter of type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(1071,22): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(1071,59): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(1076,24): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/robot-approvals-and-operations/m9-02.test.ts(1076,66): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<never, { readonly code: "approval_unavailable"; }, never> | Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+      Type 'Effect<PreparedOperation, OperationError, never>' is not assignable to type 'Effect<PreparedOperation, { readonly code: "approval_unavailable"; }, never>'.
+        Type 'OperationError' is not assignable to type '{ readonly code: "approval_unavailable"; }'.
+          Types of property 'code' are incompatible.
+            Type '"approval_cancelled" | "approval_consumed" | "approval_expired" | "approval_rejected" | "approval_unavailable" | "artifact_invalid" | "chat_unauthorized" | "context_changed" | ... 12 more ... | "untrusted_caller"' is not assignable to type '"approval_unavailable"'.
+              Type '"approval_cancelled"' is not assignable to type '"approval_unavailable"'.

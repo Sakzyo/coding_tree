@@ -1,0 +1,27 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/robot-approvals-and-operations/m9-02.test.ts:
+581 | 
+582 | test("deadline already expired at claim retires before a later clock failure", () => run(Effect.gen(function* () {
+583 |   const state = { reads: 0 }
+584 |   const f = yield* fixture({ now: Effect.suspend(() => { state.reads++; return state.reads === 1 ? Effect.succeed(10) : Effect.fail({ code: "invalid_parameters" } as const) }), deadline: () => Effect.succeed(10) })
+585 |   const p = yield* f.prepare()
+586 |   expect((yield* approve(f.operations, p, f.event(p)).pipe(Effect.flip)).code).toBe("approval_expired")
+                                                                                     ^
+error: expect(received).toBe(expected)
+
+Expected: "approval_expired"
+Received: "invalid_parameters"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/robot-approvals-and-operations/m9-02.test.ts:586:80)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) deadline already expired at claim retires before a later clock failure [7.72ms]
+
+ 0 pass
+ 70 filtered out
+ 1 fail
+ 2 expect() calls
+Ran 1 test across 1 file. [69.00ms]

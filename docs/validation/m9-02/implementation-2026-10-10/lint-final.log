@@ -1,0 +1,69 @@
+
+  ! eslint(no-unused-vars): Parameter 'revoke' is declared but never used. Unused parameters should start with a '_'.
+     ,-[packages/core/test/ftc/robot-approvals-and-operations/m9-02.test.ts:732:21]
+ 731 |         const f = yield* fixture({
+ 732 |           observe: (revoke) =>
+     :                     ^^^|^^
+     :                        `-- 'revoke' is declared here
+ 733 |             Effect.gen(function* () {
+     `----
+  help: Consider removing this parameter.
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'OperationError' is more narrow than the original type.
+    ,-[packages/core/test/ftc/robot-approvals-and-operations/m9-02.test.ts:66:19]
+ 65 |       })
+ 66 |     : Effect.fail({ code: "approval_unavailable" } as unknown as FtcOperation.OperationError)
+    :                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 67 | }
+    `----
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'OperationError' is more narrow than the original type.
+    ,-[packages/core/test/ftc/robot-approvals-and-operations/m9-02.test.ts:90:31]
+ 89 |         const decision = events.get(event)
+ 90 |         if (!decision) return { code: "untrusted_approval" } as unknown as FtcOperation.OperationError
+    :                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 91 |         events.delete(event)
+    `----
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'Effect<void, never, never>' is more narrow than the original type.
+     ,-[packages/core/test/ftc/robot-approvals-and-operations/m9-02.test.ts:573:38]
+ 572 |                 : kind === "malformed"
+ 573 |                   ? { observe: () => undefined as unknown as Effect.Effect<void> }
+     :                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 574 |                   : { observe: () => Effect.succeed(true) as unknown as Effect.Effect<void> }
+     `----
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'Effect<void, never, never>' is more narrow than the original type.
+     ,-[packages/core/test/ftc/robot-approvals-and-operations/m9-02.test.ts:574:38]
+ 573 |                   ? { observe: () => undefined as unknown as Effect.Effect<void> }
+ 574 |                   : { observe: () => Effect.succeed(true) as unknown as Effect.Effect<void> }
+     :                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 575 |         const f = yield* fixture(change)
+     `----
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'ApprovalRequest & { userEvent: object; }' is more narrow than the original type.
+      ,-[packages/core/test/ftc/robot-approvals-and-operations/m9-02.test.ts:1050:29]
+ 1049 |         (yield* f.operations
+ 1050 |           .approveOperation(invalid as unknown as FtcOperation.ApprovalRequest & { userEvent: object })
+      :                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 1051 |           .pipe(Effect.flip)).code,
+      `----
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'Effect<number, never, never>' is more narrow than the original type.
+      ,-[packages/core/test/ftc/robot-approvals-and-operations/m9-02.test.ts:1062:50]
+ 1061 |       const f = yield* fixture()
+ 1062 |       if (boundary === "clock") f.approval.now = undefined as unknown as Effect.Effect<number>
+      :                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 1063 |       if (boundary === "deadline") f.approval.deadline = () => undefined as unknown as Effect.Effect<number>
+      `----
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'Effect<number, never, never>' is more narrow than the original type.
+      ,-[packages/core/test/ftc/robot-approvals-and-operations/m9-02.test.ts:1063:64]
+ 1062 |       if (boundary === "clock") f.approval.now = undefined as unknown as Effect.Effect<number>
+ 1063 |       if (boundary === "deadline") f.approval.deadline = () => undefined as unknown as Effect.Effect<number>
+      :                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 1064 |       const p = yield* f.prepare()
+      `----
+
+Found 8 warnings and 0 errors.
+Finished in 976ms on 4 files with 130 rules using 10 threads.
