@@ -1,0 +1,3 @@
+$ oxlint packages/core/src/ftc/java/build.ts packages/core/src/ftc/java.ts "packages/core/test/ftc/java-development/m5-06.test.ts" packages/schema/src/ftc-java.ts packages/schema/test/ftc-java-artifact.test.ts
+Found 0 warnings and 0 errors.
+Finished in 398ms on 5 files with 130 rules using 10 threads.

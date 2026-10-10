@@ -1,0 +1,37 @@
+$ tsgo --noEmit
+test/ftc/java-development/m5-06.test.ts(852,28): error TS2322: Type 'Effect<void, unknown, unknown>' is not assignable to type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/java-development/m5-06.test.ts(858,30): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/java-development/m5-06.test.ts(858,144): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<Exit<A, E>, never, R>' is not assignable to parameter of type '(_: Effect<ArtifactVerificationResult, ArtifactError, never> | Effect<ArtifactRef | undefined, ArtifactError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<ArtifactVerificationResult, ArtifactError, never> | Effect<ArtifactRef | undefined, ArtifactError, never>' is not assignable to type 'Effect<ArtifactVerificationResult | undefined, ArtifactError, never>'.
+      Type 'Effect<ArtifactRef | undefined, ArtifactError, never>' is not assignable to type 'Effect<ArtifactVerificationResult | undefined, ArtifactError, never>'.
+        Type 'ArtifactRef | undefined' is not assignable to type 'ArtifactVerificationResult | undefined'.
+          Type 'ArtifactRef' is not assignable to type '{ readonly valid: boolean; readonly reason?: "content" | "dirty" | "identity" | "stale" | "unknown" | undefined; }'.
+            Property 'valid' is missing in type '{ readonly buildID: string & Brand<"FtcJava.BuildID">; readonly projectID: string & Brand<"Project.ID">; readonly sourceRevision: string; readonly configurationRevision: string; readonly digest: string; readonly path: string & Brand<...>; }' but required in type '{ readonly valid: boolean; readonly reason?: "content" | "dirty" | "identity" | "stale" | "unknown" | undefined; }'.
+test/ftc/java-development/m5-06.test.ts(863,59): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Exit<unknown, unknown>'.
+test/ftc/java-development/m5-06.test.ts(864,57): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Exit<unknown, unknown>'.
+test/ftc/java-development/m5-06.test.ts(864,82): error TS2339: Property 'valid' does not exist on type '{}'.
+test/ftc/java-development/m5-06.test.ts(886,98): error TS2322: Type 'Effect<void, unknown, unknown>' is not assignable to type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/java-development/m5-06.test.ts(896,30): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/java-development/m5-06.test.ts(896,137): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<Exit<A, E>, never, R>' is not assignable to parameter of type '(_: Effect<ArtifactVerificationResult, ArtifactError, never> | Effect<ArtifactRef | undefined, ArtifactError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<ArtifactVerificationResult, ArtifactError, never> | Effect<ArtifactRef | undefined, ArtifactError, never>' is not assignable to type 'Effect<ArtifactVerificationResult | undefined, ArtifactError, never>'.
+      Type 'Effect<ArtifactRef | undefined, ArtifactError, never>' is not assignable to type 'Effect<ArtifactVerificationResult | undefined, ArtifactError, never>'.
+        Type 'ArtifactRef | undefined' is not assignable to type 'ArtifactVerificationResult | undefined'.
+          Type 'ArtifactRef' is not assignable to type '{ readonly valid: boolean; readonly reason?: "content" | "dirty" | "identity" | "stale" | "unknown" | undefined; }'.
+            Property 'valid' is missing in type '{ readonly buildID: string & Brand<"FtcJava.BuildID">; readonly projectID: string & Brand<"Project.ID">; readonly sourceRevision: string; readonly configurationRevision: string; readonly digest: string; readonly path: string & Brand<...>; }' but required in type '{ readonly valid: boolean; readonly reason?: "content" | "dirty" | "identity" | "stale" | "unknown" | undefined; }'.
+test/ftc/java-development/m5-06.test.ts(905,58): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Exit<unknown, unknown>'.
+test/ftc/java-development/m5-06.test.ts(906,56): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Exit<unknown, unknown>'.
+test/ftc/java-development/m5-06.test.ts(906,79): error TS2339: Property 'valid' does not exist on type '{}'.
+test/ftc/java-development/m5-06.test.ts(911,93): error TS2322: Type 'Effect<void, unknown, unknown>' is not assignable to type 'Effect<void, unknown, Scope>'.
+  Type 'unknown' is not assignable to type 'Scope'.
+test/ftc/java-development/m5-06.test.ts(915,26): error TS2488: Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
+test/ftc/java-development/m5-06.test.ts(915,133): error TS2345: Argument of type '<A, E, R>(self: Effect<A, E, R>) => Effect<E, A, R>' is not assignable to parameter of type '(_: Effect<ArtifactVerificationResult, ArtifactError, never> | Effect<ArtifactRef | undefined, ArtifactError, never>) => Effect<...>'.
+  Types of parameters 'self' and '_' are incompatible.
+    Type 'Effect<ArtifactVerificationResult, ArtifactError, never> | Effect<ArtifactRef | undefined, ArtifactError, never>' is not assignable to type 'Effect<ArtifactVerificationResult | undefined, ArtifactError, never>'.
+      Type 'Effect<ArtifactRef | undefined, ArtifactError, never>' is not assignable to type 'Effect<ArtifactVerificationResult | undefined, ArtifactError, never>'.
+        Type 'ArtifactRef | undefined' is not assignable to type 'ArtifactVerificationResult | undefined'.
+          Type 'ArtifactRef' is not assignable to type '{ readonly valid: boolean; readonly reason?: "content" | "dirty" | "identity" | "stale" | "unknown" | undefined; }'.
+            Property 'valid' is missing in type '{ readonly buildID: string & Brand<"FtcJava.BuildID">; readonly projectID: string & Brand<"Project.ID">; readonly sourceRevision: string; readonly configurationRevision: string; readonly digest: string; readonly path: string & Brand<...>; }' but required in type '{ readonly valid: boolean; readonly reason?: "content" | "dirty" | "identity" | "stale" | "unknown" | undefined; }'.

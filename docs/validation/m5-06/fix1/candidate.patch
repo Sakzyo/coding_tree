@@ -1,0 +1,638 @@
+diff --git a/packages/core/src/ftc/java/build.ts b/packages/core/src/ftc/java/build.ts
+index 303f7d841..397bb9c4b 100644
+--- a/packages/core/src/ftc/java/build.ts
++++ b/packages/core/src/ftc/java/build.ts
+@@ -8,7 +8,7 @@ import { Location } from "@opencode-ai/schema/location"
+ import { WorkspaceID } from "@opencode-ai/schema/workspace-id"
+ import { createHash } from "node:crypto"
+ import { ProjectSchema } from "../../project/schema"
+-import { Cause, Deferred, Effect, Exit, Fiber, Schema, Scope, Stream } from "effect"
++import { Cause, Deferred, Effect, Exit, Fiber, Option, Schema, Scope, Stream } from "effect"
+ 
+ export interface SavedInputBasis {
+   readonly project: FtcProject.ProjectContext
+@@ -53,10 +53,27 @@ export interface Termination {
+   readonly signal?: string
+ }
+ 
++export interface ArtifactBytesObservation {
++  readonly bytes: Uint8Array | undefined
++  // Exact retention/observed-byte-bound, side-effect-free synchronous continuity proof.
++  // Remains callable after query cleanup and final async authorization. False proves change;
++  // undefined means unavailable proof. It must cover the immediately following synchronous
++  // publication; producers without protected continuity cannot implement it as constant true.
++  readonly confirm: () => boolean | undefined
++}
++
++export interface ArtifactCurrentObservation {
++  readonly validation: InputValidation
++  // Exact owner/original-basis-bound complete authority, generation and dirty confirmation.
++  // Side-effect-free, synchronous and usable after all query cleanup; no released execution
++  // lease. Return undefined if complete/recipe/interval continuity cannot be established.
++  readonly confirm: () => InputValidation | undefined
++}
++
+ export interface RetainedArtifact {
+   readonly metadata: Omit<FtcJava.ArtifactRef, "digest">
+   // Protected owner bytes; undefined establishes that the retained content is missing.
+-  readonly read: () => Effect.Effect<Uint8Array | undefined, FtcJava.ArtifactError, Scope.Scope>
++  readonly read: () => Effect.Effect<ArtifactBytesObservation, FtcJava.ArtifactError, Scope.Scope>
+   readonly release: Effect.Effect<void, FtcJava.ArtifactError>
+ }
+ 
+@@ -86,7 +103,7 @@ export interface Ports {
+     // across lease retirement, including A-B-A. Unsupported continuity fails, never endpoint inference.
+     readonly current: (input: {
+       readonly basis: SavedInputBasis
+-    }) => Effect.Effect<InputValidation, FtcJava.ArtifactError, Scope.Scope>
++    }) => Effect.Effect<ArtifactCurrentObservation, FtcJava.ArtifactError, Scope.Scope>
+   }
+   readonly projects: {
+     readonly resolve: (projectID: Project.ID) => Effect.Effect<FtcProject.ProjectContext, FtcJava.BuildError>
+@@ -156,6 +173,7 @@ const Validation = Schema.Struct({
+   generation: Text,
+   exclusions: Schema.Array(FtcJava.BuildExclusion),
+ })
++const RuntimeValidation = Schema.Struct({ ...Validation.fields, project: RuntimeProject })
+ const ArtifactMetadata = Schema.Struct({
+   buildID: FtcJava.BuildID,
+   projectID: Project.ID,
+@@ -172,6 +190,13 @@ type ArtifactState =
+     }
+   | { readonly error: Cause.Cause<FtcJava.ArtifactError> }
+ 
++type ArtifactCheck = {
++  readonly ref?: FtcJava.ArtifactRef
++  readonly reason?: FtcJava.ArtifactVerificationResult["reason"]
++  readonly confirmContent?: ArtifactBytesObservation["confirm"]
++  readonly confirmCurrent?: ArtifactCurrentObservation["confirm"]
++}
++
+ const ObservedTermination = Schema.Struct({
+   exitCode: Schema.optionalKey(Schema.Int),
+   signal: Schema.optionalKey(Text),
+@@ -630,13 +655,24 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
+       )
+     const query = <A>(effect: Effect.Effect<A, FtcJava.ArtifactError>) =>
+       Effect.acquireUseRelease(fork(effect), join, interrupt)
+-    const recheck = (state: { readonly basis: SavedInputBasis; artifact?: ArtifactState }) =>
++    const recheck = (state: {
++      readonly basis: SavedInputBasis
++      artifact?: ArtifactState
++    }): Effect.Effect<ArtifactCheck, FtcJava.ArtifactError, Scope.Scope> =>
+       Effect.gen(function* () {
+         const artifact = state.artifact
+         if (!artifact) return {}
+         if ("error" in artifact) return yield* Effect.failCause(artifact.error)
+         if (artifact.invalid) return { reason: artifact.invalid }
+-        const bytes = yield* artifact.retained.read()
++        const content = yield* artifact.retained.read()
++        if (!content || typeof content !== "object" || !Object.hasOwn(content, "bytes"))
++          return yield* Effect.fail({ code: "artifact_read_failed" } satisfies FtcJava.ArtifactError)
++        const confirmContent = content.confirm
++        if (confirmContent === undefined)
++          return yield* Effect.fail({ code: "artifact_unavailable" } satisfies FtcJava.ArtifactError)
++        if (typeof confirmContent !== "function")
++          return yield* Effect.fail({ code: "artifact_read_failed" } satisfies FtcJava.ArtifactError)
++        const bytes = content.bytes
+         if (bytes !== undefined && !(bytes instanceof Uint8Array))
+           return yield* Effect.fail({ code: "artifact_read_failed" } satisfies FtcJava.ArtifactError)
+         const digest = bytes === undefined ? undefined : createHash("sha256").update(bytes).digest("hex")
+@@ -644,7 +680,15 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
+           artifact.invalid = "content"
+           return { reason: artifact.invalid }
+         }
+-        const raw = yield* artifactPorts!.current({ basis: state.basis })
++        const observation = yield* artifactPorts!.current({ basis: state.basis })
++        if (!observation || typeof observation !== "object")
++          return yield* Effect.fail({ code: "artifact_current_failed" } satisfies FtcJava.ArtifactError)
++        const confirmCurrent = observation.confirm
++        if (confirmCurrent === undefined)
++          return yield* Effect.fail({ code: "artifact_unavailable" } satisfies FtcJava.ArtifactError)
++        if (typeof confirmCurrent !== "function")
++          return yield* Effect.fail({ code: "artifact_current_failed" } satisfies FtcJava.ArtifactError)
++        const raw = observation.validation
+         const project = yield* captureProject(raw?.project, "input_verification_failed").pipe(
+           Effect.mapError((): FtcJava.ArtifactError => ({ code: "artifact_current_failed" })),
+         )
+@@ -664,8 +708,43 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
+         yield* artifactAuthorize(state.basis.project)
+         yield* artifactActive()
+         if (artifact.invalid) return { reason: artifact.invalid }
+-        return { ref: artifact.ref ?? freeze(FtcJava.ArtifactRef.make({ ...artifact.retained.metadata, digest })) }
++        return {
++          ref: artifact.ref ?? freeze(FtcJava.ArtifactRef.make({ ...artifact.retained.metadata, digest })),
++          confirmContent,
++          confirmCurrent,
++        }
+       })
++    const confirm = (basis: SavedInputBasis, artifact: ArtifactState | undefined, checked: ArtifactCheck) => {
++      if (closed) return { error: { code: "owner_closed" } satisfies FtcJava.ArtifactError }
++      if (!artifact || "error" in artifact) return {}
++      if (artifact.invalid || checked.reason) return { reason: artifact.invalid ?? checked.reason }
++      if (!checked.ref) return {}
++      if (!checked.confirmCurrent || !checked.confirmContent)
++        return { error: { code: "artifact_unavailable" } satisfies FtcJava.ArtifactError }
++      const raw = checked.confirmCurrent()
++      if (raw === undefined) return { error: { code: "artifact_unavailable" } satisfies FtcJava.ArtifactError }
++      const current = Schema.decodeUnknownOption(RuntimeValidation, { onExcessProperty: "error" })(raw)
++      if (
++        Option.isNone(current) ||
++        !sameProject(current.value.project, basis.project) ||
++        !sameToolchain(current.value.toolchain, basis.toolchain)
++      )
++        return { error: { code: "artifact_current_failed" } satisfies FtcJava.ArtifactError }
++      if (
++        current.value.sourceRevision !== basis.sourceRevision ||
++        current.value.configurationRevision !== basis.configurationRevision ||
++        current.value.generation !== basis.generation
++      )
++        artifact.invalid = "stale"
++      if (current.value.exclusions.length) artifact.invalid = "dirty"
++      if (artifact.invalid) return { reason: artifact.invalid }
++      const content = checked.confirmContent()
++      if (content === undefined) return { error: { code: "artifact_unavailable" } satisfies FtcJava.ArtifactError }
++      if (typeof content !== "boolean")
++        return { error: { code: "artifact_read_failed" } satisfies FtcJava.ArtifactError }
++      if (!content || (artifact.ref && artifact.ref.digest !== checked.ref.digest)) artifact.invalid = "content"
++      return artifact.invalid ? { reason: artifact.invalid } : { ref: checked.ref }
++    }
+     const artifact = (input: FtcJava.ArtifactQuery) =>
+       query(
+         Effect.gen(function* () {
+@@ -681,16 +760,17 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
+           const checked = yield* Effect.scoped(recheck(state))
+           yield* artifactAuthorize(state.basis.project)
+           yield* artifactActive()
+-          if (checked.reason || (state.artifact && "retained" in state.artifact && state.artifact.invalid))
+-            return yield* Effect.fail({ code: "artifact_invalid" } satisfies FtcJava.ArtifactError)
+-          if (!state.artifact || "error" in state.artifact || !checked.ref) return undefined
+-          if (state.artifact.ref && state.artifact.ref.digest !== checked.ref.digest) {
+-            state.artifact.invalid = "content"
+-            return yield* Effect.fail({ code: "artifact_invalid" } satisfies FtcJava.ArtifactError)
+-          }
+-          // Publish only after the protected read/current Scope has joined all cleanup.
+-          state.artifact.ref ??= checked.ref
+-          return state.artifact.ref
++          const published = yield* Effect.sync(() => {
++            // Both trusted confirmations and publication share one synchronous boundary.
++            const settled = confirm(state.basis, state.artifact, checked)
++            if (settled.error) return { error: settled.error }
++            if (settled.reason) return { error: { code: "artifact_invalid" } satisfies FtcJava.ArtifactError }
++            if (!state.artifact || "error" in state.artifact || !settled.ref) return {}
++            state.artifact.ref ??= settled.ref
++            return { ref: state.artifact.ref }
++          })
++          if (published.error) return yield* Effect.fail(published.error)
++          return published.ref
+         }),
+       )
+     const verifyArtifact = (input: FtcJava.ArtifactVerificationRequest) =>
+@@ -724,8 +804,13 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
+           const checked = yield* Effect.scoped(recheck(state))
+           yield* artifactAuthorize(state.basis.project)
+           yield* artifactActive()
+-          const reason = state.artifact.invalid ?? checked.reason
+-          return freeze(reason ? { valid: false, reason } : { valid: true })
++          const published = yield* Effect.sync(() => {
++            const settled = confirm(state.basis, state.artifact, checked)
++            if (settled.error) return { error: settled.error }
++            return { result: freeze(settled.reason ? { valid: false, reason: settled.reason } : { valid: true }) }
++          })
++          if (published.error) return yield* Effect.fail(published.error)
++          return published.result
+         }),
+       )
+     return { build, startBuild, readBuild, artifact, verifyArtifact }
+diff --git a/packages/core/test/ftc/java-development/m5-06.test.ts b/packages/core/test/ftc/java-development/m5-06.test.ts
+index 822a4c0c0..ac1beb535 100644
+--- a/packages/core/test/ftc/java-development/m5-06.test.ts
++++ b/packages/core/test/ftc/java-development/m5-06.test.ts
+@@ -1,5 +1,6 @@
+ import { expect, test } from "bun:test"
+ import path from "node:path"
++import { readFileSync } from "node:fs"
+ import { FtcJava } from "@opencode-ai/schema/ftc-java"
+ import { FtcProject } from "@opencode-ai/schema/ftc-project"
+ import { FtcEnvironment } from "@opencode-ai/schema/ftc-environment"
+@@ -66,6 +67,13 @@ async function fixture(root: string) {
+     current: Effect.void as Effect.Effect<void, FtcJava.ArtifactError>,
+     cleanup: Effect.void as Effect.Effect<void, FtcJava.ArtifactError>,
+     queryCleanup: Effect.void,
++    readCleanup: Effect.void,
++    currentCleanup: Effect.void,
++    authorizationHeld: false,
++    authorization: Effect.void,
++    contentProof: true,
++    currentProof: true,
++    confirmationDefect: false,
+     metadata: (ref: FtcJava.ArtifactRef) => ref,
+   }
+   const entered = {
+@@ -75,6 +83,9 @@ async function fixture(root: string) {
+     cleanup: gate(),
+     queryCleanup: gate(),
+     process: gate(),
++    readCleanup: gate(),
++    currentCleanup: gate(),
++    authorization: gate(),
+   }
+   const finish = gate()
+   const validation = () =>
+@@ -86,10 +97,29 @@ async function fixture(root: string) {
+       generation: state.generation,
+       exclusions: state.dirty ? [{ path: "Main.java" }] : [],
+     }))
++  // Fixture-only synchronous authority: its declared inventory and writes are serialized.
++  // This is not a protected production filesystem/input continuity adapter.
++  const confirmValidation = () => ({
++    project: state.authorized,
++    toolchain,
++    sourceRevision: readFileSync(path.join(root, "Main.java"), "utf8"),
++    configurationRevision: state.configurationRevision,
++    generation: state.generation,
++    exclusions: state.dirty ? [{ path: "Main.java" }] : [],
++  })
+   const output = Object.freeze({})
+   const executions = new WeakMap<object, object>()
+   const ports = {
+-    projects: { resolve: () => Effect.succeed(state.authorized) },
++    projects: {
++      resolve: () =>
++        Effect.gen(function* () {
++          if (state.authorizationHeld) {
++            yield* open(entered.authorization)
++            yield* state.authorization
++          }
++          return state.authorized
++        }),
++    },
+     inputs: {
+       acquire: () =>
+         Effect.gen(function* () {
+@@ -186,6 +216,8 @@ async function fixture(root: string) {
+                 yield* Effect.addFinalizer(() =>
+                   open(entered.queryCleanup).pipe(
+                     Effect.andThen(state.queryCleanup),
++                    Effect.andThen(open(entered.readCleanup)),
++                    Effect.andThen(state.readCleanup),
+                     Effect.andThen(
+                       Effect.sync(() => {
+                         state.queryCleanups++
+@@ -195,9 +227,20 @@ async function fixture(root: string) {
+                 )
+                 yield* open(entered.read)
+                 yield* state.read
+-                return state.missingBytes
++                const bytes = state.missingBytes
+                   ? undefined
+                   : yield* Effect.promise(() => Bun.file(path.join(root, "owned.apk")).bytes())
++                return {
++                  bytes,
++                  confirm: () => {
++                    if (state.confirmationDefect) throw new Error("confirmation defect")
++                    return state.contentProof
++                      ? !state.missingBytes &&
++                          bytes !== undefined &&
++                          readFileSync(path.join(root, "owned.apk")).equals(bytes)
++                      : undefined
++                  },
++                }
+               }),
+             release,
+           }
+@@ -208,6 +251,8 @@ async function fixture(root: string) {
+           yield* Effect.addFinalizer(() =>
+             open(entered.queryCleanup).pipe(
+               Effect.andThen(state.queryCleanup),
++              Effect.andThen(open(entered.currentCleanup)),
++              Effect.andThen(state.currentCleanup),
+               Effect.andThen(
+                 Effect.sync(() => {
+                   state.queryCleanups++
+@@ -218,7 +263,10 @@ async function fixture(root: string) {
+           expect(input.basis.generation).toBe("0")
+           yield* open(entered.current)
+           yield* state.current
+-          return yield* validation()
++          return {
++            validation: yield* validation(),
++            confirm: () => (state.currentProof ? confirmValidation() : undefined),
++          }
+         }),
+     },
+   }
+@@ -692,12 +740,15 @@ test("foreign current toolchain is a failure rather than proven source change",
+   Object.assign(f.ports.artifacts, {
+     current: () =>
+       Effect.succeed({
+-        project: f.project,
+-        toolchain: { ...f.toolchain, profileID: "foreign" },
+-        sourceRevision: "saved",
+-        configurationRevision: "config-1",
+-        generation: "0",
+-        exclusions: [],
++        validation: {
++          project: f.project,
++          toolchain: { ...f.toolchain, profileID: "foreign" },
++          sourceRevision: "saved",
++          configurationRevision: "config-1",
++          generation: "0",
++          exclusions: [],
++        },
++        confirm: () => undefined,
+       }),
+   })
+   await run(
+@@ -811,3 +862,291 @@ test("eligible capture cleanup failure remains a typed artifact failure", () =>
+       )
+     }),
+   ))
++
++// Exact independent reviewer scenarios/assertions, with the existing trusted fixture.
++for (const operation of ["artifact", "verify"] as const)
++  test(
++    `publication observes generation changes during held cleanup: ${operation}`,
++    () =>
++      isolated((owner, f) =>
++        Effect.gen(function* () {
++          const evidence = yield* owner.build(f.request)
++          const ref = operation === "verify" ? (yield* owner.artifact({ buildID: evidence.buildID }))! : undefined
++          f.entered.queryCleanup = gate()
++          const held = gate()
++          f.state.queryCleanup = Deferred.await(held)
++          const pending = yield* (
++            ref
++              ? owner.verifyArtifact({ ref, currentProject: f.project })
++              : owner.artifact({ buildID: evidence.buildID }).pipe(Effect.map(() => undefined))
++          ).pipe(Effect.exit, Effect.forkScoped)
++          yield* Deferred.await(f.entered.queryCleanup)
++          f.state.generation = "1"
++          yield* open(held)
++          const result = yield* Fiber.join(pending)
++          if (operation === "artifact") {
++            expect(Exit.isFailure(result)).toBe(true)
++            if (Exit.isFailure(result))
++              expect(result.cause.reasons.filter(Cause.isFailReason).map((reason) => reason.error)).toEqual([
++                { code: "artifact_invalid" },
++              ])
++          }
++          if (operation === "verify") {
++            expect(Exit.isSuccess(result) && result.value?.valid === false).toBe(true)
++            if (Exit.isSuccess(result)) expect(result.value?.reason).toBe("stale")
++          }
++        }),
++      ),
++    2000,
++  )
++
++for (const phase of ["current", "queryCleanup"] as const)
++  test(
++    `verification observes protected content changes during held ${phase}`,
++    () =>
++      isolated((owner, f) =>
++        Effect.gen(function* () {
++          const evidence = yield* owner.build(f.request)
++          const ref = (yield* owner.artifact({ buildID: evidence.buildID }))!
++          f.entered[phase] = gate()
++          const held = gate()
++          f.state[phase] = Deferred.await(held)
++          const pending = yield* owner.verifyArtifact({ ref, currentProject: f.project }).pipe(Effect.forkScoped)
++          yield* Deferred.await(f.entered[phase])
++          yield* Effect.promise(() => Bun.write(path.join(f.project.canonicalRoot, "owned.apk"), "changed"))
++          yield* open(held)
++          const result = yield* Fiber.join(pending)
++          expect(result.valid).toBe(false)
++          expect(result.reason).toBe("content")
++        }),
++      ),
++    2000,
++  )
++
++for (const operation of ["artifact", "verify"] as const)
++  for (const phase of ["readCleanup", "currentCleanup", "authorization"] as const)
++    for (const change of ["source", "configuration", "generation", "dirty", "content"] as const)
++      test(
++        `${operation} rejects ${change} change during final ${phase}`,
++        () =>
++          isolated((owner, f) =>
++            Effect.gen(function* () {
++              const evidence = yield* owner.build(f.request)
++              const ref = operation === "verify" ? (yield* owner.artifact({ buildID: evidence.buildID }))! : undefined
++              f.entered[phase] = gate()
++              const held = gate()
++              if (phase !== "authorization") f.state[phase] = Deferred.await(held)
++              if (phase === "authorization") {
++                f.state.authorization = Deferred.await(held)
++                f.state.queryCleanup = Effect.sync(() => {
++                  f.state.authorizationHeld = true
++                })
++              }
++              const pending = yield* (
++                ref
++                  ? owner.verifyArtifact({ ref, currentProject: f.project })
++                  : owner.artifact({ buildID: evidence.buildID }).pipe(Effect.map(() => undefined))
++              ).pipe(Effect.exit, Effect.forkScoped)
++              yield* Deferred.await(f.entered[phase])
++              if (change === "source") yield* f.write("changed")
++              if (change === "configuration") f.state.configurationRevision = "config-2"
++              if (change === "generation") f.state.generation = "1"
++              if (change === "dirty") f.state.dirty = true
++              if (change === "content")
++                yield* Effect.promise(() => Bun.write(path.join(f.project.canonicalRoot, "owned.apk"), "changed"))
++              yield* open(held)
++              const result = yield* Fiber.join(pending)
++              if (operation === "artifact") {
++                expect(Exit.isFailure(result)).toBe(true)
++                if (Exit.isFailure(result))
++                  expect(result.cause.reasons.filter(Cause.isFailReason).map((reason) => reason.error)).toEqual([
++                    { code: "artifact_invalid" },
++                  ])
++              }
++              if (operation === "verify") {
++                expect(Exit.isSuccess(result) && result.value?.valid === false).toBe(true)
++                if (Exit.isSuccess(result))
++                  expect(result.value?.reason).toBe(
++                    change === "content" ? "content" : change === "dirty" ? "dirty" : "stale",
++                  )
++              }
++            }),
++          ),
++        2000,
++      )
++
++for (const proof of ["contentProof", "currentProof"] as const)
++  for (const operation of ["artifact", "verify"] as const)
++    test(`${operation} cannot publish when ${proof} is unavailable`, () =>
++      isolated((owner, f) =>
++        Effect.gen(function* () {
++          const evidence = yield* owner.build(f.request)
++          const ref = operation === "verify" ? (yield* owner.artifact({ buildID: evidence.buildID }))! : undefined
++          f.state[proof] = false
++          const error = yield* (
++            ref
++              ? owner.verifyArtifact({ ref, currentProject: f.project })
++              : owner.artifact({ buildID: evidence.buildID }).pipe(Effect.map(() => undefined))
++          ).pipe(Effect.flip)
++          expect(error.code).toBe("artifact_unavailable")
++          if (!ref) {
++            f.state[proof] = true
++            const claim = {
++              buildID: evidence.buildID,
++              projectID: f.project.projectID,
++              sourceRevision: "saved",
++              configurationRevision: "config-1",
++              digest: abcDigest,
++              path: AbsolutePath.make(path.join(f.project.canonicalRoot, "owned.apk")),
++            }
++            expect(yield* owner.verifyArtifact({ ref: claim, currentProject: f.project })).toEqual({
++              valid: false,
++              reason: "unknown",
++            })
++          }
++        }),
++      ))
++
++test("confirmation defects remain observable rather than established invalidity", () =>
++  isolated((owner, f) =>
++    Effect.gen(function* () {
++      const evidence = yield* owner.build(f.request)
++      f.state.confirmationDefect = true
++      const exit = yield* owner.artifact({ buildID: evidence.buildID }).pipe(Effect.exit)
++      expect(Exit.isFailure(exit) && Cause.hasDies(exit.cause)).toBe(true)
++    }),
++  ))
++
++for (const malformed of [
++  "missing-current-handle",
++  "missing-byte-handle",
++  "async-current",
++  "async-content",
++  "bad-content",
++  "bad-current",
++] as const)
++  test(`malformed confirmation fails typed: ${malformed}`, async () => {
++    await using tmp = await tmpdir()
++    const f = await fixture(tmp.path)
++    if (malformed.includes("current")) {
++      const current = f.ports.artifacts.current
++      Object.assign(f.ports.artifacts, {
++        current: (input: Parameters<typeof current>[0]) =>
++          current(input).pipe(
++            Effect.map((observation) => ({
++              ...observation,
++              confirm:
++                malformed === "missing-current-handle"
++                  ? undefined
++                  : malformed === "async-current"
++                    ? () => Promise.resolve(observation.validation)
++                    : () => ({ ...observation.validation, generation: 7 }),
++            })),
++          ),
++      })
++    }
++    if (!malformed.includes("current")) {
++      const capture = f.ports.artifacts.capture
++      Object.assign(f.ports.artifacts, {
++        capture: (input: Parameters<typeof capture>[0]) =>
++          capture(input).pipe(
++            Effect.map(
++              (retained) =>
++                retained && {
++                  ...retained,
++                  read: () =>
++                    retained.read().pipe(
++                      Effect.map((observation) => ({
++                        ...observation,
++                        confirm:
++                          malformed === "missing-byte-handle"
++                            ? undefined
++                            : malformed === "async-content"
++                              ? () => Promise.resolve(true)
++                              : () => "true",
++                      })),
++                    ),
++                },
++            ),
++          ),
++      })
++    }
++    await run(
++      Effect.gen(function* () {
++        const owner = yield* JavaBuild.make(f.ports)
++        const evidence = yield* owner.build(f.request)
++        const error = yield* owner.artifact({ buildID: evidence.buildID }).pipe(Effect.flip)
++        expect(error.code).toBe(
++          malformed.startsWith("missing")
++            ? "artifact_unavailable"
++            : malformed.includes("current")
++              ? "artifact_current_failed"
++              : "artifact_read_failed",
++        )
++      }),
++    )
++  })
++
++for (const facade of [false, true])
++  test(`${facade ? "Java" : "JavaBuild"} owner close during final authorization cannot publish`, async () => {
++    await using tmp = await tmpdir()
++    const f = await fixture(tmp.path)
++    await Effect.runPromise(
++      Effect.gen(function* () {
++        const scope = yield* Scope.make()
++        const owner = facade
++          ? Context.get(
++              yield* Layer.build(Java.layerWithBuilds({ documents: documents(f), builds: f.ports })).pipe(
++                Scope.provide(scope),
++              ),
++              Java.Service,
++            )
++          : yield* JavaBuild.make(f.ports).pipe(Scope.provide(scope))
++        const evidence = yield* owner.build(f.request)
++        f.state.authorization = Effect.never
++        f.state.queryCleanup = Effect.sync(() => {
++          f.state.authorizationHeld = true
++        })
++        const pending = yield* owner.artifact({ buildID: evidence.buildID }).pipe(Effect.forkChild)
++        yield* Deferred.await(f.entered.authorization)
++        yield* Scope.close(scope, Exit.void)
++        const exit = yield* Fiber.await(pending)
++        expect(Exit.isFailure(exit) && Cause.hasInterrupts(exit.cause)).toBe(true)
++        expect(f.state.releases).toBe(1)
++        expect((yield* owner.artifact({ buildID: evidence.buildID }).pipe(Effect.flip)).code).toBe("owner_closed")
++      }),
++    )
++  }, 2000)
++
++test(
++  "caller interruption during final authorization cannot issue a reference",
++  () =>
++    isolated((owner, f) =>
++      Effect.gen(function* () {
++        const evidence = yield* owner.build(f.request)
++        f.state.authorization = Effect.never
++        f.state.queryCleanup = Effect.sync(() => {
++          f.state.authorizationHeld = true
++        })
++        const pending = yield* owner.artifact({ buildID: evidence.buildID }).pipe(Effect.forkScoped)
++        yield* Deferred.await(f.entered.authorization)
++        pending.interruptUnsafe()
++        const exit = yield* Fiber.await(pending)
++        expect(Exit.isFailure(exit) && Cause.hasInterrupts(exit.cause)).toBe(true)
++        f.state.authorizationHeld = false
++        const claim = {
++          buildID: evidence.buildID,
++          projectID: f.project.projectID,
++          sourceRevision: "saved",
++          configurationRevision: "config-1",
++          digest: abcDigest,
++          path: AbsolutePath.make(path.join(f.project.canonicalRoot, "owned.apk")),
++        }
++        expect(yield* owner.verifyArtifact({ ref: claim, currentProject: f.project })).toEqual({
++          valid: false,
++          reason: "unknown",
++        })
++      }),
++    ),
++  2000,
++)

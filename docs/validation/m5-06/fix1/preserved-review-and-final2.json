@@ -1,0 +1,16 @@
+{
+  "final2_manifest_sha256": "5f034978ac4b6e5e9f2b4596e26f5ff9543452bd8faf41840df81684b91725b2",
+  "preserved_final2_evidence_count": 111,
+  "review": {
+    "publication-generation-v3": {
+      "probe": "docs/validation/m5-06/review/publication-generation.test.ts",
+      "probe_sha256": "182dae9c0bf4d352a46f4195f7b3656fa3d47b028d43f1d28872323d6e213a85",
+      "log_sha256": "e132a917041f47328303772e40bb61d06cafb61233ef41bbd2e23a265eeed7a5"
+    },
+    "publication-content": {
+      "probe": "docs/validation/m5-06/review/publication-content.test.ts",
+      "probe_sha256": "3d81b51080a9d159b04899b87ea3516f053020d12134c140325b0148a056c64a",
+      "log_sha256": "19c7e986ae2f751a3584afdd016300ef6acce421dac1ef58a3c31ba8239e381e"
+    }
+  }
+}

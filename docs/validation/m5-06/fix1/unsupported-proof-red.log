@@ -1,0 +1,90 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-06.test.ts:
+911 |     test(`${operation} cannot publish when ${proof} is unavailable`,()=>isolated((owner,f)=>Effect.gen(function* () {
+912 |       const evidence=yield* owner.build(f.request)
+913 |       const ref=operation==="verify"?(yield* owner.artifact({buildID:evidence.buildID}))!:undefined
+914 |       f.state[proof]=false
+915 |       const error=yield* (ref?owner.verifyArtifact({ref,currentProject:f.project}):owner.artifact({buildID:evidence.buildID})).pipe(Effect.flip)
+916 |       expect(error.code).toBe("artifact_unavailable")
+                               ^
+error: expect(received).toBe(expected)
+
+Expected: "artifact_unavailable"
+Received: "artifact_read_failed"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-06.test.ts:916:26)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) artifact cannot publish when contentProof is unavailable [25.51ms]
+911 |     test(`${operation} cannot publish when ${proof} is unavailable`,()=>isolated((owner,f)=>Effect.gen(function* () {
+912 |       const evidence=yield* owner.build(f.request)
+913 |       const ref=operation==="verify"?(yield* owner.artifact({buildID:evidence.buildID}))!:undefined
+914 |       f.state[proof]=false
+915 |       const error=yield* (ref?owner.verifyArtifact({ref,currentProject:f.project}):owner.artifact({buildID:evidence.buildID})).pipe(Effect.flip)
+916 |       expect(error.code).toBe("artifact_unavailable")
+                               ^
+error: expect(received).toBe(expected)
+
+Expected: "artifact_unavailable"
+Received: "artifact_read_failed"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-06.test.ts:916:26)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) verify cannot publish when contentProof is unavailable [9.18ms]
+911 |     test(`${operation} cannot publish when ${proof} is unavailable`,()=>isolated((owner,f)=>Effect.gen(function* () {
+912 |       const evidence=yield* owner.build(f.request)
+913 |       const ref=operation==="verify"?(yield* owner.artifact({buildID:evidence.buildID}))!:undefined
+914 |       f.state[proof]=false
+915 |       const error=yield* (ref?owner.verifyArtifact({ref,currentProject:f.project}):owner.artifact({buildID:evidence.buildID})).pipe(Effect.flip)
+916 |       expect(error.code).toBe("artifact_unavailable")
+                               ^
+error: expect(received).toBe(expected)
+
+Expected: "artifact_unavailable"
+Received: "artifact_current_failed"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-06.test.ts:916:26)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) artifact cannot publish when currentProof is unavailable [1.62ms]
+911 |     test(`${operation} cannot publish when ${proof} is unavailable`,()=>isolated((owner,f)=>Effect.gen(function* () {
+912 |       const evidence=yield* owner.build(f.request)
+913 |       const ref=operation==="verify"?(yield* owner.artifact({buildID:evidence.buildID}))!:undefined
+914 |       f.state[proof]=false
+915 |       const error=yield* (ref?owner.verifyArtifact({ref,currentProject:f.project}):owner.artifact({buildID:evidence.buildID})).pipe(Effect.flip)
+916 |       expect(error.code).toBe("artifact_unavailable")
+                               ^
+error: expect(received).toBe(expected)
+
+Expected: "artifact_unavailable"
+Received: "artifact_current_failed"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-06.test.ts:916:26)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) verify cannot publish when currentProof is unavailable [2.31ms]
+(pass) confirmation defects remain observable rather than established invalidity [1.62ms]
+
+ 1 pass
+ 87 filtered out
+ 4 fail
+ 12 expect() calls
+Ran 5 tests across 1 file. [235.00ms]

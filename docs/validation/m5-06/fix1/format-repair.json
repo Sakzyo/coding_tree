@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+    "x",
+    "--no-install",
+    "prettier",
+    "--write",
+    "/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-06.test.ts"
+  ],
+  "cwd": "/Users/dylanxu/coding_tree",
+  "exit": 0,
+  "before_sha256": "9a0a7afa2c48036c3dadbc4a5b9f96106add3f9627ced03dd11473e1024dcfe2",
+  "after_sha256": "cac1c940b0ca76d5221afbcd43855743ecf1ac32847e08f20c40c563f2b59c3b"
+}

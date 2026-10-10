@@ -1055,17 +1055,19 @@ for (const malformed of [
                 retained && {
                   ...retained,
                   read: () =>
-                    retained.read().pipe(
-                      Effect.map((observation) => ({
-                        ...observation,
-                        confirm:
-                          malformed === "missing-byte-handle"
-                            ? undefined
-                            : malformed === "async-content"
-                              ? () => Promise.resolve(true)
-                              : () => "true",
-                      })),
-                    ),
+                    retained
+                      .read()
+                      .pipe(
+                        Effect.map((observation) => ({
+                          ...observation,
+                          confirm:
+                            malformed === "missing-byte-handle"
+                              ? undefined
+                              : malformed === "async-content"
+                                ? () => Promise.resolve(true)
+                                : () => "true",
+                        })),
+                      ),
                 },
             ),
           ),

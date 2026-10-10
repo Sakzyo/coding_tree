@@ -1,0 +1,268 @@
+{
+  "status": "DONE fix1 candidate only; root commit and original-reviewer re-review pending",
+  "base": "7bcada6d9a3d2455ce4e2f26c81586fbcc63fd9f",
+  "frozen_at": "2026-10-10T08:51:16.190202+00:00",
+  "source": {
+    "packages/core/src/ftc/java/build.ts": "5f5d1e62525903cc8a4cebfeb2003e826af54e5a147aa1ed01cbb06a4085fc48",
+    "packages/core/src/ftc/java.ts": "8f1b06fe9fd9bac8cfe0cbe23621aa4e0eff6d44389de3388d5cf2c0b348b916",
+    "packages/core/test/ftc/java-development/m5-06.test.ts": "cac1c940b0ca76d5221afbcd43855743ecf1ac32847e08f20c40c563f2b59c3b",
+    "packages/schema/src/ftc-java.ts": "ccbc5b19fd72b058adee48581d6241470861699fbbf87275f08dff2cc9b952d0",
+    "packages/schema/test/ftc-java-artifact.test.ts": "6240012d11220a0eb1ba7930b2f279b9fb3d7e9a1ad2d27035231ed098967432"
+  },
+  "changed_product_paths": [
+    "packages/core/src/ftc/java/build.ts",
+    "packages/core/test/ftc/java-development/m5-06.test.ts"
+  ],
+  "checks": {
+    "final-core-focused-v2": {
+      "argv": [
+        "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+        "test",
+        "./test/ftc/java-development/m5-06.test.ts"
+      ],
+      "cwd": "/Users/dylanxu/coding_tree/packages/core",
+      "environment": {
+        "PATH": "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/dylanxu/.kimi-code/bin:/Library/Frameworks/Python.framework/Versions/3.13/bin:/Library/Frameworks/Python.framework/Versions/3.13/bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Applications/VMware Fusion.app/Contents/Public:/Users/dylanxu/.codex/tmp/arg0/codex-arg0iohucy:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/dylanxu/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/dylanxu/.unity/bin:/Users/dylanxu/.kimi-code/bin:/Users/dylanxu/anaconda3/condabin:/Library/Frameworks/Python.framework/Versions/3.13/bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/dylanxu/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+        "XDG_CONFIG_HOME": "/private/tmp/m5-06-fix1-xdg/config",
+        "XDG_DATA_HOME": "/private/tmp/m5-06-fix1-xdg/data",
+        "XDG_CACHE_HOME": "/private/tmp/m5-06-fix1-xdg/cache",
+        "XDG_STATE_HOME": "/private/tmp/m5-06-fix1-xdg/state"
+      },
+      "exit": 0,
+      "log_sha256": "d77e63228c21b1b2f6885b836e4e1aa30ca5ac1758207ddb268b47c11f09aaaa",
+      "metadata_sha256": "4e5bf93d84da13e3617d6b30f2d87efe20fa28c0bfa0516e143a55be08db08a3",
+      "pass_count": 101,
+      "fail_count": 0,
+      "assertions": 346
+    },
+    "final-core-build-regression": {
+      "argv": [
+        "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+        "test",
+        "./test/ftc/java-development/m5-05.test.ts"
+      ],
+      "cwd": "/Users/dylanxu/coding_tree/packages/core",
+      "environment": {
+        "PATH": "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/dylanxu/.kimi-code/bin:/Library/Frameworks/Python.framework/Versions/3.13/bin:/Library/Frameworks/Python.framework/Versions/3.13/bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Applications/VMware Fusion.app/Contents/Public:/Users/dylanxu/.codex/tmp/arg0/codex-arg0iohucy:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/dylanxu/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/dylanxu/.unity/bin:/Users/dylanxu/.kimi-code/bin:/Users/dylanxu/anaconda3/condabin:/Library/Frameworks/Python.framework/Versions/3.13/bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/dylanxu/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+        "XDG_CONFIG_HOME": "/private/tmp/m5-06-fix1-xdg/config",
+        "XDG_DATA_HOME": "/private/tmp/m5-06-fix1-xdg/data",
+        "XDG_CACHE_HOME": "/private/tmp/m5-06-fix1-xdg/cache",
+        "XDG_STATE_HOME": "/private/tmp/m5-06-fix1-xdg/state"
+      },
+      "exit": 0,
+      "log_sha256": "cca45fd5d24a610c6c1eb58231aade4e05df077cbb7993c99c7b773e2445dfcc",
+      "metadata_sha256": "95d95ef55d5848b3ea6440836d029ab0ebac4400be822f8a708cbf5d79234b22",
+      "pass_count": 62,
+      "fail_count": 0,
+      "assertions": 373
+    },
+    "final-core-document-regression": {
+      "argv": [
+        "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+        "test",
+        "./test/ftc/java-development/m5-01.test.ts",
+        "./test/ftc/java-development/m5-02.test.ts"
+      ],
+      "cwd": "/Users/dylanxu/coding_tree/packages/core",
+      "environment": {
+        "PATH": "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/dylanxu/.kimi-code/bin:/Library/Frameworks/Python.framework/Versions/3.13/bin:/Library/Frameworks/Python.framework/Versions/3.13/bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Applications/VMware Fusion.app/Contents/Public:/Users/dylanxu/.codex/tmp/arg0/codex-arg0iohucy:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/dylanxu/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/dylanxu/.unity/bin:/Users/dylanxu/.kimi-code/bin:/Users/dylanxu/anaconda3/condabin:/Library/Frameworks/Python.framework/Versions/3.13/bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/dylanxu/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+        "XDG_CONFIG_HOME": "/private/tmp/m5-06-fix1-xdg/config",
+        "XDG_DATA_HOME": "/private/tmp/m5-06-fix1-xdg/data",
+        "XDG_CACHE_HOME": "/private/tmp/m5-06-fix1-xdg/cache",
+        "XDG_STATE_HOME": "/private/tmp/m5-06-fix1-xdg/state"
+      },
+      "exit": 0,
+      "log_sha256": "0b65105c96fb35f4c2e7dac1c2bb7a64a3d223a5390ee2fc46dfb159934ab582",
+      "metadata_sha256": "3f39aae2307baa0a25cce4871340c9b2b1fb727a5c9a189a3157a4aa85797c15",
+      "pass_count": 50,
+      "fail_count": 0,
+      "assertions": 194
+    },
+    "final-schema-focused": {
+      "argv": [
+        "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+        "test",
+        "./test/ftc-java-artifact.test.ts",
+        "./test/ftc-java-build.test.ts",
+        "./test/ftc-java.test.ts",
+        "./test/contract-hygiene.test.ts"
+      ],
+      "cwd": "/Users/dylanxu/coding_tree/packages/schema",
+      "environment": {
+        "PATH": "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/dylanxu/.kimi-code/bin:/Library/Frameworks/Python.framework/Versions/3.13/bin:/Library/Frameworks/Python.framework/Versions/3.13/bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Applications/VMware Fusion.app/Contents/Public:/Users/dylanxu/.codex/tmp/arg0/codex-arg0iohucy:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/dylanxu/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/dylanxu/.unity/bin:/Users/dylanxu/.kimi-code/bin:/Users/dylanxu/anaconda3/condabin:/Library/Frameworks/Python.framework/Versions/3.13/bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/dylanxu/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+        "XDG_CONFIG_HOME": "/private/tmp/m5-06-fix1-xdg/config",
+        "XDG_DATA_HOME": "/private/tmp/m5-06-fix1-xdg/data",
+        "XDG_CACHE_HOME": "/private/tmp/m5-06-fix1-xdg/cache",
+        "XDG_STATE_HOME": "/private/tmp/m5-06-fix1-xdg/state"
+      },
+      "exit": 0,
+      "log_sha256": "5481292a323a13c76bd794de01d929b588feaaf74ee9b50995db991c42fd6dac",
+      "metadata_sha256": "cb4dd3f0346bccae067234bcf00a6ff3fbceaf085a42007912e50bad06392a96",
+      "pass_count": 49,
+      "fail_count": 0,
+      "assertions": 107
+    },
+    "final-core-types-v2": {
+      "argv": [
+        "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+        "typecheck"
+      ],
+      "cwd": "/Users/dylanxu/coding_tree/packages/core",
+      "environment": {
+        "PATH": "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/dylanxu/.kimi-code/bin:/Library/Frameworks/Python.framework/Versions/3.13/bin:/Library/Frameworks/Python.framework/Versions/3.13/bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Applications/VMware Fusion.app/Contents/Public:/Users/dylanxu/.codex/tmp/arg0/codex-arg0iohucy:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/dylanxu/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/dylanxu/.unity/bin:/Users/dylanxu/.kimi-code/bin:/Users/dylanxu/anaconda3/condabin:/Library/Frameworks/Python.framework/Versions/3.13/bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/dylanxu/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+        "XDG_CONFIG_HOME": "/private/tmp/m5-06-fix1-xdg/config",
+        "XDG_DATA_HOME": "/private/tmp/m5-06-fix1-xdg/data",
+        "XDG_CACHE_HOME": "/private/tmp/m5-06-fix1-xdg/cache",
+        "XDG_STATE_HOME": "/private/tmp/m5-06-fix1-xdg/state"
+      },
+      "exit": 0,
+      "log_sha256": "ae47736bb2a9401aa9743893f2f64b9a605e65a99d78cd991a8021e0f7722d87",
+      "metadata_sha256": "151a12c7eb5b98ee831f59befb20a0246b9ac8903ff8d68e1bcbf90b8ace0987"
+    },
+    "final-schema-types": {
+      "argv": [
+        "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+        "typecheck"
+      ],
+      "cwd": "/Users/dylanxu/coding_tree/packages/schema",
+      "environment": {
+        "PATH": "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/dylanxu/.kimi-code/bin:/Library/Frameworks/Python.framework/Versions/3.13/bin:/Library/Frameworks/Python.framework/Versions/3.13/bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Applications/VMware Fusion.app/Contents/Public:/Users/dylanxu/.codex/tmp/arg0/codex-arg0iohucy:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/dylanxu/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/dylanxu/.unity/bin:/Users/dylanxu/.kimi-code/bin:/Users/dylanxu/anaconda3/condabin:/Library/Frameworks/Python.framework/Versions/3.13/bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/dylanxu/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+        "XDG_CONFIG_HOME": "/private/tmp/m5-06-fix1-xdg/config",
+        "XDG_DATA_HOME": "/private/tmp/m5-06-fix1-xdg/data",
+        "XDG_CACHE_HOME": "/private/tmp/m5-06-fix1-xdg/cache",
+        "XDG_STATE_HOME": "/private/tmp/m5-06-fix1-xdg/state"
+      },
+      "exit": 0,
+      "log_sha256": "ae47736bb2a9401aa9743893f2f64b9a605e65a99d78cd991a8021e0f7722d87",
+      "metadata_sha256": "bd7edb1e492a6cd9acb2e5b38a9a043abf8e7afca500de8cde04cf1325cc4ff0"
+    },
+    "final-lint-v2": {
+      "argv": [
+        "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+        "run",
+        "lint",
+        "--",
+        "packages/core/src/ftc/java/build.ts",
+        "packages/core/src/ftc/java.ts",
+        "packages/core/test/ftc/java-development/m5-06.test.ts",
+        "packages/schema/src/ftc-java.ts",
+        "packages/schema/test/ftc-java-artifact.test.ts"
+      ],
+      "cwd": "/Users/dylanxu/coding_tree",
+      "exit": 0,
+      "log_sha256": "e3b0b98b847ef956b56a7ba1e1255d32269685b26c68b151bbc28112eae3029a",
+      "metadata_sha256": "25b0f06027200c5edc779f4bc696254e9c45f41169abd309e09a131f09b4b63e"
+    },
+    "final-format-v3": {
+      "argv": [
+        "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+        "x",
+        "--no-install",
+        "prettier",
+        "--check",
+        "packages/core/src/ftc/java/build.ts",
+        "packages/core/src/ftc/java.ts",
+        "packages/core/test/ftc/java-development/m5-06.test.ts",
+        "packages/schema/src/ftc-java.ts",
+        "packages/schema/test/ftc-java-artifact.test.ts"
+      ],
+      "cwd": "/Users/dylanxu/coding_tree",
+      "exit": 0,
+      "log_sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+      "metadata_sha256": "3212d1e35176bbf772ef5b66e4940a73f5811325afac946cf58c5b37cdbab4d9"
+    },
+    "final-whitespace": {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "7bcada6d9",
+        "--",
+        "packages/core/src/ftc/java/build.ts",
+        "packages/core/src/ftc/java.ts",
+        "packages/core/test/ftc/java-development/m5-06.test.ts",
+        "packages/schema/src/ftc-java.ts",
+        "packages/schema/test/ftc-java-artifact.test.ts"
+      ],
+      "cwd": "/Users/dylanxu/coding_tree",
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "metadata_sha256": "4763a2e7de41610b169b1fda2e3483836f95405c970a9edd78d1b7814fe882cd"
+    },
+    "final-imports": {
+      "argv": [
+        "/private/tmp/ftc-bun-1.3.14/bun-darwin-aarch64/bun",
+        "-e",
+        "import { Java } from \"./src/ftc/java\"; import { JavaBuild } from \"./src/ftc/java/build\"; import { FtcJava } from \"@opencode-ai/schema/ftc-java\"; for (const name of [\"ArtifactRef\", \"ArtifactQuery\", \"ArtifactVerificationRequest\", \"ArtifactVerificationResult\", \"ArtifactError\"]) { if (Java[name] !== FtcJava[name]) throw new Error(name); } if (typeof JavaBuild.make !== \"function\" || typeof Java.layer !== \"function\" || typeof Java.layerWithBuilds !== \"function\") throw new Error(\"facade missing\"); console.log(\"actual imports and exact canonical identities passed; no owner/process started\")"
+      ],
+      "cwd": "/Users/dylanxu/coding_tree/packages/core",
+      "exit": 0,
+      "log_sha256": "7fad4d984712f076f8340f64b92f2e3aa52012037bfc2612fa83b821dba37751",
+      "metadata_sha256": "573666b1857964bf86fea772a4c410280e7dc7d769736dc7b606b783b3854586"
+    }
+  },
+  "report": {
+    "path": "docs/validation/M5-06-fix1-implementation.md",
+    "sha256": "bd7a3dc67a73883ffdbfdf83478c19aeee0e023e78b075eee9f7c3c272636922"
+  },
+  "patch_sha256": "d587c24164c15caf6e31c3cdf63788dc46a96e483f9f67d8b096df57fa1dfacb",
+  "evidence": {
+    "baseline-source.json": "4c63d649756eb3529e9da2daa59c037bbbc49620e4842c5699621199e0c65a4d",
+    "candidate.patch": "d587c24164c15caf6e31c3cdf63788dc46a96e483f9f67d8b096df57fa1dfacb",
+    "command-runner.py": "6cc2ea57873ce30dce0a643054bea0f5fd5c52b2eeabe277e4ed24cf948f2ae2",
+    "complete-green.json": "23258cadc7e165643130117c6fac62d0ae5b6c873eeca632128ecfa2e92bf2f3",
+    "complete-green.log": "ee142f8a3c5fddd114982dd04f067f83ab884f06f92c5be5ab97ce7c0cd955c3",
+    "confirmation-green.json": "7692013efda16ce79c6ddc0651c13e0042780298eef0f44db8194dd26b72c306",
+    "confirmation-green.log": "16608c2ee1d158b04bc548b9b5a6466100aee5582dd37040779db232ba4b5988",
+    "final-core-build-regression.json": "95d95ef55d5848b3ea6440836d029ab0ebac4400be822f8a708cbf5d79234b22",
+    "final-core-build-regression.log": "cca45fd5d24a610c6c1eb58231aade4e05df077cbb7993c99c7b773e2445dfcc",
+    "final-core-document-regression.json": "3f39aae2307baa0a25cce4871340c9b2b1fb727a5c9a189a3157a4aa85797c15",
+    "final-core-document-regression.log": "0b65105c96fb35f4c2e7dac1c2bb7a64a3d223a5390ee2fc46dfb159934ab582",
+    "final-core-focused-v2.json": "4e5bf93d84da13e3617d6b30f2d87efe20fa28c0bfa0516e143a55be08db08a3",
+    "final-core-focused-v2.log": "d77e63228c21b1b2f6885b836e4e1aa30ca5ac1758207ddb268b47c11f09aaaa",
+    "final-core-focused.json": "106df85db3096c2e2a55fa720897e22ccde3a48cab9e151f3e6a8aff3f4f10d2",
+    "final-core-focused.log": "deedc9f99cfecdfcf1a79978306ee97131578ebabe2d40598b577b1023d4905b",
+    "final-core-types-v2.json": "151a12c7eb5b98ee831f59befb20a0246b9ac8903ff8d68e1bcbf90b8ace0987",
+    "final-core-types-v2.log": "ae47736bb2a9401aa9743893f2f64b9a605e65a99d78cd991a8021e0f7722d87",
+    "final-core-types.json": "151a12c7eb5b98ee831f59befb20a0246b9ac8903ff8d68e1bcbf90b8ace0987",
+    "final-core-types.log": "ae47736bb2a9401aa9743893f2f64b9a605e65a99d78cd991a8021e0f7722d87",
+    "final-format-v2.json": "55b4cd493abf626d9ff4194fcd2582157490d749675bd3f63a2f7d87ec3caab2",
+    "final-format-v2.log": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+    "final-format-v3.json": "3212d1e35176bbf772ef5b66e4940a73f5811325afac946cf58c5b37cdbab4d9",
+    "final-format-v3.log": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+    "final-format.json": "fc1d56b4b111b451f600c269dfaacb41faac8ec2236e9b9e2f748838ca50f57f",
+    "final-format.log": "6da7012995f08a38398838a358a848268257a4a6bff49c7607e897de19cba3ec",
+    "final-imports.json": "573666b1857964bf86fea772a4c410280e7dc7d769736dc7b606b783b3854586",
+    "final-imports.log": "7fad4d984712f076f8340f64b92f2e3aa52012037bfc2612fa83b821dba37751",
+    "final-lint-v2.json": "25b0f06027200c5edc779f4bc696254e9c45f41169abd309e09a131f09b4b63e",
+    "final-lint-v2.log": "e3b0b98b847ef956b56a7ba1e1255d32269685b26c68b151bbc28112eae3029a",
+    "final-lint.json": "4f93b163e7b1918b762e8b7d5d449bbcd44289b4752c606f4022d92ef3c83693",
+    "final-lint.log": "8c7a990c363fe3216cc105631ab10933b8dc231048467317d5e760de9274d3fe",
+    "final-schema-focused.json": "cb4dd3f0346bccae067234bcf00a6ff3fbceaf085a42007912e50bad06392a96",
+    "final-schema-focused.log": "5481292a323a13c76bd794de01d929b588feaaf74ee9b50995db991c42fd6dac",
+    "final-schema-types.json": "bd7edb1e492a6cd9acb2e5b38a9a043abf8e7afca500de8cde04cf1325cc4ff0",
+    "final-schema-types.log": "ae47736bb2a9401aa9743893f2f64b9a605e65a99d78cd991a8021e0f7722d87",
+    "final-whitespace.json": "4763a2e7de41610b169b1fda2e3483836f95405c970a9edd78d1b7814fe882cd",
+    "final-whitespace.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "format-before.ts": "9a0a7afa2c48036c3dadbc4a5b9f96106add3f9627ced03dd11473e1024dcfe2",
+    "format-repair.json": "bd0716d89a6e8e20462ca3de90e718fae8931f3ad5d97a1c807db7b896107444",
+    "format-repair.log": "d27da227bf97e285586f76ddcbb43b7b77bde3fb153c73a9401096cbf1dabbdd",
+    "format-write.json": "f737a6f338f4a7576ae5090adf66cf0e314aecdfbaaff672b4cd2a31ccef7c92",
+    "format-write.log": "365398a1cc4666a9e9f02a0262a0907459dedfcf94fb214ba3c66d7a788b2623",
+    "patch-command.json": "ca764787e87b6e0fd04f8b181d820bda17efb7601b478a6c4e851c3a9bf7e450",
+    "preserved-review-and-final2.json": "f98e3a0e498dc731b6d1e4aa78ebe7ffd19bebeae31acc78ee5f81dc48e5c46f",
+    "publication-green-first.json": "f550fe3606175c4115c43f8e750b491d13d0ca6bbee1866fe7134fae4382f4b8",
+    "publication-green-first.log": "f7f2e4d35d5a4c5714982dfabbf3bdb6366380f0b7db92667423e7b6493f59b1",
+    "publication-red.json": "26439843f1764471569e3dd54c4e88bba0800dc5443dce03cd27d7f7e0b41fdc",
+    "publication-red.log": "b4ce0480041a112718229b29e23501095999fd274340cae039da2f28a8e57de1",
+    "source-sha256.txt": "e7ea397800715367616fc165d0a42d4981dc4f422b9e1ff456ee6d764715a4b3",
+    "types-first.json": "0816da2dd06e10f3218212469836f13f5de057a29be7ff6ca9c04b0ee5777ecd",
+    "types-first.log": "795f3891b92f23c2deb836d60c82c0e11506f0d053cebd4a923492fd1936e52f",
+    "types-second.json": "151a12c7eb5b98ee831f59befb20a0246b9ac8903ff8d68e1bcbf90b8ace0987",
+    "types-second.log": "ae47736bb2a9401aa9743893f2f64b9a605e65a99d78cd991a8021e0f7722d87",
+    "unsupported-proof-green.json": "1faf06cbd6877d803c77a86a2e5c2df868ff725255a1d6be2b36e3079d5b388a",
+    "unsupported-proof-green.log": "c0c331fa80b06614b6ffbf190ff1bf3277490ffdb5a942f12e4b6fa010f307eb",
+    "unsupported-proof-red.json": "258d0191239d32a0c457ff99f8beeb338c4ff54e8809f92ec3b5125d0f5268bc",
+    "unsupported-proof-red.log": "bbacfbaa3f934c1d4b9e6aa3f02b34821049053907a0d835cf48d855b5bc3425"
+  }
+}
