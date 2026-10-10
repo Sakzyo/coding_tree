@@ -1,0 +1,63 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-java-artifact.test.ts:
+(pass) artifact reference and verification preserve complete identity and JSON [5.25ms]
+(pass) optional reason and artifact error build ID omit undefined [0.42ms]
+(pass) artifact contracts have stable unique identifiers [0.07ms]
+(pass) strict artifact identity rejects buildID [0.39ms]
+(pass) strict artifact identity rejects digest [0.05ms]
+(pass) strict artifact identity rejects digest [0.02ms]
+(pass) strict artifact identity rejects digest [0.02ms]
+(pass) strict artifact identity rejects path [0.02ms]
+(pass) strict artifact identity rejects sourceRevision [0.04ms]
+(pass) strict artifact identity rejects sourceRevision [0.02ms]
+(pass) strict artifact identity rejects configurationRevision [0.04ms]
+(pass) strict artifact identity rejects execution [0.03ms]
+(pass) strict artifact identity rejects read [0.02ms]
+(pass) strict artifact identity rejects success [0.01ms]
+(pass) strict artifact commands reject unknown selection and authority fields [0.19ms]
+
+test/ftc-java-build.test.ts:
+(pass) build request and evidence preserve canonical project, descriptor, saved basis and JSON [1.98ms]
+(pass) optional actual exits and exclusion/error properties omit undefined while encoding [0.31ms]
+(pass) owner-generated build IDs validate exactly their emitted prefix and are distinct [0.62ms]
+(pass) build contracts have unique stable domain identifiers [0.04ms]
+(pass) strict request decoding rejects capability/command/output and invented successful records [0.44ms]
+(pass) unsaved exclusion rejects escaped/empty path  [0.18ms]
+(pass) unsaved exclusion rejects escaped/empty path ../outside [0.07ms]
+(pass) unsaved exclusion rejects escaped/empty path nested/../outside [0.04ms]
+(pass) unsaved exclusion rejects escaped/empty path /outside [0.03ms]
+(pass) unsaved exclusion rejects escaped/empty path C:\outside [0.02ms]
+(pass) actual integer exit/log sequences and text-free exclusion records reject malformed wire values [0.20ms]
+
+test/ftc-java.test.ts:
+(pass) document snapshots and revisioned events survive JSON without losing buffer or disk identity [0.18ms]
+(pass) document IDs reject foreign prefix document [0.09ms]
+(pass) document IDs reject foreign prefix doc [0.01ms]
+(pass) document IDs reject foreign prefix docs_fixture [0.06ms]
+(pass) document IDs reject foreign prefix document_fixture [0.03ms]
+(pass) generated document IDs validate their emitted prefix and distinguish identities [0.08ms]
+(pass) buffer and saved revisions reject invalid sequence value %s [0.07ms]
+(pass) buffer and saved revisions reject invalid sequence value %s [0.02ms]
+(pass) document errors omit undefined optional properties and reject invented success states [0.15ms]
+(pass) snapshot paths reject relative identity Main.java [0.02ms]
+(pass) snapshot paths reject relative identity ../Main.java
+(pass) snapshot paths reject relative identity 
+(pass) snapshot paths preserve platform absolute identity /team/Main.java [0.01ms]
+(pass) snapshot paths preserve platform absolute identity C:\team\Main.java
+(pass) snapshot paths preserve platform absolute identity C:/team/Main.java
+(pass) snapshot paths preserve platform absolute identity \\host\team\Main.java
+(pass) edit/save contracts share complete document revisions and preserve proposal/result JSON [0.69ms]
+(pass) proposal and save validation reject empty edits and incomplete or negative revision pairs [0.23ms]
+
+test/contract-hygiene.test.ts:
+(pass) contract hygiene > optional properties preserve transformations and omit undefined while encoding [0.18ms]
+(pass) contract hygiene > todo status and priority preserve arbitrary strings [0.02ms]
+(pass) contract hygiene > current ID constructors expose create [0.08ms]
+(pass) contract hygiene > reusable public identifiers are stable and unique [0.05ms]
+(pass) contract hygiene > current source avoids Any and mutable contract wrappers [1.04ms]
+
+ 49 pass
+ 0 fail
+ 107 expect() calls
+Ran 49 tests across 4 files. [98.00ms]

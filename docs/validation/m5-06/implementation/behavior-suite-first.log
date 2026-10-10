@@ -1,0 +1,61 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-06.test.ts:
+(pass) successful build provisionally captures its exact live output before retirement [10.69ms]
+(pass) failed or changed artifacts cannot authorize deployment [10.37ms]
+(pass) identical bytes bind distinct builds and repeat queries freshly read and observe current [3.07ms]
+(pass) current source changes permanently invalidate historical identity [1.76ms]
+(pass) current configuration changes permanently invalidate historical identity [1.44ms]
+(pass) current generation changes permanently invalidate historical identity [1.86ms]
+(pass) current dirty changes permanently invalidate historical identity [1.61ms]
+(pass) known dirty builds do not issue references [1.31ms]
+(pass) known outdated builds do not issue references [0.95ms]
+(pass) known cancelled builds do not issue references [1.03ms]
+(pass) known no-output builds do not issue references [2.06ms]
+(pass) known unobserved builds do not issue references [1.40ms]
+(pass) forged projectID never reads a caller locator [1.29ms]
+(pass) forged sourceRevision never reads a caller locator [1.03ms]
+(pass) forged configurationRevision never reads a caller locator [2.44ms]
+(pass) forged digest never reads a caller locator [1.07ms]
+(pass) forged path never reads a caller locator [1.09ms]
+(pass) unknown and fresh owners cannot adopt references; running and unissued claims stay absent [1.39ms]
+(pass) capture infrastructure failure remains typed and compilation remains truthful [0.98ms]
+(pass) read infrastructure failure remains typed and compilation remains truthful [0.83ms]
+(pass) current infrastructure failure remains typed and compilation remains truthful [0.79ms]
+(pass) capture metadata mismatch is provenance failure, never an empty APK [0.86ms]
+204 |   const capture=f.ports.artifacts.capture
+205 |   const missing={value:false}
+206 |   f.ports.artifacts.capture=input=>capture(input).pipe(Effect.map(value=>value&&({...value,read:()=>missing.value?Effect.succeed(undefined):value.read()})))
+207 |   const evidence=yield* owner.build(f.request); const ref=(yield* owner.artifact({buildID:evidence.buildID}))!
+208 |   missing.value=true
+209 |   expect(yield* owner.verifyArtifact({ref,currentProject:f.project})).toEqual({valid:false,reason:"content"})
+                                                                            ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "reason": "content",
+-   "valid": false,
++   "valid": true,
+  }
+
+- Expected  - 2
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-06.test.ts:209:71)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) missing retained bytes invalidate an issued artifact [4.92ms]
+(pass) authorization failures and invalid input remain errors before protected reads [1.35ms]
+(pass) old build ports and document-only facade report typed artifact unavailability without work [1.67ms]
+
+1 tests failed:
+(fail) missing retained bytes invalidate an issued artifact [4.92ms]
+
+ 24 pass
+ 1 fail
+ 98 expect() calls
+Ran 25 tests across 1 file. [120.00ms]

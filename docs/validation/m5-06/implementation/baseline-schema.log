@@ -1,0 +1,19 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-java-build.test.ts:
+(pass) build request and evidence preserve canonical project, descriptor, saved basis and JSON [4.62ms]
+(pass) optional actual exits and exclusion/error properties omit undefined while encoding [0.21ms]
+(pass) owner-generated build IDs validate exactly their emitted prefix and are distinct [0.42ms]
+(pass) build contracts have unique stable domain identifiers [0.03ms]
+(pass) strict request decoding rejects capability/command/output and invented successful records [0.31ms]
+(pass) unsaved exclusion rejects escaped/empty path  [0.02ms]
+(pass) unsaved exclusion rejects escaped/empty path ../outside [0.01ms]
+(pass) unsaved exclusion rejects escaped/empty path nested/../outside [0.01ms]
+(pass) unsaved exclusion rejects escaped/empty path /outside
+(pass) unsaved exclusion rejects escaped/empty path C:\outside [0.01ms]
+(pass) actual integer exit/log sequences and text-free exclusion records reject malformed wire values [0.11ms]
+
+ 11 pass
+ 0 fail
+ 33 expect() calls
+Ran 11 tests across 1 file. [61.00ms]

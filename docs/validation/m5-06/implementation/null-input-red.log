@@ -1,0 +1,81 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-06.test.ts:
+(pass) successful build provisionally captures its exact live output before retirement [11.00ms]
+(pass) failed or changed artifacts cannot authorize deployment [6.99ms]
+(pass) identical bytes bind distinct builds and repeat queries freshly read and observe current [3.64ms]
+(pass) current source changes permanently invalidate historical identity [2.05ms]
+(pass) current configuration changes permanently invalidate historical identity [2.73ms]
+(pass) current generation changes permanently invalidate historical identity [1.63ms]
+(pass) current dirty changes permanently invalidate historical identity [1.53ms]
+(pass) known dirty builds do not issue references [1.36ms]
+(pass) known outdated builds do not issue references [0.93ms]
+(pass) known cancelled builds do not issue references [1.00ms]
+(pass) known no-output builds do not issue references [0.86ms]
+(pass) known unobserved builds do not issue references [1.15ms]
+(pass) forged buildID never reads a caller locator [1.31ms]
+(pass) forged projectID never reads a caller locator [0.97ms]
+(pass) forged sourceRevision never reads a caller locator [1.13ms]
+(pass) forged configurationRevision never reads a caller locator [1.16ms]
+(pass) forged digest never reads a caller locator [1.18ms]
+(pass) forged path never reads a caller locator [0.99ms]
+(pass) unknown and fresh owners cannot adopt references; running and unissued claims stay absent [1.34ms]
+(pass) capture infrastructure failure remains typed and compilation remains truthful [0.86ms]
+(pass) read infrastructure failure remains typed and compilation remains truthful [1.85ms]
+(pass) current infrastructure failure remains typed and compilation remains truthful [1.15ms]
+(pass) capture metadata mismatch is provenance failure, never an empty APK [1.12ms]
+(pass) missing retained bytes invalidate an issued artifact [1.15ms]
+(pass) authorization failures and invalid input remain errors before protected reads [1.35ms]
+(pass) old build ports and document-only facade report typed artifact unavailability without work [1.92ms]
+(pass) JavaBuild public Scope closure joins held capture cleanup and prevents late publication [1.42ms]
+(pass) Java facade public Scope closure joins held capture cleanup and prevents late publication [0.90ms]
+(pass) JavaBuild public Scope closure joins held read cleanup and prevents late publication [0.82ms]
+(pass) Java facade public Scope closure joins held read cleanup and prevents late publication [0.84ms]
+(pass) JavaBuild public Scope closure joins held current cleanup and prevents late publication [0.89ms]
+(pass) Java facade public Scope closure joins held current cleanup and prevents late publication [1.03ms]
+(pass) caller interruption joins held capture cleanup [1.01ms]
+(pass) caller interruption joins held read cleanup [0.80ms]
+(pass) caller interruption joins held current cleanup [0.95ms]
+(pass) an output from another execution fails capture provenance [1.05ms]
+(pass) revoked authority while current is held prevents artifact publication [1.10ms]
+(pass) cancellation accepted during provisional retention discard wins terminal publication [0.98ms]
+(pass) malformed capture observations remain typed failures [0.89ms]
+(pass) malformed current observations remain typed failures [2.16ms]
+(pass) mutable verification requests cannot change their identity while authority is held [1.60ms]
+(pass) Java facade reexports exact canonical artifact schema identities [0.03ms]
+(pass) capture port defects stay defects [0.96ms]
+(pass) read port defects stay defects [0.98ms]
+(pass) current port defects stay defects [0.82ms]
+(pass) foreign current toolchain is a failure rather than proven source change [0.95ms]
+(pass) real saved A-B-A after lease retirement invalidates the original generation [1.14ms]
+(pass) unsupported generation continuity remains a typed failure [1.05ms]
+(pass) discard cleanup failure stays typed without changing successful saved compilation [0.90ms]
+622 |       const reason = yield* recheck(state)
+623 |       if (reason) return yield* Effect.fail({ code: "artifact_invalid" } satisfies FtcJava.ArtifactError)
+624 |       return state.artifact && "retained" in state.artifact ? state.artifact.ref : undefined
+625 |     }))
+626 |     const verifyArtifact = (input: FtcJava.ArtifactVerificationRequest) => query(Effect.gen(function* () {
+627 |       const project = yield* captureProject(input.currentProject, "invalid_build_input").pipe(Effect.mapError((): FtcJava.ArtifactError => ({ code: "invalid_artifact_input" })))
+                                                  ^
+TypeError: null is not an object (evaluating 'input.currentProject')
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/java/build.ts:627:45)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at forkUnsafe (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2079:11)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2106:17)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2127:9)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2179:19)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:2190:31)
+      at isolated (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-06.test.ts:86:16)
+(fail) null verification request is a typed invalid-input failure [0.57ms]
+
+1 tests failed:
+(fail) null verification request is a typed invalid-input failure [0.57ms]
+
+ 49 pass
+ 1 fail
+ 181 expect() calls
+Ran 50 tests across 1 file. [140.00ms]

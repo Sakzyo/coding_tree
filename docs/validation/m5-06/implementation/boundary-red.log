@@ -1,0 +1,125 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-06.test.ts:
+(pass) successful build provisionally captures its exact live output before retirement [10.56ms]
+(pass) failed or changed artifacts cannot authorize deployment [5.13ms]
+(pass) identical bytes bind distinct builds and repeat queries freshly read and observe current [2.92ms]
+(pass) current source changes permanently invalidate historical identity [3.16ms]
+(pass) current configuration changes permanently invalidate historical identity [1.46ms]
+(pass) current generation changes permanently invalidate historical identity [1.60ms]
+(pass) current dirty changes permanently invalidate historical identity [1.49ms]
+(pass) known dirty builds do not issue references [1.12ms]
+(pass) known outdated builds do not issue references [1.03ms]
+(pass) known cancelled builds do not issue references [1.08ms]
+(pass) known no-output builds do not issue references [0.90ms]
+(pass) known unobserved builds do not issue references [1.14ms]
+(pass) forged projectID never reads a caller locator [1.30ms]
+(pass) forged sourceRevision never reads a caller locator [1.10ms]
+(pass) forged configurationRevision never reads a caller locator [1.38ms]
+(pass) forged digest never reads a caller locator [1.22ms]
+(pass) forged path never reads a caller locator [1.12ms]
+(pass) unknown and fresh owners cannot adopt references; running and unissued claims stay absent [3.04ms]
+(pass) capture infrastructure failure remains typed and compilation remains truthful [1.17ms]
+(pass) read infrastructure failure remains typed and compilation remains truthful [0.79ms]
+(pass) current infrastructure failure remains typed and compilation remains truthful [0.77ms]
+(pass) capture metadata mismatch is provenance failure, never an empty APK [0.90ms]
+(pass) missing retained bytes invalidate an issued artifact [1.10ms]
+(pass) authorization failures and invalid input remain errors before protected reads [1.29ms]
+(pass) old build ports and document-only facade report typed artifact unavailability without work [1.69ms]
+(pass) JavaBuild public Scope closure joins held capture cleanup and prevents late publication [1.33ms]
+(pass) Java facade public Scope closure joins held capture cleanup and prevents late publication [1.39ms]
+(pass) JavaBuild public Scope closure joins held read cleanup and prevents late publication [1.02ms]
+(pass) Java facade public Scope closure joins held read cleanup and prevents late publication [1.03ms]
+(pass) JavaBuild public Scope closure joins held current cleanup and prevents late publication [0.87ms]
+(pass) Java facade public Scope closure joins held current cleanup and prevents late publication [1.01ms]
+(pass) caller interruption joins held capture cleanup [2.13ms]
+(pass) caller interruption joins held read cleanup [1.07ms]
+(pass) caller interruption joins held current cleanup [0.91ms]
+(pass) an output from another execution fails capture provenance [0.83ms]
+(pass) revoked authority while current is held prevents artifact publication [1.11ms]
+299 |   yield* Deferred.await(f.entered.cleanup)
+300 |   const cancelling=yield* admitted.cancel.pipe(Effect.forkScoped)
+301 |   yield* Effect.yieldNow
+302 |   expect(cancelling.pollUnsafe()).toBeUndefined()
+303 |   yield* open(held)
+304 |   expect((yield* Fiber.join(cancelling)).status).toBe("cancelled")
+                                                       ^
+error: expect(received).toBe(expected)
+
+Expected: "cancelled"
+Received: "succeeded"
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-06.test.ts:304:50)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:656:13)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) cancellation accepted during provisional retention discard wins terminal publication [1.63ms]
+414 |                         const captured = yield* resume(Effect.gen(function* () {
+415 |                           const raw = yield* artifactPorts.capture({ buildID, basis, execution: lease.execution, output: observed.process!.apk }).pipe(Scope.provide(artifactScope))
+416 |                           if (raw === undefined) return undefined
+417 |                           // Capture all returned metadata and methods before the next async boundary.
+418 |                           const read = raw.read
+419 |                           const release = raw.release
+                                                ^
+TypeError: Cannot destructure property 'read' from null or undefined value
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/java/build.ts:419:43)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) malformed capture observations remain typed failures [1.26ms]
+591 |         if (!digest || (artifact.ref && artifact.ref.digest !== digest)) {
+592 |           artifact.invalid = "content"
+593 |           return artifact.invalid
+594 |         }
+595 |         const raw = yield* artifactPorts!.current({ basis: state.basis })
+596 |         const project = yield* captureProject(raw.project, "input_verification_failed").pipe(Effect.mapError((): FtcJava.ArtifactError => ({ code: "artifact_current_failed" })))
+                                                    ^
+TypeError: null is not an object (evaluating 'raw.project')
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/src/ftc/java/build.ts:596:47)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) malformed current observations remain typed failures [1.25ms]
+322 |   const input={ref:{...ref},currentProject:f.project};const held=gate();f.state.read=Deferred.await(held)
+323 |   const pending=yield* owner.verifyArtifact(input).pipe(Effect.forkScoped)
+324 |   yield* Deferred.await(f.entered.read)
+325 |   input.ref.path=AbsolutePath.make("/caller/changed.apk")
+326 |   yield* open(held)
+327 |   expect(yield* Fiber.join(pending)).toEqual({valid:true})
+                                           ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "valid": true,
++   "reason": "identity",
++   "valid": false,
+  }
+
+- Expected  - 1
++ Received  + 2
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-06.test.ts:327:38)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at runTasks (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:150:15)
+      at afterScheduled (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/Scheduler.js:140:10)
+(fail) mutable verification requests cannot change their identity while authority is held [1.19ms]
+
+4 tests failed:
+(fail) cancellation accepted during provisional retention discard wins terminal publication [1.63ms]
+(fail) malformed capture observations remain typed failures [1.26ms]
+(fail) malformed current observations remain typed failures [1.25ms]
+(fail) mutable verification requests cannot change their identity while authority is held [1.19ms]
+
+ 36 pass
+ 4 fail
+ 151 expect() calls
+Ran 40 tests across 1 file. [126.00ms]

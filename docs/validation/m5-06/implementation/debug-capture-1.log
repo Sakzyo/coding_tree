@@ -1,0 +1,15 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-06.test.ts:
+run delivered
+build awaiting result
+run cancel true
+capture exit true
+capture cleanup entering
+(fail) caller interruption joins held capture cleanup [2000.01ms]
+  ^ this test timed out after 2000ms.
+
+ 0 pass
+ 35 filtered out
+ 1 fail
+Ran 1 test across 1 file. [2.06s]

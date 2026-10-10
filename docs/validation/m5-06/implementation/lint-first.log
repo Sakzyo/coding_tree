@@ -1,0 +1,28 @@
+$ oxlint packages/core/src/ftc/java/build.ts packages/core/src/ftc/java.ts "packages/core/test/ftc/java-development/m5-06.test.ts" packages/schema/src/ftc-java.ts packages/schema/test/ftc-java-artifact.test.ts
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'keyof ArtifactRef' is more narrow than the original type.
+     ,-[packages/core/src/ftc/java/build.ts:715:36]
+ 714 |             Object.keys(FtcJava.ArtifactRef.fields).some(
+ 715 |               (key) => request.ref[key as keyof FtcJava.ArtifactRef] !== issued[key as keyof FtcJava.ArtifactRef],
+     :                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 716 |             )
+     `----
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'keyof ArtifactRef' is more narrow than the original type.
+     ,-[packages/core/src/ftc/java/build.ts:715:81]
+ 714 |             Object.keys(FtcJava.ArtifactRef.fields).some(
+ 715 |               (key) => request.ref[key as keyof FtcJava.ArtifactRef] !== issued[key as keyof FtcJava.ArtifactRef],
+     :                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 716 |             )
+     `----
+
+  ! typescript-eslint(no-unsafe-type-assertion): Unsafe type assertion: type 'ArtifactVerificationRequest' is more narrow than the original type.
+     ,-[packages/core/test/ftc/java-development/m5-06.test.ts:756:38]
+ 755 |       expect(
+ 756 |         (yield* owner.verifyArtifact(null as unknown as FtcJava.ArtifactVerificationRequest).pipe(Effect.flip)).code,
+     :                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 757 |       ).toBe("invalid_artifact_input")
+     `----
+
+Found 3 warnings and 0 errors.
+Finished in 345ms on 5 files with 130 rules using 10 threads.

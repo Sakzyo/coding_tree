@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-06.test.ts:
+37 |     cleanup: Effect.void as Effect.Effect<void, FtcJava.ArtifactError>,
+38 |     metadata: (ref: FtcJava.ArtifactRef) => ref,
+39 |   }
+40 |   const entered = { capture: gate(), read: gate(), current: gate(), cleanup: gate(), process: gate() }
+41 |   const finish = gate()
+42 |   const validation = () => Effect.promise(async () => ({ project: state.authorized, toolchain, sourceRevision: await Bun.file(path.join(root,"Main.java")).text(), configurationRevision: state.configurationRevision, generation: state.generation, exclusions: state.dirty ? [{path:"Main.java"}] : [] }))
+                                                                                                                                                                ^
+ENOENT: no such file or directory, open '/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-r3iZYg/Main.java'
+    path: "/private/var/folders/sv/9wf43y_d4gj92mqbwbkg_my00000gn/T/opencode-core-test-r3iZYg/Main.java",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-06.test.ts:42:156)
+(fail) successful build provisionally captures its exact live output before retirement [10.34ms]
+
+ 0 pass
+ 1 fail
+Ran 1 test across 1 file. [65.00ms]

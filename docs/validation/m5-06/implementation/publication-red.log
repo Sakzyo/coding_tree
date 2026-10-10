@@ -1,0 +1,35 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-06.test.ts:
+382 |   pending.interruptUnsafe();yield* open(held)
+383 |   const exit=yield* Fiber.await(pending)
+384 |   expect(Exit.isFailure(exit)&&Cause.hasInterrupts(exit.cause)).toBe(true)
+385 |   f.state.queryCleanup=Effect.void
+386 |   const claim={buildID:evidence.buildID,projectID:f.project.projectID,sourceRevision:"saved",configurationRevision:"config-1",digest:abcDigest,path:AbsolutePath.make(path.join(f.project.canonicalRoot,"owned.apk"))}
+387 |   expect(yield* owner.verifyArtifact({ref:claim,currentProject:f.project})).toEqual({valid:false,reason:"unknown"})
+                                                                                  ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "reason": "unknown",
+-   "valid": false,
++   "valid": true,
+  }
+
+- Expected  - 2
++ Received  + 1
+
+      at <anonymous> (/Users/dylanxu/coding_tree/packages/core/test/ftc/java-development/m5-06.test.ts:387:77)
+      at ~effect/Effect/successCont (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:870:26)
+      at runLoop (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:444:98)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:412:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+      at evaluate (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:425:23)
+      at <anonymous> (/Users/dylanxu/coding_tree/node_modules/.bun/effect@4.0.0-beta.83/node_modules/effect/dist/internal/effect.js:723:15)
+(fail) an interrupted query cannot issue an identity before joined query cleanup [15.31ms]
+
+ 0 pass
+ 50 filtered out
+ 1 fail
+ 4 expect() calls
+Ran 1 test across 1 file. [75.00ms]

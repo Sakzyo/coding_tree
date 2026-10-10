@@ -1,0 +1,49 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-06.test.ts:
+(pass) successful build provisionally captures its exact live output before retirement [12.12ms]
+(pass) failed or changed artifacts cannot authorize deployment [5.64ms]
+(pass) identical bytes bind distinct builds and repeat queries freshly read and observe current [3.52ms]
+(pass) current source changes permanently invalidate historical identity [2.38ms]
+(pass) current configuration changes permanently invalidate historical identity [2.53ms]
+(pass) current generation changes permanently invalidate historical identity [1.57ms]
+(pass) current dirty changes permanently invalidate historical identity [1.59ms]
+(pass) known dirty builds do not issue references [1.24ms]
+(pass) known outdated builds do not issue references [0.94ms]
+(pass) known cancelled builds do not issue references [1.16ms]
+(pass) known no-output builds do not issue references [0.91ms]
+(pass) known unobserved builds do not issue references [0.98ms]
+(pass) forged projectID never reads a caller locator [1.17ms]
+(pass) forged sourceRevision never reads a caller locator [0.95ms]
+(pass) forged configurationRevision never reads a caller locator [1.08ms]
+(pass) forged digest never reads a caller locator [2.36ms]
+(pass) forged path never reads a caller locator [1.18ms]
+(pass) unknown and fresh owners cannot adopt references; running and unissued claims stay absent [1.42ms]
+(pass) capture infrastructure failure remains typed and compilation remains truthful [0.93ms]
+(pass) read infrastructure failure remains typed and compilation remains truthful [0.77ms]
+(pass) current infrastructure failure remains typed and compilation remains truthful [0.75ms]
+(pass) capture metadata mismatch is provenance failure, never an empty APK [0.87ms]
+(pass) missing retained bytes invalidate an issued artifact [1.20ms]
+(pass) authorization failures and invalid input remain errors before protected reads [1.25ms]
+(pass) old build ports and document-only facade report typed artifact unavailability without work [1.74ms]
+(pass) JavaBuild public Scope closure joins held capture cleanup and prevents late publication [2.15ms]
+(pass) Java facade public Scope closure joins held capture cleanup and prevents late publication [0.97ms]
+(pass) JavaBuild public Scope closure joins held read cleanup and prevents late publication [0.94ms]
+(pass) Java facade public Scope closure joins held read cleanup and prevents late publication [0.95ms]
+(pass) JavaBuild public Scope closure joins held current cleanup and prevents late publication [0.95ms]
+(pass) Java facade public Scope closure joins held current cleanup and prevents late publication [0.96ms]
+(fail) caller interruption joins held capture cleanup [2000.00ms]
+  ^ this test timed out after 2000ms.
+(pass) caller interruption joins held read cleanup [3.56ms]
+(pass) caller interruption joins held current cleanup [1.25ms]
+(pass) an output from another execution fails capture provenance [1.05ms]
+(pass) revoked authority while current is held prevents artifact publication [1.43ms]
+
+1 tests failed:
+(fail) caller interruption joins held capture cleanup [2000.00ms]
+  ^ this test timed out after 2000ms.
+
+ 35 pass
+ 1 fail
+ 142 expect() calls
+Ran 36 tests across 1 file. [2.12s]

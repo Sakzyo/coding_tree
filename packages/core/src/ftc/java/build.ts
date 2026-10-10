@@ -6,6 +6,7 @@ import { FtcEnvironment } from "@opencode-ai/schema/ftc-environment"
 import { Project } from "@opencode-ai/schema/project"
 import { Location } from "@opencode-ai/schema/location"
 import { WorkspaceID } from "@opencode-ai/schema/workspace-id"
+import { createHash } from "node:crypto"
 import { ProjectSchema } from "../../project/schema"
 import { Cause, Deferred, Effect, Exit, Fiber, Schema, Scope, Stream } from "effect"
 
@@ -52,7 +53,16 @@ export interface Termination {
   readonly signal?: string
 }
 
+export interface RetainedArtifact {
+  readonly metadata: Omit<FtcJava.ArtifactRef, "digest">
+  // Protected owner bytes; undefined establishes that the retained content is missing.
+  readonly read: () => Effect.Effect<Uint8Array | undefined, FtcJava.ArtifactError, Scope.Scope>
+  readonly release: Effect.Effect<void, FtcJava.ArtifactError>
+}
+
 export interface BuildProcess {
+  // Opaque capability for the exact execution's identified APK, never a query/log pathname.
+  readonly apk?: object
   // Normal end guarantees complete ordered output. Capture failures/truncation fail the stream.
   readonly output: Stream.Stream<FtcJava.BuildLog, FtcJava.BuildError>
   readonly termination: Effect.Effect<Termination, FtcJava.BuildError>
@@ -63,6 +73,21 @@ export interface BuildProcess {
 }
 
 export interface Ports {
+  readonly artifacts?: {
+    // Verify exact execution/output/full basis/recipe, and register idempotent retention cleanup
+    // in this separate artifact Scope before waiting. No output is an explicit observation.
+    readonly capture: (input: {
+      readonly buildID: FtcJava.BuildID
+      readonly basis: SavedInputBasis
+      readonly execution: object
+      readonly output?: object
+    }) => Effect.Effect<RetainedArtifact | undefined, FtcJava.ArtifactError, Scope.Scope>
+    // Fresh complete authority, dirty exclusions and comparable continuity anchored to basis.generation
+    // across lease retirement, including A-B-A. Unsupported continuity fails, never endpoint inference.
+    readonly current: (input: {
+      readonly basis: SavedInputBasis
+    }) => Effect.Effect<InputValidation, FtcJava.ArtifactError, Scope.Scope>
+  }
   readonly projects: {
     readonly resolve: (projectID: Project.ID) => Effect.Effect<FtcProject.ProjectContext, FtcJava.BuildError>
   }
@@ -88,6 +113,12 @@ export interface BuildRun {
 }
 
 export interface Interface {
+  readonly artifact: (
+    input: FtcJava.ArtifactQuery,
+  ) => Effect.Effect<FtcJava.ArtifactRef | undefined, FtcJava.ArtifactError>
+  readonly verifyArtifact: (
+    input: FtcJava.ArtifactVerificationRequest,
+  ) => Effect.Effect<FtcJava.ArtifactVerificationResult, FtcJava.ArtifactError>
   readonly build: (input: FtcJava.BuildRequest) => Effect.Effect<FtcJava.BuildEvidence, FtcJava.BuildError>
   readonly startBuild: (input: FtcJava.BuildRequest) => Effect.Effect<BuildRun, FtcJava.BuildError>
   readonly readBuild: (input: FtcJava.BuildQuery) => Effect.Effect<FtcJava.BuildRecord, FtcJava.BuildError>
@@ -125,6 +156,22 @@ const Validation = Schema.Struct({
   generation: Text,
   exclusions: Schema.Array(FtcJava.BuildExclusion),
 })
+const ArtifactMetadata = Schema.Struct({
+  buildID: FtcJava.BuildID,
+  projectID: Project.ID,
+  sourceRevision: Text,
+  configurationRevision: Text,
+  path: FtcJava.ArtifactRef.fields.path,
+})
+type ArtifactState =
+  | {
+      readonly retained: RetainedArtifact
+      readonly scope: Scope.Closeable
+      ref?: FtcJava.ArtifactRef
+      invalid?: FtcJava.ArtifactVerificationResult["reason"]
+    }
+  | { readonly error: Cause.Cause<FtcJava.ArtifactError> }
+
 const ObservedTermination = Schema.Struct({
   exitCode: Schema.optionalKey(Schema.Int),
   signal: Schema.optionalKey(Text),
@@ -135,6 +182,11 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
     const lifetime = yield* Scope.make()
     const fibers = new Set<Fiber.Fiber<unknown, unknown>>()
     const roots = new Set<string>()
+    const artifactScopes = new Set<Scope.Closeable>()
+    const artifactPorts =
+      ports.artifacts && typeof ports.artifacts.capture === "function" && typeof ports.artifacts.current === "function"
+        ? Object.freeze({ capture: ports.artifacts.capture, current: ports.artifacts.current })
+        : undefined
     const records = new Map<
       FtcJava.BuildID,
       {
@@ -145,6 +197,7 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
         evidence?: FtcJava.BuildEvidence
         defect?: Cause.Cause<never>
         fiber?: Fiber.Fiber<void>
+        artifact?: ArtifactState
       }
     >()
     let closed = false
@@ -165,6 +218,10 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
         })
         yield* Effect.forEach([...fibers], (fiber) => interrupt(fiber), { concurrency: "unbounded" })
         yield* Scope.close(lifetime, Exit.void)
+        yield* Effect.forEach([...artifactScopes], (scope) => Scope.close(scope, Exit.void), {
+          concurrency: "unbounded",
+        })
+        artifactScopes.clear()
         records.clear()
         roots.clear()
       }),
@@ -245,6 +302,7 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
                     evidence: undefined as FtcJava.BuildEvidence | undefined,
                     defect: undefined as Cause.Cause<never> | undefined,
                     fiber: undefined as Fiber.Fiber<void> | undefined,
+                    artifact: undefined as ArtifactState | undefined,
                   }
                   const worker = Effect.uninterruptibleMask((resume) =>
                     Effect.gen(function* () {
@@ -317,6 +375,7 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
                             termination: rawProcess.termination,
                             cancelAndJoin: rawProcess.cancelAndJoin,
                             release: rawProcess.release,
+                            apk: rawProcess.apk,
                           })
                           observed.process = process
                           yield* Effect.all(
@@ -357,6 +416,56 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
                         if (Cause.hasInterrupts(execution.cause)) state.cancelled = true
                         yield* note(execution.cause, "execution_defect")
                       }
+                      // Retain provisionally while the execution capability is still live. Artifact
+                      // failures do not rewrite truthful saved-compilation observations.
+                      if (
+                        artifactPorts &&
+                        observed.process &&
+                        Exit.isSuccess(execution) &&
+                        observed.termination?.exitCode === 0 &&
+                        !observed.termination.signal &&
+                        observed.outputComplete
+                      ) {
+                        const artifactScope = yield* Scope.make()
+                        artifactScopes.add(artifactScope)
+                        const captured = yield* resume(
+                          Effect.gen(function* () {
+                            const raw = yield* artifactPorts
+                              .capture({ buildID, basis, execution: lease.execution, output: observed.process!.apk })
+                              .pipe(Scope.provide(artifactScope))
+                            if (raw === undefined) return undefined
+                            if (!raw || typeof raw !== "object")
+                              return yield* Effect.fail({ code: "artifact_provenance" } satisfies FtcJava.ArtifactError)
+                            // Capture all returned metadata and methods before the next async boundary.
+                            const read = raw.read
+                            const release = raw.release
+                            const metadata = yield* artifactCopy(ArtifactMetadata, raw.metadata, "artifact_provenance")
+                            if (
+                              typeof read !== "function" ||
+                              !Effect.isEffect(release) ||
+                              metadata.buildID !== buildID ||
+                              metadata.projectID !== basis.project.projectID ||
+                              metadata.sourceRevision !== basis.sourceRevision ||
+                              metadata.configurationRevision !== basis.configurationRevision
+                            )
+                              return yield* Effect.fail({ code: "artifact_provenance" } satisfies FtcJava.ArtifactError)
+                            return Object.freeze({ metadata, read, release })
+                          }),
+                        ).pipe(Effect.exit)
+                        if (Exit.isFailure(captured)) {
+                          if (Cause.hasInterrupts(captured.cause)) state.cancelled = true
+                          state.artifact = Cause.hasInterruptsOnly(captured.cause)
+                            ? undefined
+                            : { error: captured.cause }
+                        }
+                        if (Exit.isSuccess(captured) && captured.value)
+                          state.artifact = { retained: captured.value, scope: artifactScope }
+                        if (!state.artifact || "error" in state.artifact) {
+                          const closed = yield* Effect.exit(Scope.close(artifactScope, Exit.void))
+                          artifactScopes.delete(artifactScope)
+                          if (Exit.isFailure(closed)) state.artifact = { error: closed.cause }
+                        }
+                      }
                       if (observed.process) {
                         if (state.cancelled || Exit.isFailure(execution)) {
                           const cancelled = yield* observed.process.cancelAndJoin.pipe(
@@ -388,6 +497,27 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
                       if (Exit.isFailure(released)) yield* note(released.cause, "cleanup_failed")
                       const cleaned = yield* Effect.exit(Scope.close(resourceScope, Exit.void))
                       if (Exit.isFailure(cleaned)) yield* note(cleaned.cause, "cleanup_failed")
+                      if (
+                        state.artifact &&
+                        "retained" in state.artifact &&
+                        (state.cancelled ||
+                          observed.inputChanged ||
+                          observed.termination?.exitCode !== 0 ||
+                          !!observed.termination.signal ||
+                          !observed.outputComplete ||
+                          errors.length > 0 ||
+                          basis.exclusions.length > 0 ||
+                          observed.settlement === undefined ||
+                          observed.settlement.exclusions.length > 0)
+                      ) {
+                        const discarded = yield* Effect.exit(
+                          state.artifact.retained.release.pipe(
+                            Effect.ensuring(Scope.close(state.artifact.scope, Exit.void)),
+                          ),
+                        )
+                        artifactScopes.delete(state.artifact.scope)
+                        state.artifact = Exit.isFailure(discarded) ? { error: discarded.cause } : undefined
+                      }
                       const evidence = freeze(
                         FtcJava.BuildEvidence.make({
                           buildID,
@@ -486,7 +616,119 @@ export const make = (ports: Ports): Effect.Effect<Interface, never, Scope.Scope>
             : { state: "running" as const, buildID: query.buildID, projectID: query.projectID },
         )
       })
-    return { build, startBuild, readBuild }
+    const artifactActive = () =>
+      active().pipe(
+        Effect.mapError(
+          (error): FtcJava.ArtifactError => ({
+            code: error.code === "owner_closed" ? "owner_closed" : "project_unauthorized",
+          }),
+        ),
+      )
+    const artifactAuthorize = (project: FtcProject.ProjectContext) =>
+      authorize(project).pipe(
+        Effect.mapError((): FtcJava.ArtifactError => ({ code: closed ? "owner_closed" : "project_unauthorized" })),
+      )
+    const query = <A>(effect: Effect.Effect<A, FtcJava.ArtifactError>) =>
+      Effect.acquireUseRelease(fork(effect), join, interrupt)
+    const recheck = (state: { readonly basis: SavedInputBasis; artifact?: ArtifactState }) =>
+      Effect.gen(function* () {
+        const artifact = state.artifact
+        if (!artifact) return {}
+        if ("error" in artifact) return yield* Effect.failCause(artifact.error)
+        if (artifact.invalid) return { reason: artifact.invalid }
+        const bytes = yield* artifact.retained.read()
+        if (bytes !== undefined && !(bytes instanceof Uint8Array))
+          return yield* Effect.fail({ code: "artifact_read_failed" } satisfies FtcJava.ArtifactError)
+        const digest = bytes === undefined ? undefined : createHash("sha256").update(bytes).digest("hex")
+        if (!digest || (artifact.ref && artifact.ref.digest !== digest)) {
+          artifact.invalid = "content"
+          return { reason: artifact.invalid }
+        }
+        const raw = yield* artifactPorts!.current({ basis: state.basis })
+        const project = yield* captureProject(raw?.project, "input_verification_failed").pipe(
+          Effect.mapError((): FtcJava.ArtifactError => ({ code: "artifact_current_failed" })),
+        )
+        const current = yield* artifactCopy(Validation, { ...raw, project }, "artifact_current_failed")
+        if (
+          !sameProject(current.project, state.basis.project) ||
+          !sameToolchain(current.toolchain, state.basis.toolchain)
+        )
+          return yield* Effect.fail({ code: "artifact_current_failed" } satisfies FtcJava.ArtifactError)
+        if (
+          current.sourceRevision !== state.basis.sourceRevision ||
+          current.configurationRevision !== state.basis.configurationRevision ||
+          current.generation !== state.basis.generation
+        )
+          artifact.invalid = "stale"
+        if (current.exclusions.length) artifact.invalid = "dirty"
+        yield* artifactAuthorize(state.basis.project)
+        yield* artifactActive()
+        if (artifact.invalid) return { reason: artifact.invalid }
+        return { ref: artifact.ref ?? freeze(FtcJava.ArtifactRef.make({ ...artifact.retained.metadata, digest })) }
+      })
+    const artifact = (input: FtcJava.ArtifactQuery) =>
+      query(
+        Effect.gen(function* () {
+          const captured = yield* artifactCopy(FtcJava.ArtifactQuery, input, "invalid_artifact_input")
+          yield* artifactActive()
+          const state = records.get(captured.buildID)
+          if (!state) return yield* Effect.fail({ code: "artifact_unknown" } satisfies FtcJava.ArtifactError)
+          yield* artifactAuthorize(state.basis.project)
+          if (!artifactPorts)
+            return yield* Effect.fail({ code: "artifact_unavailable" } satisfies FtcJava.ArtifactError)
+          if (!state.evidence || !eligible(state.evidence)) return undefined
+          if (state.artifact && "error" in state.artifact) return yield* Effect.failCause(state.artifact.error)
+          const checked = yield* Effect.scoped(recheck(state))
+          yield* artifactAuthorize(state.basis.project)
+          yield* artifactActive()
+          if (checked.reason || (state.artifact && "retained" in state.artifact && state.artifact.invalid))
+            return yield* Effect.fail({ code: "artifact_invalid" } satisfies FtcJava.ArtifactError)
+          if (!state.artifact || "error" in state.artifact || !checked.ref) return undefined
+          if (state.artifact.ref && state.artifact.ref.digest !== checked.ref.digest) {
+            state.artifact.invalid = "content"
+            return yield* Effect.fail({ code: "artifact_invalid" } satisfies FtcJava.ArtifactError)
+          }
+          // Publish only after the protected read/current Scope has joined all cleanup.
+          state.artifact.ref ??= checked.ref
+          return state.artifact.ref
+        }),
+      )
+    const verifyArtifact = (input: FtcJava.ArtifactVerificationRequest) =>
+      query(
+        Effect.gen(function* () {
+          const project = yield* captureProject(input?.currentProject, "invalid_build_input").pipe(
+            Effect.mapError((): FtcJava.ArtifactError => ({ code: "invalid_artifact_input" })),
+          )
+          const request = yield* artifactCopy(
+            FtcJava.ArtifactVerificationRequest,
+            { ...input, currentProject: project },
+            "invalid_artifact_input",
+          )
+          yield* artifactAuthorize(request.currentProject)
+          if (!artifactPorts)
+            return yield* Effect.fail({ code: "artifact_unavailable" } satisfies FtcJava.ArtifactError)
+          const state = records.get(request.ref.buildID)
+          if (!state || !state.artifact || "error" in state.artifact || !state.artifact.ref)
+            return freeze({ valid: false, reason: "unknown" as const })
+          const issued = state.artifact.ref
+          if (
+            !sameProject(request.currentProject, state.basis.project) ||
+            request.ref.buildID !== issued.buildID ||
+            request.ref.projectID !== issued.projectID ||
+            request.ref.sourceRevision !== issued.sourceRevision ||
+            request.ref.configurationRevision !== issued.configurationRevision ||
+            request.ref.digest !== issued.digest ||
+            request.ref.path !== issued.path
+          )
+            return freeze({ valid: false, reason: "identity" as const })
+          const checked = yield* Effect.scoped(recheck(state))
+          yield* artifactAuthorize(state.basis.project)
+          yield* artifactActive()
+          const reason = state.artifact.invalid ?? checked.reason
+          return freeze(reason ? { valid: false, reason } : { valid: true })
+        }),
+      )
+    return { build, startBuild, readBuild, artifact, verifyArtifact }
   })
 
 function captureProject(value: unknown, code: FtcJava.BuildError["code"]) {
@@ -568,4 +810,20 @@ function join<A, E>(fiber: Fiber.Fiber<A, E>) {
 
 function interrupt<A, E>(fiber: Fiber.Fiber<A, E>) {
   return Effect.sync(() => fiber.interruptUnsafe()).pipe(Effect.andThen(awaitFiber(fiber)), Effect.asVoid)
+}
+
+function eligible(evidence: FtcJava.BuildEvidence) {
+  return (
+    evidence.status === "succeeded" &&
+    !evidence.exclusions.initial.length &&
+    evidence.exclusions.settlement !== undefined &&
+    !evidence.exclusions.settlement.length
+  )
+}
+
+function artifactCopy<A>(schema: Schema.Decoder<A>, value: unknown, code: FtcJava.ArtifactError["code"]) {
+  return Effect.try({
+    try: () => freeze(Schema.decodeUnknownSync(schema, { onExcessProperty: "error" })(structuredClone(value))),
+    catch: (): FtcJava.ArtifactError => ({ code }),
+  })
 }

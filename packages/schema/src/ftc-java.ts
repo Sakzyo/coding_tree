@@ -192,3 +192,48 @@ export const BuildRecord = Schema.Union([
   Schema.Struct({ state: Schema.Literal("settled"), buildID: BuildID, projectID: Project.ID, evidence: BuildEvidence }),
 ]).annotate({ identifier: "FtcJava.BuildRecord" })
 export type BuildRecord = typeof BuildRecord.Type
+
+export interface ArtifactRef extends Schema.Schema.Type<typeof ArtifactRef> {}
+export const ArtifactRef = Schema.Struct({
+  buildID: BuildID,
+  projectID: Project.ID,
+  sourceRevision: BuildRevision,
+  configurationRevision: BuildRevision,
+  digest: Schema.String.check(Schema.isPattern(/^[a-f0-9]{64}$/)),
+  path: AbsolutePath.check(Schema.isPattern(/^(?:\/|[a-zA-Z]:[\\/]|\\\\)/)),
+}).annotate({ identifier: "FtcJava.ArtifactRef" })
+
+export interface ArtifactQuery extends Schema.Schema.Type<typeof ArtifactQuery> {}
+export const ArtifactQuery = Schema.Struct({ buildID: BuildID }).annotate({ identifier: "FtcJava.ArtifactQuery" })
+
+export interface ArtifactVerificationRequest extends Schema.Schema.Type<typeof ArtifactVerificationRequest> {}
+export const ArtifactVerificationRequest = Schema.Struct({
+  ref: ArtifactRef,
+  currentProject: FtcProject.ProjectContext,
+}).annotate({
+  identifier: "FtcJava.ArtifactVerificationRequest",
+})
+
+export interface ArtifactVerificationResult extends Schema.Schema.Type<typeof ArtifactVerificationResult> {}
+export const ArtifactVerificationResult = Schema.Struct({
+  valid: Schema.Boolean,
+  reason: optional(Schema.Literals(["unknown", "identity", "content", "stale", "dirty"])),
+}).annotate({ identifier: "FtcJava.ArtifactVerificationResult" })
+
+export interface ArtifactError extends Schema.Schema.Type<typeof ArtifactError> {}
+export const ArtifactError = Schema.Struct({
+  code: Schema.Literals([
+    "invalid_artifact_input",
+    "artifact_unavailable",
+    "artifact_unknown",
+    "artifact_invalid",
+    "artifact_provenance",
+    "artifact_capture_failed",
+    "artifact_read_failed",
+    "artifact_current_failed",
+    "artifact_cleanup_failed",
+    "project_unauthorized",
+    "owner_closed",
+  ]),
+  buildID: optional(BuildID),
+}).annotate({ identifier: "FtcJava.ArtifactError" })

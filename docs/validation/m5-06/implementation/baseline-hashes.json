@@ -1,0 +1,27 @@
+[
+  {
+    "path": "packages/core/src/ftc/java/build.ts",
+    "actual": "02ad95b5e59b8d8602fb2300d03530c3708992b16376148df7b487ea8dd143d9",
+    "expected": "02ad95b5e59b8d8602fb2300d03530c3708992b16376148df7b487ea8dd143d9"
+  },
+  {
+    "path": "packages/core/src/ftc/java.ts",
+    "actual": "44f7c5810f506a97fd213f96743d559d50bc7212c064d45cf097af2d9ef2f6b3",
+    "expected": "44f7c5810f506a97fd213f96743d559d50bc7212c064d45cf097af2d9ef2f6b3"
+  },
+  {
+    "path": "packages/core/test/ftc/java-development/m5-05.test.ts",
+    "actual": "02bf37061a5ac19f732498f5685c60401ce3953068eea5d2e81a1baecf5ae7d7",
+    "expected": "02bf37061a5ac19f732498f5685c60401ce3953068eea5d2e81a1baecf5ae7d7"
+  },
+  {
+    "path": "packages/schema/src/ftc-java.ts",
+    "actual": "85bebc90f9f1841e4974ce619f5d9099b0e63c343df6ed528b0ec86a1029101d",
+    "expected": "85bebc90f9f1841e4974ce619f5d9099b0e63c343df6ed528b0ec86a1029101d"
+  },
+  {
+    "path": "packages/schema/test/ftc-java-build.test.ts",
+    "actual": "063f914d0fdeda70b694982d8d1d5bbde8701656187a549e00c177c31caeec9b",
+    "expected": "063f914d0fdeda70b694982d8d1d5bbde8701656187a549e00c177c31caeec9b"
+  }
+]

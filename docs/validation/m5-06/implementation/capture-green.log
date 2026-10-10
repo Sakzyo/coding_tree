@@ -1,0 +1,9 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-06.test.ts:
+(pass) successful build provisionally captures its exact live output before retirement [15.64ms]
+
+ 1 pass
+ 0 fail
+ 4 expect() calls
+Ran 1 test across 1 file. [177.00ms]

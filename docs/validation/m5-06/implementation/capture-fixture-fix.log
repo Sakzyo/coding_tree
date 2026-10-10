@@ -1,0 +1,10 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc/java-development/m5-06.test.ts:
+(pass) caller interruption joins held capture cleanup [12.45ms]
+
+ 1 pass
+ 35 filtered out
+ 0 fail
+ 3 expect() calls
+Ran 1 test across 1 file. [73.00ms]

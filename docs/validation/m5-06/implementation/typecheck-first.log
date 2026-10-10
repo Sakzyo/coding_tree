@@ -1,0 +1,3 @@
+$ tsgo --noEmit
+src/ftc/java/build.ts(631,129): error TS2339: Property 'ref' does not exist on type 'ArtifactState'.
+  Property 'ref' does not exist on type '{ readonly error: Cause<ArtifactError>; }'.

@@ -22,6 +22,11 @@ export {
   BuildError,
   BuildQuery,
   BuildRecord,
+  ArtifactRef,
+  ArtifactQuery,
+  ArtifactVerificationRequest,
+  ArtifactVerificationResult,
+  ArtifactError,
 } from "@opencode-ai/schema/ftc-java"
 export type { Filesystem, Projects, CodeChanges, Ports } from "./java/documents"
 export type { BuildRun } from "./java/build"
@@ -39,9 +44,13 @@ export const layer = (ports: JavaDocuments.Ports) =>
         build: unavailable,
         startBuild: unavailable,
         readBuild: unavailable,
+        artifact: artifactUnavailable,
+        verifyArtifact: artifactUnavailable,
       })),
     ),
   )
+
+const artifactUnavailable = () => Effect.fail({ code: "artifact_unavailable" as const })
 
 const unavailable = () => Effect.fail({ code: "build_unavailable" as const })
 

@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--check",
+    "--",
+    "packages/core/src/ftc/java/build.ts",
+    "packages/core/src/ftc/java.ts",
+    "packages/core/test/ftc/java-development/m5-06.test.ts",
+    "packages/schema/src/ftc-java.ts",
+    "packages/schema/test/ftc-java-artifact.test.ts"
+  ],
+  "cwd": "/Users/dylanxu/coding_tree",
+  "exit": 0,
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

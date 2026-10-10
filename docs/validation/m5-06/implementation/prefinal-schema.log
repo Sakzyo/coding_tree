@@ -1,0 +1,43 @@
+bun test v1.3.14 (0d9b296a)
+
+test/ftc-java-artifact.test.ts:
+(pass) artifact reference and verification preserve complete identity and JSON [3.41ms]
+(pass) optional reason and artifact error build ID omit undefined [0.35ms]
+(pass) artifact contracts have stable unique identifiers [0.05ms]
+(pass) strict artifact identity rejects buildID [0.57ms]
+(pass) strict artifact identity rejects digest [0.03ms]
+(pass) strict artifact identity rejects digest [0.02ms]
+(pass) strict artifact identity rejects digest [0.02ms]
+(pass) strict artifact identity rejects path [0.03ms]
+(pass) strict artifact identity rejects sourceRevision [0.03ms]
+(pass) strict artifact identity rejects sourceRevision [0.02ms]
+(pass) strict artifact identity rejects configurationRevision [0.02ms]
+(pass) strict artifact identity rejects execution [0.02ms]
+(pass) strict artifact identity rejects read [0.02ms]
+(pass) strict artifact identity rejects success [0.01ms]
+(pass) strict artifact commands reject unknown selection and authority fields [0.16ms]
+
+test/ftc-java-build.test.ts:
+(pass) build request and evidence preserve canonical project, descriptor, saved basis and JSON [0.99ms]
+(pass) optional actual exits and exclusion/error properties omit undefined while encoding [0.19ms]
+(pass) owner-generated build IDs validate exactly their emitted prefix and are distinct [0.48ms]
+(pass) build contracts have unique stable domain identifiers [0.04ms]
+(pass) strict request decoding rejects capability/command/output and invented successful records [0.24ms]
+(pass) unsaved exclusion rejects escaped/empty path  [0.03ms]
+(pass) unsaved exclusion rejects escaped/empty path ../outside
+(pass) unsaved exclusion rejects escaped/empty path nested/../outside
+(pass) unsaved exclusion rejects escaped/empty path /outside
+(pass) unsaved exclusion rejects escaped/empty path C:\outside [0.01ms]
+(pass) actual integer exit/log sequences and text-free exclusion records reject malformed wire values [0.11ms]
+
+test/contract-hygiene.test.ts:
+(pass) contract hygiene > optional properties preserve transformations and omit undefined while encoding [0.12ms]
+(pass) contract hygiene > todo status and priority preserve arbitrary strings [0.02ms]
+(pass) contract hygiene > current ID constructors expose create [0.07ms]
+(pass) contract hygiene > reusable public identifiers are stable and unique [0.04ms]
+(pass) contract hygiene > current source avoids Any and mutable contract wrappers [2.48ms]
+
+ 31 pass
+ 0 fail
+ 65 expect() calls
+Ran 31 tests across 3 files. [67.00ms]

@@ -1,0 +1,10 @@
+{
+  "packages/core/test/ftc/java-development/m5-05.test.ts": {
+    "expected": "02bf37061a5ac19f732498f5685c60401ce3953068eea5d2e81a1baecf5ae7d7",
+    "actual": "02bf37061a5ac19f732498f5685c60401ce3953068eea5d2e81a1baecf5ae7d7"
+  },
+  "packages/schema/test/ftc-java-build.test.ts": {
+    "expected": "063f914d0fdeda70b694982d8d1d5bbde8701656187a549e00c177c31caeec9b",
+    "actual": "063f914d0fdeda70b694982d8d1d5bbde8701656187a549e00c177c31caeec9b"
+  }
+}
