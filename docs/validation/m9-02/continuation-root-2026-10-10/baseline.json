@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-10",
+  "base": "7f9e23cea771d3660f32c1f1b5799b92dcfa1719",
+  "checked_tasks": 31,
+  "target_tasks": 32,
+  "writer": "/root/m9_02",
+  "contract_audit": "/root/m9_contract_audit",
+  "allowed_product_paths": [
+    "packages/core/src/ftc/operations.ts",
+    "packages/schema/src/ftc-operation.ts",
+    "packages/core/test/ftc/robot-approvals-and-operations/m9-01.test.ts",
+    "packages/core/test/ftc/robot-approvals-and-operations/m9-02.test.ts"
+  ],
+  "baseline_source": {
+    "packages/core/src/ftc/operations.ts": "090da2676b7ba2298867467004e3cb8a0debf7046b35ec23661a4a6590441bb7",
+    "packages/schema/src/ftc-operation.ts": "1c2e66f286fced3c1ed251c2f326b96c5fe07af78a990b6168b41a8f18eb4ae5",
+    "packages/core/test/ftc/robot-approvals-and-operations/m9-01.test.ts": "ae346562f8068fbf3be72c074e00290bdd8f8ac9bfb3d2615d347f4a67108a41"
+  },
+  "source_task": "M9-02",
+  "rulings": "docs/validation/M9-02-continuation-brief.md"
+}

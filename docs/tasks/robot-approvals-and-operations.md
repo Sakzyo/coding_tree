@@ -53,7 +53,7 @@ Signatures below specify domain inputs/results; use the repository's Effect serv
 ## Task checklist
 
 - [x] [M9-01 — Prepare typed operations under independent action policy](#m9-01)
-- [ ] [M9-02 — Bind single-use approval to exact operation context](#m9-02)
+- [x] [M9-02 — Bind single-use approval to exact operation context](#m9-02)
 - [ ] [M9-03 — Serialize mutations per physical controller](#m9-03)
 - [ ] [M9-04 — Revalidate current action preconditions immediately before dispatch](#m9-04)
 - [ ] [M9-05 — Execute once and persist confirmed or unknown outcomes](#m9-05)
@@ -97,16 +97,16 @@ Verified 2026-10-08 at `768ec206c`: [implementation evidence](../validation/M9-0
 
 **Interfaces:** Produces `approveOperation({ userEvent, operationID, contextFingerprint }): PreparedOperation`; userEvent is an injected trusted capability, not a JSON secret.
 
-- [ ] **1. Write the focused test:** In `packages/core/test/ftc/robot-approvals-and-operations/m9-02.test.ts`, add `Deploy click authorizes only the displayed build and target`. Use the real module and supplied port fixtures; core assertions:
+- [x] **1. Write the focused test:** In `packages/core/test/ftc/robot-approvals-and-operations/m9-02.test.ts`, add `Deploy click authorizes only the displayed build and target`. Use the real module and supplied port fixtures; core assertions:
 
 ```ts
 expect(approved.action.artifact.digest).toBe(displayedDigest); expect(reused.code).toBe('approval_consumed'); expect(forged.code).toBe('untrusted_approval')
 ```
 
-- [ ] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/robot-approvals-and-operations/m9-02.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
-- [ ] **3. Implement the smallest behavior:** Treat a deliberate Deploy click as authorization without a redundant confirmation. Invalidate on changed target/generation/artifact/parameters, rejection, restart or consumption; define expiry via injected policy/clock rather than inventing a product timeout. Installation approval never includes start.
-- [ ] **4. Verify:** Re-run `bun test ./test/ftc/robot-approvals-and-operations/m9-02.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
-- [ ] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): bind single-use approval to exact operation context`.
+- [x] **2. Establish the baseline:** From `packages/core`, run `bun test ./test/ftc/robot-approvals-and-operations/m9-02.test.ts`. Expected: FAIL for the missing behavior, not a broken harness.
+- [x] **3. Implement the smallest behavior:** Treat a deliberate Deploy click as authorization without a redundant confirmation. Invalidate on changed target/generation/artifact/parameters, rejection, restart or consumption; define expiry via injected policy/clock rather than inventing a product timeout. Installation approval never includes start.
+- [x] **4. Verify:** Re-run `bun test ./test/ftc/robot-approvals-and-operations/m9-02.test.ts` from `packages/core`; expected: PASS. Run `bun typecheck` in each changed package. Also verify scoped cleanup.
+- [x] **5. Review and record completion:** Save verification evidence, review the scoped diff, commit, then update this checklist and [progress](progress.md). Commit: `feat(ftc): bind single-use approval to exact operation context`.
 
 <a id="m9-03"></a>
 

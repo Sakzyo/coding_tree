@@ -1,0 +1,231 @@
+{
+  "reviewed_base": "7f9e23cea771d3660f32c1f1b5799b92dcfa1719",
+  "reviewed_head": "638f5b078b36f243ee6996c889d0b00fb760bcee",
+  "source_sha256": {
+    "packages/core/src/ftc/operations.ts": "e701c26a463962d19e196d735ef83adc91808fd30ea9d64093092a9ee11d35f8",
+    "packages/schema/src/ftc-operation.ts": "30c49b1809b43bb808b25ebb29887d436dc45db1236c99f54454950ecd5bcbf9",
+    "packages/core/test/ftc/robot-approvals-and-operations/m9-01.test.ts": "685a7b9a327b9a61031cb0af18b9439cd1fc54c33c5701aa7120545fe84e051b",
+    "packages/core/test/ftc/robot-approvals-and-operations/m9-02.test.ts": "12e3805e4bc5d40d24e4c1c8db956e943066b8055fc6698a46aece08c1c76c1e"
+  },
+  "source_identity_matches": true,
+  "evidence_files": 77,
+  "evidence_hashes_match": true,
+  "completed_command_records": {
+    "clock-owner-green": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "combined-final": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "combined-resume-v1": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "combined-resume-v2": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": true
+    },
+    "contract-red-bounded": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "core-types-final": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "core-types-first": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "core-types-resume-v1": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "core-types-resume-v2": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": true
+    },
+    "expanded-contract": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "expired-policy-green": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "expired-policy-red": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "focused-resume-v1": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "focused-resume-v2": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": true
+    },
+    "format-final": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "format-helper-resume-v1": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": true
+    },
+    "format-repair": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "format-resume-v1": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "format-resume-v2": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": true
+    },
+    "format-write": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "green-first": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "green-owner-precedence": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "lint-final": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "lint-repair": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "lint-resume-v1": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "lint-resume-v2": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": true
+    },
+    "m9-01-baseline": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "m9-02-final": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "schema-types-final": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "schema-types-resume-v1": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    },
+    "schema-types-resume-v2": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": true
+    },
+    "source-audit-command-resume-v1": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": true
+    },
+    "source-audit-command-resume-v2": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": true
+    },
+    "task-red": {
+      "metadata_matches": true,
+      "log_matches": true,
+      "exit_matches": true,
+      "sources_match_candidate": false
+    }
+  },
+  "final_checks": [
+    "focused-resume-v2",
+    "combined-resume-v2",
+    "core-types-resume-v2",
+    "schema-types-resume-v2",
+    "lint-resume-v2",
+    "format-resume-v2",
+    "source-audit-command-resume-v2"
+  ],
+  "reviewer_test_runs": 0,
+  "external_product_code_reads": 0,
+  "diff_sha256": "8c72cc95633c7982256e64a0e1e07025e25eacbb7eab52e80c1a6a1a5fa60f50"
+}

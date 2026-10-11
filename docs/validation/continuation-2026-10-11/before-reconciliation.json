@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-11",
+  "head_before": "638f5b078b36f243ee6996c889d0b00fb760bcee",
+  "branch": "ftc-workspace",
+  "ledger_sha256_before": "f292deb75144ff3f83ef7b72e3c6750eca798d6fad37a79f0dfb1b1b8eaecfe2",
+  "checked_task_count_before": 31,
+  "saved_target": 32,
+  "source_sha256": {
+    "packages/core/src/ftc/operations.ts": "e701c26a463962d19e196d735ef83adc91808fd30ea9d64093092a9ee11d35f8",
+    "packages/schema/src/ftc-operation.ts": "30c49b1809b43bb808b25ebb29887d436dc45db1236c99f54454950ecd5bcbf9",
+    "packages/core/test/ftc/robot-approvals-and-operations/m9-01.test.ts": "685a7b9a327b9a61031cb0af18b9439cd1fc54c33c5701aa7120545fe84e051b",
+    "packages/core/test/ftc/robot-approvals-and-operations/m9-02.test.ts": "12e3805e4bc5d40d24e4c1c8db956e943066b8055fc6698a46aece08c1c76c1e"
+  },
+  "preserved_pending_files_sha256": {
+    "docs/validation/M9-02-interrupted-2026-10-10.md": "00e2f7d8a42c8e3329bb7fa1ef9e2e08a4f5a2f77020e6acc375c2119b83b11a",
+    "docs/validation/M9-02-review-2026-10-10.diff": "8c72cc95633c7982256e64a0e1e07025e25eacbb7eab52e80c1a6a1a5fa60f50",
+    "docs/validation/M9-02-review-2026-10-10.md": "74fc51f0ec334645683fcb55b0f516c1c485e0ba9ebe5e682554d81b07662d58",
+    "docs/validation/m9-02/continuation-root-2026-10-10/baseline.json": "ebf284e54c96e0e588f5703a531b0c0ef842c4b829151d160195e5b797373cb3",
+    "docs/validation/m9-02/continuation-root-2026-10-10/interrupted-audit.json": "eff9887683fa6576c45005c167773a222695e4729945dffa7b035d3cfd339ea5",
+    "docs/validation/m9-02/review-2026-10-10/evidence-identity.json": "42ae06ed2ded9e793c310dd0ced3206c583a7ba16eb2f6a86974623089e6212c"
+  },
+  "review_report_sha256": "74fc51f0ec334645683fcb55b0f516c1c485e0ba9ebe5e682554d81b07662d58",
+  "review_receipt_sha256": "42ae06ed2ded9e793c310dd0ced3206c583a7ba16eb2f6a86974623089e6212c",
+  "no_active_goal": true,
+  "new_test_runs": 0
+}
